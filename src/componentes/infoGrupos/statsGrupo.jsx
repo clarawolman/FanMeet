@@ -1,17 +1,18 @@
 export default function StatsGrupo({ grupo }) {
+
    return (
       <div className="statsGrupo">
 
          <div className="statCard">
-            <p>24/06</p>
+            <p>{grupo.fecha}</p>
          </div>
 
          <div className="statCard">
-            <p>18:30 hs</p>
+            <p>{grupo.hora}</p>
          </div>
 
          <div className="statCard">
-            <p>Parque Centenario</p>
+            <p>{grupo.ubicacion}</p>
          </div>
 
       </div>

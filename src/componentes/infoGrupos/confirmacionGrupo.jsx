@@ -1,15 +1,17 @@
-export default function ConfirmacionGrupo() {
+export default function ConfirmacionGrupo({ onConfirmar }) {
+
    return (
       <div className="confirmacionGrupo">
 
-         <h3>¡Sumate gratis!</h3>
+         <h3>¡Sumate al grupo!</h3>
 
          <p>
             Confirmá tu asistencia para recibir
-            notificaciones del grupo.
+            notificaciones y enterarte de todas
+            las novedades del evento.
          </p>
 
-         <button>
+         <button onClick={onConfirmar}>
             Confirmar asistencia
          </button>
 

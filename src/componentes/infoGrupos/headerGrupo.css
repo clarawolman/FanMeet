@@ -1,0 +1,39 @@
+.headerGrupo {
+   display: flex;
+   align-items: center;
+   gap: 16px;
+
+   margin-bottom: 24px;
+}
+
+.backButton {
+   width: 42px;
+   height: 42px;
+
+   border: none;
+   border-radius: 50%;
+
+   background-color: #f3f3f3;
+
+   font-size: 20px;
+   cursor: pointer;
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   transition: background-color 0.2s ease;
+}
+
+.backButton:hover {
+   background-color: #e5e5e5;
+}
+
+.headerGrupo h2 {
+   margin: 0;
+
+   font-size: 28px;
+   font-weight: 700;
+
+   color: #111;
+}

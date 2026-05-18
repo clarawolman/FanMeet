@@ -1,11 +1,12 @@
 export default function MapaGrupo({ ubicacion }) {
+
    return (
       <div className="mapaGrupo">
 
          <h3>Ubicación</h3>
 
          <div className="mapaFake">
-            {ubicacion}
+            <p>{ubicacion}</p>
          </div>
 
       </div>

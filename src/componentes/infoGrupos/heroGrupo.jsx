@@ -1,21 +1,22 @@
 export default function HeroGrupo({ grupo }) {
+
    return (
       <div className="heroGrupo">
 
          <div className="heroImageContainer">
 
-            <img src={grupo.foto} />
-
-            <span>
-               Evento Gratuito
-            </span>
+            <img
+               src={grupo.foto}
+               alt={grupo.nombre}
+            />
 
          </div>
 
          <h1>
             {grupo.nombre}
+
             <span>
-               {grupo.concierto.nombre}
+               {grupo.concierto?.nombre}
             </span>
          </h1>
 

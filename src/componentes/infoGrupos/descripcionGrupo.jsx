@@ -1,4 +1,5 @@
 export default function DescripcionGrupo({ descripcion }) {
+
    return (
       <div className="descripcionGrupo">
 

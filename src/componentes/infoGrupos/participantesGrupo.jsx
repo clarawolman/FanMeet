@@ -1,16 +1,21 @@
 export default function ParticipantesGrupo({ participantes }) {
+
    return (
       <div className="participantesGrupo">
 
-         {participantes.slice(0, 4).map((user) => (
-            <img
-               key={user.id_usuario}
-               src={user.fotoperfil}
-            />
-         ))}
+         <div className="imagenesParticipantes">
+            {participantes.slice(0, 4).map((user) => (
+               <img
+                  key={user.id_usuario}
+                  src={user.fotoperfil}
+                  alt={user.nombre}
+                  className="fotoParticipante"
+               />
+            ))}
+         </div>
 
          <span>
-            +12k fans confirmados
+            {participantes.length} fans confirmados
          </span>
 
       </div>

@@ -1,31 +1,56 @@
 .confirmacionGrupo {
-   background: white;
+   margin-top: 40px;
 
-   border-radius: 28px;
+   padding: 28px;
 
-   padding: 24px;
+   border-radius: 24px;
+
+   background-color: #f7f7f7;
 
    display: flex;
    flex-direction: column;
-   gap: 16px;
+   gap: 18px;
+
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.confirmacionGrupo h3 {
+   margin: 0;
+
+   font-size: 26px;
+   font-weight: 700;
+
+   color: #111;
+}
+
+.confirmacionGrupo p {
+   margin: 0;
+
+   font-size: 16px;
+   line-height: 1.6;
+
+   color: #555;
 }
 
 .confirmacionGrupo button {
-   height: 52px;
+   width: fit-content;
+
+   padding: 14px 22px;
 
    border: none;
+   border-radius: 14px;
 
-   border-radius: 16px;
-
-   background: linear-gradient(
-      90deg,
-      #7B2EFF,
-      #FF4FD8
-   );
-
+   background-color: #111;
    color: white;
 
+   font-size: 15px;
    font-weight: 600;
 
    cursor: pointer;
+
+   transition: transform 0.2s ease;
+}
+
+.confirmacionGrupo button:hover {
+   transform: translateY(-2px);
 }

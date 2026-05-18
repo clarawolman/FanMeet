@@ -1,8 +1,9 @@
 export default function HeaderGrupo() {
+
    return (
       <div className="headerGrupo">
 
-         <button>
+         <button className="backButton">
             ←
          </button>
 
