@@ -7,3 +7,5 @@ const grupoMock = {
 export default function App() {
   return <InfoGrupo grupo={grupoMock} />;
 }
+
+
