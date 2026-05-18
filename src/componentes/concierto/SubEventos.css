@@ -1,0 +1,84 @@
+.SubEventoCard {
+  background-color: #f6dff4;
+  border-radius: 31px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.SubEventoContenido {
+  width: 100%;
+}
+
+.SubEventoTitulo {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.05;
+  font-weight: 900;
+  color: #111111;
+}
+
+.SubEventoInfo {
+  margin: 7px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.SubEventoUsuarios {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.SubEventoAvatares {
+  display: flex;
+  align-items: center;
+}
+
+.SubEventoAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  margin-left: -9px;
+  background-color: #ddd;
+}
+
+.SubEventoAvatar:first-child {
+  margin-left: 0;
+}
+
+.SubEventoExtra {
+  margin-left: 10px;
+  background-color: #f3b8de;
+  color: #9e006d;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.SubEventoAsistiran {
+  display: inline-block;
+  margin: 18px 0 0;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: #666666;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.SubEventoBoton {
+  width: 100%;
+  margin-top: 21px;
+  border: none;
+  border-radius: 999px;
+  background-color: #8f20e8;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 16px;
+  cursor: pointer;
+}

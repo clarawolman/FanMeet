@@ -1,0 +1,25 @@
+.HeaderConcierto {
+  height: 78px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 22px 14px;
+  box-sizing: border-box;
+}
+
+.HeaderBoton {
+  border: none;
+  background: none;
+  color: #8f20e8;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.HeaderTitulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111111;
+}
