@@ -1,0 +1,31 @@
+.confirmacionGrupo {
+   background: white;
+
+   border-radius: 28px;
+
+   padding: 24px;
+
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+}
+
+.confirmacionGrupo button {
+   height: 52px;
+
+   border: none;
+
+   border-radius: 16px;
+
+   background: linear-gradient(
+      90deg,
+      #7B2EFF,
+      #FF4FD8
+   );
+
+   color: white;
+
+   font-weight: 600;
+
+   cursor: pointer;
+}

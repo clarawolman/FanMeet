@@ -1,0 +1,18 @@
+.statsGrupo {
+   display: flex;
+   gap: 12px;
+}
+
+.statCard {
+   flex: 1;
+
+   background: white;
+
+   border-radius: 20px;
+
+   padding: 18px 12px;
+
+   text-align: center;
+
+   box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+}

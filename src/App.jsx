@@ -1,17 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import InfoGrupo from "./componentes/infoGrupos/InfoGrupo";
 
-function App() {
-  const [count, setCount] = useState(0)
+const grupoMock = {
+  nombre: "Picnic de Fans",
+};
 
-  return (
-    <>
-      
-    </>
-  )
+export default function App() {
+  return <InfoGrupo grupo={grupoMock} />;
 }
-
-export default App
