@@ -1,0 +1,28 @@
+.FiltroSubEvento {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+
+.FiltroSubEvento::-webkit-scrollbar {
+  display: none;
+}
+
+.FiltroBoton {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 19px;
+  background-color: #ffffff;
+  color: #555555;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.FiltroBotonActivo {
+  background-color: #8f20e8;
+  color: #ffffff;
+}
