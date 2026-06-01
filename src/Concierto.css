@@ -1,0 +1,27 @@
+.Concierto {
+  min-height: 100vh;
+  background-color: #777;
+  display: flex;
+  justify-content: center;
+}
+
+.ConciertoPantalla {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+  overflow-x: hidden;
+}
+
+.ConciertoContenido {
+  padding: 18px 20px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.SubEventosLista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
