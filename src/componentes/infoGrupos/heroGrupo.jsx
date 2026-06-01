@@ -1,3 +1,4 @@
+import "./heroGrupo.css";
 export default function HeroGrupo({ grupo }) {
 
    return (

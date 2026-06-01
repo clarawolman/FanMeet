@@ -1,14 +1,13 @@
-export default function HeaderGrupo() {
+import "./headerGrupo.css";
+export default function HeaderGrupo({ titulo, onVolver }) {
+  return (
+    <div className="headerGrupo">
+      <button className="backButton" onClick={onVolver}>
+        ←
+      </button>
 
-   return (
-      <div className="headerGrupo">
-
-         <button className="backButton">
-            ←
-         </button>
-
-         <h2>Grupo</h2>
-
-      </div>
-   );
+      <h2>{titulo}</h2>
+    </div>
+  );
 }
+

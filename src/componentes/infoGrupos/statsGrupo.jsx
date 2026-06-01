@@ -1,3 +1,4 @@
+import "./statsGrupo.css";
 export default function StatsGrupo({ grupo }) {
 
    return (

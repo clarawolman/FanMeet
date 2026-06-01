@@ -1,3 +1,4 @@
+import "./mapaGrupo.css";
 export default function MapaGrupo({ ubicacion }) {
 
    return (

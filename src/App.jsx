@@ -1,86 +1,169 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Concierto from "./componentes/concierto/Concierto";
-import InfoGrupo from "./componentes/infoGrupos/InfoGrupo";
+import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
+import { supabase } from "./supabase";
+
+const ID_USUARIO_ACTUAL = 2;
 
 function App() {
   const [pantalla, setPantalla] = useState("concierto");
+  const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [errorTexto, setErrorTexto] = useState("");
 
-  const usuariosMock = [
-    {
-      id_usuario: 1,
-      nombre: "Luna",
-      foto_perfil: "https://i.pravatar.cc/100?img=1",
-    },
-    {
-      id_usuario: 2,
-      nombre: "Mora",
-      foto_perfil: "https://i.pravatar.cc/100?img=2",
-    },
-    {
-      id_usuario: 3,
-      nombre: "Sofi",
-      foto_perfil: "https://i.pravatar.cc/100?img=3",
-    },
-    {
-      id_usuario: 4,
-      nombre: "Juli",
-      foto_perfil: "https://i.pravatar.cc/100?img=4",
-    },
-  ];
+  useEffect(() => {
+    async function cargarDatos() {
+      setCargando(true);
 
-  const conciertoMock = {
-    id_concierto: 1,
-    nombre: "The Eras Tour",
-    fecha: "9 de noviembre",
-    hora: "21:00",
-    imagen: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a",
+      const { data: usuarioConcierto, error: errorUsuarioConcierto } =
+        await supabase
+          .from("usuarios_conciertos")
+          .select("*")
+          .eq("id_usuario", ID_USUARIO_ACTUAL)
+          .limit(1)
+          .maybeSingle();
 
-    artista: {
-      id_artista: 1,
-      nombre: "Taylor Swift",
-    },
+      if (errorUsuarioConcierto) {
+        setErrorTexto("Error en usuarios_conciertos: " + errorUsuarioConcierto.message);
+        setCargando(false);
+        return;
+      }
 
-    estadio: {
-      id_estadio: 1,
-      nombre: "River Plate",
-      direccion: "Av. Pres. Figueroa Alcorta 7597",
-      ciudad: "Buenos Aires",
-      imagen: "https://images.unsplash.com/photo-1577223625816-7546f13df25d",
-    },
+      if (!usuarioConcierto) {
+        setErrorTexto("El usuario 1 no tiene conciertos en usuarios_conciertos.");
+        setCargando(false);
+        return;
+      }
 
-    usuarios: usuariosMock,
-    asistentes: usuariosMock.length,
+      const { data: conciertoData, error: errorConcierto } = await supabase
+        .from("concierto")
+        .select("*")
+        .eq("id_concierto", usuarioConcierto.id_concierto)
+        .maybeSingle();
 
-    grupos: [
-      {
-        id_grupo: 1,
-        nombre: "Picnic pre - concierto",
-        descripcion: "Nos juntamos antes del show para hacer previa, charlar y entrar juntos.",
-        fecha: "9 de noviembre",
-        hora: "17:00",
-        ubicacion: "Parque Centenario",
-        foto: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a",
-        usuarios: usuariosMock,
-      },
-      {
-        id_grupo: 2,
-        nombre: "Ida al concierto",
-        descripcion: "Grupo para ir acompañados al estadio.",
-        fecha: "9 de noviembre",
-        hora: "19:00",
-        ubicacion: "Estación Belgrano C",
-        foto: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
-        usuarios: usuariosMock.slice(0, 3),
-      },
-    ],
-  };
+      if (errorConcierto) {
+        setErrorTexto("Error en concierto: " + errorConcierto.message);
+        setCargando(false);
+        return;
+      }
+
+      if (!conciertoData) {
+        setErrorTexto("No existe el concierto con id " + usuarioConcierto.id_concierto);
+        setCargando(false);
+        return;
+      }
+
+      const { data: artistaData } = await supabase
+        .from("artista")
+        .select("*")
+        .eq("id_artista", conciertoData.id_artista)
+        .maybeSingle();
+
+      const { data: estadioData } = await supabase
+        .from("estadio")
+        .select("*")
+        .eq("id_estadio", conciertoData.id_estadio)
+        .maybeSingle();
+
+      const { data: gruposData, error: errorGrupos } = await supabase
+        .from("grupo")
+        .select("*")
+        .eq("id_concierto", conciertoData.id_concierto);
+
+      if (errorGrupos) {
+        setErrorTexto("Error en grupo: " + errorGrupos.message);
+        setCargando(false);
+        return;
+      }
+
+      const gruposConUsuarios = await Promise.all(
+        (gruposData || []).map(async (grupo) => {
+          const { data: relacionesGrupo } = await supabase
+            .from("grupos_usuarios")
+            .select("*")
+            .eq("id_grupo", grupo.id_grupo);
+
+          const usuarios = await Promise.all(
+            (relacionesGrupo || []).map(async (relacion) => {
+              const { data: usuarioData } = await supabase
+                .from("usuario")
+                .select("*")
+                .eq("id_usuario", relacion.id_usuario)
+                .maybeSingle();
+
+              return {
+                id_usuario: usuarioData?.id_usuario,
+                nombre: usuarioData?.nombre || "Usuario",
+                foto_perfil:
+                  usuarioData?.fotoperfil ||
+                  "https://i.pravatar.cc/100?img=5",
+              };
+            })
+          );
+
+          return {
+            ...grupo,
+            usuarios,
+          };
+        })
+      );
+
+      const usuariosDelConcierto = gruposConUsuarios.flatMap(
+        (grupo) => grupo.usuarios
+      );
+
+      const conciertoFinal = {
+        ...conciertoData,
+
+        artista: artistaData || {
+          id_artista: conciertoData.id_artista,
+          nombre: "Artista",
+        },
+
+        estadio: {
+          ...(estadioData || {
+            id_estadio: conciertoData.id_estadio,
+            nombre: "Estadio",
+            direccion: "",
+            ciudad: "",
+          }),
+          imagen:
+            estadioData?.imagen ||
+            "https://images.unsplash.com/photo-1577223625816-7546f13df25d",
+        },
+
+        imagen:
+          conciertoData.imagen ||
+          "https://images.unsplash.com/photo-1501386761578-eac5c94b800a",
+
+        hora: conciertoData.hora || "21:00",
+
+        grupos: gruposConUsuarios,
+        usuarios: usuariosDelConcierto,
+        asistentes: usuariosDelConcierto.length,
+      };
+
+      setConcierto(conciertoFinal);
+      setCargando(false);
+    }
+
+    cargarDatos();
+  }, []);
+
+  if (cargando) {
+    return <p style={{ padding: 20 }}>Cargando concierto...</p>;
+  }
+
+  if (!concierto) {
+    return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
+  }
 
   return (
     <>
       {pantalla === "concierto" && (
         <Concierto
-          concierto={conciertoMock}
+          concierto={concierto}
           onAbrirGrupo={(grupo) => {
             setGrupoSeleccionado(grupo);
             setPantalla("infoGrupo");
@@ -91,7 +174,7 @@ function App() {
       {pantalla === "infoGrupo" && grupoSeleccionado && (
         <InfoGrupo
           grupo={grupoSeleccionado}
-          concierto={conciertoMock}
+          concierto={concierto}
           onVolver={() => setPantalla("concierto")}
         />
       )}

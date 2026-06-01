@@ -1,39 +1,59 @@
 .headerGrupo {
-   display: flex;
-   align-items: center;
-   gap: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
 
-   margin-bottom: 24px;
+  width: 100%;
+  height: 64px;
+
+  background: white;
+  border-radius: 18px;
+
+  padding: 0 18px;
 }
 
 .backButton {
-   width: 42px;
-   height: 42px;
+  width: 32px;
+  height: 32px;
 
-   border: none;
-   border-radius: 50%;
+  border: none;
+  border-radius: 50%;
 
-   background-color: #f3f3f3;
+  background: #f3f0f7;
+  color: #811cd9;
 
-   font-size: 20px;
-   cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
 
-   display: flex;
-   justify-content: center;
-   align-items: center;
+  cursor: pointer;
 
-   transition: background-color 0.2s ease;
-}
-
-.backButton:hover {
-   background-color: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .headerGrupo h2 {
-   margin: 0;
+  margin: 0;
 
-   font-size: 28px;
-   font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
 
-   color: #111;
+  color: #111;
+}
+
+@media (max-width: 850px) {
+  .headerGrupo {
+    height: 56px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  .headerGrupo h2 {
+    font-size: 14px;
+  }
+
+  .backButton {
+    background: transparent;
+  }
 }

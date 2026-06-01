@@ -1,3 +1,4 @@
+import "./confirmacionGrupo.css";
 export default function ConfirmacionGrupo({ onConfirmar }) {
 
    return (

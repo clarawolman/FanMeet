@@ -2,7 +2,7 @@ import "./Footer.css";
 
 import inicioIcon from "../../assets/InicioMarcado.png";
 import eventosIcon from "../../assets/eventosNoMarc.png";
-import perfilIcon from "../../assets/FooterInicioNo.png";
+import perfilIcon from "../../assets/PerfilNo.png";
 
 function Footer() {
   return (

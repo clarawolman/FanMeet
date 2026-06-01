@@ -10,23 +10,20 @@ import ParticipantesGrupo from "./participantesGrupo";
 
 function InfoGrupo({ grupo, concierto, onVolver }) {
   return (
-    <div className="pantalla-info-grupo">
-      <HeaderGrupo
-        titulo={`Grupo - ${grupo.nombre}`}
-        onVolver={onVolver}
-      />
+    <div className="infoGrupo">
+      <HeaderGrupo titulo={`Grupo - ${grupo.nombre}`} onVolver={onVolver} />
 
       <HeroGrupo grupo={grupo} concierto={concierto} />
 
-      <ParticipantesGrupo cantidad={grupo.participantes} />
+      <ParticipantesGrupo participantes={grupo.usuarios} />
 
       <StatsGrupo grupo={grupo} />
 
-      <DescripcionGrupo grupo={grupo} />
+      <DescripcionGrupo descripcion={grupo.descripcion} />
 
       <MapaGrupo ubicacion={grupo.ubicacion} />
 
-      <ConfirmacionGrupo grupo={grupo} />
+      <ConfirmacionGrupo />
     </div>
   );
 }

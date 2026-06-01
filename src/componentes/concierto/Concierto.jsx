@@ -19,29 +19,36 @@ function Concierto({ concierto, onAbrirGrupo }) {
     <div className="pantalla-concierto">
       <HeaderConcierto concierto={concierto} />
 
-      <CardEvento concierto={concierto} />
+      <main className="conciertoLayout">
+        <section className="conciertoHero">
+          <CardEvento concierto={concierto} />
+        </section>
 
-      <CardEstadio estadio={concierto.estadio} />
+        <section className="conciertoInfo">
+          <CardEstadio estadio={concierto.estadio} />
+          <FansUnidos fans={concierto.usuarios} />
+        </section>
 
-      <FansUnidos fans={concierto.usuarios} />
-
-      <FiltroSubEvento
-        filtros={filtros}
-        filtroActivo="todos"
-        onCambiarFiltro={() => {}}
-      />
-
-      <section className="lista-grupos">
-        {concierto.grupos.map((grupo) => (
-          <SubEventos
-            key={grupo.id_grupo}
-            subEvento={grupo}
-            onAbrirGrupo={onAbrirGrupo}
+        <section className="conciertoGrupos">
+          <FiltroSubEvento
+            filtros={filtros}
+            filtroActivo="todos"
+            onCambiarFiltro={() => {}}
           />
-        ))}
-      </section>
 
-      <button className="btn-crear-grupo">CREAR GRUPO ＋</button>
+          <div className="lista-grupos">
+            {concierto.grupos.map((grupo) => (
+              <SubEventos
+                key={grupo.id_grupo}
+                subEvento={grupo}
+                onAbrirGrupo={onAbrirGrupo}
+              />
+            ))}
+          </div>
+
+          <button className="btn-crear-grupo">CREAR GRUPO ＋</button>
+        </section>
+      </main>
 
       <Footer />
     </div>

@@ -1,3 +1,4 @@
+import "./descripcionGrupo.css";
 export default function DescripcionGrupo({ descripcion }) {
 
    return (

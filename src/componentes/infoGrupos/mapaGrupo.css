@@ -1,34 +1,61 @@
 .mapaGrupo {
-   margin-top: 30px;
+  background: white;
+
+  border-radius: 22px;
+
+  padding: 24px;
 }
 
 .mapaGrupo h3 {
-   font-size: 22px;
-   margin-bottom: 16px;
-   color: #222;
+  margin: 0 0 14px;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  color: #111;
 }
 
 .mapaFake {
-   width: 100%;
-   height: 250px;
+  width: 100%;
+  height: 260px;
 
-   border-radius: 20px;
+  border-radius: 18px;
 
-   display: flex;
-   justify-content: center;
-   align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-   background-color: #f2f2f2;
+  background: #ece9ef;
 
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-   overflow: hidden;
+  overflow: hidden;
 }
 
 .mapaFake p {
-   font-size: 18px;
-   font-weight: 500;
-   color: #444;
-   text-align: center;
-   padding: 20px;
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  color: #555;
+  text-align: center;
+}
+
+@media (max-width: 850px) {
+  .mapaGrupo {
+    background: transparent;
+    padding: 0;
+  }
+
+  .mapaGrupo h3 {
+    font-size: 14px;
+  }
+
+  .mapaFake {
+    height: 180px;
+    border-radius: 18px;
+  }
+
+  .mapaFake p {
+    font-size: 12px;
+  }
 }

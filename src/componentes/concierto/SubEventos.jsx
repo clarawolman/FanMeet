@@ -34,11 +34,11 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
         </p>
 
         <button
-          className="SubEventoBoton"
-          onClick={() => onAbrirGrupo(subEvento)}
-        >
-          VER MÁS
-        </button>
+  className="SubEventoBoton"
+  onClick={() => onAbrirGrupo(subEvento)}
+>
+  VER MÁS
+</button>
       </div>
     </section>
   );
