@@ -1,0 +1,32 @@
+.statsGrupo {
+   display: flex;
+   gap: 20px;
+   margin-top: 20px;
+   flex-wrap: wrap;
+}
+
+.statCard {
+   background-color: #ffffff;
+   border-radius: 16px;
+   padding: 18px 24px;
+   min-width: 140px;
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+   transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+   transform: translateY(-3px);
+}
+
+.statCard p {
+   margin: 0;
+   font-size: 16px;
+   font-weight: 600;
+   color: #222;
+}

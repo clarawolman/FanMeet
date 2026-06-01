@@ -1,0 +1,12 @@
+.infoGrupo {
+   width: 100%;
+   min-height: 100vh;
+
+   background: #F8F6FB;
+
+   padding: 20px;
+
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+}
