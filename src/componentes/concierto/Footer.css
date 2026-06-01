@@ -1,22 +1,47 @@
-import "./footer.css";
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
 
-function Footer({}) {
-  return (
-    <section className="footer">
-      <button className="footerButton">
-      <img src={homeIcon} alt="Inicio" />
-      <span>Inicio</span>
-      </button>
-      <button className="footerButton">
-      <img src={homeIcon} alt="Eventos" />
-      <span>Eventos</span>
-    </button>
-      <button className="footerButton">
-      <img src={homeIcon} alt="Perfil" />
-      <span>Perfil</span>
-    </button>
-    </section>
-  );
+  width: 100%;
+  height: 80px;
+
+  background: #ffffff;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  border-top: 1px solid #e5e5e5;
+
+  z-index: 100;
 }
 
-export default FiltroSubEvento;
+.footerButton {
+  border: none;
+  background: transparent;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  cursor: pointer;
+
+  min-width: 70px;
+}
+
+.footerButton img {
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+}
+
+.footerButton span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #7b7b7b;
+}
