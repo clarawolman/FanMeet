@@ -1,84 +1,115 @@
+/* ===== SUB EVENTOS ===== */
 .SubEventoCard {
-  background-color: #f6dff4;
-  border-radius: 31px;
-  padding: 24px;
-  box-sizing: border-box;
+  width: 85%;
+  background-color: #fce4f0;
+  border-radius: 20px;
+  padding: 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-left: 7.5%;
+  margin-right: 7.5%;
+}
+
+.SubEventoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .SubEventoContenido {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .SubEventoTitulo {
   margin: 0;
-  font-size: 24px;
-  line-height: 1.05;
+  font-size: 19px;
   font-weight: 900;
   color: #111111;
+  line-height: 1.2;
 }
 
 .SubEventoInfo {
-  margin: 7px 0 0;
+  margin: 0;
   font-size: 12px;
-  font-weight: 600;
   color: #666666;
+  font-weight: 500;
 }
 
+/* ===== AVATARES ===== */
 .SubEventoUsuarios {
   display: flex;
   align-items: center;
-  margin-top: 20px;
+  gap: 8px;
 }
 
 .SubEventoAvatares {
   display: flex;
-  align-items: center;
+  flex-direction: row;
 }
 
-.SubEventoAvatar {
-  width: 34px;
-  height: 34px;
+.SubEventoAvatares .SubEventoAvatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #ffffff;
-  margin-left: -9px;
-  background-color: #ddd;
+  margin-right: -8px;
 }
 
-.SubEventoAvatar:first-child {
-  margin-left: 0;
+.SubEventoAvatares .SubEventoAvatar:last-child {
+  margin-right: 0;
 }
 
 .SubEventoExtra {
-  margin-left: 10px;
-  background-color: #f3b8de;
-  color: #9e006d;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 5px 10px;
-  border-radius: 999px;
-}
-
-.SubEventoAsistiran {
-  display: inline-block;
-  margin: 18px 0 0;
-  padding: 9px 14px;
-  border-radius: 999px;
-  background-color: #ffffff;
-  color: #666666;
-  font-size: 11px;
+  margin-left: 12px;
+  font-size: 12px;
   font-weight: 600;
+  color: #555555;
 }
 
+/* ===== ASISTIRAN ===== */
+.SubEventoAsistiran {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #444444;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  padding: 5px 14px;
+  width: fit-content;
+}
+
+/* ===== BOTÓN VER MÁS ===== */
 .SubEventoBoton {
   width: 100%;
-  margin-top: 21px;
-  border: none;
-  border-radius: 999px;
-  background-color: #8f20e8;
+  padding: 14px 0;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
   color: #ffffff;
   font-size: 12px;
-  font-weight: 900;
-  padding: 16px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border: none;
+  border-radius: 999px;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+  margin-top: 4px;
+}
+
+.SubEventoBoton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.SubEventoBoton:active {
+  transform: translateY(0);
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .SubEventoCard {
+    max-width: 560px;
+  }
 }

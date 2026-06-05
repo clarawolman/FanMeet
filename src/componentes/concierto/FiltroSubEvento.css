@@ -1,28 +1,37 @@
-.FiltroSubEvento {
+/* ===== FILTRO SUB EVENTO ===== */
+.filtro-sub-evento {
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 2px 0;
-  scrollbar-width: none;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.FiltroSubEvento::-webkit-scrollbar {
-  display: none;
-}
-
-.FiltroBoton {
-  flex-shrink: 0;
-  border: none;
+.filtro-sub-evento__boton {
+  padding: 8px 20px;
   border-radius: 999px;
-  padding: 12px 19px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border: 1.5px solid #d1d5db;
   background-color: #ffffff;
   color: #555555;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
-.FiltroBotonActivo {
-  background-color: #8f20e8;
+.filtro-sub-evento__boton:hover {
+  border-color: #a855f7;
+  color: #7c3aed;
+}
+
+.filtro-sub-evento__boton--activo {
+  background-color: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.3);
+}
+
+.filtro-sub-evento__boton--activo:hover {
+  background-color: #6d28d9;
+  border-color: #6d28d9;
   color: #ffffff;
 }
