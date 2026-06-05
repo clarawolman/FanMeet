@@ -3,7 +3,7 @@ import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import { supabase } from "./supabase";
 
-const ID_USUARIO_ACTUAL = 2;
+const ID_USUARIO_ACTUAL = 1;
 
 function App() {
   const [pantalla, setPantalla] = useState("concierto");
