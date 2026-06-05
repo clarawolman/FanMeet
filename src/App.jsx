@@ -9,12 +9,34 @@ function App() {
   const [pantalla, setPantalla] = useState("concierto");
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+  const [usuarioActual, setUsuarioActual] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [errorTexto, setErrorTexto] = useState("");
 
   useEffect(() => {
     async function cargarDatos() {
       setCargando(true);
+
+      const { data: usuarioActualData, error: errorUsuarioActual } =
+        await supabase
+          .from("usuario")
+          .select("*")
+          .eq("id_usuario", ID_USUARIO_ACTUAL)
+          .maybeSingle();
+
+      if (errorUsuarioActual) {
+        setErrorTexto("Error en usuario: " + errorUsuarioActual.message);
+        setCargando(false);
+        return;
+      }
+
+      if (!usuarioActualData) {
+        setErrorTexto("No existe el usuario con id " + ID_USUARIO_ACTUAL);
+        setCargando(false);
+        return;
+      }
+
+      setUsuarioActual(usuarioActualData);
 
       const { data: usuarioConcierto, error: errorUsuarioConcierto } =
         await supabase
@@ -25,13 +47,17 @@ function App() {
           .maybeSingle();
 
       if (errorUsuarioConcierto) {
-        setErrorTexto("Error en usuarios_conciertos: " + errorUsuarioConcierto.message);
+        setErrorTexto(
+          "Error en usuarios_conciertos: " + errorUsuarioConcierto.message
+        );
         setCargando(false);
         return;
       }
 
       if (!usuarioConcierto) {
-        setErrorTexto("El usuario 1 no tiene conciertos en usuarios_conciertos.");
+        setErrorTexto(
+          "El usuario 1 no tiene conciertos en usuarios_conciertos."
+        );
         setCargando(false);
         return;
       }
@@ -49,7 +75,9 @@ function App() {
       }
 
       if (!conciertoData) {
-        setErrorTexto("No existe el concierto con id " + usuarioConcierto.id_concierto);
+        setErrorTexto(
+          "No existe el concierto con id " + usuarioConcierto.id_concierto
+        );
         setCargando(false);
         return;
       }
@@ -175,6 +203,7 @@ function App() {
         <InfoGrupo
           grupo={grupoSeleccionado}
           concierto={concierto}
+          usuario={usuarioActual}
           onVolver={() => setPantalla("concierto")}
         />
       )}

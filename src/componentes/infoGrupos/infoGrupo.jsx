@@ -11,23 +11,25 @@ import ParticipantesGrupo from "./participantesGrupo";
 
 function InfoGrupo({ grupo, concierto, onVolver, usuario }) {
   const confirmarAsistenciaGrupo = async () => {
-    if (!usuario || !grupo) return;
+  if (!usuario || !grupo) return;
 
-    const { error } = await supabase
-      .from("grupos_usuarios")
-      .insert({
-        id_usuario: usuario.id_usuario,
-        id_grupo: grupo.id_grupo,
-      });
+  const { data, error } = await supabase
+    .from("grupos_usuarios")
+    .insert({
+      id: Date.now(),
+      id_usuario: usuario.id_usuario,
+      id_grupo: grupo.id_grupo,
+    })
+    .select();
 
-    if (error) {
-      console.error("Error al sumarse al grupo:", error);
-      alert("No se pudo confirmar la asistencia");
-      return;
-    }
+  if (error) {
+    console.error("Error al sumarse al grupo:", error);
+    alert(error.message);
+    return;
+  }
 
-    alert("Te sumaste al grupo");
-  };
+  alert("Te sumaste al grupo");
+};
 
   return (
     <div className="infoGrupo">
