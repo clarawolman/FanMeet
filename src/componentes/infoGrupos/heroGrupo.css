@@ -41,7 +41,7 @@
 
 @media (max-width: 850px) {
   .heroImageContainer {
-    height: 140px;
+    height: 260px;
     border-radius: 18px;
     box-shadow: none;
   }

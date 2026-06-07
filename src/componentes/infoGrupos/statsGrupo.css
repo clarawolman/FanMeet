@@ -1,48 +1,24 @@
 .statsGrupo {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 12px;
 }
 
 .statCard {
-  height: 120px;
-  min-width: 0;
-
   background: white;
-
-  border-radius: 20px;
-  padding: 18px;
-
+  border-radius: 18px;
+  padding: 16px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(100, 60, 180, 0.12);
+  min-height: 72px;
 }
 
 .statCard p {
   margin: 0;
-
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
-
   color: #222;
   text-align: center;
-}
-
-@media (max-width: 850px) {
-  .statsGrupo {
-    gap: 10px;
-  }
-
-  .statCard {
-    height: 72px;
-    border-radius: 14px;
-    padding: 10px;
-    box-shadow: none;
-  }
-
-  .statCard p {
-    font-size: 11px;
-  }
 }

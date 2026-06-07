@@ -2,13 +2,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-height: 64px;
-
   background: white;
   border-radius: 18px;
-
   padding: 14px 18px;
+  box-shadow: 0 4px 16px rgba(100, 60, 180, 0.12);
 }
 
 .imagenesParticipantes {
@@ -19,13 +17,10 @@
 .fotoParticipante {
   width: 34px;
   height: 34px;
-
   border-radius: 50%;
   object-fit: cover;
-
   border: 2px solid white;
   margin-left: -10px;
-
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
@@ -35,23 +30,6 @@
 
 .participantesGrupo span {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: #333;
-}
-
-@media (max-width: 850px) {
-  .participantesGrupo {
-    background: transparent;
-    padding: 0;
-    min-height: auto;
-  }
-
-  .fotoParticipante {
-    width: 28px;
-    height: 28px;
-  }
-
-  .participantesGrupo span {
-    font-size: 12px;
-  }
 }

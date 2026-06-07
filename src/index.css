@@ -1,17 +1,52 @@
-* {
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html, body {
   margin: 0;
-  min-height: 100vh;
-  width: 100%;
-  font-family: Arial, sans-serif;
-  background: #777;
+  padding: 0;
+  background-color: #f5f5f7;
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #111111;
 }
 
-body {
-  overflow-x: hidden;
+#root {
+  min-height: 100vh;
+}
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --color-primary: #7c3aed;
+  --color-primary-light: #a855f7;
+  --color-primary-dark: #6d28d9;
+  --color-pink: #e91e8c;
+  --color-pink-light: #fce4f0;
+  --color-bg: #f5f5f7;
+  --color-white: #ffffff;
+  --color-text: #111111;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-full: 999px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-purple: 0 4px 20px rgba(124, 58, 237, 0.35);
+}
+
+/* ===== SCROLLBAR LIMPIO ===== */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.15);
+  border-radius: 4px;
 }

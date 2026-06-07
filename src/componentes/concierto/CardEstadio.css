@@ -1,33 +1,44 @@
+/* ===== CARD ESTADIO ===== */
 .EstadioCard {
+  width: 100%;
   background-color: #ffffff;
-  border-radius: 30px;
-  padding: 14px 14px 18px;
-  box-sizing: border-box;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
 .EstadioImagen {
   width: 100%;
-  height: 126px;
+  height: 160px;
   object-fit: cover;
   display: block;
-  border-radius: 22px;
 }
 
 .EstadioContenido {
-  text-align: center;
-  padding-top: 14px;
+  padding: 14px 16px 16px;
 }
 
 .EstadioNombre {
-  margin: 0;
-  font-size: 15px;
+  margin: 0 0 4px;
+  font-size: 17px;
   font-weight: 800;
   color: #111111;
 }
 
 .EstadioDireccion {
-  margin: 5px 0 0;
-  font-size: 11px;
-  font-weight: 500;
-  color: #777777;
+  margin: 0;
+  font-size: 12px;
+  color: #888888;
+  font-weight: 400;
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .EstadioImagen {
+    height: 180px;
+  }
+
+  .EstadioNombre {
+    font-size: 17px;
+  }
 }

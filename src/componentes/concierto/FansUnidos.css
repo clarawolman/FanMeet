@@ -1,44 +1,59 @@
+/* ===== FANS UNIDOS ===== */
 .FansUnidosCard {
-  background-color: #ffb5d5;
-  border-radius: 28px;
-  padding: 20px 24px;
-  box-sizing: border-box;
+  width: 100%;
+  background: linear-gradient(135deg, #fce4f0 0%, #fbb6d6 100%);
+  border-radius: 20px;
+  padding: 20px 20px 16px;
+  box-shadow: 0 2px 12px rgba(236, 72, 153, 0.12);
 }
 
 .FansSubtitulo {
-  margin: 0;
+  margin: 0 0 4px;
   font-size: 13px;
-  font-weight: 700;
-  color: #b00078;
+  font-weight: 600;
+  color: #c2185b;
+  letter-spacing: 0.2px;
 }
 
 .FansCantidad {
-  margin: 2px 0 0;
-  font-size: 34px;
+  margin: 0 0 10px;
+  font-size: 36px;
+  font-weight: 800;
+  color: #e91e8c;
   line-height: 1;
-  font-weight: 900;
-  color: #c00084;
 }
 
 .FansTexto {
-  margin: 5px 0 0;
+  background: none;
+  border: 1.5px solid rgba(201, 24, 91, 0.4);
+  border-radius: 999px;
+  padding: 5px 14px;
   font-size: 12px;
   font-weight: 600;
-  color: #9d006c;
-  text-decoration: underline;
+  color: #c2185b;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  margin-bottom: 14px;
+  display: inline-block;
+}
+
+.FansTexto:hover {
+  background-color: rgba(201, 24, 91, 0.08);
 }
 
 .FansBarra {
   width: 100%;
-  height: 8px;
-  margin-top: 17px;
-  background-color: #f6c5df;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 999px;
   overflow: hidden;
+  margin-top: 4px;
 }
 
 .FansBarraActiva {
   height: 100%;
-  background-color: #c10085;
+  background: linear-gradient(90deg, #e91e8c, #f06292);
   border-radius: 999px;
+  min-width: 6px;
+  transition: width 0.6s ease;
 }
