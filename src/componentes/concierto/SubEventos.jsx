@@ -16,7 +16,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
               <img
                 key={usuario.id_usuario}
                 className="SubEventoAvatar"
-                src={usuario.foto_perfil}
+                src={usuario.fotoperfil || "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg"}
                 alt={usuario.nombre}
               />
             ))}

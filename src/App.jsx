@@ -97,8 +97,7 @@ function App() {
                 nombre: usuarioData?.nombre || "Usuario",
                 foto_perfil:
                   usuarioData?.fotoperfil ||
-                  "https://i.pravatar.cc/100?img=5",
-              };
+                  "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",              };
             })
           );
 

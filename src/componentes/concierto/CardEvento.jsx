@@ -4,7 +4,7 @@ function CardEvento({concierto}) {
   return (
     <section className="CardEvento">
       <img className="EventoImagen"
-        src={concierto.imagen}
+        src={concierto.imagenConcierto}
         alt={concierto.nombre}
       />
 
