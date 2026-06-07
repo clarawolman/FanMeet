@@ -1,0 +1,70 @@
+.confirmacionGrupo {
+  background: white;
+
+  border-radius: 22px;
+
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  height: fit-content;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.confirmacionGrupo h3 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  color: #111;
+}
+
+.confirmacionGrupo p {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  color: #555;
+}
+
+.confirmacionGrupo button {
+  width: 100%;
+
+  border: none;
+  border-radius: 14px;
+
+  padding: 15px;
+
+  background: linear-gradient(90deg, #8c3cff, #ff5ec4);
+  color: white;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+@media (max-width: 850px) {
+  .confirmacionGrupo {
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+
+  .confirmacionGrupo h3 {
+    font-size: 15px;
+  }
+
+  .confirmacionGrupo p {
+    font-size: 12px;
+  }
+
+  .confirmacionGrupo button {
+    font-size: 12px;
+  }
+}
