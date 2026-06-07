@@ -6,13 +6,13 @@ function CardEstadio({ estadio }) {
     <section className="EstadioCard">
       <img
         className="EstadioImagen"
-        src={imagenEstadio}
+        src={estadio?.venueImage || "https://images.unsplash.com/photo-1577223625816-7546f13df25d"}
         alt={estadio?.nombre || "Estadio"}
       />
-
+      {/* no entiendo por que en estadio hay un ? dsp */}
       <div className="EstadioContenido">
         <h3 className="EstadioNombre">
-          {estadio?.nombre}
+          {estadio?.nombre} 
         </h3>
 
         <p className="EstadioDireccion">
