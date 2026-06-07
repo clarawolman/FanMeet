@@ -127,14 +127,15 @@ function App() {
             nombre: "Estadio",
             direccion: "",
             ciudad: "",
+            venueImage: "",
           }),
           imagen:
-            estadioData?.imagen ||
+            estadioData?.venueImage ||
             "https://images.unsplash.com/photo-1577223625816-7546f13df25d",
         },
 
         imagen:
-          conciertoData.imagen ||
+          conciertoData.imagenConcierto ||
           "https://images.unsplash.com/photo-1501386761578-eac5c94b800a",
 
         hora: conciertoData.hora || "21:00",
