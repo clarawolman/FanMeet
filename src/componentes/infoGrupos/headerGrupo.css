@@ -1,59 +1,57 @@
 .headerGrupo {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
-  gap: 14px;
-
+  gap: 12px;
   width: 100%;
-  height: 64px;
-
-  background: white;
-  border-radius: 18px;
-
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
   padding: 0 18px;
+  border-radius: 0;
 }
 
 .backButton {
-  width: 32px;
-  height: 32px;
-
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
-
-  background: #f3f0f7;
-  color: #811cd9;
-
+  background: none;
+  color: #7c3aed;
   font-size: 18px;
   font-weight: 700;
-
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.backButton:hover {
+  background-color: rgba(124, 58, 237, 0.08);
 }
 
 .headerGrupo h2 {
   margin: 0;
-
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
-
   color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (max-width: 850px) {
+@media (min-width: 768px) {
   .headerGrupo {
-    height: 56px;
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
+    height: 60px;
+    padding: 0 24px;
   }
 
   .headerGrupo h2 {
-    font-size: 14px;
-  }
-
-  .backButton {
-    background: transparent;
+    font-size: 18px;
   }
 }

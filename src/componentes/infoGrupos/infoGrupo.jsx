@@ -7,23 +7,23 @@ import DescripcionGrupo from "./descripcionGrupo";
 import MapaGrupo from "./mapaGrupo";
 import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
+import Footer from "../concierto/Footer";
 
 function InfoGrupo({ grupo, concierto, onVolver }) {
   return (
     <div className="infoGrupo">
       <HeaderGrupo titulo={`Grupo - ${grupo.nombre}`} onVolver={onVolver} />
 
-      <HeroGrupo grupo={grupo} concierto={concierto} />
+      <div className="infoGrupoContenido">
+        <HeroGrupo grupo={grupo} concierto={concierto} />
+        <ParticipantesGrupo participantes={grupo.usuarios} />
+        <StatsGrupo grupo={grupo} />
+        <DescripcionGrupo descripcion={grupo.descripcion} />
+        <MapaGrupo ubicacion={grupo.ubicacion} />
+        <ConfirmacionGrupo />
+      </div>
 
-      <ParticipantesGrupo participantes={grupo.usuarios} />
-
-      <StatsGrupo grupo={grupo} />
-
-      <DescripcionGrupo descripcion={grupo.descripcion} />
-
-      <MapaGrupo ubicacion={grupo.ubicacion} />
-
-      <ConfirmacionGrupo />
+      <Footer />
     </div>
   );
 }
