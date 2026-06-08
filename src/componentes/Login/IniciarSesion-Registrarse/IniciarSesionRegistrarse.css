@@ -1,0 +1,44 @@
+.pantallaLogin {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.loginContenido {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  padding: 92px 24px 0;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.loginTitulo {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #7a3fe0;
+}
+
+@media (max-width: 430px) {
+  .loginContenido {
+    padding: 92px 24px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .loginContenido {
+    padding: 76px 22px 0;
+  }
+
+  .loginTitulo {
+    font-size: 42px;
+  }
+}
