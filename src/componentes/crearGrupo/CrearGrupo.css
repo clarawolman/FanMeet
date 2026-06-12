@@ -1,0 +1,32 @@
+.crearGrupoPantalla {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(255, 127, 159, 0.23), transparent 24%),
+    radial-gradient(circle at 92% 10%, rgba(255, 209, 102, 0.3), transparent 22%),
+    radial-gradient(circle at 78% 88%, rgba(133, 23, 232, 0.11), transparent 28%),
+    #fff7ef;
+  font-family: "Archivo", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  color: #201725;
+}
+
+.crearGrupoMain {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 54px 48px 80px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .crearGrupoMain {
+    padding: 34px 22px 58px;
+  }
+}
+
+@media (max-width: 480px) {
+  .crearGrupoMain {
+    padding: 24px 16px 46px;
+  }
+}

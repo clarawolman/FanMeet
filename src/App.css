@@ -1,3 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+:root {
+  --fm-bg: #fff7ef;
+  --fm-bg-soft: #fffaf4;
+  --fm-surface: #ffffff;
+  --fm-surface-warm: #fff1df;
+  --fm-purple: #8517e8;
+  --fm-purple-dark: #4b0d83;
+  --fm-pink: #ff7f9f;
+  --fm-coral: #ff8a63;
+  --fm-yellow: #ffd166;
+  --fm-ink: #201725;
+  --fm-muted: #7b6f82;
+  --fm-border: rgba(75, 13, 131, 0.13);
+  --fm-shadow: 0 18px 45px rgba(65, 21, 93, 0.12);
+  --fm-radius-lg: 34px;
+  --fm-radius-md: 22px;
+  --fm-radius-sm: 14px;
+
+  font-family: "Archivo", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--fm-bg);
+  color: var(--fm-ink);
+  font-family: "Archivo", system-ui, sans-serif;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Mata gradientes genéricos en botones */
+button,
+.btn,
+.boton,
+.crearGrupoBoton,
+.btn-crear-grupo {
+  background-image: none !important;
+}
 .counter {
   font-size: 16px;
   padding: 5px 10px;

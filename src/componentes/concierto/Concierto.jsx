@@ -8,7 +8,7 @@ import FiltroSubEvento from "./FiltroSubEvento";
 import SubEventos from "./SubEventos";
 import Footer from "./Footer";
 
-function Concierto({ concierto, onAbrirGrupo }) {
+function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
   const filtros = [
     { id: "todos", nombre: "Todos" },
     { id: "pre", nombre: "Pre" },
@@ -46,7 +46,7 @@ function Concierto({ concierto, onAbrirGrupo }) {
             ))}
           </div>
 
-          <button className="btn-crear-grupo">CREAR GRUPO ＋</button>
+          <button className="btn-crear-grupo" onClick={onCrearGrupo}>CREAR GRUPO ＋</button>
         </section>
       </main>
 
