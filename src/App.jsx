@@ -295,13 +295,16 @@ function App() {
 
 export default App;
 
-/*import { useState } from "react";
+/*import { useEffect, useState } from "react";
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
+import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
+
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
+
 import { supabase } from "./supabase";
 
 function App() {
