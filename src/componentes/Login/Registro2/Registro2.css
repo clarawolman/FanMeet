@@ -1,0 +1,314 @@
+.pantallaRegistro2 {
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f6f8;
+  color: #05050f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registro2Header {
+  width: 100%;
+  max-width: 430px;
+  height: 84px;
+  padding: 0 24px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.registro2Volver {
+  border: none;
+  background: transparent;
+  color: #ff3f97;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.registro2Logo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #7b24df;
+}
+
+.registro2Contenido {
+  width: 100%;
+  max-width: 430px;
+  padding: 20px 24px 28px;
+  box-sizing: border-box;
+}
+
+.registro2ProgresoInfo {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #05050f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  margin-bottom: 7px;
+}
+
+.registro2Barra {
+  width: 100%;
+  height: 5px;
+  background: #202036;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 44px;
+}
+
+.registro2BarraActiva {
+  width: 66%;
+  height: 100%;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff4ca3 100%);
+  border-radius: 999px;
+}
+
+.registro2Titulo {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 26px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  color: #05050f;
+}
+
+.registro2FotoWrapper {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 28px;
+  position: relative;
+}
+
+.registro2Foto {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #7f7f86;
+  border: 1.5px dashed #ff66ad;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.registro2FotoPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Si la imagen PNG tiene transparencia, este fondo se ve detrás */
+.registro2FotoPreview[src$=".png"] {
+  object-fit: contain;
+  padding: 18px;
+}
+
+.registro2BotonMas {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7b4fff 0%, #ff3f97 100%);
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  position: absolute;
+  right: -2px;
+  bottom: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(170, 70, 220, 0.3);
+  display: grid;
+  place-items: center;
+}
+
+.registro2TextoOpcional {
+  margin: -14px 0 22px;
+  text-align: center;
+  color: #6f6f76;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.registro2Opciones {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.registro2Opcion {
+  width: 100%;
+  height: 60px;
+  border: none;
+  border-radius: 9px;
+  background: #696969;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.registro2OpcionIcono {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+.registro2OpcionIcono.camara {
+  background: rgba(123, 79, 255, 0.45);
+}
+
+.registro2OpcionIcono.libreria {
+  background: rgba(255, 63, 151, 0.38);
+}
+
+.registro2OpcionTexto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  color: #ffffff;
+  text-align: left;
+}
+
+.registro2OpcionTexto strong {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.registro2OpcionTexto small {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #e6e6e6;
+}
+
+.registro2Flecha {
+  color: #f1b8cc;
+  font-size: 28px;
+  line-height: 1;
+  margin-left: 10px;
+}
+
+.registro2BotonSiguiente {
+  width: 100%;
+  height: 54px;
+  margin-top: 64px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+  color: white;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.25);
+}
+
+.registro2BotonSiguiente:active,
+.registro2BotonMas:active,
+.registro2Opcion:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 360px) {
+  .registro2Header {
+    height: 78px;
+    padding: 0 22px;
+  }
+
+  .registro2Contenido {
+    padding: 18px 22px 24px;
+  }
+
+  .registro2Titulo {
+    font-size: 24px;
+  }
+
+  .registro2FotoWrapper {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 24px;
+  }
+
+  .registro2Foto {
+    width: 140px;
+    height: 140px;
+  }
+
+  .registro2BotonSiguiente {
+    margin-top: 52px;
+  }
+}
+.registro2Error {
+  margin: -10px 0 16px;
+  text-align: center;
+  color: #ff2f7d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.registro2Camara {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.registro2Video {
+  width: 100%;
+  height: 230px;
+  background: #111111;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.registro2CamaraBotones {
+  display: flex;
+  gap: 10px;
+}
+
+.registro2BotonCamaraSecundario,
+.registro2BotonCamaraPrincipal {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.registro2BotonCamaraSecundario {
+  background: #dedee3;
+  color: #111111;
+}
+
+.registro2BotonCamaraPrincipal {
+  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+  color: #ffffff;
+}

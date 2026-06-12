@@ -1,0 +1,27 @@
+.fondoLogin {
+  width: 100%;
+  max-width: 430px;
+  position: absolute;
+  left: 50%;
+  top: 360px;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+.fondoLoginImagen {
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  opacity: 0.75;
+}
+
+@media (max-width: 360px) {
+  .fondoLogin {
+    top: 345px;
+  }
+}

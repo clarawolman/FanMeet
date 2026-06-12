@@ -1,0 +1,257 @@
+.pantallaRegistro3 {
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f6f8;
+  color: #05050f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registro3Header {
+  width: 100%;
+  max-width: 430px;
+  height: 84px;
+  padding: 0 24px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.registro3Volver {
+  border: none;
+  background: transparent;
+  color: #ff3f97;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.registro3Logo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #7b24df;
+}
+
+.registro3Contenido {
+  width: 100%;
+  max-width: 430px;
+  padding: 20px 20px 28px;
+  box-sizing: border-box;
+}
+
+.registro3ProgresoInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  margin-bottom: 7px;
+}
+
+.registro3Barra {
+  width: 100%;
+  height: 5px;
+  background: #202036;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 34px;
+}
+
+.registro3BarraActiva {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+}
+
+.registro3Titulo {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+}
+
+.registro3Subtitulo {
+  margin: 6px 0 24px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #202020;
+}
+
+.registro3Generos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.registro3Genero {
+  height: 74px;
+  border: none;
+  border-radius: 9px;
+  background: #7e7e85;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.registro3Genero span {
+  color: #ffd2e5;
+  font-size: 20px;
+}
+
+.registro3Genero strong {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.registro3Genero.activo {
+  background: linear-gradient(135deg, #a96cff 0%, #ff579f 100%);
+  box-shadow: 0 7px 14px rgba(255, 63, 151, 0.22);
+}
+
+.registro3SeccionTitulo {
+  margin: 28px 0 13px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.registro3Ambientes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.registro3Ambiente {
+  width: 100%;
+  min-height: 60px;
+  border: none;
+  border-radius: 9px;
+  background: #727277;
+  color: #ffffff;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+}
+
+.registro3Ambiente.activo {
+  background: linear-gradient(90deg, #9b6b85 0%, #77777e 100%);
+}
+
+.registro3AmbienteIcono {
+  width: 39px;
+  height: 39px;
+  border-radius: 8px;
+  background: rgba(255, 63, 151, 0.22);
+  display: grid;
+  place-items: center;
+  color: #ffd2e5;
+  font-size: 17px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.registro3AmbienteTexto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.registro3AmbienteTexto strong {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.registro3AmbienteTexto small {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #f0f0f0;
+}
+
+.registro3Check {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 900;
+  margin-left: 8px;
+}
+
+.registro3Ambiente.activo .registro3Check {
+  background: #ff3f97;
+  border-color: #ff3f97;
+}
+
+.registro3Error {
+  margin: 14px 0 -4px;
+  color: #ff2f7d;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.registro3Decoracion {
+  margin: 28px 0 18px;
+  text-align: center;
+  color: #ff9fca;
+  font-size: 34px;
+  letter-spacing: 3px;
+  opacity: 0.85;
+}
+
+.registro3BotonFinalizar {
+  width: 100%;
+  height: 58px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.25);
+}
+
+.registro3BotonFinalizar:active,
+.registro3Genero:active,
+.registro3Ambiente:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 360px) {
+  .registro3Header {
+    height: 78px;
+    padding: 0 22px;
+  }
+
+  .registro3Contenido {
+    padding: 18px 18px 24px;
+  }
+
+  .registro3Titulo {
+    font-size: 24px;
+  }
+
+  .registro3Genero {
+    height: 68px;
+  }
+
+  .registro3BotonFinalizar {
+    height: 54px;
+  }
+}

@@ -1,0 +1,245 @@
+.pantallaRegistro1 {
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f6f8;
+  color: #05050f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registroHeader {
+  width: 100%;
+  max-width: 430px;
+  height: 84px;
+  padding: 0 24px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.registroVolver {
+  border: none;
+  background: transparent;
+  color: #ff3f97;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.registroLogo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #7b24df;
+}
+
+.registroContenido {
+  width: 100%;
+  max-width: 430px;
+  padding: 20px 24px 28px;
+  box-sizing: border-box;
+}
+
+.registroProgresoInfo {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #05050f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  margin-bottom: 7px;
+}
+
+.registroBarra {
+  width: 100%;
+  height: 5px;
+  background: #202036;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.registroBarraActiva {
+  width: 33%;
+  height: 100%;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff4ca3 100%);
+  border-radius: 999px;
+}
+
+.registroTitulo {
+  margin: 0 0 16px;
+  font-size: 25px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #05050f;
+}
+
+.registroFormulario {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.registroCampo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.registroCampo > span {
+  font-size: 12px;
+  font-weight: 800;
+  color: #05050f;
+}
+
+.registroInputWrapper {
+  width: 100%;
+  height: 54px;
+  border-radius: 999px;
+  border: 1.5px solid #505057;
+  background: #7f7f86;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  box-sizing: border-box;
+}
+
+.registroIcono {
+  width: 24px;
+  color: #ffffff;
+  font-size: 20px;
+  opacity: 0.95;
+  margin-right: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.registroInputWrapper input,
+.registroInputWrapper select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.registroInputWrapper input::placeholder {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.registroInputWrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.registroInputWrapper select option {
+  color: #111111;
+  background: #ffffff;
+}
+
+.registroInputWrapper input[type="date"] {
+  color-scheme: dark;
+}
+
+.registroInputWrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.registroBotonSiguiente {
+  width: 100%;
+  height: 54px;
+  margin-top: 36px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+  color: white;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.25);
+}
+
+.registroBotonSiguiente:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 360px) {
+  .registroHeader {
+    height: 78px;
+    padding: 0 22px;
+  }
+
+  .registroContenido {
+    padding: 18px 22px 24px;
+  }
+
+  .registroTitulo {
+    font-size: 23px;
+  }
+
+  .registroInputWrapper {
+    height: 52px;
+  }
+
+  .registroBotonSiguiente {
+    margin-top: 30px;
+  }
+}
+.registroError {
+  margin: 8px 0 -12px;
+  color: #ff2f7d;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+.registroPasswordWrapper {
+  position: relative;
+}
+
+.registroPasswordWrapper input {
+  padding-right: 40px;
+}
+
+.registroBotonOjo {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.registroOjoIcono {
+  width: 19px;
+  height: 13px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.registroOjoIcono::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

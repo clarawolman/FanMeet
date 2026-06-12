@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./Concierto.css";
 
 import HeaderConcierto from "./HeaderConcierto";
@@ -13,6 +14,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
     { id: "todos", nombre: "Todos" },
     { id: "pre", nombre: "Pre" },
     { id: "after", nombre: "After" },
+    { id: "mismo_dia", nombre: "Hoy" }
   ];
 
   return (
@@ -56,3 +58,5 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
 }
 
 export default Concierto;
+
+*/ 
