@@ -158,17 +158,22 @@
 }
 
 .registroBotonSiguiente {
-  width: 100%;
-  height: 54px;
-  margin-top: 36px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
-  color: white;
-  font-size: 19px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.25);
+  width: 100% !important;
+  height: 54px !important;
+  margin-top: 36px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  line-height: 54px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  padding: 0 !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 .registroBotonSiguiente:active {

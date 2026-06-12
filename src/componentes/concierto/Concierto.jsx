@@ -59,4 +59,3 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
 
 export default Concierto;
 
-*/ 

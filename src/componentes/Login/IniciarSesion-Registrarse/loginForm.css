@@ -86,22 +86,27 @@
 
 /* botón */
 .botonIngresar {
-  width: 122px;
-  height: 31px;
-  margin-top: 5px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #9f6cff 0%, #ff5ca8 100%);
-  color: white;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(180, 91, 220, 0.28);
+  width: 122px !important;
+  height: 31px !important;
+  margin-top: 5px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  line-height: 31px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 6px 14px rgba(255, 90, 166, 0.28) !important;
+  padding: 0 !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
 .botonIngresar:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  opacity: 0.75 !important;
+  cursor: not-allowed !important;
 }
 
 .botonIngresar:active {

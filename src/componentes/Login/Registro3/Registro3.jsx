@@ -13,7 +13,7 @@ const generosMusicales = [
 
 const ambientes = [
   {
-    id: "pogos",
+    id: "pogo",
     titulo: "Pogos, campos",
     descripcion: "Mucha energía, sudor y movimiento.",
     icono: "♟",
@@ -25,7 +25,7 @@ const ambientes = [
     icono: "▣",
   },
   {
-    id: "primeraFila",
+    id: "campo",
     titulo: "Primera Fila",
     descripcion: "Ojos en el escenario, cantando cada palabra.",
     icono: "◉",
