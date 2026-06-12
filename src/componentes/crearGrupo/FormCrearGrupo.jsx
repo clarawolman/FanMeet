@@ -14,6 +14,18 @@ function FormCrearGrupo({
     });
   }
 
+  function manejarImagen(e) {
+    const archivo = e.target.files?.[0];
+
+    if (!archivo) return;
+
+    setFormulario({
+      ...formulario,
+      imagenArchivo: archivo,
+      imagenPreview: URL.createObjectURL(archivo),
+    });
+  }
+
   return (
     <main className="crearGrupoContenido">
       <h1 className="crearGrupoTitulo">NUEVO GRUPO</h1>
@@ -29,33 +41,41 @@ function FormCrearGrupo({
             onChange={(e) => actualizarCampo("nombre", e.target.value)}
           />
         </label>
-        <label className="crearGrupoLabel">
-          Foto del grupo
-          <input
-            className="crearGrupoInputArchivo"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const archivo = e.target.files[0];
 
-              if (!archivo) return;
+       <label className="crearGrupoLabel">
+  Foto del grupo
 
-              setFormulario({
-                ...formulario,
-                imagenArchivo: archivo,
-                imagenPreview: URL.createObjectURL(archivo),
-              });
-            }}
-          />
+  <input
+    className="crearGrupoInputArchivo"
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+      const archivo = e.target.files?.[0];
 
-          {formulario.imagenPreview && (
-            <img
-              className="crearGrupoPreviewImagen"
-              src={formulario.imagenPreview}
-              alt="Vista previa del grupo"
-            />
-          )}
-        </label>
+      if (!archivo) return;
+
+      const lector = new FileReader();
+
+      lector.onloadend = () => {
+        setFormulario({
+          ...formulario,
+          foto: lector.result,
+          imagenPreview: lector.result,
+        });
+      };
+
+      lector.readAsDataURL(archivo);
+    }}
+  />
+
+  {formulario.imagenPreview && (
+    <img
+      className="crearGrupoPreviewImagen"
+      src={formulario.imagenPreview}
+      alt="Vista previa del grupo"
+    />
+  )}
+</label>
 
         <label className="crearGrupoLabel">
           Ubicación
@@ -77,6 +97,7 @@ function FormCrearGrupo({
             onChange={(e) => actualizarCampo("fecha", e.target.value)}
           />
         </label>
+
         <label className="crearGrupoLabel">
           Hora
           <input

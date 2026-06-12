@@ -9,6 +9,8 @@ import DescartarCambios from "./DescartarCambios";
 const IMAGEN_GRUPO_DEFAULT =
   "https://images.unsplash.com/photo-1514525253161-7a46d19cd819";
 
+const BUCKET_IMAGENES_GRUPOS = "imagenes-grupos";
+
 const MENSAJE_ERROR_GENERICO =
   "No se pudo crear el grupo. Revisá los datos e intentá otra vez.";
 
@@ -18,15 +20,15 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
   const [errorTexto, setErrorTexto] = useState("");
 
   const [formulario, setFormulario] = useState({
-    nombre: "",
-    ubicacion: "",
-    fecha: "",
-    hora: "",
-    descripcion: "",
-    categoria: "pre",
-    imagenArchivo: null,
-    imagenPreview: "",
-  });
+  nombre: "",
+  ubicacion: "", 
+  fecha: "",
+  hora: "",
+  descripcion: "",
+  categoria: "pre",
+  foto: "",
+  imagenPreview: "",
+});
 
   function hayCambios() {
     return (
@@ -36,8 +38,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
       formulario.hora.trim() !== "" ||
       formulario.descripcion.trim() !== "" ||
       formulario.categoria !== "pre" ||
-      formulario.imagenArchivo !== null
-    );
+formulario.foto.trim() !== ""    );
   }
 
   function manejarVolver() {
@@ -78,28 +79,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
     return data?.id ? data.id + 1 : 1;
   }
 
-  async function subirImagenGrupo(nuevoIdGrupo) {
-    if (!formulario.imagenArchivo) {
-      return IMAGEN_GRUPO_DEFAULT;
-    }
-
-    const archivo = formulario.imagenArchivo;
-    const extension = archivo.name.split(".").pop();
-    const nombreArchivo = `grupo-${nuevoIdGrupo}-${Date.now()}.${extension}`;
-
-    const { error: errorUpload } = await supabase.storage
-      .from("grupos")
-      .upload(nombreArchivo, archivo);
-
-    if (errorUpload) {
-      throw new Error("No se pudo subir la foto del grupo. Probá con otra imagen.");
-    }
-
-    const { data } = supabase.storage.from("grupos").getPublicUrl(nombreArchivo);
-
-    return data.publicUrl;
-  }
-
+  
   function validarFormulario() {
     if (!formulario.nombre.trim()) {
       return "Falta completar el nombre del grupo.";
@@ -143,8 +123,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
 
     try {
       const nuevoIdGrupo = await obtenerNuevoIdGrupo();
-      const imagenUrl = await subirImagenGrupo(nuevoIdGrupo);
-
+const fotoGrupo = formulario.foto || IMAGEN_GRUPO_DEFAULT;
       const nuevoGrupo = {
         id_grupo: nuevoIdGrupo,
         nombre: formulario.nombre.trim(),
@@ -155,7 +134,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
         categoria: formulario.categoria,
         id_concierto: concierto.id_concierto,
         id_creador: idUsuarioActual,
-        foto: imagenUrl,
+        foto: fotoGrupo,
       };
 
       const { data: grupoCreado, error: errorGrupo } = await supabase
@@ -165,6 +144,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
         .single();
 
       if (errorGrupo) {
+        console.log("ERROR INSERT GRUPO:", errorGrupo);
         throw new Error(MENSAJE_ERROR_GENERICO);
       }
 
@@ -181,6 +161,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
         .insert([relacionGrupoUsuario]);
 
       if (errorRelacion) {
+        console.log("ERROR RELACION:", errorRelacion);
         setErrorTexto("El grupo se creó, pero no se pudo agregarte como integrante.");
         setGuardando(false);
         return;
