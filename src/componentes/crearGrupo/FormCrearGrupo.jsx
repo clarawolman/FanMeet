@@ -77,6 +77,15 @@ function FormCrearGrupo({
             onChange={(e) => actualizarCampo("fecha", e.target.value)}
           />
         </label>
+        <label className="crearGrupoLabel">
+          Hora
+          <input
+            className="crearGrupoInput"
+            type="time"
+            value={formulario.hora}
+            onChange={(e) => actualizarCampo("hora", e.target.value)}
+          />
+        </label>
 
         <label className="crearGrupoLabel">
           Descripción

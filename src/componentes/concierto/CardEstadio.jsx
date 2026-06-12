@@ -6,9 +6,10 @@ function CardEstadio({ estadio }) {
     <section className="EstadioCard">
       <img
         className="EstadioImagen"
-        src={estadio?.venueImage || "https://images.unsplash.com/photo-1577223625816-7546f13df25d"}        alt={estadio?.nombre || "Estadio"}
+        src={estadio?.venueImage || "https://images.unsplash.com/photo-1577223625816-7546f13df25d"}
         alt={estadio?.nombre || "Estadio"}
-     />
+
+      />
 
       <div className="EstadioContenido">
         <h3 className="EstadioNombre">
