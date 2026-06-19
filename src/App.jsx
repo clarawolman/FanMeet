@@ -3,7 +3,7 @@ import { useState } from "react";
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
-
+import Home from "./componentes/home/Home";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
@@ -21,39 +21,17 @@ function App() {
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
+  
+  
 
-  async function cargarDatos(idUsuario) {
+  async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
     setErrorTexto("");
-
-    const { data: usuarioConcierto, error: errorUsuarioConcierto } =
-      await supabase
-        .from("usuarios_conciertos")
-        .select("*")
-        .eq("id_usuario", idUsuario)
-        .limit(1)
-        .maybeSingle();
-
-    if (errorUsuarioConcierto) {
-      setErrorTexto(
-        "Error en usuarios_conciertos: " + errorUsuarioConcierto.message
-      );
-      setCargando(false);
-      return false;
-    }
-
-    if (!usuarioConcierto) {
-      setErrorTexto(
-        "Este usuario no tiene conciertos cargados en usuarios_conciertos."
-      );
-      setCargando(false);
-      return false;
-    }
 
     const { data: conciertoData, error: errorConcierto } = await supabase
       .from("concierto")
       .select("*")
-      .eq("id_concierto", usuarioConcierto.id_concierto)
+      .eq("id_concierto", idConcierto)      
       .maybeSingle();
 
     if (errorConcierto) {
@@ -64,7 +42,7 @@ function App() {
 
     if (!conciertoData) {
       setErrorTexto(
-        "No existe el concierto con id " + usuarioConcierto.id_concierto
+        "No existe el concierto con id " + idConcierto
       );
       setCargando(false);
       return false;
@@ -193,7 +171,7 @@ function App() {
     return true;
   }
 
-  async function manejarIngreso(usuario) {
+  /*async function manejarIngreso(usuario) {
     setUsuarioActual(usuario);
 
     const pudoCargar = await cargarDatos(usuario.id_usuario);
@@ -201,12 +179,25 @@ function App() {
     if (pudoCargar) {
       setPantalla("concierto");
     }
+  }*/
+  async function manejarIngreso(usuario) {
+    setUsuarioActual(usuario);
+    setConcierto(null);
+    setGrupoSeleccionado(null);
+    setErrorTexto("");
+    setPantalla("home");
+  }
+  async function manejarEntrarConcierto(idConcierto) {
+    const pudoCargar = await cargarConciertoPorId(idConcierto);
+
+    if (pudoCargar) {
+      setPantalla("concierto");
+    }
   }
 
   async function recargarDatos() {
-    if (!usuarioActual) return;
-
-    await cargarDatos(usuarioActual.id_usuario);
+    if (!concierto) return;
+    await cargarConciertoPorId(concierto.id_concierto);
   }
 
   function manejarRegistro1(datosPaso1) {
@@ -274,11 +265,17 @@ const { data: usuarioCreado, error } = await supabase
     pantalla === "registro2" ||
     pantalla === "registro3";
 
-  if (!esPantallaLogin && cargando) {
-    return <p style={{ padding: 20 }}>Cargando concierto...</p>;
+  if (!esPantallaLogin && pantalla !== "home" && cargando) {
+  return <p style={{ padding: 20 }}>Cargando concierto...</p>;
   }
 
-  if (!esPantallaLogin && !concierto) {
+  if (
+    !esPantallaLogin &&
+    pantalla !== "home" &&
+    pantalla !== "crearGrupo" &&
+    pantalla !== "infoGrupo" &&
+    !concierto
+  ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
 
@@ -313,6 +310,13 @@ const { data: usuarioCreado, error } = await supabase
         <Registro3
           onVolver={() => setPantalla("registro2")}
           onFinalizar={manejarFinalizarRegistro}
+        />
+      )}
+
+      {pantalla === "home" && usuarioActual && (
+        <Home
+          usuarioActual={usuarioActual}
+          onEntrarConcierto={manejarEntrarConcierto}
         />
       )}
 
