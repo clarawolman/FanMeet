@@ -78,26 +78,28 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
     return data?.id ? data.id + 1 : 1;
   }
 
-  async function subirImagenGrupo(nuevoIdGrupo) {
+  function convertirImagenABase64(archivo) {
+    return new Promise((resolve, reject) => {
+      const lector = new FileReader();
+
+      lector.onload = () => {
+        resolve(lector.result);
+      };
+
+      lector.onerror = () => {
+        reject(new Error("No se pudo cargar la imagen. Probá con otra foto."));
+      };
+
+      lector.readAsDataURL(archivo);
+    });
+  }
+
+  async function obtenerImagenGrupo() {
     if (!formulario.imagenArchivo) {
       return IMAGEN_GRUPO_DEFAULT;
     }
 
-    const archivo = formulario.imagenArchivo;
-    const extension = archivo.name.split(".").pop();
-    const nombreArchivo = `grupo-${nuevoIdGrupo}-${Date.now()}.${extension}`;
-
-    const { error: errorUpload } = await supabase.storage
-      .from("grupos")
-      .upload(nombreArchivo, archivo);
-
-    if (errorUpload) {
-      throw new Error("No se pudo subir la foto del grupo. Probá con otra imagen.");
-    }
-
-    const { data } = supabase.storage.from("grupos").getPublicUrl(nombreArchivo);
-
-    return data.publicUrl;
+    return await convertirImagenABase64(formulario.imagenArchivo);
   }
 
   function validarFormulario() {
@@ -143,7 +145,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
 
     try {
       const nuevoIdGrupo = await obtenerNuevoIdGrupo();
-      const imagenUrl = await subirImagenGrupo(nuevoIdGrupo);
+      const imagenUrl = await obtenerImagenGrupo();
 
       const nuevoGrupo = {
         id_grupo: nuevoIdGrupo,

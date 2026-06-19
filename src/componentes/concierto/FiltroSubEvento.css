@@ -35,3 +35,14 @@
   border-color: #6d28d9;
   color: #ffffff;
 }
+.filtro-sub-evento {
+  position: relative;
+  z-index: 999;
+  pointer-events: auto;
+}
+
+.filtro-sub-evento__boton {
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto;
+}

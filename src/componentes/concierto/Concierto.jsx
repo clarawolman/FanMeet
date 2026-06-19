@@ -10,12 +10,23 @@ import SubEventos from "./SubEventos";
 import Footer from "./Footer";
 
 function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
+  const [filtroActivo, setFiltroActivo] = useState("todos");
+
   const filtros = [
     { id: "todos", nombre: "Todos" },
     { id: "pre", nombre: "Pre" },
     { id: "after", nombre: "After" },
-    { id: "mismo_dia", nombre: "Hoy" }
+    { id: "mismo_dia", nombre: "Hoy" },
   ];
+
+  const grupos = concierto?.grupos || [];
+
+  const gruposFiltrados =
+    filtroActivo === "todos"
+      ? grupos
+      : grupos.filter((grupo) => grupo.categoria === filtroActivo);
+
+  console.log("FILTRO ACTIVO:", filtroActivo);
 
   return (
     <div className="pantalla-concierto">
@@ -34,12 +45,12 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
         <section className="conciertoGrupos">
           <FiltroSubEvento
             filtros={filtros}
-            filtroActivo="todos"
-            onCambiarFiltro={() => {}}
+            filtroActivo={filtroActivo}
+            onCambiarFiltro={setFiltroActivo}
           />
 
           <div className="lista-grupos">
-            {concierto.grupos.map((grupo) => (
+            {gruposFiltrados.map((grupo) => (
               <SubEventos
                 key={grupo.id_grupo}
                 subEvento={grupo}
@@ -48,7 +59,15 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
             ))}
           </div>
 
-          <button className="btn-crear-grupo" onClick={onCrearGrupo}>CREAR GRUPO ＋</button>
+          {gruposFiltrados.length === 0 && (
+            <p className="conciertoSinGrupos">
+              No hay grupos en esta categoría todavía.
+            </p>
+          )}
+
+          <button className="btn-crear-grupo" onClick={onCrearGrupo}>
+            CREAR GRUPO ＋
+          </button>
         </section>
       </main>
 
@@ -58,4 +77,3 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
 }
 
 export default Concierto;
-
