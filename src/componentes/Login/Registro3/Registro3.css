@@ -65,7 +65,7 @@
 .registro3BarraActiva {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%);
 }
 
 .registro3Titulo {
@@ -101,6 +101,7 @@
   justify-content: center;
   gap: 6px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  opacity: 1;
 }
 
 .registro3Genero span {
@@ -109,13 +110,22 @@
 }
 
 .registro3Genero strong {
+  color: #ffffff;
   font-size: 12px;
   font-weight: 800;
 }
 
 .registro3Genero.activo {
-  background: linear-gradient(135deg, #a96cff 0%, #ff579f 100%);
-  box-shadow: 0 7px 14px rgba(255, 63, 151, 0.22);
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  opacity: 1 !important;
+}
+
+.registro3Genero.activo span,
+.registro3Genero.activo strong {
+  color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .registro3SeccionTitulo {
@@ -142,20 +152,24 @@
   align-items: center;
   cursor: pointer;
   text-align: left;
+  opacity: 1;
 }
 
 .registro3Ambiente.activo {
-  background: linear-gradient(90deg, #9b6b85 0%, #77777e 100%);
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.24) !important;
+  opacity: 1 !important;
 }
 
 .registro3AmbienteIcono {
   width: 39px;
   height: 39px;
   border-radius: 8px;
-  background: rgba(255, 63, 151, 0.22);
+  background: rgba(255, 255, 255, 0.18);
   display: grid;
   place-items: center;
-  color: #ffd2e5;
+  color: #ffffff;
   font-size: 17px;
   margin-right: 12px;
   flex-shrink: 0;
@@ -168,6 +182,7 @@
 }
 
 .registro3AmbienteTexto strong {
+  color: #ffffff;
   font-size: 13px;
   font-weight: 900;
 }
@@ -175,13 +190,25 @@
 .registro3AmbienteTexto small {
   margin-top: 3px;
   font-size: 10px;
-  color: #f0f0f0;
+  color: #ffffff;
+  opacity: 0.92;
+}
+
+.registro3Ambiente.activo .registro3AmbienteIcono {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff !important;
+}
+
+.registro3Ambiente.activo .registro3AmbienteTexto strong,
+.registro3Ambiente.activo .registro3AmbienteTexto small {
+  color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .registro3Check {
   width: 22px;
   height: 22px;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border: 1.5px solid rgba(255, 255, 255, 0.42);
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -193,8 +220,9 @@
 }
 
 .registro3Ambiente.activo .registro3Check {
-  background: #ff3f97;
-  border-color: #ff3f97;
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #ff3f97 !important;
 }
 
 .registro3Error {
@@ -205,26 +233,28 @@
   font-weight: 800;
 }
 
-.registro3Decoracion {
-  margin: 28px 0 18px;
-  text-align: center;
-  color: #ff9fca;
-  font-size: 34px;
-  letter-spacing: 3px;
-  opacity: 0.85;
+.registro3BotonFinalizar {
+  margin-top: 50px;
+  width: 100% !important;
+  height: 58px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  font-size: 19px !important;
+  font-weight: 900 !important;
+  line-height: 58px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  padding: 0 !important;
+  display: block !important;
+  opacity: 1 !important;
 }
 
-.registro3BotonFinalizar {
-  width: 100%;
-  height: 58px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #7b4fff 0%, #ff3f97 100%);
-  color: #ffffff;
-  font-size: 19px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.25);
+.registro3BotonFinalizar:disabled {
+  opacity: 0.75 !important;
+  cursor: not-allowed !important;
 }
 
 .registro3BotonFinalizar:active,
@@ -252,6 +282,7 @@
   }
 
   .registro3BotonFinalizar {
-    height: 54px;
+    height: 54px !important;
+    line-height: 54px !important;
   }
 }

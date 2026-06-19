@@ -47,17 +47,12 @@ function Registro3({ onVolver, onFinalizar }) {
       return;
     }
 
-    if (generosSeleccionados.length >= 2) {
-      setErrorRegistro3("Solo podés elegir 2 géneros musicales");
-      return;
-    }
-
     setGenerosSeleccionados([...generosSeleccionados, idGenero]);
   }
 
   function manejarFinalizar() {
-    if (generosSeleccionados.length !== 2) {
-      setErrorRegistro3("Elegí exactamente 2 géneros musicales");
+    if (generosSeleccionados.length < 2) {
+      setErrorRegistro3("Elegí al menos 2 géneros musicales");
       return;
     }
 
@@ -97,7 +92,7 @@ function Registro3({ onVolver, onFinalizar }) {
         <h2 className="registro3Titulo">Tu Estilo Musical</h2>
 
         <p className="registro3Subtitulo">
-          Elige tus géneros favoritos para encontrar a tu grupo
+          Elegí al menos 2 géneros favoritos para encontrar a tu grupo
         </p>
 
         <div className="registro3Generos">
@@ -141,9 +136,7 @@ function Registro3({ onVolver, onFinalizar }) {
                   <small>{ambiente.descripcion}</small>
                 </span>
 
-                <span className="registro3Check">
-                  {activo ? "✓" : ""}
-                </span>
+                <span className="registro3Check">{activo ? "✓" : ""}</span>
               </button>
             );
           })}
@@ -153,15 +146,13 @@ function Registro3({ onVolver, onFinalizar }) {
           <p className="registro3Error">{errorRegistro3}</p>
         )}
 
-        <div className="registro3Decoracion">▏▌▏</div>
-
         <button
-          className="registro3BotonFinalizar"
-          type="button"
-          onClick={manejarFinalizar}
-        >
-          Finalizar
-        </button>
+  className="registro3BotonFinalizar"
+  type="button"
+  onClick={manejarFinalizar}
+>
+  Finalizar
+</button>
       </section>
     </main>
   );
