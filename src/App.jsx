@@ -9,6 +9,9 @@ import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
 
+import MisEventos from "./componentes/misEventos/MisEventos";
+import MisGrupos from "./componentes/misGrupos/MisGrupos";
+
 import { supabase } from "./supabase";
 
 function App() {
@@ -199,7 +202,7 @@ function App() {
     const pudoCargar = await cargarDatos(usuario.id_usuario);
 
     if (pudoCargar) {
-      setPantalla("concierto");
+      setPantalla("misEventos");
     }
   }
 
@@ -315,6 +318,29 @@ const { data: usuarioCreado, error } = await supabase
           onFinalizar={manejarFinalizarRegistro}
         />
       )}
+      {pantalla === "misEventos" && usuarioActual && (
+  <MisEventos
+  usuarioActual={usuarioActual}
+  onIngresar={async (evento) => {
+    const pudoCargar = await cargarDatos(usuarioActual.id_usuario);
+
+    if (pudoCargar) {
+      setPantalla("concierto");
+    }
+  }}
+  onIrMisGrupos={() => setPantalla("misGrupos")}
+/> 
+)}
+       {pantalla === "misGrupos" && usuarioActual && (
+  <MisGrupos
+    usuarioActual={usuarioActual}
+    onVolver={() => setPantalla("misEventos")}
+    onAbrirGrupo={(grupo) => {
+      setGrupoSeleccionado(grupo);
+      setPantalla("infoGrupo");
+    }}
+  />
+)}
 
       {pantalla === "concierto" && concierto && usuarioActual && (
         <Concierto
