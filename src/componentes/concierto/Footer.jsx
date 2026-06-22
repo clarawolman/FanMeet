@@ -4,20 +4,20 @@ import inicioIcon from "../../assets/InicioMarcado.png";
 import eventosIcon from "../../assets/eventosNoMarc.png";
 import perfilIcon from "../../assets/PerfilNo.png";
 
-function Footer() {
+function Footer({ onNavegar }) {
   return (
     <section className="footer">
-      <button className="footerButton">
+      <button className="footerButton" onClick={() => onNavegar("home")}>
         <img src={inicioIcon} alt="Inicio" />
         <span>Inicio</span>
       </button>
 
-      <button className="footerButton">
+      <button className="footerButton" onClick={() => onNavegar("eventos")}>
         <img src={eventosIcon} alt="Eventos" />
         <span>Eventos</span>
       </button>
 
-      <button className="footerButton">
+      <button className="footerButton" onClick={() => onNavegar("perfil")}>
         <img src={perfilIcon} alt="Perfil" />
         <span>Perfil</span>
       </button>

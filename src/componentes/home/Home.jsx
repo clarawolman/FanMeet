@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
 import { supabase } from "../../supabase";
+import HeaderHome from "./HeaderHome";
+import BienvenidaHome from "./BienvenidaHome";
+import FiltrosHome from "./FiltrosHome";
+import CardConciertoHome from "./CardConciertoHome";
+import OverlayCodigo from "./OverlayCodigo";
 
 function Home({ usuarioActual, onEntrarConcierto }) {
   const [conciertos, setConciertos] = useState([]);
@@ -46,10 +51,28 @@ function Home({ usuarioActual, onEntrarConcierto }) {
     setCargando(false);
   }
 
-  function abrirOverlay(concierto) {
+  async function abrirOverlay(concierto) {
+    setErrorCodigo("");
+
+    const { data, error } = await supabase
+      .from("usuarios_conciertos")
+      .select("*")
+      .eq("id_usuario", usuarioActual.id_usuario)
+      .eq("id_concierto", concierto.id_concierto)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error verificando acceso:", error);
+      return;
+    }
+
+    if (data) {
+      await onEntrarConcierto(concierto.id_concierto);
+      return;
+    }
+
     setConciertoSeleccionado(concierto);
     setCodigoIngresado("");
-    setErrorCodigo("");
   }
 
   function cerrarOverlay() {
@@ -59,9 +82,39 @@ function Home({ usuarioActual, onEntrarConcierto }) {
   }
 
   async function validarCodigo() {
+    const CODIGO_PRUEBA = "FANMEET2026";
 
     if (codigoIngresado.trim() !== CODIGO_PRUEBA) {
-      setErrorCodigo("Código incorrecto. Probá con FANMEET2026.");
+      setErrorCodigo("Código incorrecto.");
+      return;
+    }
+
+   const { error } = await supabase.from("usuarios_conciertos").insert([
+      {
+        id_usuario: usuarioActual.id_usuario,
+        id_concierto: conciertoSeleccionado.id_concierto,
+      },
+    ]);
+     /*const { error } = await supabase.from("usuarios_conciertos").upsert(
+      [
+        {
+          id_usuario: usuarioActual.id_usuario,
+          id_concierto: conciertoSeleccionado.id_concierto,
+        },
+      ],
+      {
+        onConflict: "id_usuario,id_concierto",
+      }
+    );*/
+
+    /*if (error) {
+      console.error("Error guardando acceso:", error);
+      setErrorCodigo("El código está bien, pero no se pudo guardar el acceso.");
+      return;
+    }*/
+      if (error) {
+      console.error("Error guardando acceso:", error);
+      setErrorCodigo("Error guardando acceso: " + error.message);
       return;
     }
 

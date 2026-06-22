@@ -9,7 +9,7 @@ import FiltroSubEvento from "./FiltroSubEvento";
 import SubEventos from "./SubEventos";
 import Footer from "./Footer";
 
-function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
+function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar }) {  
   const [filtroActivo, setFiltroActivo] = useState("todos");
 
   const filtros = [
@@ -71,7 +71,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
         </section>
       </main>
 
-      <Footer />
+      <Footer onNavegar={onNavegar} />    
     </div>
   );
 }
