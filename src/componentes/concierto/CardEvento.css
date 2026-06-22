@@ -1,17 +1,15 @@
-/* ===== CARD EVENTO ===== */
+/* ===== HERO ===== */
 .CardEvento {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 24px;
+  border-radius: 18px;
   overflow: hidden;
-  background-color: #222;
-  margin: 0 auto;
+  background-color: #1a1a1a;
 }
 
 .EventoImagen {
   width: 100%;
-  height: 100%;
+  height: 375px;
   object-fit: cover;
   display: block;
 }
@@ -21,72 +19,57 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.82) 0%,
-    rgba(0, 0, 0, 0.30) 50%,
-    rgba(0, 0, 0, 0.04) 100%
+    rgba(0,0,0,0.82) 0%,
+    rgba(0,0,0,0.38) 45%,
+    rgba(0,0,0,0.05) 100%
   );
 }
 
 .EventoContenido {
   position: absolute;
-  left: 22px;
-  right: 22px;
-  bottom: 20px;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
   color: #ffffff;
 }
 
 .EventoArtista {
   display: inline-block;
   margin: 0 0 8px;
-  padding: 4px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  padding: 3px 10px;
+  border: 1px solid rgba(255,255,255,0.65);
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.3px;
 }
 
 .EventoTitulo {
   margin: 0;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 500;
 }
 
 .EventoFecha {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 12px;
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .EventoUbicacion {
   display: inline-block;
-  margin: 12px 0 0;
-  padding: 7px 14px;
+  margin: 8px 0 0;
+  padding: 4px 12px;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.20);
-  backdrop-filter: blur(6px);
+  background-color: rgba(0,0,0,0.4);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.2px;
 }
 
-/* ===== DESKTOP ===== */
 @media (min-width: 768px) {
-  .CardEvento {
-    width: 100%;
-    aspect-ratio: 16 / 7;
-    border-radius: 28px;
-  }
-
-  .EventoTitulo {
-    font-size: 36px;
-  }
-
-  .EventoContenido {
-    left: 28px;
-    right: 28px;
-    bottom: 26px;
-  }
+  .CardEvento { height: 260px; border-radius: 20px; }
+  .EventoTitulo { font-size: 30px; }
+  .EventoContenido { left: 24px; right: 24px; bottom: 20px; }
 }

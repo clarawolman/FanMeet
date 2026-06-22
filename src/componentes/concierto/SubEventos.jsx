@@ -1,13 +1,24 @@
 import "./SubEventos.css";
 
+const FALLBACK_IMG = "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=400&q=80";
+
 function SubEventos({ subEvento, onAbrirGrupo }) {
   return (
-    <section className="SubEventoCard">
+    <section className="SubEventoCard" onClick={() => onAbrirGrupo(subEvento)}>
+
+      <img
+        className="SubEventoImagen"
+        src={subEvento.foto || subEvento.imagen || FALLBACK_IMG}
+        alt={subEvento.nombre}
+      />
+
+      <div className="SubEventoOverlay" />
+
       <div className="SubEventoContenido">
         <h3 className="SubEventoTitulo">{subEvento.nombre}</h3>
 
         <p className="SubEventoInfo">
-          {subEvento.ubicacion} - {subEvento.fecha}
+          {subEvento.ubicacion} · {subEvento.fecha}
         </p>
 
         <div className="SubEventoUsuarios">
@@ -16,7 +27,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
               <img
                 key={usuario.id_usuario}
                 className="SubEventoAvatar"
-                src={usuario.fotoperfil || "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg"}
+                src={usuario.foto_perfil}
                 alt={usuario.nombre}
               />
             ))}
@@ -27,18 +38,23 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
               +{subEvento.usuarios.length - 3}
             </span>
           )}
+
+          <span className="SubEventoAsistiran">
+            {subEvento.usuarios.length} asistirán
+          </span>
         </div>
 
-        <p className="SubEventoAsistiran">
-          {subEvento.usuarios.length} personas asistirán
-        </p>
-
         <button
-  className="SubEventoBoton"
-  onClick={() => onAbrirGrupo(subEvento)}
->
-  VER MÁS
-</button>
+          className="SubEventoBoton"
+          onClick={(e) => {
+            if (window.__carouselDragging) return;
+
+            e.stopPropagation();
+            onAbrirGrupo(subEvento);
+          }}
+        >
+          Ver más
+        </button>
       </div>
     </section>
   );
