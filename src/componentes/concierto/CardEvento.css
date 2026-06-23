@@ -9,9 +9,9 @@
 
 .EventoImagen {
   width: 100%;
-  height: 375px;
+  height: auto;
   object-fit: cover;
-  display: block;
+  
 }
 
 .EventoOverlay {
@@ -69,7 +69,7 @@
 }
 
 @media (min-width: 768px) {
-  .CardEvento { height: 260px; border-radius: 20px; }
+  .CardEvento { height: 300px; border-radius: 20px; }
   .EventoTitulo { font-size: 30px; }
   .EventoContenido { left: 24px; right: 24px; bottom: 20px; }
 }
