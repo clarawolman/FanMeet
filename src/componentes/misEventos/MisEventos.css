@@ -3,15 +3,18 @@
 ============================ */
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .pantallaMisEventos {
-  min-height: 100vh;
-  background: #e0d9f0;
-  display: flex;
-  flex-direction: column;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+
+    background: #F6F7F9;
+
+    display: flex;
+    flex-direction: column;
+
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 /* ============================
@@ -19,17 +22,18 @@
 ============================ */
 
 .misEventosLayout {
-  flex: 1;
-  width: 100%;
-  max-width: 680px;
+    flex: 1;
 
-  margin: 0 auto;
+    width: 100%;
+    max-width: 315px;
 
-  padding: 20px 16px 100px;
+    margin: 0 auto;
 
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+    padding: 0 0 115px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 /* ============================
@@ -37,51 +41,47 @@
 ============================ */
 
 .mensajeMisEventos {
-  width: 100%;
+    width: 100%;
 
-  padding: 60px 20px;
+    padding: 60px 20px;
 
-  text-align: center;
+    text-align: center;
 
-  color: #555;
+    color: #555;
 
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* ============================
-        SCROLL
-============================ */
-
-.misEventosLayout::-webkit-scrollbar {
-  width: 8px;
-}
-
-.misEventosLayout::-webkit-scrollbar-thumb {
-  background: rgba(140, 82, 255, .35);
-  border-radius: 999px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 /* ============================
         DESKTOP
 ============================ */
 
-@media (min-width:768px){
+@media (min-width: 768px) {
+    .misEventosLayout {
+        max-width: 315px;
+    }
+}
+@media (min-width: 768px) {
+    .pantallaMisEventos {
+        background: #F6F7F9;
+    }
 
-.misEventosLayout{
+    .misEventosLayout {
+        max-width: 760px;
 
-    padding:28px 28px 110px;
+        padding: 32px 24px 130px;
 
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 34px;
+
+        align-items: start;
+    }
 }
 
-}
-
-@media (min-width:1024px){
-
-.misEventosLayout{
-
-    max-width:720px;
-
-}
-
+@media (min-width: 1200px) {
+    .misEventosLayout {
+        max-width: 850px;
+    }
 }

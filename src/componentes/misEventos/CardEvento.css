@@ -1,111 +1,147 @@
-.cardEvento{
-    width:100%;
-    background:white;
-    border-radius:22px;
-    overflow:hidden;
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
+.cardEvento {
+    width: 100%;
 
-    display:flex;
-    flex-direction:column;
+    background: white;
+
+    border: 1px solid #E6E0F2;
+    border-radius: 20px;
+
+    padding: 12px;
+
+    box-shadow: 0 4px 14px rgba(140, 82, 255, 0.08);
+
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 28px;
+
+    overflow: visible;
 }
 
-.cardEventoImagenContainer{
-    position:relative;
-    width:100%;
-    height:220px;
+/* CONTENEDOR DE IMAGEN */
+.cardEventoImagenContainer {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    margin: 0 auto;
+
+    overflow: visible;
 }
 
-.cardEventoImagen{
-    width:100%;
-    height:100%;
-    object-fit:cover;
+.cardEventoImagen {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center center;
+
+    display: block;
+
+    border-radius: 14px;
 }
 
-.btnIngresarEvento{
+.btnIngresarEvento {
+    position: absolute;
 
-    position:absolute;
-    right:18px;
-    bottom:18px;
+    left: 50%;
+    bottom: -24px;
+    transform: translateX(-50%);
 
-    border:none;
-    cursor:pointer;
+    border: none;
+    cursor: pointer;
 
-    padding:12px 34px;
+    padding: 15px 42px;
 
-    border-radius:999px;
+    border-radius: 999px;
 
-    background:#8C52FF;
-    color:white;
+    background: #8C1AFF;
+    color: white;
 
-    font-size:15px;
-    font-weight:700;
+    font-size: 15px;
+    font-weight: 800;
 
-    transition:.2s;
+    box-shadow: 0 6px 16px rgba(140, 26, 255, .35);
+
+    z-index: 5;
+}
+.btnIngresarEvento:hover {
+    transform: translateX(-50%) translateY(-2px);
 }
 
-.btnIngresarEvento:hover{
-    transform:translateY(-2px);
+/* INFO */
+.cardEventoInfo {
+    padding: 44px 4px 6px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.cardEventoInfo{
+.cardEventoInfo h2 {
+    margin: 0;
 
-    padding:20px;
+    font-size: 24px;
+    font-weight: 800;
 
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-
+    color: #202020;
 }
 
-.cardEventoInfo h2{
+/* INFO DEL EVENTO EN UNA LÍNEA */
+.infoEvento {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
 
-    margin:0;
+    color: #6f6f6f;
 
-    font-size:30px;
-    font-weight:800;
-
-    color:#222;
-
+    font-size: 12px;
+    font-weight: 500;
 }
 
-.infoEvento{
+.filaInfo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+    color: #6f6f6f;
 
+    font-size: 12px;
 }
 
-.filaInfo{
-
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    color:#5d5d5d;
-
-    font-size:16px;
-
+.filaInfo:not(:last-child)::after {
+    content: "•";
+    margin-left: 6px;
+    color: #6f6f6f;
 }
 
-.icono{
-
-    font-size:18px;
-
+/* OCULTA LOS EMOJIS PARA QUE QUEDE COMO LA SEGUNDA FOTO */
+.icono {
+    display: none;
 }
+@media (min-width: 768px) {
+    .cardEvento {
+        width: 100%;
+        margin-bottom: 0;
+    }
 
-@media (min-width:768px){
+    .cardEventoImagenContainer {
+        aspect-ratio: 16 / 9;
+    }
 
-.cardEventoImagenContainer{
+    .cardEventoInfo h2 {
+        font-size: 25px;
+    }
 
-    height:260px;
+    .infoEvento,
+    .filaInfo {
+        font-size: 13px;
+    }
 
-}
-
-.cardEventoInfo h2{
-
-    font-size:34px;
-
-}
-
+    .btnIngresarEvento {
+        padding: 14px 38px;
+        font-size: 14px;
+    }
 }
