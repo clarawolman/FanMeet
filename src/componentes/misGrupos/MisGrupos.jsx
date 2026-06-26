@@ -5,7 +5,7 @@ import { supabase } from "../../supabase";
 
 import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
-import Footer from "../concierto/Footer";
+import Footer from "../generales/Footer";
 
 function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver }) {
   const [misGrupos, setMisGrupos] = useState([]);
@@ -107,7 +107,7 @@ function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver }) {
         )}
       </main>
 
-      <Footer />
+      <Footer onNavegar={onNavegar} />    
     </div>
   );
 }

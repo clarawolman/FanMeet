@@ -8,7 +8,7 @@ import FansUnidos from "./FansUnidos";
 import FiltroSubEvento from "./FiltroSubEvento";
 import SubEventos from "./SubEventos";
 import Carrusel from "./Carrusel";
-import Footer from "./Footer";
+import Footer from "../generales/Footer";
 
 function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar }) {  
   const [filtroActivo, setFiltroActivo] = useState("todos");

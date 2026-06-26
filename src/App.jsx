@@ -8,7 +8,6 @@ import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registra
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
-
 import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
 
@@ -275,6 +274,8 @@ const { data: usuarioCreado, error } = await supabase
   if (
     !esPantallaLogin &&
     pantalla !== "home" &&
+    pantalla !== "misEventos" &&
+    pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
     pantalla !== "infoGrupo" &&
     !concierto
@@ -316,18 +317,18 @@ const { data: usuarioCreado, error } = await supabase
         />
       )}
       {pantalla === "misEventos" && usuarioActual && (
-  <MisEventos
-  usuarioActual={usuarioActual}
-  onIngresar={async (evento) => {
-    const pudoCargar = await cargarDatos(usuarioActual.id_usuario);
+      <MisEventos
+        usuarioActual={usuarioActual}
+        onIngresar={async (evento) => {
+          const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
 
-    if (pudoCargar) {
-      setPantalla("concierto");
-    }
-  }}
-  onIrMisGrupos={() => setPantalla("misGrupos")}
-/> 
-)}
+          if (pudoCargar) {
+            setPantalla("concierto");
+          }
+        }}
+        onIrMisGrupos={() => setPantalla("misGrupos")}
+      />
+    )}
        {pantalla === "misGrupos" && usuarioActual && (
   <MisGrupos
     usuarioActual={usuarioActual}
@@ -338,7 +339,7 @@ const { data: usuarioCreado, error } = await supabase
     }}
   />
 )}
-
+      
       {pantalla === "home" && usuarioActual && (
         <Home
           usuarioActual={usuarioActual}

@@ -5,7 +5,7 @@ import { supabase } from "../../supabase";
 
 import HeaderMisEventos from "./HeaderMisEventos";
 import CardEvento from "./CardEvento";
-import Footer from "../concierto/Footer";
+import Footer from "../generales/Footer";
 
 function MisEventos({
   usuarioActual,
@@ -123,7 +123,7 @@ function MisEventos({
           ))}
       </main>
 
-      <Footer />
+      <Footer onNavegar={onNavegar} />    
     </div>
   );
 }

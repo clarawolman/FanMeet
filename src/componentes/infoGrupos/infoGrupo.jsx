@@ -7,7 +7,7 @@ import DescripcionGrupo from "./descripcionGrupo";
 import MapaGrupo from "./mapaGrupo";
 import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
-import Footer from "../concierto/Footer";
+import Footer from "../generales/Footer";
 
 function InfoGrupo({ grupo, concierto, onVolver, usuario }) {
   const confirmarAsistenciaGrupo = async () => {

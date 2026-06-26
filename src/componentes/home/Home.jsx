@@ -6,6 +6,7 @@ import BienvenidaHome from "./BienvenidaHome";
 import FiltrosHome from "./FiltrosHome";
 import CardConciertoHome from "./CardConciertoHome";
 import OverlayCodigo from "./OverlayCodigo";
+import Footer from "../generales/Footer";
 
 function Home({ usuarioActual, onEntrarConcierto }) {
   const [conciertos, setConciertos] = useState([]);
@@ -251,8 +252,10 @@ function Home({ usuarioActual, onEntrarConcierto }) {
             </button>
           </div>
         </div>
-      )}
+      )}          
+      <Footer onNavegar={onNavegar} />    
     </div>
+    
   );
 }
 

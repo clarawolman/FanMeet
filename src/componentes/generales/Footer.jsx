@@ -12,8 +12,8 @@ function Footer({ onNavegar }) {
         <span>Inicio</span>
       </button>
 
-      <button className="footerButton" onClick={() => onNavegar("eventos")}>
-        <img src={eventosIcon} alt="Eventos" />
+      <button className="footerButton" onClick={() => onNavegar("misEventos")}>
+        <img src={eventosIcon} alt="Mis Eventos" />
         <span>Eventos</span>
       </button>
 
