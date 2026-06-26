@@ -1,0 +1,29 @@
+
+.home-bienvenida {
+  background: #130f1f;
+  color: #fff9ef;
+  border-radius: 30px;
+  padding: 24px;
+  box-shadow: 0 18px 45px rgba(19, 15, 31, 0.18);
+}
+
+.home-bienvenida p {
+  margin: 0 0 8px;
+  color: #ffd166;
+  font-weight: 800;
+}
+
+.home-bienvenida h2 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+}
+
+.home-bienvenida span {
+  display: block;
+  margin-top: 14px;
+  color: rgba(255, 249, 239, 0.78);
+  font-size: 14px;
+  line-height: 1.45;
+}

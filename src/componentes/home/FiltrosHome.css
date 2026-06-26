@@ -1,0 +1,32 @@
+
+
+.home-filtros {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 20px 2px 18px;
+}
+
+.home-filtros::-webkit-scrollbar {
+  display: none;
+}
+
+.home-filtro {
+  border: 2px solid #130f1f;
+  background: #fff9ef;
+  color: #130f1f;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 4px 4px 0 #130f1f;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.home-filtro--activo {
+  background: #ffd166;
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 #130f1f;
+}
