@@ -14,15 +14,24 @@ function Home({ usuarioActual, onEntrarConcierto }) {
   const [codigoIngresado, setCodigoIngresado] = useState("");
   const [errorCodigo, setErrorCodigo] = useState("");
   const [cargando, setCargando] = useState(true);
-    
-    const CODIGO_PRUEBA = "FANMEET2026";
+  const CODIGO_PRUEBA = "FANMEET2026";
+
+  const conciertosFiltrados =
+  filtroActivo === "todos"
+    ? conciertos
+    : conciertos.filter(
+        (concierto) =>
+          String(concierto.id_estiloMusical) === String(filtroActivo)
+      );
+
+  console.log("FILTRO ACTIVO:", filtroActivo);
 
   const filtros = [
     { id: "todos", nombre: "Todos" },
-    { id: "pop", nombre: "Pop" },
-    { id: "rock", nombre: "Rock" },
-    { id: "urbano", nombre: "Urbano" },
-    { id: "indie", nombre: "Indie" },
+    { id: "1", nombre: "Pop" },
+    { id: "2", nombre: "Rock" },
+    { id: "3", nombre: "Urbano" },
+    { id: "4", nombre: "Indie" },
   ];
 
   useEffect(() => {
@@ -121,16 +130,6 @@ function Home({ usuarioActual, onEntrarConcierto }) {
     await onEntrarConcierto(conciertoSeleccionado.id_concierto);
   }
 
-  const conciertosFiltrados =
-    filtroActivo === "todos"
-      ? conciertos
-      : conciertos.filter((concierto) => {
-          const textoBusqueda = `${concierto.nombre || ""} ${
-            concierto.artista?.nombre || ""
-          }`.toLowerCase();
-
-          return textoBusqueda.includes(filtroActivo);
-        });
 
   return (
     <div className="pantalla-home">
