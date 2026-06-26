@@ -21,7 +21,7 @@
 
 .EstadioNombre {
   margin: 0 0 2px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111111;
   white-space: nowrap;
@@ -31,7 +31,7 @@
 
 .EstadioDireccion {
   margin: 0;
-  font-size: 11px;
+  font-size: 14px;
   color: #111111;
   font-weight: 400;
   white-space: nowrap;
