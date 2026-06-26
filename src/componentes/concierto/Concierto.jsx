@@ -7,6 +7,7 @@ import CardEstadio from "./CardEstadio";
 import FansUnidos from "./FansUnidos";
 import FiltroSubEvento from "./FiltroSubEvento";
 import SubEventos from "./SubEventos";
+import Carrusel from "./Carrusel";
 import Footer from "./Footer";
 
 function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
@@ -49,15 +50,10 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo }) {
             onCambiarFiltro={setFiltroActivo}
           />
 
-          <div className="lista-grupos">
-            {gruposFiltrados.map((grupo) => (
-              <SubEventos
-                key={grupo.id_grupo}
-                subEvento={grupo}
-                onAbrirGrupo={onAbrirGrupo}
-              />
-            ))}
-          </div>
+          <Carrusel
+            subEventos={gruposFiltrados}
+            onAbrirGrupo={onAbrirGrupo}
+          />
 
           {gruposFiltrados.length === 0 && (
             <p className="conciertoSinGrupos">

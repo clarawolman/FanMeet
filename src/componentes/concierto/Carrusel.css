@@ -1,0 +1,70 @@
+.CarruselWrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* scroll base */
+.SubEventosCarrusel {
+  display: flex;
+  gap: 12px;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+
+  padding: 10px;
+  width: 100%;
+
+  scrollbar-width: none;
+}
+
+.SubEventosCarrusel::-webkit-scrollbar {
+  display: none;
+}
+
+/* cards */
+.SubEventoCard {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* ========================= */
+/* 🔘 FLECHAS MÁS SUAVES */
+/* ========================= */
+
+.CarruselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 42px;
+  height: 42px;   /* 👈 más chicas */
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(0, 0, 0, 0.35); /* 👈 menos oscuro */
+  backdrop-filter: blur(6px);
+
+  color: white;
+
+  font-size: 22px; /* 👈 más suave */
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 10;
+
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.CarruselBtn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.CarruselBtn.left { left: 8px; }
+.CarruselBtn.right { right: 8px; }
