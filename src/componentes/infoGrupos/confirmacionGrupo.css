@@ -1,42 +1,55 @@
 .confirmacionGrupo {
-  background: white;
-  border-radius: 22px;
-  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #f0eefe;
+  padding: 20px 16px;
+  margin: 10px 16px 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(100, 60, 180, 0.12);
-  
+  gap: 8px;
 }
 
 .confirmacionGrupo h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
-  color: #111;
+  color: #1a1a1a;
 }
 
 .confirmacionGrupo p {
   margin: 0;
   font-size: 14px;
-  line-height: 1.5;
-  color: #555;
+  color: #6c48c5;
+  line-height: 1.55;
 }
 
 .confirmacionGrupo button {
+  margin-top: 8px;
   width: 100%;
-  border: none;
-  border-radius: 999px;
   padding: 15px;
-  background: linear-gradient(90deg, #8c3cff, #ff5ec4);
-  color: white;
-  font-size: 14px;
+  background: #6c48c5;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
   font-weight: 700;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: opacity 0.15s ease;
+  transition: background 0.18s, transform 0.12s;
 }
 
 .confirmacionGrupo button:hover {
-  opacity: 0.9;
+  background: #5a3aad;
+}
+
+.confirmacionGrupo button:active {
+  transform: scale(0.98);
+  background: #4d30a0;
+}
+
+@media (min-width: 768px) {
+  .confirmacionGrupo {
+    margin: 12px 0 0;
+    padding: 24px 20px;
+  }
 }

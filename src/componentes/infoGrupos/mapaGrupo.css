@@ -1,32 +1,33 @@
 .mapaGrupo {
-  background: white;
-  border-radius: 22px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(100, 60, 180, 0.12);
-}
-
-.mapaGrupo h3 {
-  margin: 0 0 14px;
-  font-size: 18px;
-  font-weight: 800;
-  color: #111;
-}
-
-.mapaFake {
-  width: 100%;
-  height: 200px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ece9ef;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #f0eefe;
+  padding: 16px;
+  margin: 10px 16px 0;
   overflow: hidden;
 }
 
-.mapaFake p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #555;
-  text-align: center;
+.mapaGrupo h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.mapaFake {
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.mapaFake iframe {
+  display: block;
+  border-radius: 12px;
+}
+
+@media (min-width: 768px) {
+  .mapaGrupo {
+    margin: 12px 0 0;
+    padding: 20px;
+  }
 }
