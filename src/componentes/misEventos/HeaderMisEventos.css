@@ -1,0 +1,117 @@
+/* ============================
+            HEADER
+============================ */
+
+.headerMisEventos {
+    width: 100%;
+    height: 74px;
+
+    background: #F6F7F9;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    padding: 0 20px 16px;
+
+    box-shadow: none;
+}
+
+.logoFanMeet {
+    margin: 0;
+
+    color: #8C1AFF;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+}
+
+.headerBoton {
+    border: none;
+    background: none;
+
+    width: 28px;
+    height: 28px;
+
+    cursor: pointer;
+
+    font-size: 21px;
+
+    color: #444;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.headerBoton:hover {
+    color: #8C1AFF;
+}
+
+/* ============================
+        TÍTULO
+============================ */
+
+.barraTituloEventos {
+    width: 100%;
+
+    background: #F6F7F9;
+
+    padding: 0 20px 26px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: none;
+}
+
+.barraTituloEventos h2 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 800;
+
+    color: #1f1f1f;
+}
+
+.btnMisGrupos {
+    border: none;
+    background: none;
+
+    color: #8C1AFF;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.btnMisGrupos:hover {
+    opacity: .7;
+}
+@media (min-width: 768px) {
+    .headerMisEventos {
+        height: 78px;
+
+        padding-left: calc((100% - 850px) / 2 + 24px);
+        padding-right: calc((100% - 850px) / 2 + 24px);
+        padding-bottom: 18px;
+    }
+
+    .barraTituloEventos {
+        padding-left: calc((100% - 850px) / 2 + 24px);
+        padding-right: calc((100% - 850px) / 2 + 24px);
+        padding-bottom: 24px;
+    }
+
+    .logoFanMeet {
+        font-size: 20px;
+    }
+
+    .barraTituloEventos h2 {
+        font-size: 24px;
+    }
+}

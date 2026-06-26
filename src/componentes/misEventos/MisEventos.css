@@ -1,0 +1,87 @@
+/* ============================
+        PANTALLA
+============================ */
+
+* {
+    box-sizing: border-box;
+}
+
+.pantallaMisEventos {
+    min-height: 100vh;
+
+    background: #F6F7F9;
+
+    display: flex;
+    flex-direction: column;
+
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* ============================
+        LAYOUT
+============================ */
+
+.misEventosLayout {
+    flex: 1;
+
+    width: 100%;
+    max-width: 315px;
+
+    margin: 0 auto;
+
+    padding: 0 0 115px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* ============================
+        MENSAJES
+============================ */
+
+.mensajeMisEventos {
+    width: 100%;
+
+    padding: 60px 20px;
+
+    text-align: center;
+
+    color: #555;
+
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* ============================
+        DESKTOP
+============================ */
+
+@media (min-width: 768px) {
+    .misEventosLayout {
+        max-width: 315px;
+    }
+}
+@media (min-width: 768px) {
+    .pantallaMisEventos {
+        background: #F6F7F9;
+    }
+
+    .misEventosLayout {
+        max-width: 760px;
+
+        padding: 32px 24px 130px;
+
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 34px;
+
+        align-items: start;
+    }
+}
+
+@media (min-width: 1200px) {
+    .misEventosLayout {
+        max-width: 850px;
+    }
+}
