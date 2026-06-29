@@ -334,6 +334,7 @@ const { data: usuarioCreado, error } = await supabase
   <MisGrupos
     usuarioActual={usuarioActual}
     onVolver={() => setPantalla("misEventos")}
+    onNavegar={setPantalla}
     onAbrirGrupo={(grupo) => {
       setGrupoSeleccionado(grupo);
       setPantalla("infoGrupo");
@@ -345,6 +346,7 @@ const { data: usuarioCreado, error } = await supabase
         <Home
           usuarioActual={usuarioActual}
           onEntrarConcierto={manejarEntrarConcierto}
+          onNavegar={setPantalla}
         />
       )}
 
