@@ -11,13 +11,14 @@ function MisEventos({
   usuarioActual,
   onIngresar,
   onIrMisGrupos,
+  onNavegar,
 }) {
   const [misEventos, setMisEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorTexto, setErrorTexto] = useState("");
 
   useEffect(() => {
-    if (usuarioActual) {
+    if (usuarioActual?.id_usuario) {
       cargarMisEventos();
     }
   }, [usuarioActual]);
@@ -26,38 +27,38 @@ function MisEventos({
     setCargando(true);
     setErrorTexto("");
 
-    // Relación usuario - conciertos
     const { data: relaciones, error: errorRelaciones } = await supabase
       .from("usuarios_conciertos")
       .select("*")
       .eq("id_usuario", usuarioActual.id_usuario);
 
     if (errorRelaciones) {
-      setErrorTexto(errorRelaciones.message);
+      console.error("Error cargando relaciones:", errorRelaciones);
+      setErrorTexto("No se pudieron cargar tus eventos.");
       setCargando(false);
       return;
     }
 
     const eventos = [];
 
-    for (const relacion of relaciones) {
-      // Concierto
+    for (const relacion of relaciones || []) {
       const { data: concierto, error: errorConcierto } = await supabase
         .from("concierto")
         .select("*")
         .eq("id_concierto", relacion.id_concierto)
         .maybeSingle();
 
-      if (errorConcierto || !concierto) continue;
+      if (errorConcierto || !concierto) {
+        console.error("Error cargando concierto:", errorConcierto);
+        continue;
+      }
 
-      // Artista
       const { data: artista } = await supabase
         .from("artista")
         .select("*")
         .eq("id_artista", concierto.id_artista)
         .maybeSingle();
 
-      // Estadio
       const { data: estadio } = await supabase
         .from("estadio")
         .select("*")
@@ -66,16 +67,13 @@ function MisEventos({
 
       eventos.push({
         ...concierto,
-
         artista: artista || {
           nombre: "Artista",
         },
-
         estadio: estadio || {
           nombre: "Estadio",
           ciudad: "",
         },
-
         imagen:
           concierto.imagen ||
           concierto.imagenConcierto ||
@@ -94,36 +92,31 @@ function MisEventos({
 
       <main className="misEventosLayout">
         {cargando && (
-          <p className="mensajeMisEventos">
-            Cargando eventos...
-          </p>
+          <p className="mensajeMisEventos">Cargando eventos...</p>
         )}
 
         {!cargando && errorTexto && (
+          <p className="mensajeMisEventos">{errorTexto}</p>
+        )}
+
+        {!cargando && !errorTexto && misEventos.length === 0 && (
           <p className="mensajeMisEventos">
-            {errorTexto}
+            Todavía no estás asociado a ningún evento.
           </p>
         )}
 
         {!cargando &&
           !errorTexto &&
-          misEventos.length === 0 && (
-            <p className="mensajeMisEventos">
-              Todavía no estás asociado a ningún evento.
-            </p>
-          )}
-
-        {!cargando &&
           misEventos.map((evento) => (
             <CardEvento
               key={evento.id_concierto}
               evento={evento}
-              onIngresar={onIngresar}
+              onIngresar={() => onIngresar(evento)}
             />
           ))}
       </main>
 
-      <Footer onNavegar={onNavegar} />    
+      <Footer onNavegar={onNavegar} />
     </div>
   );
 }

@@ -7,7 +7,7 @@ import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
 import Footer from "../generales/Footer";
 
-function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver }) {
+function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver, onNavegar }) {
   const [misGrupos, setMisGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
