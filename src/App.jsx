@@ -234,46 +234,56 @@ function App() {
     setPantalla("registro3");
   }
 
-  async function manejarFinalizarRegistro(datosPaso3) {
-    setCargando(true);
-    setErrorTexto("");
+async function manejarFinalizarRegistro(datosPaso3) {
+  setCargando(true);
+  setErrorTexto("");
 
-    const datosFinales = {
-      ...datosRegistro,
-      ...datosPaso3,
-    };
+  const datosFinales = {
+    ...datosRegistro,
+    ...datosPaso3,
+  };
 
-    const fotoDefault =
-      "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
+  const fotoDefault =
+    "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
 
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email: datosFinales.mail,
+    password: datosFinales.contrasena,
+  });
 
-const { data: usuarioCreado, error } = await supabase
-  .from("usuario")
-  .insert([
-    {
-      nombre: datosFinales.nombre,
-      mail: datosFinales.mail,
-      contrasena: datosFinales.contrasena,
-      fechanac: datosFinales.fechanac,
-      genero: datosFinales.genero,
-      fotoperfil: datosFinales.previewFoto || fotoDefault,
-      estilo_asistencia: datosFinales.estilo_asistencia,
-    },
-  ])
-  .select()
-  .single();
-
-    if (error) {
-      setErrorTexto("Error al registrar usuario: " + error.message);
-      setCargando(false);
-      return;
-    }
-
-    setUsuarioActual(usuarioCreado);
-    setDatosRegistro({});
+  if (authError) {
+    setErrorTexto("Error al crear usuario en Auth: " + authError.message);
     setCargando(false);
-    setPantalla("login");
+    return;
   }
+
+  const { data: usuarioCreado, error } = await supabase
+    .from("usuario")
+    .insert([
+      {
+        auth_id: authData.user.id,
+        nombre: datosFinales.nombre,
+        mail: datosFinales.mail,
+        fechanac: datosFinales.fechanac,
+        genero: datosFinales.genero,
+        fotoperfil: datosFinales.previewFoto || fotoDefault,
+        estilo_asistencia: datosFinales.estilo_asistencia,
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) {
+    setErrorTexto("Error al registrar usuario: " + error.message);
+    setCargando(false);
+    return;
+  }
+
+  setUsuarioActual(usuarioCreado);
+  setDatosRegistro({});
+  setCargando(false);
+  setPantalla("login");
+}
 
   const esPantallaLogin =
     pantalla === "login" ||

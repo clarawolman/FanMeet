@@ -21,26 +21,63 @@ function LoginForm({ onIngresar, onRegistrarse }) {
 
     setCargandoLogin(true);
 
-    const { data: usuarios, error } = await supabase
-      .from("usuario")
-      .select("*")
-      .eq("contrasena", contrasena)
-      .or(`mail.eq.${usuarioOMail},nombre.eq.${usuarioOMail}`);
+    try {
+      const usuarioOMailLimpio = usuarioOMail.trim();
 
-    if (error) {
+      let mailParaLogin = usuarioOMailLimpio;
+
+      // Supabase Auth inicia sesión con MAIL.
+      // Si la persona escribió su nombre de usuario, primero buscamos su mail.
+      if (!usuarioOMailLimpio.includes("@")) {
+        const { data: usuarioEncontrado, error: errorUsuario } = await supabase
+          .from("usuario")
+          .select("mail")
+          .eq("nombre", usuarioOMailLimpio)
+          .single();
+
+        if (errorUsuario || !usuarioEncontrado) {
+          setErrorLogin("Este usuario no existe");
+          setCargandoLogin(false);
+          return;
+        }
+
+        mailParaLogin = usuarioEncontrado.mail;
+      }
+
+      // Login real con Supabase Auth.
+      // Acá Supabase genera y maneja el JWT automáticamente.
+      const { data: authData, error: errorAuth } =
+        await supabase.auth.signInWithPassword({
+          email: mailParaLogin,
+          password: contrasena,
+        });
+
+      if (errorAuth) {
+        setErrorLogin("Usuario/mail o contraseña incorrectos");
+        setCargandoLogin(false);
+        return;
+      }
+
+      // Buscamos el perfil completo de FanMeet en tu tabla usuario.
+      const { data: usuarioPerfil, error: errorPerfil } = await supabase
+        .from("usuario")
+        .select("*")
+        .eq("auth_id", authData.user.id)
+        .single();
+
+      if (errorPerfil || !usuarioPerfil) {
+        setErrorLogin("No se pudo cargar el perfil del usuario");
+        setCargandoLogin(false);
+        return;
+      }
+
+      setCargandoLogin(false);
+      onIngresar(usuarioPerfil);
+    } catch (error) {
+      console.error(error);
       setErrorLogin("Error al iniciar sesión");
       setCargandoLogin(false);
-      return;
     }
-
-    if (!usuarios || usuarios.length === 0) {
-      setErrorLogin("Este usuario no existe");
-      setCargandoLogin(false);
-      return;
-    }
-
-    setCargandoLogin(false);
-    onIngresar(usuarios[0]);
   }
 
   return (
