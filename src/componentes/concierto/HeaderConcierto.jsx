@@ -1,10 +1,13 @@
 import "./HeaderConcierto.css";
 
-function HeaderConcierto({concierto}) {
+function HeaderConcierto({ concierto, onVolver }) {
   return (
     <header className="HeaderConcierto">
-      <button className="HeaderBoton"> ← </button>
-      <h1 className="HeaderTitulo"> {concierto.nombre} </h1>
+      <button className="HeaderBoton" type="button" onClick={onVolver}>
+        ←
+      </button>
+
+      <h1 className="HeaderTitulo">{concierto.nombre}</h1>
     </header>
   );
 }

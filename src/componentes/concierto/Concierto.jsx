@@ -10,7 +10,7 @@ import SubEventos from "./SubEventos";
 import Carrusel from "./Carrusel";
 import Footer from "../generales/Footer";
 
-function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar }) {  
+function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver }) {
   const [filtroActivo, setFiltroActivo] = useState("todos");
 
   const filtros = [
@@ -31,7 +31,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar }) {
 
   return (
     <div className="pantalla-concierto">
-      <HeaderConcierto concierto={concierto} />
+      <HeaderConcierto concierto={concierto} onVolver={onVolver} />
 
       <main className="conciertoLayout">
         <section className="conciertoHero">

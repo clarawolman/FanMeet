@@ -370,6 +370,7 @@ const { data: usuarioCreado, error } = await supabase
           usuarioActual={usuarioActual}
           onCrearGrupo={() => setPantalla("crearGrupo")}
           onNavegar={manejarNavegacion}
+          onVolver={() => manejarNavegacion("home")}
           onAbrirGrupo={(grupo) => {
             setGrupoSeleccionado(grupo);
             setPantalla("infoGrupo");
