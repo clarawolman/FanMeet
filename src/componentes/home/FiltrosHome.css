@@ -1,10 +1,11 @@
-
-
 .home-filtros {
   display: flex;
-  gap: 10px;
+  flex-direction: row;
+  gap: 8px;
+  padding: 0 16px 16px;
   overflow-x: auto;
-  padding: 20px 2px 18px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .home-filtros::-webkit-scrollbar {
@@ -12,21 +13,23 @@
 }
 
 .home-filtro {
-  border: 2px solid #130f1f;
-  background: #fff9ef;
-  color: #130f1f;
-  padding: 10px 16px;
-  border-radius: 999px;
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 1.5px solid #d0d0d0;
+  background: #ffffff;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 500;
+  color: #1a1a1a;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 4px 4px 0 #130f1f;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: all 0.15s;
+  font-family: inherit;
 }
 
 .home-filtro--activo {
-  background: #ffd166;
-  transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 #130f1f;
+  background: #6c48c5;
+  border-color: #6c48c5;
+  color: #ffffff;
+  font-weight: 700;
 }
