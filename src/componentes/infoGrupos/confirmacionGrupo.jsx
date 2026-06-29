@@ -1,6 +1,10 @@
 import "./confirmacionGrupo.css";
 
-export default function ConfirmacionGrupo({ onConfirmar }) {
+export default function ConfirmacionGrupo({
+  onConfirmar,
+  confirmado,
+  cargandoConfirmacion,
+}) {
   return (
     <div className="confirmacionGrupo">
       <h3>¡Sumate al grupo!</h3>
@@ -10,9 +14,16 @@ export default function ConfirmacionGrupo({ onConfirmar }) {
         las novedades del evento.
       </p>
 
-      <button onClick={onConfirmar}>
-        Confirmar asistencia
+      <button
+        onClick={onConfirmar}
+        disabled={confirmado || cargandoConfirmacion}
+      >
+        {confirmado
+          ? "Asistencia confirmada"
+          : cargandoConfirmacion
+          ? "Confirmando..."
+          : "Confirmar asistencia"}
       </button>
     </div>
-  );
+    )
 }
