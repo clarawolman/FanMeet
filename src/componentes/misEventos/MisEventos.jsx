@@ -116,7 +116,7 @@ function MisEventos({
           ))}
       </main>
 
-      <Footer onNavegar={onNavegar} />
+      <Footer onNavegar={onNavegar} pantallaActiva="misEventos" />
     </div>
   );
 }

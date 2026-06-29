@@ -1,23 +1,42 @@
 import "./Footer.css";
 
-import inicioIcon from "../../assets/InicioMarcado.png";
-import eventosIcon from "../../assets/eventosNoMarc.png";
+import inicioMarcadoIcon from "../../assets/InicioMarcado.png";
+import inicioNoMarcIcon from "../../assets/FooterInicioNo.png";
+
+import eventosMarcadoIcon from "../../assets/eventosMarcado.png";
+import eventosNoMarcIcon from "../../assets/eventosNoMarc.png";
+
 import perfilIcon from "../../assets/PerfilNo.png";
 
-function Footer({ onNavegar }) {
+function Footer({ onNavegar, pantallaActiva }) {
+  function navegar(destino) {
+    if (pantallaActiva === destino) return;
+    onNavegar(destino);
+  }
+
   return (
     <section className="footer">
-      <button className="footerButton" onClick={() => onNavegar("home")}>
-        <img src={inicioIcon} alt="Inicio" />
+      <button className="footerButton" onClick={() => navegar("home")}>
+        <img
+          src={pantallaActiva === "home" ? inicioMarcadoIcon : inicioNoMarcIcon}
+          alt="Inicio"
+        />
         <span>Inicio</span>
       </button>
 
-      <button className="footerButton" onClick={() => onNavegar("misEventos")}>
-        <img src={eventosIcon} alt="Mis Eventos" />
+      <button className="footerButton" onClick={() => navegar("misEventos")}>
+        <img
+          src={
+            pantallaActiva === "misEventos"
+              ? eventosMarcadoIcon
+              : eventosNoMarcIcon
+          }
+          alt="Mis Eventos"
+        />
         <span>Eventos</span>
       </button>
 
-      <button className="footerButton" onClick={() => onNavegar("perfil")}>
+      <button className="footerButton" onClick={() => navegar("perfil")}>
         <img src={perfilIcon} alt="Perfil" />
         <span>Perfil</span>
       </button>
