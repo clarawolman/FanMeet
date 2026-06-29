@@ -1,38 +1,23 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
 import { supabase } from "../../supabase";
-import HeaderHome from "./HeaderHome";
-import BienvenidaHome from "./BienvenidaHome";
-import FiltrosHome from "./FiltrosHome";
-import CardConciertoHome from "./CardConciertoHome";
-import OverlayCodigo from "./OverlayCodigo";
 import Footer from "../generales/Footer";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
-  const [filtroActivo, setFiltroActivo] = useState("todos");
   const [conciertoSeleccionado, setConciertoSeleccionado] = useState(null);
   const [codigoIngresado, setCodigoIngresado] = useState("");
   const [errorCodigo, setErrorCodigo] = useState("");
   const [cargando, setCargando] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
+
   const CODIGO_PRUEBA = "FANMEET2026";
 
-  const conciertosFiltrados =
-  filtroActivo === "todos"
-    ? conciertos
-    : conciertos.filter(
-        (concierto) =>
-          String(concierto.id_estiloMusical) === String(filtroActivo)
-      );
-
-  console.log("FILTRO ACTIVO:", filtroActivo);
-
-  const filtros = [
-    { id: "todos", nombre: "Todos" },
-    { id: "1", nombre: "Pop" },
-    { id: "2", nombre: "Rock" },
-    { id: "3", nombre: "Urbano" },
-    { id: "4", nombre: "Indie" },
+  const generos = [
+    { id: "1", nombre: "Pop"},
+    { id: "2", nombre: "Rock"},
+    { id: "3", nombre: "Urbano"},
+    { id: "4", nombre: "Indie"},
   ];
 
   useEffect(() => {
@@ -59,6 +44,31 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
 
     setConciertos(data || []);
     setCargando(false);
+  }
+  
+
+  const conciertosBuscados = conciertos.filter((concierto) => {
+    const texto = busqueda.toLowerCase();
+
+    const nombreConcierto = concierto.nombre || "";
+    const nombreArtista = concierto.artista?.nombre || "";
+    const nombreEstadio = concierto.estadio?.nombre || "";
+    const ciudadEstadio = concierto.estadio?.ciudad || "";
+
+    return (
+      nombreConcierto.toLowerCase().includes(texto) ||
+      nombreArtista.toLowerCase().includes(texto) ||
+      nombreEstadio.toLowerCase().includes(texto) ||
+      ciudadEstadio.toLowerCase().includes(texto)
+    );
+  });
+
+  const hayBusqueda = busqueda.trim().length > 0;
+
+  function obtenerConciertosPorGenero(idGenero) {
+    return conciertos.filter(
+      (concierto) => String(concierto.id_estiloMusical) === String(idGenero)
+    );
   }
 
   async function abrirOverlay(concierto) {
@@ -92,37 +102,19 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   }
 
   async function validarCodigo() {
-    const CODIGO_PRUEBA = "FANMEET2026";
-
     if (codigoIngresado.trim() !== CODIGO_PRUEBA) {
       setErrorCodigo("Código incorrecto.");
       return;
     }
 
-   const { error } = await supabase.from("usuarios_conciertos").insert([
+    const { error } = await supabase.from("usuarios_conciertos").insert([
       {
         id_usuario: usuarioActual.id_usuario,
         id_concierto: conciertoSeleccionado.id_concierto,
       },
     ]);
-     /*const { error } = await supabase.from("usuarios_conciertos").upsert(
-      [
-        {
-          id_usuario: usuarioActual.id_usuario,
-          id_concierto: conciertoSeleccionado.id_concierto,
-        },
-      ],
-      {
-        onConflict: "id_usuario,id_concierto",
-      }
-    );*/
 
-    /*if (error) {
-      console.error("Error guardando acceso:", error);
-      setErrorCodigo("El código está bien, pero no se pudo guardar el acceso.");
-      return;
-    }*/
-      if (error) {
+    if (error) {
       console.error("Error guardando acceso:", error);
       setErrorCodigo("Error guardando acceso: " + error.message);
       return;
@@ -130,95 +122,142 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
 
     await onEntrarConcierto(conciertoSeleccionado.id_concierto);
   }
+  
+function formatearFecha(fecha) {
+  if (!fecha) return "Fecha a confirmar";
 
+  const fechaTexto = String(fecha);
+  const soloFecha = fechaTexto.split("T")[0];
+  const partes = soloFecha.split("-");
+
+  if (partes.length !== 3) return fechaTexto;
+
+  const [anio, mes, dia] = partes;
+  return `${dia}/${mes}/${anio.slice(2)}`;
+}
+  function renderCard(concierto) {
+    return (
+      <article
+        className="home-card"
+        key={concierto.id_concierto}
+        onClick={() => abrirOverlay(concierto)}
+      >
+        <div className="home-card-imagen">
+          <img
+            src={
+              concierto.imagen ||
+              concierto.imagenConcierto ||
+              concierto.foto ||
+              ""
+            }
+            alt={concierto.nombre || concierto.artista?.nombre}
+          />
+
+          <button
+            className="home-card-btn-unirme"
+            onClick={(e) => {
+              e.stopPropagation();
+              abrirOverlay(concierto);
+            }}
+          >
+            Unirme
+          </button>
+        </div>
+
+        <div className="home-card-info">
+          <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
+
+          <div className="home-card-meta">
+            <span>
+              {concierto.estadio?.nombre ||
+                concierto.estadio?.ciudad ||
+                "Estadio"}
+            </span>
+            <span>{formatearFecha(concierto.fecha)}</span>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <div className="pantalla-home">
       <header className="home-header">
-        <div>
+        <div className="home-header-icons">
           <p className="home-eyebrow">FanMeet</p>
-          <h1>Encontrá tu próximo show</h1>
-        </div>
-
-        <div className="home-usuario">
-          <img
-            src={
-              usuarioActual?.fotoperfil ||
-              usuarioActual?.foto_perfil ||
-              "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg"
-            }
-            alt={usuarioActual?.nombre || "Usuario"}
-          />
         </div>
       </header>
 
       <main className="home-main">
-        <section className="home-bienvenida">
-          <p>Hola, {usuarioActual?.nombre || "fan"}.</p>
-          <h2>Más que un show, una conexión.</h2>
-          <span>
-            Explorá recitales, ingresá con tu código y conectá con personas que
-            van al mismo evento.
-          </span>
-        </section>
-
-        <section className="home-filtros">
-          {filtros.map((filtro) => (
-            <button
-              key={filtro.id}
-              className={
-                filtroActivo === filtro.id
-                  ? "home-filtro home-filtro--activo"
-                  : "home-filtro"
-              }
-              onClick={() => setFiltroActivo(filtro.id)}
-            >
-              {filtro.nombre}
-            </button>
-          ))}
-        </section>
+        <div className="home-search">
+          <input
+            type="text"
+            placeholder="Buscá tu concierto o artista"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
 
         {cargando && <p className="home-estado">Cargando conciertos...</p>}
 
-        {!cargando && conciertosFiltrados.length === 0 && (
+        {!cargando && conciertos.length === 0 && (
           <p className="home-estado">No hay conciertos disponibles.</p>
         )}
 
-        <section className="home-grid">
-          {conciertosFiltrados.map((concierto) => (
-            <article
-              className="home-card"
-              key={concierto.id_concierto}
-              onClick={() => abrirOverlay(concierto)}
-            >
-              <div className="home-card-imagen">
-                <img
-                  src={
-                    concierto.imagen ||
-                    concierto.imagenConcierto ||
-                    concierto.foto ||
-                    ""
-                  }
-                  alt={concierto.nombre || concierto.artista?.nombre}
-                />
+        {!cargando && hayBusqueda && (
+          <section className="home-row">
+            <div className="home-row-header">
+              <h2>Resultados</h2>
+              <span>{conciertosBuscados.length}</span>
+            </div>
+
+            {conciertosBuscados.length === 0 ? (
+              <p className="home-estado">No encontramos conciertos.</p>
+            ) : (
+              <div className="home-resultados-grid">
+                {conciertosBuscados.map((concierto) => renderCard(concierto))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {!cargando && !hayBusqueda && conciertos.length > 0 && (
+          <section className="home-catalogo">
+            <section className="home-row">
+              <div className="home-row-header">
+                <h2> Destacados</h2>
+                <span>Todos</span>
               </div>
 
-              <div className="home-card-info">
-                <p>{concierto.artista?.nombre || "Artista"}</p>
-                <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
-
-                <div className="home-card-meta">
-                  <span>{concierto.fecha || "Fecha a confirmar"}</span>
-                  <span>
-                    {concierto.estadio?.nombre ||
-                      concierto.estadio?.ciudad ||
-                      "Estadio"}
-                  </span>
-                </div>
+              <div className="home-row-scroll">
+                {conciertos.slice(0, 10).map((concierto) => renderCard(concierto))}
               </div>
-            </article>
-          ))}
-        </section>
+            </section>
+
+            {generos.map((genero) => {
+              const conciertosDelGenero = obtenerConciertosPorGenero(genero.id);
+
+              if (conciertosDelGenero.length === 0) return null;
+
+              return (
+                <section className="home-row" key={genero.id}>
+                  <div className="home-row-header">
+                    <h2>
+                      {genero.emoji} {genero.nombre}
+                    </h2>
+                    <span>{conciertosDelGenero.length}</span>
+                  </div>
+
+                  <div className="home-row-scroll">
+                    {conciertosDelGenero.map((concierto) =>
+                      renderCard(concierto)
+                    )}
+                  </div>
+                </section>
+              );
+            })}
+          </section>
+        )}
       </main>
 
       {conciertoSeleccionado && (
@@ -253,10 +292,10 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
           </div>
         </div>
       )}          
-    <Footer onNavegar={onNavegar} pantallaActiva="home" /> 
+      <Footer onNavegar={onNavegar} />    
     </div>
-    
   );
 }
+
 
 export default Home;

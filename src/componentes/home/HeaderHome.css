@@ -1,44 +1,60 @@
-
 .home-header {
-  width: 100%;
-  max-width: 430px;
-  padding: 22px 22px 12px;
-  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  background: #ffffff;
 }
 
-.home-eyebrow,
-.home-modal-eyebrow {
+.home-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-eyebrow {
   margin: 0;
-  color: #ff3f97;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 800;
+  color: #6c48c5;
+  letter-spacing: -0.3px;
+  line-height: 1;
 }
 
 .home-header h1 {
-  margin: 4px 0 0;
-  font-size: 27px;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
+  display: none;
+}
+
+.home-header-hamburger {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.home-header-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #1a1a1a;
+  border-radius: 2px;
+}
+
+.home-header-bell {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 20px;
+  color: #1a1a1a;
+  line-height: 1;
 }
 
 .home-usuario {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
-  padding: 3px;
-  background: #130f1f;
-  transform: rotate(4deg);
-}
-
-.home-usuario img {
-  width: 100%;
-  height: 100%;
-  border-radius: 13px;
-  object-fit: cover;
-  display: block;
+  display: none;
 }

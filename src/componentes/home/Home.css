@@ -1,47 +1,503 @@
-.pantalla-home {
-  width: 100%;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(255, 63, 151, 0.2), transparent 32%),
-    radial-gradient(circle at top right, rgba(123, 36, 223, 0.18), transparent 30%),
-    #f7f2ea;
-  color: #130f1f;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.home-main {
-  width: 100%;
-  max-width: 430px;
-  padding: 10px 18px 34px;
-  box-sizing: border-box;
-}
+/* ─────────────────────────────────────────────
+   HOME NUEVO: secciones por género
+   Mantiene dimensiones originales
+───────────────────────────────────────────── */
+
+/* Ocultamos los filtros viejos */
+.home-filtros,
+.home-section-header,
 .home-grid {
+  display: none;
+}
+
+/* Buscador centrado sin achicar toda la pantalla */
+.home-search {
+  display: flex;
+  justify-content: center;
+}
+
+.home-search input {
+  max-width: 600px;
+}
+
+/* Catálogo */
+.home-catalogo {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 30px;
+  padding-bottom: 18px;
 }
 
+.home-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-.home-estado {
-  padding: 20px 4px;
-  color: #5c536c;
+.home-row-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 16px 0;
+}
+
+.home-row-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
+}
+
+.home-row-header span {
+  font-size: 13px;
   font-weight: 700;
+  color: #6c48c5;
 }
 
-@media (min-width: 700px) {
-  .home-header,
-  .home-main {
-    max-width: 920px;
+/* Filas horizontales, pero respetando tamaño de card original */
+.home-row-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 0 16px 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.home-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* En mobile: card grande como antes */
+.home-row-scroll .home-card {
+  flex: 0 0 calc(100vw - 32px);
+  max-width: calc(100vw - 32px);
+  scroll-snap-align: start;
+  margin-bottom: 0;
+}
+
+/* Resultados del buscador */
+.home-resultados-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+/* Card: mantenemos el estilo original */
+.home-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+/* Imagen igual que antes, pero deja salir el botón */
+.home-card-imagen {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: visible;
+  aspect-ratio: 4 / 3;
+  background: #f2f2f2;
+}
+
+.home-card-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+/* Botón mitad adentro y mitad afuera */
+.home-card-btn-unirme {
+  position: absolute;
+  bottom: -17px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+
+  background: #6c48c5;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+
+  padding: 11px 36px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+
+  box-shadow: 0 4px 16px rgba(108, 72, 197, 0.4);
+}
+
+.home-card-info {
+  padding: 28px 4px 0;
+}
+
+.home-card-info h3 {
+  margin: 0 0 3px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.home-card-meta {
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+  color: #888888;
+}
+
+.home-card-meta span:first-child::after {
+  content: " •";
+  margin-right: 2px;
+}
+
+/* Tablet: respeta la lógica original de 2 columnas */
+@media (min-width: 768px) {
+  .home-row-header {
+    padding: 8px 40px 0;
   }
 
-  .home-grid {
+  .home-row-header h2 {
+    font-size: 22px;
+  }
+
+  .home-row-scroll {
+    gap: 24px;
+    padding: 0 40px 10px;
+  }
+
+  .home-row-scroll .home-card {
+    flex: 0 0 calc((100vw - 104px) / 2);
+    max-width: calc((100vw - 104px) / 2);
+  }
+
+  .home-resultados-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    padding: 0 40px;
+  }
+}
+
+/* Desktop: respeta la lógica original de 3 columnas */
+@media (min-width: 1024px) {
+  .home-search {
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .home-bienvenida h2 {
-    max-width: 620px;
-    font-size: 48px;
+  .home-row-header {
+    padding: 8px 64px 0;
+  }
+
+  .home-row-header h2 {
+    font-size: 26px;
+    letter-spacing: -0.4px;
+  }
+
+  .home-row-scroll {
+    gap: 28px;
+    padding: 0 64px 12px;
+  }
+
+  .home-row-scroll .home-card {
+    flex: 0 0 calc((100vw - 184px) / 3);
+    max-width: calc((100vw - 184px) / 3);
+  }
+
+  .home-card-imagen {
+    border-radius: 20px;
+    aspect-ratio: 3 / 2;
+  }
+
+  .home-card-imagen img {
+    border-radius: 20px;
+  }
+
+  .home-card-info {
+    padding: 30px 4px 0;
+  }
+
+  .home-resultados-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    padding: 0 64px;
+  }
+}
+
+/* Wide: respeta la lógica original de 4 columnas */
+@media (min-width: 1440px) {
+  .home-row-header {
+    padding: 8px 80px 0;
+  }
+
+  .home-row-scroll {
+    gap: 32px;
+    padding: 0 80px 14px;
+  }
+
+  .home-row-scroll .home-card {
+    flex: 0 0 calc((100vw - 256px) / 4);
+    max-width: calc((100vw - 256px) / 4);
+  }
+
+  .home-resultados-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    padding: 0 80px;
+  }
+}
+/* ─────────────────────────────
+   FIX HEADER + BUSCADOR FANMEET
+───────────────────────────── */
+
+.pantalla-home {
+  background: #ffffff !important;
+}
+
+/* HEADER */
+.home-header {
+  width: 100% !important;
+  padding: 18px 20px 14px !important;
+  background: #ffffff !important;
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  border-bottom: none !important;
+}
+
+.home-header-icons {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+}
+
+.home-eyebrow {
+  margin: 0 !important;
+  color: #811cd9 !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.8px !important;
+  line-height: 1 !important;
+  text-align: left !important;
+}
+
+
+
+/* VIOLETA FANMEET */
+.home-card-btn-unirme,
+.home-btn-principal,
+.home-filtro--activo {
+  background: #811cd9 !important;
+  border-color: #811cd9 !important;
+  color: #ffffff !important;
+}
+
+.home-card-btn-unirme {
+  box-shadow: 0 6px 18px rgba(129, 28, 217, 0.35) !important;
+}
+
+.home-card-btn-unirme:hover,
+.home-btn-principal:hover {
+  background: #7018bf !important;
+}
+
+/* sacar número del costado de Pop / Rock / etc */
+.home-row-header span {
+  display: none !important;
+}
+/* CELULAR: cards más altas que anchas */
+@media (max-width: 767px) {
+  .home-row-scroll .home-card {
+    flex: 0 0 190px !important;
+    min-width: 190px !important;
+    max-width: 190px !important;
+  }
+
+  .home-card-imagen {
+    aspect-ratio: 2 / 3 !important;
+    height: auto !important;
+  }
+
+  .home-card-imagen img {
+    aspect-ratio: 2 / 3 !important;
+    object-fit: cover !important;
+  }
+}
+/* ─────────────────────────────
+   FIX FINAL HOME MOBILE
+───────────────────────────── */
+
+.pantalla-home {
+  background: #f5f5f7 !important;
+}
+
+/* HEADER más separado del body */
+.home-header {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 22px 24px 18px !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #ececf1 !important;
+  box-shadow: 0 2px 10px rgba(20, 20, 30, 0.04) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+}
+
+.home-header-icons {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+}
+
+
+
+/* BODY */
+.home-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: #f5f5f7 !important;
+  padding-top: 16px !important;
+  padding-bottom: 96px !important;
+  box-sizing: border-box !important;
+}
+
+/* BUSCADOR más visible */
+.home-search {
+  width: 100%;
+  padding: 8px 16px 18px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: static;
+  margin: 0;
+}
+
+.home-search::before {
+  content: none;
+}
+
+.home-search input {
+  width: 100%;
+  max-width: 360px;
+  height: 42px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid #e7e2f3;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  box-shadow: none;
+}
+
+.home-search input::placeholder {
+  color: #9e9e9e;
+}
+
+.home-search input:focus {
+  border-color: #811cd9 !important;
+  box-shadow: 0 8px 24px rgba(129, 28, 217, 0.14) !important;
+}
+
+/* sacar número del costado */
+.home-row-header span {
+  display: none !important;
+}
+
+/* títulos de secciones */
+.home-row-header {
+  padding: 0 20px !important;
+}
+
+.home-row-header h2 {
+  color: #17171f !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.4px !important;
+}
+
+/* filas */
+.home-row-scroll {
+  padding: 0 20px 8px !important;
+  gap: 16px !important;
+}
+
+/* CELULAR: cards verticales */
+@media (max-width: 767px) {
+  .home-row-scroll .home-card {
+    flex: 0 0 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+  }
+
+  .home-card-imagen {
+    width: 100% !important;
+    height: 255px !important;
+    aspect-ratio: auto !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+  }
+
+  .home-card-imagen img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    display: block !important;
+  }
+
+  .home-card-btn-unirme {
+    bottom: -16px !important;
+    background: #811cd9 !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 8px 18px rgba(129, 28, 217, 0.35) !important;
+  }
+
+  .home-card-info {
+    padding: 28px 2px 0 !important;
+  }
+
+  .home-card-info h3 {
+    font-size: 15px !important;
+    line-height: 1.1 !important;
+    font-weight: 900 !important;
+    color: #17171f !important;
+  }
+
+  .home-card-meta {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+    color: #777783 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
   }
 }

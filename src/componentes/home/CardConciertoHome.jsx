@@ -13,23 +13,31 @@ function CardConciertoHome({ concierto, onAbrir }) {
           }
           alt={concierto.nombre || concierto.artista?.nombre}
         />
+        <button
+          className="home-card-btn-unirme"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAbrir();
+          }}
+        >
+          Unirme
+        </button>
       </div>
 
       <div className="home-card-info">
-        <p>{concierto.artista?.nombre || "Artista"}</p>
         <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
-
         <div className="home-card-meta">
-          <span>{concierto.fecha || "Fecha a confirmar"}</span>
           <span>
             {concierto.estadio?.nombre ||
               concierto.estadio?.ciudad ||
               "Estadio"}
           </span>
+          <span>{concierto.fecha || "Fecha a confirmar"}</span>
         </div>
       </div>
     </article>
   );
 }
+
 
 export default CardConciertoHome;

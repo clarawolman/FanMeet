@@ -3,21 +3,17 @@ import "./HeaderHome.css";
 function HeaderHome({ usuarioActual }) {
   return (
     <header className="home-header">
-      <div>
+      <div className="home-header-icons">
+        <button className="home-header-hamburger" aria-label="Menú">
+          <span />
+          <span />
+          <span />
+        </button>
         <p className="home-eyebrow">FanMeet</p>
-        <h1>Encontrá tu próximo show</h1>
       </div>
-
-      <div className="home-usuario">
-        <img
-          src={
-            usuarioActual?.fotoperfil ||
-            usuarioActual?.foto_perfil ||
-            "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg"
-          }
-          alt={usuarioActual?.nombre || "Usuario"}
-        />
-      </div>
+      <button className="home-header-bell" aria-label="Notificaciones">
+        🔔
+      </button>
     </header>
   );
 }
