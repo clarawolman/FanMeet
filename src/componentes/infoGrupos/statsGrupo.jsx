@@ -5,15 +5,21 @@ export default function StatsGrupo({ grupo }) {
       <div className="statsGrupo">
 
          <div className="statCard">
-            <p>{grupo.fecha}</p>
+            <span className="statIcon">📅</span>
+            <p className="statLabel">Fecha</p>
+            <p className="statValue">{grupo.fecha}</p>
          </div>
 
          <div className="statCard">
-            <p>{grupo.hora}</p>
+            <span className="statIcon">🕐</span>
+            <p className="statLabel">Hora</p>
+            <p className="statValue">{grupo.hora}</p>
          </div>
 
          <div className="statCard">
-            <p>{grupo.ubicacion}</p>
+            <span className="statIcon">📍</span>
+            <p className="statLabel">Lugar</p>
+            <p className="statValue">{grupo.ubicacion}</p>
          </div>
 
       </div>

@@ -1,35 +1,46 @@
 .participantesGrupo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 64px;
-  background: white;
-  border-radius: 18px;
-  padding: 14px 18px;
-  box-shadow: 0 4px 16px rgba(100, 60, 180, 0.12);
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 12px 16px 0;
+  border: 1px solid #f0eefe;
 }
 
 .imagenesParticipantes {
   display: flex;
-  align-items: center;
+  flex-direction: row;
 }
 
 .fotoParticipante {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid white;
+  border: 2.5px solid #ffffff;
   margin-left: -10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s;
 }
 
 .fotoParticipante:first-child {
   margin-left: 0;
 }
 
+.fotoParticipante:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
 .participantesGrupo span {
   font-size: 14px;
   font-weight: 700;
-  color: #333;
+  color: #6c48c5;
+}
+
+@media (min-width: 768px) {
+  .participantesGrupo {
+    margin: 16px 0 0;
+  }
 }

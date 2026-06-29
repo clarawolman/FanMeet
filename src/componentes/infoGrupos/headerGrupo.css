@@ -1,57 +1,42 @@
 .headerGrupo {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
-  height: 56px;
+  padding: 14px 16px;
   background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
-  padding: 0 18px;
-  border-radius: 0;
+  border-bottom: 1px solid #f0eefe;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.backButton {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background: none;
-  color: #7c3aed;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
+.headerGrupo .backButton {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #6c48c5;
+  font-size: 20px;
+  line-height: 1;
+  transition: background 0.15s;
   flex-shrink: 0;
-  transition: background-color 0.15s ease;
 }
 
-.backButton:hover {
-  background-color: rgba(124, 58, 237, 0.08);
+.headerGrupo .backButton:hover {
+  background: #f0eefe;
 }
 
 .headerGrupo h2 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  color: #111;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-@media (min-width: 768px) {
-  .headerGrupo {
-    height: 60px;
-    padding: 0 24px;
-  }
-
-  .headerGrupo h2 {
-    font-size: 18px;
-  }
 }

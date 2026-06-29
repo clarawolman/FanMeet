@@ -10,4 +10,3 @@ export default function HeaderGrupo({ titulo, onVolver }) {
     </div>
   );
 }
-
