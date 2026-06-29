@@ -8,7 +8,7 @@ import CardConciertoHome from "./CardConciertoHome";
 import OverlayCodigo from "./OverlayCodigo";
 import Footer from "../generales/Footer";
 
-function Home({ usuarioActual, onEntrarConcierto }) {
+function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
   const [filtroActivo, setFiltroActivo] = useState("todos");
   const [conciertoSeleccionado, setConciertoSeleccionado] = useState(null);

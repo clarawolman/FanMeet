@@ -4,6 +4,7 @@ import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
 import Home from "./componentes/home/Home";
+//import Footer from "./generales/Footer";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
@@ -278,7 +279,7 @@ const { data: usuarioCreado, error } = await supabase
     pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
     pantalla !== "infoGrupo" &&
-    !concierto
+    pantalla !== "concierto"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
