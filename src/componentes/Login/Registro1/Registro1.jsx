@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Registro1.css";
+import { supabase } from "../../../supabase";
 
 function Registro1({ onVolver, onSiguiente }) {
   const [nombre, setNombre] = useState("");
@@ -9,6 +10,7 @@ function Registro1({ onVolver, onSiguiente }) {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [genero, setGenero] = useState("");
   const [errorRegistro, setErrorRegistro] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   function calcularEdad(fecha) {
     const hoy = new Date();
@@ -24,15 +26,18 @@ function Registro1({ onVolver, onSiguiente }) {
     return edad;
   }
 
-  function manejarSiguiente(e) {
+  async function manejarSiguiente(e) {
     e.preventDefault();
 
-    if (!nombre || !mail || !contrasena || !fechaNacimiento || !genero) {
+    const nombreLimpio = nombre.trim();
+    const mailLimpio = mail.trim().toLowerCase();
+
+    if (!nombreLimpio || !mailLimpio || !contrasena || !fechaNacimiento || !genero) {
       setErrorRegistro("Completá todos los campos para continuar");
       return;
     }
 
-    if (!mail.includes("@")) {
+    if (!mailLimpio.includes("@")) {
       setErrorRegistro("Ingresá un mail válido");
       return;
     }
@@ -44,11 +49,51 @@ function Registro1({ onVolver, onSiguiente }) {
       return;
     }
 
+    setCargando(true);
+    setErrorRegistro("");
+
+    const { data: usuarioConMail, error: errorMail } = await supabase
+      .from("usuario")
+      .select("id_usuario")
+      .eq("mail", mailLimpio)
+      .maybeSingle();
+
+    if (errorMail) {
+      setErrorRegistro("Hubo un error al verificar el mail");
+      setCargando(false);
+      return;
+    }
+
+    if (usuarioConMail) {
+      setErrorRegistro("Ese mail ya está registrado");
+      setCargando(false);
+      return;
+    }
+
+    const { data: usuarioConNombre, error: errorNombre } = await supabase
+      .from("usuario")
+      .select("id_usuario")
+      .eq("nombre", nombreLimpio)
+      .maybeSingle();
+
+    if (errorNombre) {
+      setErrorRegistro("Hubo un error al verificar el nombre de usuario");
+      setCargando(false);
+      return;
+    }
+
+    if (usuarioConNombre) {
+      setErrorRegistro("Ese nombre de usuario ya está en uso");
+      setCargando(false);
+      return;
+    }
+
+    setCargando(false);
     setErrorRegistro("");
 
     onSiguiente({
-      nombre,
-      mail,
+      nombre: nombreLimpio,
+      mail: mailLimpio,
       contrasena,
       fechanac: fechaNacimiento,
       genero,
@@ -165,8 +210,12 @@ function Registro1({ onVolver, onSiguiente }) {
 
           {errorRegistro && <p className="registroError">{errorRegistro}</p>}
 
-          <button className="registroBotonSiguiente" type="submit">
-            Siguiente
+          <button
+            className="registroBotonSiguiente"
+            type="submit"
+            disabled={cargando}
+          >
+            {cargando ? "Verificando..." : "Siguiente"}
           </button>
         </form>
       </section>
