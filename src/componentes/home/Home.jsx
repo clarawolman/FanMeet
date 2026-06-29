@@ -253,7 +253,7 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
           </div>
         </div>
       )}          
-      <Footer onNavegar={onNavegar} />    
+    <Footer onNavegar={onNavegar} pantallaActiva="home" /> 
     </div>
     
   );

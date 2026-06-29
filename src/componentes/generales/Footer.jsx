@@ -2,7 +2,6 @@ import "./Footer.css";
 
 import inicioMarcadoIcon from "../../assets/InicioMarcado.png";
 import inicioNoMarcIcon from "../../assets/FooterInicioNo.png";
-
 import eventosMarcadoIcon from "../../assets/eventosMarcado.png";
 import eventosNoMarcIcon from "../../assets/eventosNoMarc.png";
 
@@ -16,13 +15,13 @@ function Footer({ onNavegar, pantallaActiva }) {
 
   return (
     <section className="footer">
-      <button className="footerButton" onClick={() => navegar("home")}>
-        <img
-          src={pantallaActiva === "home" ? inicioMarcadoIcon : inicioNoMarcIcon}
-          alt="Inicio"
-        />
-        <span>Inicio</span>
-      </button>
+     <button className="footerButton" onClick={() => navegar("home")}>
+  <img
+    src={pantallaActiva === "home" ? inicioMarcadoIcon : inicioNoMarcIcon}
+    alt="Inicio"
+  />
+  <span>Inicio</span>
+</button>
 
       <button className="footerButton" onClick={() => navegar("misEventos")}>
         <img

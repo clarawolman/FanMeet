@@ -190,6 +190,19 @@ function App() {
     setErrorTexto("");
     setPantalla("home");
   }
+
+  function manejarNavegacion(destino) {
+  if (destino === "home") {
+    setConcierto(null);
+    setGrupoSeleccionado(null);
+    setErrorTexto("");
+    setPantalla("home");
+    return;
+  }
+
+  setPantalla(destino);
+}
+
   async function manejarEntrarConcierto(idConcierto) {
     const pudoCargar = await cargarConciertoPorId(idConcierto);
 
@@ -317,19 +330,20 @@ const { data: usuarioCreado, error } = await supabase
           onFinalizar={manejarFinalizarRegistro}
         />
       )}
-      {pantalla === "misEventos" && usuarioActual && (
-      <MisEventos
-        usuarioActual={usuarioActual}
-        onIngresar={async (evento) => {
-          const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
+     {pantalla === "misEventos" && usuarioActual && (
+  <MisEventos
+    usuarioActual={usuarioActual}
+    onIngresar={async (evento) => {
+      const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
 
-          if (pudoCargar) {
-            setPantalla("concierto");
-          }
-        }}
-        onIrMisGrupos={() => setPantalla("misGrupos")}
-      />
-    )}
+      if (pudoCargar) {
+        setPantalla("concierto");
+      }
+    }}
+    onIrMisGrupos={() => setPantalla("misGrupos")}
+    onNavegar={manejarNavegacion}
+  />
+)}
        {pantalla === "misGrupos" && usuarioActual && (
   <MisGrupos
     usuarioActual={usuarioActual}
@@ -346,7 +360,7 @@ const { data: usuarioCreado, error } = await supabase
         <Home
           usuarioActual={usuarioActual}
           onEntrarConcierto={manejarEntrarConcierto}
-          onNavegar={setPantalla}
+          onNavegar={manejarNavegacion}
         />
       )}
 
@@ -355,7 +369,7 @@ const { data: usuarioCreado, error } = await supabase
           concierto={concierto}
           usuarioActual={usuarioActual}
           onCrearGrupo={() => setPantalla("crearGrupo")}
-          onNavegar={setPantalla}
+          onNavegar={manejarNavegacion}
           onAbrirGrupo={(grupo) => {
             setGrupoSeleccionado(grupo);
             setPantalla("infoGrupo");
