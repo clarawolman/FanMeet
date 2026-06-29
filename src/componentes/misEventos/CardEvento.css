@@ -1,0 +1,147 @@
+.cardEvento {
+    width: 100%;
+
+    background: white;
+
+    border: 1px solid #E6E0F2;
+    border-radius: 20px;
+
+    padding: 12px;
+
+    box-shadow: 0 4px 14px rgba(140, 82, 255, 0.08);
+
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 28px;
+
+    overflow: visible;
+}
+
+/* CONTENEDOR DE IMAGEN */
+.cardEventoImagenContainer {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    margin: 0 auto;
+
+    overflow: visible;
+}
+
+.cardEventoImagen {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center center;
+
+    display: block;
+
+    border-radius: 14px;
+}
+
+.btnIngresarEvento {
+    position: absolute;
+
+    left: 50%;
+    bottom: -24px;
+    transform: translateX(-50%);
+
+    border: none;
+    cursor: pointer;
+
+    padding: 15px 42px;
+
+    border-radius: 999px;
+
+    background: #8C1AFF;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    box-shadow: 0 6px 16px rgba(140, 26, 255, .35);
+
+    z-index: 5;
+}
+.btnIngresarEvento:hover {
+    transform: translateX(-50%) translateY(-2px);
+}
+
+/* INFO */
+.cardEventoInfo {
+    padding: 44px 4px 6px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cardEventoInfo h2 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    color: #202020;
+}
+
+/* INFO DEL EVENTO EN UNA LÍNEA */
+.infoEvento {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+
+    color: #6f6f6f;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.filaInfo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    color: #6f6f6f;
+
+    font-size: 12px;
+}
+
+.filaInfo:not(:last-child)::after {
+    content: "•";
+    margin-left: 6px;
+    color: #6f6f6f;
+}
+
+/* OCULTA LOS EMOJIS PARA QUE QUEDE COMO LA SEGUNDA FOTO */
+.icono {
+    display: none;
+}
+@media (min-width: 768px) {
+    .cardEvento {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .cardEventoImagenContainer {
+        aspect-ratio: 16 / 9;
+    }
+
+    .cardEventoInfo h2 {
+        font-size: 25px;
+    }
+
+    .infoEvento,
+    .filaInfo {
+        font-size: 13px;
+    }
+
+    .btnIngresarEvento {
+        padding: 14px 38px;
+        font-size: 14px;
+    }
+}
