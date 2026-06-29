@@ -1,56 +1,70 @@
 .heroGrupo {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  position: relative;
+  width: 100%;
 }
 
 .heroImageContainer {
   width: 100%;
-  height: 280px;
-
-  border-radius: 24px;
+  height: 220px;
   overflow: hidden;
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  position: relative;
 }
 
 .heroImageContainer img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.heroImageContainer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
 }
 
 .heroGrupo h1 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 16px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-
-  margin: 0;
-
-  font-size: 30px;
-  font-weight: 900;
-
-  color: #111;
+  gap: 4px;
+  z-index: 1;
 }
 
 .heroGrupo h1 span {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  width: fit-content;
+  letter-spacing: 0.01em;
 }
 
-@media (max-width: 850px) {
+@media (min-width: 768px) {
   .heroImageContainer {
-    height: 260px;
-    border-radius: 18px;
-    box-shadow: none;
+    height: 320px;
   }
 
   .heroGrupo h1 {
-    font-size: 16px;
-  }
-
-  .heroGrupo h1 span {
-    font-size: 12px;
+    font-size: 28px;
+    padding: 24px;
   }
 }

@@ -381,6 +381,7 @@ const { data: usuarioCreado, error } = await supabase
           grupo={grupoSeleccionado}
           concierto={concierto}
           usuarioActual={usuarioActual}
+          onNavegar={setPantalla}
           onVolver={() => setPantalla("concierto")}
         />
       )}
