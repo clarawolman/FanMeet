@@ -1,18 +1,4 @@
-/* ============================
-            HEADER
-============================ */
 
-.headerMisEventos {
-  width: 100%;
-  min-height: 72px;
-  background: #ffffff;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 0 20px 16px;
-  border-bottom: 1px solid #e8e4ef;
-  box-shadow: 0 3px 14px rgba(20, 20, 30, 0.04);
-}
 
 .logoFanMeet {
   margin: 0;

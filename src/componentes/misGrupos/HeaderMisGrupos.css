@@ -1,29 +1,88 @@
-.headerMisGrupos {
-  background: #f4f4f4;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 18px 20px;
-
-  border-bottom: 1px solid #e6e6e6;
+.logoFanMeet {
+  margin: 0;
+  color: #811cd9;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
 }
 
-.btnVolver {
+.headerBoton {
   border: none;
   background: none;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
-
-  font-size: 24px;
-  color: #7b2ff7;
+  font-size: 21px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.headerMisGrupos h2 {
+.headerBoton:hover {
+  color: #811cd9;
+}
+
+/* ============================
+        TÍTULO
+============================ */
+
+.barraTituloGrupos {
+  width: 100%;
+  background: #f3f3f6;
+  padding: 18px 20px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+}
+
+.barraTituloGrupos h2 {
   margin: 0;
+  font-size: 21px;
+  font-weight: 720;
+  color: #17171f;
+  letter-spacing: -0.3px;
+}
 
-  font-size: 34px;
-  font-weight: 700;
+.btnMisEventos {
+  border: none;
+  background: none;
+  color: #811cd9;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  padding: 6px 0;
+}
 
-  color: #222;
+.btnMisEventos:hover {
+  opacity: 0.75;
+}
+
+@media (min-width: 768px) {
+  .headerMisGrupos {
+    min-height: 76px;
+    padding-left: calc((100% - 850px) / 2 + 24px);
+    padding-right: calc((100% - 850px) / 2 + 24px);
+    padding-bottom: 18px;
+  }
+
+  .barraTituloGrupos {
+    padding-left: calc((100% - 850px) / 2 + 24px);
+    padding-right: calc((100% - 850px) / 2 + 24px);
+    padding-top: 20px;
+    padding-bottom: 10px;
+  }
+
+  .logoFanMeet {
+    font-size: 23px;
+  }
+
+  .barraTituloGrupos h2 {
+    font-size: 23px;
+  }
+
+  .btnMisEventos {
+    font-size: 14px;
+  }
 }

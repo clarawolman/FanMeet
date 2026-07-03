@@ -7,43 +7,52 @@ import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
 import Footer from "../generales/Footer";
 
-function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver, onNavegar }) {
+function MisGrupos({
+  usuarioActual,
+  onAbrirGrupo,
+  onVolver,
+  onNavegar,
+}) {
   const [misGrupos, setMisGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [errorTexto, setErrorTexto] = useState("");
 
   useEffect(() => {
-    if (usuarioActual) {
+    if (usuarioActual?.id_usuario) {
       cargarMisGrupos();
     }
   }, [usuarioActual]);
 
   async function cargarMisGrupos() {
     setCargando(true);
+    setErrorTexto("");
 
-    // Grupos donde participa el usuario
-    const { data: relaciones } = await supabase
+    const { data: relaciones, error: errorRelaciones } = await supabase
       .from("grupos_usuarios")
       .select("*")
       .eq("id_usuario", usuarioActual.id_usuario);
 
-    if (!relaciones) {
-      setMisGrupos([]);
+    if (errorRelaciones) {
+      console.error("Error cargando relaciones:", errorRelaciones);
+      setErrorTexto("No se pudieron cargar tus grupos.");
       setCargando(false);
       return;
     }
 
     const grupos = [];
 
-    for (const relacion of relaciones) {
-      const { data: grupo } = await supabase
+    for (const relacion of relaciones || []) {
+      const { data: grupo, error: errorGrupo } = await supabase
         .from("grupo")
         .select("*")
         .eq("id_grupo", relacion.id_grupo)
         .maybeSingle();
 
-      if (!grupo) continue;
+      if (errorGrupo || !grupo) {
+        console.error("Error cargando grupo:", errorGrupo);
+        continue;
+      }
 
-      // Usuarios del grupo
       const { data: integrantes } = await supabase
         .from("grupos_usuarios")
         .select("*")
@@ -84,14 +93,22 @@ function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver, onNavegar }) {
       <HeaderMisGrupos onVolver={onVolver} />
 
       <main className="misGruposLayout">
-
         {cargando && (
+          <p className="mensajeMisGrupos">Cargando grupos...</p>
+        )}
+
+        {!cargando && errorTexto && (
+          <p className="mensajeMisGrupos">{errorTexto}</p>
+        )}
+
+        {!cargando && !errorTexto && misGrupos.length === 0 && (
           <p className="mensajeMisGrupos">
-            Cargando grupos...
+            Todavía no participás en ningún grupo.
           </p>
         )}
 
         {!cargando &&
+          !errorTexto &&
           misGrupos.map((grupo) => (
             <CardGrupo
               key={grupo.id_grupo}
@@ -99,15 +116,9 @@ function MisGrupos({ usuarioActual, onAbrirGrupo, onVolver, onNavegar }) {
               onAbrirGrupo={onAbrirGrupo}
             />
           ))}
-
-        {!cargando && misGrupos.length === 0 && (
-          <p className="mensajeMisGrupos">
-            Todavía no participás en ningún grupo.
-          </p>
-        )}
       </main>
 
-      <Footer onNavegar={onNavegar} />    
+      <Footer onNavegar={onNavegar} pantallaActiva="misGrupos" />
     </div>
   );
 }

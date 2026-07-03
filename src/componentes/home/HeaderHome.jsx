@@ -1,4 +1,5 @@
 import "./HeaderHome.css";
+import ".home/HeaderMisEventos.css"
 
 function HeaderHome({ usuarioActual }) {
   return (

@@ -3,13 +3,12 @@ import "./HeaderMisEventos.css";
 function HeaderMisEventos({ onIrMisGrupos }) {
   return (
     <>
-      <header className="headerMisEventos">
-
-           <div className="home-header-icons">
+    <header className="home-header">
+      <div className="home-header-icons">
         <p className="home-eyebrow">FanMeet</p>
       </div>
 
-      </header>
+    </header>
 
       <section className="barraTituloEventos">
         <h2>Tus eventos</h2>

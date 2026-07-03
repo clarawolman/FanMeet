@@ -367,9 +367,10 @@
 }
 
 /* BUSCADOR más visible */
+/* BUSCADOR más grande y más legible */
 .home-search {
   width: 100%;
-  padding: 8px 16px 18px;
+  padding: 10px 16px 20px;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -384,22 +385,24 @@
 
 .home-search input {
   width: 100%;
-  max-width: 360px;
-  height: 42px;
+  max-width: 390px;
+  height: 48px;
   box-sizing: border-box;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid #e7e2f3;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1.5px solid #ded6ef;
   background: #ffffff;
-  color: #1a1a1a;
-  font-size: 13px;
-  font-weight: 500;
+  color: #17171f;
+  font-size: 15px;
+  font-weight: 600;
   outline: none;
-  box-shadow: none;
+  box-shadow: 0 4px 14px rgba(20, 20, 30, 0.04);
 }
 
 .home-search input::placeholder {
-  color: #9e9e9e;
+  color: #6f6f78;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .home-search input:focus {
