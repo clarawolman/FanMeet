@@ -1,151 +1,127 @@
 .cardEvento {
-    width: 100%;
-
-    background: white;
-
-    border: 1px solid #E6E0F2;
-    border-radius: 20px;
-
-    padding: 12px;
-
-    box-shadow: 0 4px 14px rgba(140, 82, 255, 0.08);
-
-    display: flex;
-    flex-direction: column;
-
-    margin-bottom: 28px;
-
-    overflow: visible;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e7e1f0;
+  border-radius: 11px;
+  padding: 10px;
+  box-shadow: 0 4px 16px rgba(40, 35, 55, 0.06);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  overflow: visible;
 }
 
 /* CONTENEDOR DE IMAGEN */
 .cardEventoImagenContainer {
-    position: relative;
-
-    width: 100%;
-    height: 230px;
-    min-height: 230px;
-    max-height: 230px;
-
-    margin: 0 auto;
-
-    overflow: visible;
+  position: relative;
+  width: 100%;
+  height: 210px;
+  min-height: 210px;
+  max-height: 210px;
+  margin: 0 auto;
+  overflow: visible;
 }
 
 .cardEventoImagen {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    object-position: center center;
-
-    display: block;
-
-    border-radius: 14px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  border-radius: 10px;
 }
 
 .btnIngresarEvento {
-    position: absolute;
-
-    left: 50%;
-    bottom: -24px;
-    transform: translateX(-50%);
-
-    border: none;
-    cursor: pointer;
-
-    padding: 15px 42px;
-
-    border-radius: 999px;
-
-    background: #8C1AFF;
-    color: white;
-
-    font-size: 15px;
-    font-weight: 800;
-
-    box-shadow: 0 6px 16px rgba(140, 26, 255, .35);
-
-    z-index: 5;
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
+  border: none;
+  cursor: pointer;
+  padding: 12px 34px;
+  border-radius: 15px;
+  background: #811cd9;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 650;
+  box-shadow: 0 5px 12px rgba(129, 28, 217, 0.22);
+  z-index: 5;
 }
+
 .btnIngresarEvento:hover {
-    transform: translateX(-50%) translateY(-2px);
+  transform: translateX(-50%) translateY(-1px);
 }
 
 /* INFO */
 .cardEventoInfo {
-    padding: 44px 4px 6px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  padding: 34px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .cardEventoInfo h2 {
-    margin: 0;
-
-    font-size: 24px;
-    font-weight: 800;
-
-    color: #202020;
+  margin: 0;
+  font-size: 21px;
+  font-weight: 650;
+  color: #17171f;
+  letter-spacing: -0.4px;
+  line-height: 1.12;
 }
 
 /* INFO DEL EVENTO EN UNA LÍNEA */
 .infoEvento {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-
-    color: #6f6f6f;
-
-    font-size: 12px;
-    font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  color: #6f6f78;
+  font-size: 12px;
+  font-weight: 450;
 }
 
 .filaInfo {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    color: #6f6f6f;
-
-    font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6f6f78;
+  font-size: 12px;
+  font-weight: 450;
 }
 
 .filaInfo:not(:last-child)::after {
-    content: "•";
-    margin-left: 6px;
-    color: #6f6f6f;
+  content: "•";
+  margin-left: 6px;
+  color: #777782;
 }
 
-/* OCULTA LOS EMOJIS PARA QUE QUEDE COMO LA SEGUNDA FOTO */
 .icono {
-    display: none;
+  display: none;
 }
+
 @media (min-width: 768px) {
-    .cardEvento {
-        width: 100%;
-        margin-bottom: 0;
-    }
+  .cardEvento {
+    width: 100%;
+    margin-bottom: 0;
+  }
 
-    .cardEventoImagenContainer {
-        height: 260px;
-        min-height: 260px;
-        max-height: 260px;
-    }
+  .cardEventoImagenContainer {
+    height: 225px;
+    min-height: 225px;
+    max-height: 225px;
+  }
 
-    .cardEventoInfo h2 {
-        font-size: 25px;
-    }
+  .cardEventoInfo h2 {
+    font-size: 22px;
+  }
 
-    .infoEvento,
-    .filaInfo {
-        font-size: 13px;
-    }
+  .infoEvento,
+  .filaInfo {
+    font-size: 13px;
+  }
 
-    .btnIngresarEvento {
-        padding: 14px 38px;
-        font-size: 14px;
-    }
+  .btnIngresarEvento {
+    padding: 12px 32px;
+    font-size: 14px;
+  }
 }

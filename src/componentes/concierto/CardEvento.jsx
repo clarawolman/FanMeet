@@ -12,7 +12,7 @@ function formatearFecha(fecha) {
 
   if (isNaN(dia.getTime())) return fecha;
 
-  return `${[dia.getMonth()]} de ${MESES[dia.getDate()]} de ${dia.getFullYear()}`;
+  return `${[dia.getDate()]} de ${MESES[dia.getMonth()]} de ${dia.getFullYear()}`;
 }
 
 function CardEvento({concierto}) {

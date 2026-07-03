@@ -326,3 +326,105 @@
     margin-top: 52px !important;
   }
 }
+/* ============================
+   DESKTOP REGISTRO 2
+============================ */
+
+@media (min-width: 900px) {
+  .pantallaRegistro2 {
+    min-height: 100vh;
+    padding: 40px 24px;
+    justify-content: center;
+    background:
+      radial-gradient(circle at top left, rgba(143, 92, 255, 0.16), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(255, 90, 166, 0.14), transparent 34%),
+      #f6f6f8;
+  }
+
+  .registro2Header {
+    max-width: 860px;
+    height: 74px;
+    padding: 0 36px;
+    border-radius: 28px 28px 0 0;
+    border-bottom: 1px solid #ececf1;
+    box-shadow: 0 16px 42px rgba(35, 25, 55, 0.08);
+  }
+
+  .registro2Logo {
+    font-size: 22px;
+  }
+
+  .registro2Contenido {
+    max-width: 860px;
+    background: #ffffff;
+    padding: 34px 42px 40px;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 24px 55px rgba(35, 25, 55, 0.1);
+
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    column-gap: 48px;
+    align-items: center;
+  }
+
+  .registro2ProgresoInfo,
+  .registro2Barra,
+  .registro2Titulo {
+    grid-column: 1 / -1;
+  }
+
+  .registro2Barra {
+    margin-bottom: 32px;
+  }
+
+  .registro2Titulo {
+    margin-bottom: 26px;
+    font-size: 34px;
+    text-align: left;
+  }
+
+  .registro2FotoWrapper {
+    grid-column: 1;
+    width: 190px;
+    height: 190px;
+    margin: 0 auto 18px;
+  }
+
+  .registro2Foto {
+    width: 190px;
+    height: 190px;
+  }
+
+  .registro2TextoOpcional {
+    grid-column: 1;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .registro2Opciones,
+  .registro2Camara {
+    grid-column: 2;
+    grid-row: 4 / span 2;
+    max-width: 360px;
+    width: 100%;
+    justify-self: center;
+  }
+
+  .registro2Opcion {
+    height: 68px;
+    border-radius: 14px;
+  }
+
+  .registro2Error {
+    grid-column: 1 / -1;
+    margin: 18px 0 0;
+  }
+
+  .registro2BotonSiguiente {
+    grid-column: 2;
+    width: 320px !important;
+    justify-self: center;
+    margin-top: 26px !important;
+  }
+}

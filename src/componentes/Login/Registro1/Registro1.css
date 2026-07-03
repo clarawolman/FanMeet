@@ -248,3 +248,76 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+/* ============================
+   DESKTOP REGISTRO 1
+============================ */
+
+@media (min-width: 900px) {
+  .pantallaRegistro1 {
+    min-height: 100vh;
+    padding: 40px 24px;
+    justify-content: center;
+    background:
+      radial-gradient(circle at top left, rgba(143, 92, 255, 0.16), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(255, 90, 166, 0.14), transparent 34%),
+      #f6f6f8;
+  }
+
+  .registroHeader {
+    max-width: 860px;
+    height: 74px;
+    padding: 0 36px;
+    border-radius: 28px 28px 0 0;
+    border-bottom: 1px solid #ececf1;
+    box-shadow: 0 16px 42px rgba(35, 25, 55, 0.08);
+  }
+
+  .registroLogo {
+    font-size: 22px;
+  }
+
+  .registroContenido {
+    max-width: 860px;
+    background: #ffffff;
+    padding: 34px 42px 40px;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 24px 55px rgba(35, 25, 55, 0.1);
+  }
+
+  .registroBarra {
+    margin-bottom: 32px;
+  }
+
+  .registroTitulo {
+    margin-bottom: 26px;
+    font-size: 34px;
+    text-align: left;
+  }
+
+  .registroFormulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 22px;
+    row-gap: 16px;
+  }
+
+  .registroCampo {
+    margin-bottom: 0;
+  }
+
+  .registroCampo:nth-of-type(3) {
+    grid-column: 1 / -1;
+  }
+
+  .registroError {
+    grid-column: 1 / -1;
+    margin: 4px 0 0;
+  }
+
+  .registroBotonSiguiente {
+    grid-column: 1 / -1;
+    width: 320px !important;
+    justify-self: end;
+    margin-top: 18px !important;
+  }
+}
