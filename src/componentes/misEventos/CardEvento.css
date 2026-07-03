@@ -23,7 +23,9 @@
     position: relative;
 
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 230px;
+    min-height: 230px;
+    max-height: 230px;
 
     margin: 0 auto;
 
@@ -128,7 +130,9 @@
     }
 
     .cardEventoImagenContainer {
-        aspect-ratio: 16 / 9;
+        height: 260px;
+        min-height: 260px;
+        max-height: 260px;
     }
 
     .cardEventoInfo h2 {
