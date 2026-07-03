@@ -62,7 +62,7 @@ function LoginForm({ onIngresar, onRegistrarse }) {
       const { data: usuarioPerfil, error: errorPerfil } = await supabase
         .from("usuario")
         .select("*")
-        .eq("auth_id", authData.user.id)
+        .eq("id_usuario", authData.user.id)
         .single();
 
       if (errorPerfil || !usuarioPerfil) {

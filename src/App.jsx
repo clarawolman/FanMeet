@@ -261,7 +261,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     .from("usuario")
     .insert([
       {
-        auth_id: authData.user.id,
+        id_usuario: authData.user.id,
         nombre: datosFinales.nombre,
         mail: datosFinales.mail,
         fechanac: datosFinales.fechanac,

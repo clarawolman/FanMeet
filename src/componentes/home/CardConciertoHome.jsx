@@ -2,8 +2,8 @@ import "./CardConciertoHome.css";
 
 function CardConciertoHome({ concierto, onAbrir }) {
   return (
-    <article className="home-card" onClick={onAbrir}>
-      <div className="home-card-imagen">
+    <article className="card-concierto-home" onClick={onAbrir}>
+      <div className="card-concierto-home-imagen">
         <img
           src={
             concierto.imagen ||
@@ -14,7 +14,7 @@ function CardConciertoHome({ concierto, onAbrir }) {
           alt={concierto.nombre || concierto.artista?.nombre}
         />
         <button
-          className="home-card-btn-unirme"
+          className="card-concierto-home-btn-unirme"
           onClick={(e) => {
             e.stopPropagation();
             onAbrir();
@@ -24,9 +24,9 @@ function CardConciertoHome({ concierto, onAbrir }) {
         </button>
       </div>
 
-      <div className="home-card-info">
+      <div className="card-concierto-home-info">
         <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
-        <div className="home-card-meta">
+        <div className="card-concierto-home-meta">
           <span>
             {concierto.estadio?.nombre ||
               concierto.estadio?.ciudad ||

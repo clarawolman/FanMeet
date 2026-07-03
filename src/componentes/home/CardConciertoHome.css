@@ -1,7 +1,7 @@
-.home-card {
+.card-concierto-home {
   display: flex;
   flex-direction: column;
-  margin-bottom: 24px;
+  width: 100%;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -9,57 +9,64 @@
   text-align: left;
 }
 
-.home-card-imagen {
+/* Todas las imágenes quedan EXACTAMENTE con la misma caja */
+.card-concierto-home-imagen {
   position: relative;
   width: 100%;
+  height: 260px;
+  min-height: 260px;
+  max-height: 260px;
   border-radius: 16px;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  background: #f2f2f2;
+  flex-shrink: 0;
 }
 
-.home-card-imagen img {
+.card-concierto-home-imagen img {
   width: 100%;
   height: 100%;
+  min-height: 100%;
+  max-height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
-
-.home-card-btn-unirme {
+.card-concierto-home-btn-unirme {
   position: absolute;
-  bottom: 14px;
+  bottom: 12px; /* aseguramos que el botón quede visible dentro del recorte */
   left: 50%;
   transform: translateX(-50%);
   background: #6c48c5;
   color: #ffffff;
   border: none;
   border-radius: 50px;
-  padding: 11px 36px;
+  padding: 10px 28px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 4px 16px rgba(108, 72, 197, 0.4);
   transition: background 0.15s, transform 0.12s;
-  z-index: 1;
+  z-index: 2;
 }
 
-.home-card-btn-unirme:hover {
+.card-concierto-home-btn-unirme:hover {
   background: #5a3aad;
 }
 
-.home-card-btn-unirme:active {
+.card-concierto-home-btn-unirme:active {
   transform: translateX(-50%) scale(0.97);
 }
 
-.home-card-info {
+.card-concierto-home-info {
   padding: 10px 4px 0;
 }
 
-.home-card-info p {
+.card-concierto-home-info p {
   display: none;
 }
 
-.home-card-info h3 {
+.card-concierto-home-info h3 {
   margin: 0 0 3px;
   font-size: 15px;
   font-weight: 700;
@@ -67,14 +74,27 @@
   line-height: 1.2;
 }
 
-.home-card-meta {
+.card-concierto-home-meta {
   display: flex;
   gap: 4px;
   font-size: 12px;
   color: #888888;
 }
 
-.home-card-meta span:first-child::after {
+.card-concierto-home-meta span:first-child::after {
   content: " •";
   margin-right: 2px;
+}
+
+/* Ajustes responsivos: pequeño: imagen más alta, grande: menos alto */
+@media (max-width: 767px) {
+  .card-concierto-home-imagen {
+    height: 320px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-concierto-home-imagen {
+    height: 240px;
+  }
 }

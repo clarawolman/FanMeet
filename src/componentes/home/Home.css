@@ -446,6 +446,9 @@
   padding: 0 20px 8px !important;
   gap: 16px !important;
 }
+.home-card-btn-unirme--ver {
+  min-width: 140px;
+}
 
 /* CELULAR: cards verticales */
 @media (max-width: 767px) {
@@ -457,17 +460,16 @@
 
   .home-card-imagen {
     width: 100% !important;
-    height: 255px !important;
-    aspect-ratio: auto !important;
+    aspect-ratio: 2 / 3 !important;
     border-radius: 10px !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     background: #ffffff !important;
   }
 
   .home-card-imagen img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
     object-position: center !important;
     border-radius: 10px !important;
     background: #ffffff !important;

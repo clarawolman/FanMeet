@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
+import OverlayCodigo from "./OverlayCodigo";
 import { supabase } from "../../supabase";
 import Footer from "../generales/Footer";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
+  const [conciertosUnidos, setConciertosUnidos] = useState([]);
   const [conciertoSeleccionado, setConciertoSeleccionado] = useState(null);
   const [codigoIngresado, setCodigoIngresado] = useState("");
   const [errorCodigo, setErrorCodigo] = useState("");
@@ -14,19 +16,27 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const CODIGO_PRUEBA = "FANMEET2026";
 
   const generos = [
-    { id: "1", nombre: "Pop"},
-    { id: "2", nombre: "Rock"},
-    { id: "3", nombre: "Urbano"},
-    { id: "4", nombre: "Indie"},
+    { id: "1", nombre: "Pop" },
+    { id: "2", nombre: "Rock" },
+    { id: "3", nombre: "Urbano" },
+    { id: "4", nombre: "Indie" },
   ];
 
   useEffect(() => {
-    cargarConciertos();
-  }, []);
+    if (usuarioActual?.id_usuario) {
+      cargarDatosHome();
+    }
+  }, [usuarioActual]);
 
-  async function cargarConciertos() {
+  async function cargarDatosHome() {
     setCargando(true);
 
+    await Promise.all([cargarConciertos(), cargarConciertosDelUsuario()]);
+
+    setCargando(false);
+  }
+
+  async function cargarConciertos() {
     const { data, error } = await supabase
       .from("concierto")
       .select(`
@@ -38,14 +48,32 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
     if (error) {
       console.error("Error cargando conciertos:", error);
       setConciertos([]);
-      setCargando(false);
       return;
     }
 
     setConciertos(data || []);
-    setCargando(false);
   }
-  
+
+  async function cargarConciertosDelUsuario() {
+    const { data, error } = await supabase
+      .from("usuarios_conciertos")
+      .select("id_concierto")
+      .eq("id_usuario", usuarioActual.id_usuario);
+
+    if (error) {
+      console.error("Error cargando conciertos del usuario:", error);
+      setConciertosUnidos([]);
+      return;
+    }
+
+    setConciertosUnidos((data || []).map((item) => item.id_concierto));
+  }
+
+  function usuarioYaEstaUnido(idConcierto) {
+    return conciertosUnidos.some(
+      (id) => String(id) === String(idConcierto)
+    );
+  }
 
   const conciertosBuscados = conciertos.filter((concierto) => {
     const texto = busqueda.toLowerCase();
@@ -71,28 +99,15 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
     );
   }
 
-  async function abrirOverlay(concierto) {
-    setErrorCodigo("");
-
-    const { data, error } = await supabase
-      .from("usuarios_conciertos")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_concierto", concierto.id_concierto)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error verificando acceso:", error);
-      return;
-    }
-
-    if (data) {
+  async function abrirConcierto(concierto) {
+    if (usuarioYaEstaUnido(concierto.id_concierto)) {
       await onEntrarConcierto(concierto.id_concierto);
       return;
     }
 
-    setConciertoSeleccionado(concierto);
+    setErrorCodigo("");
     setCodigoIngresado("");
+    setConciertoSeleccionado(concierto);
   }
 
   function cerrarOverlay() {
@@ -102,45 +117,80 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   }
 
   async function validarCodigo() {
+    if (!conciertoSeleccionado) return;
+
     if (codigoIngresado.trim() !== CODIGO_PRUEBA) {
       setErrorCodigo("Código incorrecto.");
       return;
     }
 
-    const { error } = await supabase.from("usuarios_conciertos").insert([
-      {
-        id_usuario: usuarioActual.id_usuario,
-        id_concierto: conciertoSeleccionado.id_concierto,
-      },
-    ]);
+    const idConcierto = conciertoSeleccionado.id_concierto;
 
-    if (error) {
-      console.error("Error guardando acceso:", error);
-      setErrorCodigo("Error guardando acceso: " + error.message);
+    const { data: relacionExistente, error: errorConsulta } = await supabase
+      .from("usuarios_conciertos")
+      .select("*")
+      .eq("id_usuario", usuarioActual.id_usuario)
+      .eq("id_concierto", idConcierto)
+      .maybeSingle();
+
+    if (errorConsulta) {
+      console.error("Error verificando acceso:", errorConsulta);
+      setErrorCodigo("Error verificando acceso.");
       return;
     }
 
-    await onEntrarConcierto(conciertoSeleccionado.id_concierto);
+    if (!relacionExistente) {
+      const { error: errorInsert } = await supabase
+        .from("usuarios_conciertos")
+        .insert([
+          {
+            id_usuario: usuarioActual.id_usuario,
+            id_concierto: idConcierto,
+          },
+        ]);
+
+      if (errorInsert) {
+        console.error("Error guardando acceso:", errorInsert);
+        setErrorCodigo("Error guardando acceso: " + errorInsert.message);
+        return;
+      }
+    }
+
+    setConciertosUnidos((anteriores) => {
+      const yaExiste = anteriores.some(
+        (id) => String(id) === String(idConcierto)
+      );
+
+      if (yaExiste) return anteriores;
+
+      return [...anteriores, idConcierto];
+    });
+
+    cerrarOverlay();
+    await onEntrarConcierto(idConcierto);
   }
-  
-function formatearFecha(fecha) {
-  if (!fecha) return "Fecha a confirmar";
 
-  const fechaTexto = String(fecha);
-  const soloFecha = fechaTexto.split("T")[0];
-  const partes = soloFecha.split("-");
+  function formatearFecha(fecha) {
+    if (!fecha) return "Fecha a confirmar";
 
-  if (partes.length !== 3) return fechaTexto;
+    const fechaTexto = String(fecha);
+    const soloFecha = fechaTexto.split("T")[0];
+    const partes = soloFecha.split("-");
 
-  const [anio, mes, dia] = partes;
-  return `${dia}/${mes}/${anio.slice(2)}`;
-}
+    if (partes.length !== 3) return fechaTexto;
+
+    const [anio, mes, dia] = partes;
+    return `${dia}/${mes}/${anio.slice(2)}`;
+  }
+
   function renderCard(concierto) {
+    const yaUnido = usuarioYaEstaUnido(concierto.id_concierto);
+
     return (
       <article
         className="home-card"
         key={concierto.id_concierto}
-        onClick={() => abrirOverlay(concierto)}
+        onClick={() => abrirConcierto(concierto)}
       >
         <div className="home-card-imagen">
           <img
@@ -154,13 +204,17 @@ function formatearFecha(fecha) {
           />
 
           <button
-            className="home-card-btn-unirme"
+            className={
+              yaUnido
+                ? "home-card-btn-unirme home-card-btn-unirme--ver"
+                : "home-card-btn-unirme"
+            }
             onClick={(e) => {
               e.stopPropagation();
-              abrirOverlay(concierto);
+              abrirConcierto(concierto);
             }}
           >
-            Unirme
+            {yaUnido ? "Ver concierto" : "Unirme"}
           </button>
         </div>
 
@@ -225,12 +279,14 @@ function formatearFecha(fecha) {
           <section className="home-catalogo">
             <section className="home-row">
               <div className="home-row-header">
-                <h2> Destacados</h2>
+                <h2>Destacados</h2>
                 <span>Todos</span>
               </div>
 
               <div className="home-row-scroll">
-                {conciertos.slice(0, 10).map((concierto) => renderCard(concierto))}
+                {conciertos
+                  .slice(0, 10)
+                  .map((concierto) => renderCard(concierto))}
               </div>
             </section>
 
@@ -242,9 +298,7 @@ function formatearFecha(fecha) {
               return (
                 <section className="home-row" key={genero.id}>
                   <div className="home-row-header">
-                    <h2>
-                      {genero.emoji} {genero.nombre}
-                    </h2>
+                    <h2>{genero.nombre}</h2>
                     <span>{conciertosDelGenero.length}</span>
                   </div>
 
@@ -261,41 +315,22 @@ function formatearFecha(fecha) {
       </main>
 
       {conciertoSeleccionado && (
-        <div className="home-overlay">
-          <div className="home-modal">
-            <button className="home-modal-cerrar" onClick={cerrarOverlay}>
-              ×
-            </button>
+        <OverlayCodigo
+          conciertoSeleccionado={conciertoSeleccionado}
+          codigoIngresado={codigoIngresado}
+          errorCodigo={errorCodigo}
+          onCambiarCodigo={(valor) => {
+            setCodigoIngresado(valor);
+            setErrorCodigo("");
+          }}
+          onCerrar={cerrarOverlay}
+          onValidar={validarCodigo}
+        />
+      )}
 
-            <p className="home-modal-eyebrow">Acceso al evento</p>
-            <h2>{conciertoSeleccionado.nombre}</h2>
-            <span>
-              Ingresá el código que recibiste con tu entrada para desbloquear la
-              comunidad del concierto.
-            </span>
-
-            <input
-              type="text"
-              value={codigoIngresado}
-              onChange={(e) => {
-                setCodigoIngresado(e.target.value);
-                setErrorCodigo("");
-              }}
-              placeholder="Código de acceso"
-            />
-
-            {errorCodigo && <p className="home-error">{errorCodigo}</p>}
-
-            <button className="home-btn-principal" onClick={validarCodigo}>
-              Entrar al concierto
-            </button>
-          </div>
-        </div>
-      )}          
-     <Footer onNavegar={onNavegar} pantallaActiva="home" />    
+      <Footer onNavegar={onNavegar} pantallaActiva="home" />
     </div>
   );
 }
-
 
 export default Home;
