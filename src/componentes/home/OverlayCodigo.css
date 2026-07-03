@@ -116,3 +116,20 @@
 .home-btn-principal:hover {
   background: #5a3aad;
 }
+/* CELULAR / TABLET CHICA: modal centrado y más angosto */
+@media (max-width: 767px) {
+  .home-overlay {
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    box-sizing: border-box;
+  }
+
+  .home-modal {
+    width: 100%;
+    max-width: 340px;
+    border-radius: 22px;
+    padding: 30px 22px 26px;
+    box-sizing: border-box;
+  }
+}

@@ -4,11 +4,11 @@ function HeaderMisEventos({ onIrMisGrupos }) {
   return (
     <>
       <header className="headerMisEventos">
-        <button className="headerBoton">☰</button>
 
-        <h1 className="logoFanMeet">FanMeet</h1>
+           <div className="home-header-icons">
+        <p className="home-eyebrow">FanMeet</p>
+      </div>
 
-        <button className="headerBoton">🔔</button>
       </header>
 
       <section className="barraTituloEventos">
