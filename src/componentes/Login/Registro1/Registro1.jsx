@@ -155,7 +155,9 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           autoComplete="off"
         >
           <label className="registroCampo">
-            <span>Nombre de usuario</span>
+            <span>
+              Nombre de usuario <span className="registroObligatorio">*</span>
+            </span>
 
             <div className="registroInputWrapper">
               <span className="registroIcono">♙</span>
@@ -172,7 +174,9 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           </label>
 
           <label className="registroCampo">
-            <span>Mail</span>
+            <span>
+              Mail <span className="registroObligatorio">*</span>
+            </span>
 
             <div className="registroInputWrapper">
               <span className="registroIcono">@</span>
@@ -189,7 +193,9 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           </label>
 
           <label className="registroCampo">
-            <span>Contraseña</span>
+            <span>
+              Contraseña <span className="registroObligatorio">*</span>
+            </span>
 
             <div className="registroInputWrapper registroPasswordWrapper">
               <span className="registroIcono">◉</span>
@@ -244,7 +250,9 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           </label>
 
           <label className="registroCampo">
-            <span>Fecha de nacimiento</span>
+            <span>
+              Fecha de nacimiento <span className="registroObligatorio">*</span>
+            </span>
 
             <div className="registroInputWrapper">
               <span className="registroIcono">▣</span>
@@ -260,7 +268,9 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           </label>
 
           <label className="registroCampo">
-            <span>Género</span>
+            <span>
+              Género <span className="registroObligatorio">*</span>
+            </span>
 
             <div className="registroInputWrapper registroSelectWrapper">
               <span className="registroIcono">♁</span>

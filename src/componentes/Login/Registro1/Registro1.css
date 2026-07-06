@@ -101,6 +101,12 @@
   color: #05050f;
 }
 
+.registroObligatorio {
+  color: #ff2f7d;
+  font-weight: 900;
+  margin-left: 3px;
+}
+
 .registroInputWrapper {
   width: 100%;
   height: 54px;
