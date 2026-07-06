@@ -4,7 +4,6 @@ import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
 import Home from "./componentes/home/Home";
-//import Footer from "./generales/Footer";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
@@ -24,8 +23,18 @@ function App() {
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
-  
-  
+
+  function guardarDatosRegistro(datosNuevos) {
+    setDatosRegistro((datosAnteriores) => ({
+      ...datosAnteriores,
+      ...datosNuevos,
+    }));
+  }
+
+  function salirDelRegistro() {
+    setDatosRegistro({});
+    setPantalla("login");
+  }
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -34,7 +43,7 @@ function App() {
     const { data: conciertoData, error: errorConcierto } = await supabase
       .from("concierto")
       .select("*")
-      .eq("id_concierto", idConcierto)      
+      .eq("id_concierto", idConcierto)
       .maybeSingle();
 
     if (errorConcierto) {
@@ -44,9 +53,7 @@ function App() {
     }
 
     if (!conciertoData) {
-      setErrorTexto(
-        "No existe el concierto con id " + idConcierto
-      );
+      setErrorTexto("No existe el concierto con id " + idConcierto);
       setCargando(false);
       return false;
     }
@@ -174,15 +181,6 @@ function App() {
     return true;
   }
 
-  /*async function manejarIngreso(usuario) {
-    setUsuarioActual(usuario);
-
-    const pudoCargar = await cargarDatos(usuario.id_usuario);
-
-    if (pudoCargar) {
-      setPantalla("misEventos");
-    }
-  }*/
   async function manejarIngreso(usuario) {
     setUsuarioActual(usuario);
     setConcierto(null);
@@ -192,16 +190,16 @@ function App() {
   }
 
   function manejarNavegacion(destino) {
-  if (destino === "home") {
-    setConcierto(null);
-    setGrupoSeleccionado(null);
-    setErrorTexto("");
-    setPantalla("home");
-    return;
-  }
+    if (destino === "home") {
+      setConcierto(null);
+      setGrupoSeleccionado(null);
+      setErrorTexto("");
+      setPantalla("home");
+      return;
+    }
 
-  setPantalla(destino);
-}
+    setPantalla(destino);
+  }
 
   async function manejarEntrarConcierto(idConcierto) {
     const pudoCargar = await cargarConciertoPorId(idConcierto);
@@ -217,73 +215,75 @@ function App() {
   }
 
   function manejarRegistro1(datosPaso1) {
-    setDatosRegistro((datosAnteriores) => ({
-      ...datosAnteriores,
-      ...datosPaso1,
-    }));
-
+    guardarDatosRegistro(datosPaso1);
     setPantalla("registro2");
   }
 
   function manejarRegistro2(datosPaso2) {
-    setDatosRegistro((datosAnteriores) => ({
-      ...datosAnteriores,
-      ...datosPaso2,
-    }));
-
+    guardarDatosRegistro(datosPaso2);
     setPantalla("registro3");
   }
 
-async function manejarFinalizarRegistro(datosPaso3) {
-  setCargando(true);
-  setErrorTexto("");
-
-  const datosFinales = {
-    ...datosRegistro,
-    ...datosPaso3,
-  };
-
-  const fotoDefault =
-    "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
-
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: datosFinales.mail,
-    password: datosFinales.contrasena,
-  });
-
-  if (authError) {
-    setErrorTexto("Error al crear usuario en Auth: " + authError.message);
-    setCargando(false);
-    return;
+  function volverDeRegistro2ARegistro1(datosPaso2) {
+    guardarDatosRegistro(datosPaso2);
+    setPantalla("registro1");
   }
 
-  const { data: usuarioCreado, error } = await supabase
-    .from("usuario")
-    .insert([
-      {
-        id_usuario: authData.user.id,
-        nombre: datosFinales.nombre,
-        mail: datosFinales.mail,
-        fechanac: datosFinales.fechanac,
-        genero: datosFinales.genero,
-        fotoperfil: datosFinales.previewFoto || fotoDefault,
-        estilo_asistencia: datosFinales.estilo_asistencia,
-      },
-    ])
-    .select()
-    .single();
-
-  if (error) {
-    setErrorTexto("Error al registrar usuario: " + error.message);
-    setCargando(false);
-    return;
+  function volverDeRegistro3ARegistro2(datosPaso3) {
+    guardarDatosRegistro(datosPaso3);
+    setPantalla("registro2");
   }
 
-  setUsuarioActual(usuarioCreado);
-  setDatosRegistro({});
-  setCargando(false);
-  setPantalla("login");
-}
+  async function manejarFinalizarRegistro(datosPaso3) {
+    setCargando(true);
+    setErrorTexto("");
+
+    const datosFinales = {
+      ...datosRegistro,
+      ...datosPaso3,
+    };
+
+    const fotoDefault =
+      "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: datosFinales.mail,
+      password: datosFinales.contrasena,
+    });
+
+    if (authError) {
+      setErrorTexto("Error al crear usuario en Auth: " + authError.message);
+      setCargando(false);
+      return;
+    }
+
+    const { data: usuarioCreado, error } = await supabase
+      .from("usuario")
+      .insert([
+        {
+          id_usuario: authData.user.id,
+          nombre: datosFinales.nombre,
+          mail: datosFinales.mail,
+          fechanac: datosFinales.fechanac,
+          genero: datosFinales.genero,
+          fotoperfil: datosFinales.previewFoto || fotoDefault,
+          estilo_asistencia: datosFinales.estilo_asistencia,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      setErrorTexto("Error al registrar usuario: " + error.message);
+      setCargando(false);
+      return;
+    }
+
+    setUsuarioActual(usuarioCreado);
+    setDatosRegistro({});
+    setCargando(false);
+    setPantalla("login");
+  }
 
   const esPantallaLogin =
     pantalla === "login" ||
@@ -292,7 +292,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla === "registro3";
 
   if (!esPantallaLogin && pantalla !== "home" && cargando) {
-  return <p style={{ padding: 20 }}>Cargando concierto...</p>;
+    return <p style={{ padding: 20 }}>Cargando concierto...</p>;
   }
 
   if (
@@ -322,50 +322,55 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
       {pantalla === "registro1" && (
         <Registro1
-          onVolver={() => setPantalla("login")}
+          datosIniciales={datosRegistro}
+          onVolver={salirDelRegistro}
           onSiguiente={manejarRegistro1}
         />
       )}
 
       {pantalla === "registro2" && (
         <Registro2
-          onVolver={() => setPantalla("registro1")}
+          datosIniciales={datosRegistro}
+          onVolver={volverDeRegistro2ARegistro1}
           onSiguiente={manejarRegistro2}
         />
       )}
 
       {pantalla === "registro3" && (
         <Registro3
-          onVolver={() => setPantalla("registro2")}
+          datosIniciales={datosRegistro}
+          onVolver={volverDeRegistro3ARegistro2}
           onFinalizar={manejarFinalizarRegistro}
         />
       )}
-     {pantalla === "misEventos" && usuarioActual && (
-  <MisEventos
-    usuarioActual={usuarioActual}
-    onIngresar={async (evento) => {
-      const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
 
-      if (pudoCargar) {
-        setPantalla("concierto");
-      }
-    }}
-    onIrMisGrupos={() => setPantalla("misGrupos")}
-    onNavegar={manejarNavegacion}
-  />
-)}
-       {pantalla === "misGrupos" && usuarioActual && (
-  <MisGrupos
-    usuarioActual={usuarioActual}
-    onVolver={() => setPantalla("misEventos")}
-    onNavegar={setPantalla}
-    onAbrirGrupo={(grupo) => {
-      setGrupoSeleccionado(grupo);
-      setPantalla("infoGrupo");
-    }}
-  />
-)}
-      
+      {pantalla === "misEventos" && usuarioActual && (
+        <MisEventos
+          usuarioActual={usuarioActual}
+          onIngresar={async (evento) => {
+            const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
+
+            if (pudoCargar) {
+              setPantalla("concierto");
+            }
+          }}
+          onIrMisGrupos={() => setPantalla("misGrupos")}
+          onNavegar={manejarNavegacion}
+        />
+      )}
+
+      {pantalla === "misGrupos" && usuarioActual && (
+        <MisGrupos
+          usuarioActual={usuarioActual}
+          onVolver={() => setPantalla("misEventos")}
+          onNavegar={setPantalla}
+          onAbrirGrupo={(grupo) => {
+            setGrupoSeleccionado(grupo);
+            setPantalla("infoGrupo");
+          }}
+        />
+      )}
+
       {pantalla === "home" && usuarioActual && (
         <Home
           usuarioActual={usuarioActual}

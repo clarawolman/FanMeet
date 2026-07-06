@@ -121,6 +121,7 @@
   margin-right: 12px;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .registroInputWrapper input,
@@ -140,6 +141,8 @@
 
 .registroInputWrapper select {
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   cursor: pointer;
 }
 
@@ -155,6 +158,26 @@
 .registroInputWrapper input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
+}
+
+.registroSelectWrapper {
+  position: relative;
+}
+
+.registroSelectWrapper select {
+  padding-right: 46px;
+}
+
+.registroSelectFlecha {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: translateY(-65%) rotate(45deg);
+  pointer-events: none;
 }
 
 .registroBotonSiguiente {
@@ -180,28 +203,6 @@
   transform: scale(0.98);
 }
 
-@media (max-width: 360px) {
-  .registroHeader {
-    height: 78px;
-    padding: 0 22px;
-  }
-
-  .registroContenido {
-    padding: 18px 22px 24px;
-  }
-
-  .registroTitulo {
-    font-size: 23px;
-  }
-
-  .registroInputWrapper {
-    height: 52px;
-  }
-
-  .registroBotonSiguiente {
-    margin-top: 30px;
-  }
-}
 .registroError {
   margin: 8px 0 -12px;
   color: #ff2f7d;
@@ -209,6 +210,7 @@
   font-weight: 800;
   text-align: center;
 }
+
 .registroPasswordWrapper {
   position: relative;
 }
@@ -226,6 +228,7 @@
   place-items: center;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .registroOjoIcono {
@@ -248,9 +251,78 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
-/* ============================
-   DESKTOP REGISTRO 1
-============================ */
+
+.registroCondicionesPassword {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.registroCondicionesPassword li {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8b8b94;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.registroCondicionesPassword li::before {
+  content: "×";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #eeeef2;
+  color: #8b8b94;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.registroCondicionesPassword li.cumplida {
+  color: #178f55;
+}
+
+.registroCondicionesPassword li.cumplida::before {
+  content: "✓";
+  background: #dff7ea;
+  color: #178f55;
+}
+
+.registroPasswordError {
+  margin: 4px 0 0;
+  color: #ff2f7d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 360px) {
+  .registroHeader {
+    height: 78px;
+    padding: 0 22px;
+  }
+
+  .registroContenido {
+    padding: 18px 22px 24px;
+  }
+
+  .registroTitulo {
+    font-size: 23px;
+  }
+
+  .registroInputWrapper {
+    height: 52px;
+  }
+
+  .registroBotonSiguiente {
+    margin-top: 30px;
+  }
+}
 
 @media (min-width: 900px) {
   .pantallaRegistro1 {
@@ -307,6 +379,13 @@
 
   .registroCampo:nth-of-type(3) {
     grid-column: 1 / -1;
+  }
+
+  .registroCondicionesPassword {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+    row-gap: 6px;
   }
 
   .registroError {
