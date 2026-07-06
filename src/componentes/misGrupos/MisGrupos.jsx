@@ -33,7 +33,6 @@ function MisGrupos({
       .eq("id_usuario", usuarioActual.id_usuario);
 
     if (errorRelaciones) {
-      console.error("Error cargando relaciones:", errorRelaciones);
       setErrorTexto("No se pudieron cargar tus grupos.");
       setCargando(false);
       return;
@@ -42,16 +41,24 @@ function MisGrupos({
     const grupos = [];
 
     for (const relacion of relaciones || []) {
-      const { data: grupo, error: errorGrupo } = await supabase
+      const { data: grupo } = await supabase
         .from("grupo")
         .select("*")
         .eq("id_grupo", relacion.id_grupo)
         .maybeSingle();
 
-      if (errorGrupo || !grupo) {
-        console.error("Error cargando grupo:", errorGrupo);
-        continue;
-      }
+
+      const { data: concierto } = await supabase
+        .from("concierto")
+        .select(`
+        *,
+        artista (*),
+        estadio (*)
+      `)
+        .eq("id_concierto", grupo.id_concierto)
+        .maybeSingle();
+
+
 
       const { data: integrantes } = await supabase
         .from("grupos_usuarios")
@@ -80,12 +87,38 @@ function MisGrupos({
 
       grupos.push({
         ...grupo,
+        concierto: concierto || null,
         usuarios,
       });
     }
 
     setMisGrupos(grupos);
     setCargando(false);
+  }
+  const gruposPorConcierto = misGrupos.reduce((acumulador, grupo) => {
+    const idConcierto = String(grupo.id_concierto || "sin-concierto");
+
+    if (!acumulador[idConcierto]) {
+      acumulador[idConcierto] = {
+        id_concierto: idConcierto,
+        concierto: grupo.concierto,
+        grupos: [],
+      };
+    }
+
+    acumulador[idConcierto].grupos.push(grupo);
+
+    return acumulador;
+  }, {});
+
+  const seccionesConciertos = Object.values(gruposPorConcierto);
+
+  function obtenerNombreConcierto(seccion) {
+    return (
+      seccion.concierto?.nombre ||
+      seccion.concierto?.artista?.nombre ||
+      `Concierto ${seccion.id_concierto}`
+    );
   }
 
   return (
@@ -107,15 +140,28 @@ function MisGrupos({
           </p>
         )}
 
-        {!cargando &&
-          !errorTexto &&
-          misGrupos.map((grupo) => (
-            <CardGrupo
-              key={grupo.id_grupo}
-              grupo={grupo}
-              onAbrirGrupo={onAbrirGrupo}
-            />
-          ))}
+        {!cargando && !errorTexto && (
+          <div className="misGruposCatalogo">
+            {seccionesConciertos.map((seccion) => (
+              <section className="misGruposRow" key={seccion.id_concierto}>
+                <div className="misGruposRowHeader">
+                  <h2>{obtenerNombreConcierto(seccion)}</h2>
+                  <span>{seccion.grupos.length}</span>
+                </div>
+
+                <div className="misGruposRowScroll">
+                  {seccion.grupos.map((grupo) => (
+                    <CardGrupo
+                      key={grupo.id_grupo}
+                      grupo={grupo}
+                      onAbrirGrupo={() => onAbrirGrupo(grupo)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
       </main>
 
       <Footer onNavegar={onNavegar} pantallaActiva="misGrupos" />
