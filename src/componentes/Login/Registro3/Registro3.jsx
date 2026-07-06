@@ -2,13 +2,10 @@ import { useState } from "react";
 import "./Registro3.css";
 
 const generosMusicales = [
-  { id: "rock", nombre: "Rock", icono: "⚡" },
-  { id: "pop", nombre: "Pop", icono: "♪" },
-  { id: "techno", nombre: "Techno", icono: "▥" },
-  { id: "indie", nombre: "Indie", icono: "▤" },
-  { id: "hiphop", nombre: "Hip Hop", icono: "🎧" },
-  { id: "jazz", nombre: "Jazz", icono: "♨" },
-  { id: "otros", nombre: "Otros", icono: "⊕" },
+  { id: "1", nombre: "Pop", icono: "♪" },
+  { id: "2", nombre: "Rock", icono: "⚡" },
+  { id: "3", nombre: "Urbano", icono: "🎧" },
+  { id: "4", nombre: "Indie", icono: "▤" },
 ];
 
 const ambientes = [
@@ -20,7 +17,7 @@ const ambientes = [
   },
   {
     id: "tranquilo",
-    titulo: "Tranquilo",
+    titulo: "Platea",
     descripcion: "Relajado desde atrás con una bebida.",
     icono: "▣",
   },
@@ -63,10 +60,10 @@ function Registro3({ onVolver, onFinalizar }) {
 
     setErrorRegistro3("");
 
-    onFinalizar({
-      generos: generosSeleccionados,
-      estilo_asistencia: ambienteSeleccionado,
-    });
+  onFinalizar({
+  estilos_musicales: generosSeleccionados,
+  estilo_asistencia: ambienteSeleccionado,
+});
   }
 
   return (

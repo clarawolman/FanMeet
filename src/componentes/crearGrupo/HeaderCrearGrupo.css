@@ -1,81 +1,88 @@
 .crearGrupoHeader {
   width: 100%;
-  min-height: 88px;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255, 127, 159, 0.22), transparent 28%),
-    linear-gradient(180deg, #fffaf4 0%, #ffffff 100%);
+  min-height: 76px;
+  background: #ffffff;
   display: flex;
   align-items: center;
-  padding: 0 56px;
+  padding: 0 48px;
   box-sizing: border-box;
-  gap: 18px;
-  border-bottom: 1px solid rgba(75, 13, 131, 0.1);
+  gap: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
   z-index: 20;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .crearGrupoVolver {
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(75, 13, 131, 0.12);
-  background: rgba(255, 255, 255, 0.82);
-  color: #4b0d83;
-  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  background: #ffffff;
+  color: #7c3aed;
+  border-radius: 14px;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .crearGrupoVolver:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.32);
+  color: #6d28d9;
   transform: translateX(-2px);
-  background: #fff1df;
-  border-color: rgba(75, 13, 131, 0.22);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
 }
 
 .crearGrupoHeaderEyebrow {
   margin: 0 0 2px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: #8517e8;
+  color: #7c3aed;
 }
 
 .crearGrupoHeaderTexto {
   margin: 0;
-  font-family: "Space Grotesk", "Archivo", sans-serif;
   font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: #201725;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  color: #111827;
 }
 
 @media (max-width: 768px) {
   .crearGrupoHeader {
-    min-height: 76px;
+    min-height: 72px;
     padding: 0 24px;
   }
 
   .crearGrupoHeaderTexto {
-    font-size: 19px;
+    font-size: 20px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   .crearGrupoHeader {
-    min-height: 68px;
+    min-height: 66px;
     padding: 0 16px;
     gap: 12px;
   }
 
   .crearGrupoVolver {
-    width: 39px;
-    height: 39px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .crearGrupoHeaderEyebrow {
+    font-size: 10px;
   }
 
   .crearGrupoHeaderTexto {
-    font-size: 17px;
+    font-size: 18px;
   }
 }

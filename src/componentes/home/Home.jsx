@@ -12,6 +12,7 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [errorCodigo, setErrorCodigo] = useState("");
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
+  const [generosPreferidosIds, setGenerosPreferidosIds] = useState([]);
 
   const CODIGO_PRUEBA = "FANMEET2026";
 
@@ -31,7 +32,11 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   async function cargarDatosHome() {
     setCargando(true);
 
-    await Promise.all([cargarConciertos(), cargarConciertosDelUsuario()]);
+    await Promise.all([
+      cargarConciertos(),
+      cargarConciertosDelUsuario(),
+      cargarPreferenciasUsuario(),
+    ]);
 
     setCargando(false);
   }
@@ -68,6 +73,24 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
 
     setConciertosUnidos((data || []).map((item) => item.id_concierto));
   }
+async function cargarPreferenciasUsuario() {
+  const { data, error } = await supabase
+    .from("estilo_musical_usuario")
+    .select("id_estilo")
+    .eq("id_usuario", usuarioActual.id_usuario);
+
+  if (error) {
+    console.error("Error cargando preferencias del usuario:", error);
+    setGenerosPreferidosIds([]);
+    return;
+  }
+
+  const idsPreferidos = (data || []).map((item) => String(item.id_estilo));
+
+  console.log("Preferencias del usuario:", idsPreferidos);
+
+  setGenerosPreferidosIds(idsPreferidos);
+}
 
   function usuarioYaEstaUnido(idConcierto) {
     return conciertosUnidos.some(
@@ -92,6 +115,22 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   });
 
   const hayBusqueda = busqueda.trim().length > 0;
+const generosOrdenados = [...generos].sort((a, b) => {
+  const posicionA = generosPreferidosIds.indexOf(String(a.id));
+  const posicionB = generosPreferidosIds.indexOf(String(b.id));
+
+  const aEsPreferido = posicionA !== -1;
+  const bEsPreferido = posicionB !== -1;
+
+  if (aEsPreferido && bEsPreferido) {
+    return posicionA - posicionB;
+  }
+
+  if (aEsPreferido && !bEsPreferido) return -1;
+  if (!aEsPreferido && bEsPreferido) return 1;
+
+  return 0;
+});
 
   function obtenerConciertosPorGenero(idGenero) {
     return conciertos.filter(
@@ -290,7 +329,7 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
               </div>
             </section>
 
-            {generos.map((genero) => {
+            {generosOrdenados.map((genero) => {
               const conciertosDelGenero = obtenerConciertosPorGenero(genero.id);
 
               if (conciertosDelGenero.length === 0) return null;
