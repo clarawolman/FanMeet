@@ -26,7 +26,7 @@ function App() {
   const [errorTexto, setErrorTexto] = useState("");
   const [pantallaAnterior, setPantallaAnterior] = useState(null);
 
-    function navegarA(nuevaPantalla) {
+  function navegarA(nuevaPantalla) {
     setPantallaAnterior(pantalla);
     setPantalla(nuevaPantalla);
   }
@@ -39,8 +39,8 @@ function App() {
       setPantalla("home");
     }
   }
-  
-  
+
+
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -49,7 +49,7 @@ function App() {
     const { data: conciertoData, error: errorConcierto } = await supabase
       .from("concierto")
       .select("*")
-      .eq("id_concierto", idConcierto)      
+      .eq("id_concierto", idConcierto)
       .maybeSingle();
 
     if (errorConcierto) {
@@ -207,16 +207,16 @@ function App() {
   }
 
   function manejarNavegacion(destino) {
-  if (destino === "home") {
-    setConcierto(null);
-    setGrupoSeleccionado(null);
-    setErrorTexto("");
-    setPantalla("home");
-    return;
-  }
+    if (destino === "home") {
+      setConcierto(null);
+      setGrupoSeleccionado(null);
+      setErrorTexto("");
+      setPantalla("home");
+      return;
+    }
 
-  setPantalla(destino);
-}
+    setPantalla(destino);
+  }
 
   async function manejarEntrarConcierto(idConcierto) {
     const pudoCargar = await cargarConciertoPorId(idConcierto);
@@ -249,105 +249,105 @@ function App() {
     setPantalla("registro3");
   }
 
-async function manejarFinalizarRegistro(datosPaso3) {
-  setCargando(true);
-  setErrorTexto("");
+  async function manejarFinalizarRegistro(datosPaso3) {
+    setCargando(true);
+    setErrorTexto("");
 
-  try {
-    const datosFinales = {
-      ...datosRegistro,
-      ...datosPaso3,
-    };
+    try {
+      const datosFinales = {
+        ...datosRegistro,
+        ...datosPaso3,
+      };
 
-    console.log("DATOS FINALES REGISTRO:", datosFinales);
+      console.log("DATOS FINALES REGISTRO:", datosFinales);
 
-    const generosElegidos =
-      datosFinales.generos || datosFinales.estilos_musicales || [];
+      const generosElegidos =
+        datosFinales.generos || datosFinales.estilos_musicales || [];
 
-    console.log("GÉNEROS ELEGIDOS:", generosElegidos);
+      console.log("GÉNEROS ELEGIDOS:", generosElegidos);
 
-    if (generosElegidos.length === 0) {
-      setErrorTexto("No se recibieron los géneros musicales.");
-      setCargando(false);
-      return;
-    }
+      if (generosElegidos.length === 0) {
+        setErrorTexto("No se recibieron los géneros musicales.");
+        setCargando(false);
+        return;
+      }
 
-    const fotoDefault =
-      "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
+      const fotoDefault =
+        "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: datosFinales.mail,
-      password: datosFinales.contrasena,
-    });
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: datosFinales.mail,
+        password: datosFinales.contrasena,
+      });
 
-    if (authError) {
-      setErrorTexto("Error al crear usuario en Auth: " + authError.message);
-      setCargando(false);
-      return;
-    }
+      if (authError) {
+        setErrorTexto("Error al crear usuario en Auth: " + authError.message);
+        setCargando(false);
+        return;
+      }
 
-    console.log("AUTH DATA:", authData);
+      console.log("AUTH DATA:", authData);
 
-    const { data: usuarioCreado, error } = await supabase
-      .from("usuario")
-      .insert([
-        {
-          id_usuario: authData.user.id,
-          nombre: datosFinales.nombre,
-          mail: datosFinales.mail,
-          fechanac: datosFinales.fechanac,
-          genero: datosFinales.genero,
-          fotoperfil: datosFinales.previewFoto || fotoDefault,
-          estilo_asistencia: datosFinales.estilo_asistencia,
-        },
-      ])
-      .select()
-      .single();
+      const { data: usuarioCreado, error } = await supabase
+        .from("usuario")
+        .insert([
+          {
+            id_usuario: authData.user.id,
+            nombre: datosFinales.nombre,
+            mail: datosFinales.mail,
+            fechanac: datosFinales.fechanac,
+            genero: datosFinales.genero,
+            fotoperfil: datosFinales.previewFoto || fotoDefault,
+            estilo_asistencia: datosFinales.estilo_asistencia,
+          },
+        ])
+        .select()
+        .single();
 
-    if (error) {
-      console.error("ERROR USUARIO:", error);
-      setErrorTexto("Error al registrar usuario: " + error.message);
-      setCargando(false);
-      return;
-    }
+      if (error) {
+        console.error("ERROR USUARIO:", error);
+        setErrorTexto("Error al registrar usuario: " + error.message);
+        setCargando(false);
+        return;
+      }
 
-    console.log("USUARIO CREADO:", usuarioCreado);
+      console.log("USUARIO CREADO:", usuarioCreado);
 
-    const preferenciasAGuardar = generosElegidos.map((idEstilo) => ({
-      id_usuario: usuarioCreado.id_usuario,
-      id_estilo: Number(idEstilo),
-    }));
+      const preferenciasAGuardar = generosElegidos.map((idEstilo) => ({
+        id_usuario: usuarioCreado.id_usuario,
+        id_estilo: Number(idEstilo),
+      }));
 
-    console.log("PREFERENCIAS A GUARDAR:", preferenciasAGuardar);
+      console.log("PREFERENCIAS A GUARDAR:", preferenciasAGuardar);
 
-    const { data: preferenciasCreadas, error: errorPreferencias } =
-      await supabase
-        .from("estilo_musical_usuario")
-        .insert(preferenciasAGuardar)
-        .select();
+      const { data: preferenciasCreadas, error: errorPreferencias } =
+        await supabase
+          .from("estilo_musical_usuario")
+          .insert(preferenciasAGuardar)
+          .select();
 
-    if (errorPreferencias) {
-      console.error("ERROR PREFERENCIAS:", errorPreferencias);
-      setErrorTexto(
-        "Error al guardar preferencias musicales: " +
+      if (errorPreferencias) {
+        console.error("ERROR PREFERENCIAS:", errorPreferencias);
+        setErrorTexto(
+          "Error al guardar preferencias musicales: " +
           errorPreferencias.message
-      );
+        );
+        setCargando(false);
+        return;
+      }
+
+      console.log("PREFERENCIAS GUARDADAS:", preferenciasCreadas);
+
+      setUsuarioActual(usuarioCreado);
+      setDatosRegistro({});
       setCargando(false);
-      return;
+      setPantalla("home");
+    } catch (error) {
+      console.error("ERROR GENERAL REGISTRO:", error);
+      setErrorTexto("Error inesperado en el registro: " + error.message);
+      setCargando(false);
     }
-
-    console.log("PREFERENCIAS GUARDADAS:", preferenciasCreadas);
-
-    setUsuarioActual(usuarioCreado);
-    setDatosRegistro({});
-    setCargando(false);
-    setPantalla("home");
-  } catch (error) {
-    console.error("ERROR GENERAL REGISTRO:", error);
-    setErrorTexto("Error inesperado en el registro: " + error.message);
-    setCargando(false);
   }
-}
 
   const esPantallaLogin =
     pantalla === "login" ||
@@ -356,7 +356,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla === "registro3";
 
   if (!esPantallaLogin && pantalla !== "home" && cargando) {
-  return <p style={{ padding: 20 }}>Cargando concierto...</p>;
+    return <p style={{ padding: 20 }}>Cargando concierto...</p>;
   }
 
   if (
@@ -404,32 +404,50 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onFinalizar={manejarFinalizarRegistro}
         />
       )}
-     {pantalla === "misEventos" && usuarioActual && (
-  <MisEventos
-    usuarioActual={usuarioActual}
-    onIngresar={async (evento) => {
-      const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
+      {pantalla === "misEventos" && usuarioActual && (
+        <MisEventos
+          usuarioActual={usuarioActual}
+          onIngresar={async (evento) => {
+            const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
 
-      if (pudoCargar) {
-        setPantalla("concierto");
-      }
-    }}
-    onIrMisGrupos={() => setPantalla("misGrupos")}
-    onNavegar={manejarNavegacion}
-  />
-)}
-       {pantalla === "misGrupos" && usuarioActual && (
-<MisGrupos
-  usuarioActual={usuarioActual}
-  onVolver={volverPantallaAnterior}
-  onNavegar={navegarA}
-  onAbrirGrupo={(grupo) => {
-    setGrupoSeleccionado(grupo);
-    navegarA("infoGrupo");
-  }}
-/>
-)}
-      
+            if (pudoCargar) {
+              setPantalla("concierto");
+            }
+          }}
+          onIrMisGrupos={() => setPantalla("misGrupos")}
+          onNavegar={manejarNavegacion}
+        />
+      )}
+      {pantalla === "misGrupos" && usuarioActual && (
+        <MisGrupos
+          usuarioActual={usuarioActual}
+          onVolver={volverPantallaAnterior}
+          onNavegar={navegarA}
+          onAbrirGrupo={async (grupo) => {
+          
+
+            const grupoFinal = grupo?.grupo || grupo;
+
+
+            const { data: conciertoDelGrupo, error } = await supabase
+              .from("concierto")
+              .select(`
+        *,
+        artista (*),
+        estadio (*)
+      `)
+              .eq("id_concierto", grupoFinal.id_concierto)
+              .single();
+
+           
+
+            setGrupoSeleccionado(grupoFinal);
+            setConcierto(conciertoDelGrupo);
+            navegarA("infoGrupo");
+          }}
+        />
+      )}
+
       {pantalla === "home" && usuarioActual && (
         <Home
           usuarioActual={usuarioActual}
@@ -470,8 +488,8 @@ async function manejarFinalizarRegistro(datosPaso3) {
           grupo={grupoSeleccionado}
           concierto={concierto}
           usuarioActual={usuarioActual}
-          onNavegar={setPantalla}
-          onVolver={() => setPantalla("concierto")}
+          onNavegar={navegarA}
+          onVolver={volverPantallaAnterior}
         />
       )}
     </>
