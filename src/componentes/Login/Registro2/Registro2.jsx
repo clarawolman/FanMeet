@@ -2,9 +2,13 @@ import { useRef, useState } from "react";
 import "./Registro2.css";
 import fotoDefault from "../../../assets/fotoDefault.png";
 
-function Registro2({ onVolver, onSiguiente }) {
-  const [fotoPerfil, setFotoPerfil] = useState(null);
-  const [previewFoto, setPreviewFoto] = useState(fotoDefault);
+function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
+  const [fotoPerfil, setFotoPerfil] = useState(
+    datosIniciales.foto_perfil || null
+  );
+  const [previewFoto, setPreviewFoto] = useState(
+    datosIniciales.previewFoto || fotoDefault
+  );
   const [errorCamara, setErrorCamara] = useState("");
   const [camaraAbierta, setCamaraAbierta] = useState(false);
 
@@ -103,6 +107,15 @@ function Registro2({ onVolver, onSiguiente }) {
     setErrorCamara("");
   }
 
+  function manejarVolver() {
+    cerrarCamara();
+
+    onVolver({
+      foto_perfil: fotoPerfil,
+      previewFoto: previewFoto || fotoDefault,
+    });
+  }
+
   function manejarSiguiente() {
     cerrarCamara();
 
@@ -115,7 +128,7 @@ function Registro2({ onVolver, onSiguiente }) {
   return (
     <main className="pantallaRegistro2">
       <header className="registro2Header">
-        <button className="registro2Volver" type="button" onClick={onVolver}>
+        <button className="registro2Volver" type="button" onClick={manejarVolver}>
           ←
         </button>
 

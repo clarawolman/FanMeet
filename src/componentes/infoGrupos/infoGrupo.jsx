@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./infoGrupo.css";
 import { supabase } from "../../supabase";
+
 import HeaderGrupo from "./headerGrupo";
 import HeroGrupo from "./heroGrupo";
 import StatsGrupo from "./statsGrupo";
@@ -13,6 +14,8 @@ import Footer from "../generales/Footer";
 function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
+  const [verificandoConfirmacion, setVerificandoConfirmacion] = useState(true);
+
   useEffect(() => {
     if (usuarioActual && grupo) {
       verificarConfirmacion();
@@ -20,6 +23,8 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
   }, [usuarioActual, grupo]);
 
   async function verificarConfirmacion() {
+    setVerificandoConfirmacion(true);
+
     const { data, error } = await supabase
       .from("grupos_usuarios")
       .select("*")
@@ -29,40 +34,37 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
 
     if (error) {
       console.error("Error verificando asistencia:", error);
+      setConfirmado(false);
+      setVerificandoConfirmacion(false);
       return;
     }
 
     setConfirmado(!!data);
-  }  
-  const confirmarAsistenciaGrupo = async () => {
-  if (!usuarioActual || !grupo || confirmado) return;
+    setVerificandoConfirmacion(false);
+  }
 
-  setCargandoConfirmacion(true);
+  async function confirmarAsistenciaGrupo() {
+    if (!usuarioActual || !grupo || confirmado) return;
 
-  const { error } = await supabase.from("grupos_usuarios").insert([
-    {
-      id_usuario: usuarioActual.id_usuario,
-      id_grupo: grupo.id_grupo,
-    },
-  ]);
+    setCargandoConfirmacion(true);
 
-  /*if (error) {
-    console.error("Error al sumarse al grupo:", error);
+    const { error } = await supabase.from("grupos_usuarios").insert([
+      {
+        id_usuario: usuarioActual.id_usuario,
+        id_grupo: grupo.id_grupo,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error al sumarse al grupo:", error);
+      alert("No se pudo confirmar la asistencia: " + error.message);
+      setCargandoConfirmacion(false);
+      return;
+    }
+
+    setConfirmado(true);
     setCargandoConfirmacion(false);
-    alert("No se pudo confirmar la asistencia");
-    return;
-  }*/
- console.error("Error al sumarse al grupo:", error);
-console.log("MENSAJE:", error.message);
-console.log("CODE:", error.code);
-console.log("DETAILS:", error.details);
-
-alert("No se pudo confirmar la asistencia: " + error.message);
-return;
-
-  setConfirmado(true);
-  setCargandoConfirmacion(false);
-};
+  }
 
   return (
     <div className="infoGrupo">
@@ -70,17 +72,24 @@ return;
 
       <div className="infoGrupoContenido">
         <HeroGrupo grupo={grupo} concierto={concierto} />
+
         <ParticipantesGrupo participantes={grupo.usuarios} />
+
         <StatsGrupo grupo={grupo} />
+
         <DescripcionGrupo descripcion={grupo.descripcion} />
+
         <MapaGrupo ubicacion={grupo.ubicacion} />
-        <ConfirmacionGrupo
-          onConfirmar={confirmarAsistenciaGrupo}
-          confirmado={confirmado}
-          cargandoConfirmacion={cargandoConfirmacion}
-        />
+
+        {!verificandoConfirmacion && !confirmado && (
+          <ConfirmacionGrupo
+            onConfirmar={confirmarAsistenciaGrupo}
+            cargandoConfirmacion={cargandoConfirmacion}
+          />
+        )}
       </div>
-    <Footer onNavegar={onNavegar} />
+
+      <Footer onNavegar={onNavegar} />
     </div>
   );
 }

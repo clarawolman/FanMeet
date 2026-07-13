@@ -2,10 +2,12 @@ import { useState } from "react";
 import "./Registro3.css";
 
 const generosMusicales = [
-  { id: "1", nombre: "Pop", icono: "♪" },
-  { id: "2", nombre: "Rock", icono: "⚡" },
-  { id: "3", nombre: "Urbano", icono: "🎧" },
-  { id: "4", nombre: "Indie", icono: "▤" },
+  { id: "rock", nombre: "Rock", icono: "⚡" },
+  { id: "pop", nombre: "Pop", icono: "♪" },
+  { id: "techno", nombre: "Techno", icono: "▥" },
+  { id: "indie", nombre: "Indie", icono: "▤" },
+  { id: "hiphop", nombre: "Hip Hop", icono: "🎧" },
+  { id: "jazz", nombre: "Jazz", icono: "♨" },
 ];
 
 const ambientes = [
@@ -18,7 +20,7 @@ const ambientes = [
   {
     id: "tranquilo",
     titulo: "Platea",
-    descripcion: "Relajado desde atrás con una bebida.",
+    descripcion: "Sentado y relajado con una bebida.",
     icono: "▣",
   },
   {
@@ -29,9 +31,13 @@ const ambientes = [
   },
 ];
 
-function Registro3({ onVolver, onFinalizar }) {
-  const [generosSeleccionados, setGenerosSeleccionados] = useState([]);
-  const [ambienteSeleccionado, setAmbienteSeleccionado] = useState("");
+function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
+  const [generosSeleccionados, setGenerosSeleccionados] = useState(
+    datosIniciales.generos || []
+  );
+  const [ambienteSeleccionado, setAmbienteSeleccionado] = useState(
+    datosIniciales.estilo_asistencia || ""
+  );
   const [errorRegistro3, setErrorRegistro3] = useState("");
 
   function manejarGenero(idGenero) {
@@ -45,6 +51,13 @@ function Registro3({ onVolver, onFinalizar }) {
     }
 
     setGenerosSeleccionados([...generosSeleccionados, idGenero]);
+  }
+
+  function manejarVolver() {
+    onVolver({
+      generos: generosSeleccionados,
+      estilo_asistencia: ambienteSeleccionado,
+    });
   }
 
   function manejarFinalizar() {
@@ -69,7 +82,7 @@ function Registro3({ onVolver, onFinalizar }) {
   return (
     <main className="pantallaRegistro3">
       <header className="registro3Header">
-        <button className="registro3Volver" type="button" onClick={onVolver}>
+        <button className="registro3Volver" type="button" onClick={manejarVolver}>
           ←
         </button>
 
@@ -139,17 +152,15 @@ function Registro3({ onVolver, onFinalizar }) {
           })}
         </div>
 
-        {errorRegistro3 && (
-          <p className="registro3Error">{errorRegistro3}</p>
-        )}
+        {errorRegistro3 && <p className="registro3Error">{errorRegistro3}</p>}
 
         <button
-  className="registro3BotonFinalizar"
-  type="button"
-  onClick={manejarFinalizar}
->
-  Finalizar
-</button>
+          className="registro3BotonFinalizar"
+          type="button"
+          onClick={manejarFinalizar}
+        >
+          Finalizar
+        </button>
       </section>
     </main>
   );
