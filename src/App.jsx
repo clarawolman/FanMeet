@@ -145,9 +145,42 @@ function App() {
       })
     );
 
-    const usuariosDelConcierto = gruposConUsuarios.flatMap(
-      (grupo) => grupo.usuarios
-    );
+const { data: relacionesConcierto, error: errorRelacionesConcierto } =
+  await supabase
+    .from("usuarios_conciertos")
+    .select("id_usuario")
+    .eq("id_concierto", conciertoData.id_concierto);
+
+if (errorRelacionesConcierto) {
+  console.error("Error cargando usuarios_conciertos:", errorRelacionesConcierto);
+}
+
+const idsUsuariosConcierto = [
+  ...new Set((relacionesConcierto || []).map((relacion) => relacion.id_usuario)),
+];
+
+const usuariosDelConcierto = await Promise.all(
+  idsUsuariosConcierto.map(async (idUsuario) => {
+    const { data: usuarioData, error: errorUsuarioConcierto } = await supabase
+      .from("usuario")
+      .select("*")
+      .eq("id_usuario", idUsuario)
+      .maybeSingle();
+
+    if (errorUsuarioConcierto) {
+      console.error("Error cargando usuario del concierto:", errorUsuarioConcierto);
+    }
+
+    return {
+      id_usuario: usuarioData?.id_usuario || idUsuario,
+      nombre: usuarioData?.nombre || "Usuario",
+      foto_perfil:
+        usuarioData?.fotoperfil ||
+        usuarioData?.foto_perfil ||
+        "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
+    };
+  })
+);
 
     const conciertoFinal = {
       ...conciertoData,
@@ -182,6 +215,7 @@ function App() {
       grupos: gruposConUsuarios,
       usuarios: usuariosDelConcierto,
       asistentes: usuariosDelConcierto.length,
+      cantidadFans: usuariosDelConcierto.length,
     };
 
     setConcierto(conciertoFinal);

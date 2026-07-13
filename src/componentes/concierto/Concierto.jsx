@@ -40,8 +40,11 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver 
 
         <section className="conciertoInfo">
           <CardEstadio estadio={concierto.estadio} />
-          <FansUnidos fans={concierto.usuarios} />
-        </section>
+          <FansUnidos
+            fans={concierto.usuarios}
+            cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
+          />        
+          </section>
 
         <section className="conciertoGrupos">
           <FiltroSubEvento
