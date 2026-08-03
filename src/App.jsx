@@ -10,6 +10,8 @@ import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
 import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
+import Perfil from "./componentes/perfil/perfil";
+import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 
 import { supabase } from "./supabase";
 
@@ -316,7 +318,9 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
     pantalla !== "infoGrupo" &&
-    pantalla !== "concierto"
+    pantalla !== "concierto" &&
+    pantalla !== "perfil" &&
+    pantalla !== "editarGeneros"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
@@ -382,7 +386,23 @@ async function manejarFinalizarRegistro(datosPaso3) {
     }}
   />
 )}
-      
+
+      {pantalla === "perfil" && usuarioActual && (
+        <Perfil
+          usuarioActual={usuarioActual}
+          isOwnProfile={true}
+          onEditarGeneros={() => setPantalla("editarGeneros")}
+          onNavegar={manejarNavegacion}
+        />
+      )}
+
+      {pantalla === "editarGeneros" && usuarioActual && (
+        <EditarGeneros
+          usuarioActual={usuarioActual}
+          onVolver={() => setPantalla("perfil")}
+        />
+      )}
+
       {pantalla === "home" && usuarioActual && (
         <Home
           usuarioActual={usuarioActual}

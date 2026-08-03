@@ -1,0 +1,262 @@
+.pantallaEditarGeneros {
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f6f8;
+  color: #05050f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editarGenerosHeader {
+  width: 100%;
+  max-width: 430px;
+  height: 84px;
+  padding: 0 24px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.editarGenerosVolver {
+  border: none;
+  background: transparent;
+  color: #ff3f97;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.editarGenerosLogo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #7b24df;
+}
+
+.editarGenerosContenido {
+  width: 100%;
+  max-width: 430px;
+  padding: 20px 20px 32px;
+  box-sizing: border-box;
+}
+
+.editarGenerosTitulo {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+}
+
+.editarGenerosSubtitulo {
+  margin: 6px 0 20px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #202020;
+}
+
+.editarGenerosBuscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid #e4e2ea;
+  border-radius: 12px;
+  padding: 0 14px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.editarGenerosBuscadorIcono {
+  font-size: 16px;
+  color: #7b24df;
+}
+
+.editarGenerosBuscador input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  height: 46px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #05050f;
+}
+
+.editarGenerosGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.editarGenerosChip {
+  height: 74px;
+  border: none;
+  border-radius: 9px;
+  background: #7e7e85;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  opacity: 1;
+}
+
+.editarGenerosChip strong {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.editarGenerosChip.activo {
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  opacity: 1 !important;
+}
+
+.editarGenerosChip.activo strong {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.editarGenerosVacio {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #6f6f76;
+}
+
+.editarGenerosError {
+  margin: 16px 0 -4px;
+  color: #ff2f7d;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.editarGenerosError code {
+  display: inline-block;
+  margin-top: 6px;
+  background: rgba(255, 47, 125, 0.1);
+  color: #ff2f7d;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.editarGenerosBotones {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.editarGenerosBotonCancelar,
+.editarGenerosBotonGuardar {
+  flex: 1;
+  height: 54px;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.editarGenerosBotonCancelar {
+  background: #e5e3ea;
+  color: #05050f;
+}
+
+.editarGenerosBotonGuardar {
+  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28);
+}
+
+.editarGenerosBotonCancelar:active,
+.editarGenerosBotonGuardar:active,
+.editarGenerosChip:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 360px) {
+  .editarGenerosHeader {
+    height: 78px;
+    padding: 0 22px;
+  }
+
+  .editarGenerosContenido {
+    padding: 18px 18px 26px;
+  }
+
+  .editarGenerosTitulo {
+    font-size: 24px;
+  }
+
+  .editarGenerosChip {
+    height: 68px;
+  }
+}
+
+/* ============================
+   DESKTOP EDITAR GENEROS
+============================ */
+
+@media (min-width: 900px) {
+  .pantallaEditarGeneros {
+    min-height: 100vh;
+    padding: 40px 24px;
+    justify-content: center;
+    background:
+      radial-gradient(circle at top left, rgba(143, 92, 255, 0.16), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(255, 90, 166, 0.14), transparent 34%),
+      #f6f6f8;
+  }
+
+  .editarGenerosHeader {
+    max-width: 640px;
+    height: 74px;
+    padding: 0 36px;
+    border-radius: 28px 28px 0 0;
+    border-bottom: 1px solid #ececf1;
+    box-shadow: 0 16px 42px rgba(35, 25, 55, 0.08);
+  }
+
+  .editarGenerosLogo {
+    font-size: 22px;
+  }
+
+  .editarGenerosContenido {
+    max-width: 640px;
+    background: #ffffff;
+    padding: 34px 42px 40px;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 24px 55px rgba(35, 25, 55, 0.1);
+  }
+
+  .editarGenerosTitulo {
+    font-size: 32px;
+  }
+
+  .editarGenerosGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .editarGenerosChip {
+    height: 86px;
+    border-radius: 14px;
+  }
+
+  .editarGenerosBotones {
+    max-width: 380px;
+    margin: 40px auto 0;
+  }
+}
