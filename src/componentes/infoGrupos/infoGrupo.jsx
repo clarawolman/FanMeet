@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./infoGrupo.css";
 import { supabase } from "../../supabase";
+import { crearNotificacion } from "../../notificaciones";
 
 import HeaderGrupo from "./headerGrupo";
 import HeroGrupo from "./heroGrupo";
@@ -61,6 +62,15 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
       setCargandoConfirmacion(false);
       return;
     }
+
+    await crearNotificacion({
+      idUsuario: usuarioActual.id_usuario,
+      tipo: "grupo_unido",
+      titulo: `Te uniste al grupo ${grupo.nombre}`,
+      descripcion: concierto?.nombre || concierto?.artista?.nombre || "",
+      imagen: grupo.foto || grupo.imagen || grupo.imagenGrupo || "",
+      idGrupo: grupo.id_grupo,
+    });
 
     setConfirmado(true);
     setCargandoConfirmacion(false);

@@ -10,6 +10,7 @@ import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
 import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
+import Notificaciones from "./componentes/notificaciones/Notificaciones";
 
 import { supabase } from "./supabase";
 
@@ -238,6 +239,39 @@ const usuariosDelConcierto = await Promise.all(
     await cargarConciertoPorId(concierto.id_concierto);
   }
 
+  async function manejarVerMasNotificacion(notificacion) {
+    if (notificacion.tipo === "concierto_unido" && notificacion.id_concierto) {
+      await manejarEntrarConcierto(notificacion.id_concierto);
+      return;
+    }
+
+    if (notificacion.tipo === "grupo_unido") {
+      setPantalla("misGrupos");
+    }
+  }
+
+  function guardarDatosRegistro(datosNuevos) {
+    setDatosRegistro((anteriores) => ({ ...anteriores, ...datosNuevos }));
+  }
+
+  function salirDelRegistro() {
+    setDatosRegistro({});
+    setErrorTexto("");
+    setPantalla("login");
+  }
+
+  function volverDeRegistro2ARegistro1() {
+    setPantalla("registro1");
+  }
+
+  function volverDeRegistro3ARegistro2() {
+    setPantalla("registro2");
+  }
+
+  function volverPantallaAnterior() {
+    setPantalla(concierto ? "concierto" : "misGrupos");
+  }
+
   function manejarRegistro1(datosPaso1) {
     guardarDatosRegistro(datosPaso1);
     setPantalla("registro2");
@@ -316,7 +350,8 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
     pantalla !== "infoGrupo" &&
-    pantalla !== "concierto"
+    pantalla !== "concierto" &&
+    pantalla !== "notificaciones"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
@@ -391,6 +426,15 @@ async function manejarFinalizarRegistro(datosPaso3) {
         />
       )}
 
+      {pantalla === "notificaciones" && usuarioActual && (
+        <Notificaciones
+          usuarioActual={usuarioActual}
+          onVolver={() => manejarNavegacion("home")}
+          onNavegar={manejarNavegacion}
+          onVerMas={manejarVerMasNotificacion}
+        />
+      )}
+
       {pantalla === "concierto" && concierto && usuarioActual && (
         <Concierto
           concierto={concierto}
@@ -423,7 +467,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           grupo={grupoSeleccionado}
           concierto={concierto}
           usuarioActual={usuarioActual}
-          onNavegar={navegarA}
+          onNavegar={manejarNavegacion}
           onVolver={volverPantallaAnterior}
         />
       )}

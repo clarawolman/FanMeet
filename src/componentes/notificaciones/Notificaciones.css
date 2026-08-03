@@ -1,0 +1,81 @@
+.pantallaNotificaciones {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: 96px;
+}
+
+/* ============================
+        TÍTULO
+============================ */
+
+.barraTituloNotificaciones {
+  width: 100%;
+  background: var(--color-bg);
+  padding: 18px 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.barraTituloNotificaciones h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 720;
+  color: var(--color-text);
+  letter-spacing: -0.3px;
+}
+
+.btnVolverNotificaciones {
+  border: none;
+  background: none;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  padding: 0;
+  font-size: 20px;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btnVolverNotificaciones:hover {
+  opacity: 0.75;
+}
+
+/* ============================
+        LISTA
+============================ */
+
+.notificacionesLista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 20px 20px;
+}
+
+.mensajeNotificaciones {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: 40px 0;
+}
+
+@media (min-width: 768px) {
+  .barraTituloNotificaciones {
+    padding-left: calc((100% - 850px) / 2 + 24px);
+    padding-right: calc((100% - 850px) / 2 + 24px);
+    padding-top: 20px;
+  }
+
+  .barraTituloNotificaciones h2 {
+    font-size: 23px;
+  }
+
+  .notificacionesLista {
+    padding-left: calc((100% - 850px) / 2 + 24px);
+    padding-right: calc((100% - 850px) / 2 + 24px);
+    gap: 16px;
+  }
+}
