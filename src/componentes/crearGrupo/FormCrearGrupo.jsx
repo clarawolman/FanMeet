@@ -87,12 +87,12 @@ function FormCrearGrupo({
           />
         </label>
 
-        <label className="crearGrupoLabel">
+        <label className="crearGrupoLabel crearGrupoLabelDescripcion">
           Descripción
-          <input
-            className="crearGrupoInput"
-            type="text"
+          <textarea
+            className="crearGrupoTextarea"
             placeholder="Escriba algo aquí..."
+            rows={4}
             value={formulario.descripcion}
             onChange={(e) => actualizarCampo("descripcion", e.target.value)}
           />
