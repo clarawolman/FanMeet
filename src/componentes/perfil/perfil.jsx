@@ -7,6 +7,7 @@ import StatsPerfil from "./statsPerfil";
 import GenerosPerfil from "./generosPerfil";
 import VibraConcierto from "./vibraConcierto";
 import HighlightsPerfil from "./highlightsPerfil";
+import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 
 // Mismos valores que usa Registro3 para usuario.estilo_asistencia:
 // no son datos inventados, son el vocabulario real ya persistido en esa columna.
@@ -31,16 +32,32 @@ const AMBIENTES_CONCIERTO = [
   },
 ];
 
-function Perfil({ usuarioActual, usuarioPerfil, isOwnProfile = true, onEditarGeneros, onNavegar }) {
-  const usuario = usuarioPerfil || usuarioActual;
+function Perfil({
+  usuarioActual,
+  usuarioPerfil,
+  isOwnProfile = true,
+  onEditarGeneros,
+  onNavegar,
+  onUsuarioActualizado,
+}) {
+  const usuarioBase = usuarioPerfil || usuarioActual;
+
+  // La foto se actualiza optimistamente acá y también se propaga hacia
+  // arriba (onUsuarioActualizado) para que el resto de la app la vea.
+  const [fotoLocal, setFotoLocal] = useState(null);
+  const usuario = fotoLocal
+    ? { ...usuarioBase, fotoperfil: fotoLocal }
+    : usuarioBase;
 
   const [cargando, setCargando] = useState(true);
   const [estadisticas, setEstadisticas] = useState({ conciertos: 0, grupos: 0, amigos: 0 });
   const [generosSeleccionadosIds, setGenerosSeleccionadosIds] = useState([]);
-  const [vibraActual, setVibraActual] = useState(usuario?.estilo_asistencia || "");
+  const [catalogoGeneros, setCatalogoGeneros] = useState([]);
+  const [vibraActual, setVibraActual] = useState(usuarioBase?.estilo_asistencia || "");
   const [highlights, setHighlights] = useState([]);
   const [highlightsError, setHighlightsError] = useState("");
   const [subiendoHighlight, setSubiendoHighlight] = useState(false);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoAmistad] = useState("conectar");
 
   useEffect(() => {
@@ -52,9 +69,26 @@ function Perfil({ usuarioActual, usuarioPerfil, isOwnProfile = true, onEditarGen
   async function cargarDatosPerfil() {
     setCargando(true);
 
-    await Promise.all([cargarEstadisticas(), cargarGeneros(), cargarHighlights()]);
+    await Promise.all([
+      cargarEstadisticas(),
+      cargarGeneros(),
+      cargarCatalogoGeneros(),
+      cargarHighlights(),
+    ]);
 
     setCargando(false);
+  }
+
+  async function cargarCatalogoGeneros() {
+    const { data, error } = await supabase.from("estilo_musical").select("*");
+
+    if (error) {
+      console.error("Error cargando catálogo de géneros:", error);
+      setCatalogoGeneros([]);
+      return;
+    }
+
+    setCatalogoGeneros(data || []);
   }
 
   async function cargarEstadisticas() {
@@ -170,9 +204,53 @@ function Perfil({ usuarioActual, usuarioPerfil, isOwnProfile = true, onEditarGen
     setSubiendoHighlight(false);
   }
 
-  function manejarEditarFoto() {
-    alert("Próximamente: cambiar foto de perfil");
+  async function manejarSubirFoto(archivo) {
+    if (!isOwnProfile) return;
+
+    setSubiendoFoto(true);
+
+    const nombreArchivo = `${usuario.id_usuario}/${Date.now()}-${archivo.name}`;
+
+    const { error: errorSubida } = await supabase.storage
+      .from("avatars")
+      .upload(nombreArchivo, archivo);
+
+    if (errorSubida) {
+      alert("No se pudo subir la foto: " + errorSubida.message);
+      setSubiendoFoto(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(nombreArchivo);
+
+    const { error: errorUpdate } = await supabase
+      .from("usuario")
+      .update({ fotoperfil: urlData.publicUrl })
+      .eq("id_usuario", usuario.id_usuario);
+
+    if (errorUpdate) {
+      alert("No se pudo guardar la foto: " + errorUpdate.message);
+      setSubiendoFoto(false);
+      return;
+    }
+
+    setFotoLocal(urlData.publicUrl);
+    onUsuarioActualizado?.({ ...usuarioBase, fotoperfil: urlData.publicUrl });
+    setSubiendoFoto(false);
   }
+
+  const generosConNombre = generosSeleccionadosIds.map((idEstilo) => {
+    const genero = catalogoGeneros.find(
+      (item) => String(idDeGenero(item)) === String(idEstilo)
+    );
+
+    return {
+      id: idEstilo,
+      nombre: genero ? nombreDeGenero(genero) : `Género #${idEstilo}`,
+    };
+  });
 
   return (
     <div className="pantallaPerfil">
@@ -181,14 +259,15 @@ function Perfil({ usuarioActual, usuarioPerfil, isOwnProfile = true, onEditarGen
         isOwnProfile={isOwnProfile}
         estadoAmistad={estadoAmistad}
         onAccionAmistad={() => {}}
-        onEditarFoto={manejarEditarFoto}
+        onSubirFoto={manejarSubirFoto}
+        subiendoFoto={subiendoFoto}
       />
 
       <div className="perfilContenido">
         <StatsPerfil estadisticas={estadisticas} />
 
         <GenerosPerfil
-          generos={generosSeleccionadosIds}
+          generos={generosConNombre}
           isOwnProfile={isOwnProfile}
           onEditar={onEditarGeneros}
         />

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
 
@@ -6,39 +7,37 @@ export default function HeaderPerfil({
   isOwnProfile,
   estadoAmistad,
   onAccionAmistad,
-  onEditarFoto,
+  onSubirFoto,
+  subiendoFoto,
 }) {
+  const inputFotoRef = useRef(null);
+
+  function manejarClickEditar() {
+    if (inputFotoRef.current) {
+      inputFotoRef.current.click();
+    }
+  }
+
+  function manejarArchivoSeleccionado(e) {
+    const archivo = e.target.files?.[0];
+    e.target.value = "";
+
+    if (archivo) {
+      onSubirFoto(archivo);
+    }
+  }
+
   return (
     <div className="headerPerfil">
-      <div className="headerPerfilTop">
-        <button className="headerPerfilIconBtn" type="button" aria-label="Menú">
-          ☰
-        </button>
-
+      <header className="headerPerfilTop">
         <p className="headerPerfilEyebrow">FanMeet</p>
-
-        {isOwnProfile ? (
-          <button
-            className="headerPerfilIconBtn"
-            type="button"
-            aria-label="Notificaciones"
-          >
-            🔔
-          </button>
-        ) : (
-          <BotonAmistad
-            estado={estadoAmistad}
-            onAccion={onAccionAmistad}
-            deshabilitado
-          />
-        )}
-      </div>
+      </header>
 
       <div className="headerPerfilInfo">
         <div className="headerPerfilFotoWrap">
           <img
             className="headerPerfilFoto"
-            src={usuario?.foto_perfil}
+            src={usuario?.fotoperfil || usuario?.foto_perfil}
             alt={usuario?.nombre}
           />
 
@@ -46,15 +45,30 @@ export default function HeaderPerfil({
             <button
               className="headerPerfilFotoEditar"
               type="button"
-              onClick={onEditarFoto}
+              onClick={manejarClickEditar}
+              disabled={subiendoFoto}
               aria-label="Cambiar foto"
             >
-              ✎
+              {subiendoFoto ? "…" : "✎"}
             </button>
+          )}
+
+          {isOwnProfile && (
+            <input
+              ref={inputFotoRef}
+              type="file"
+              accept="image/*"
+              onChange={manejarArchivoSeleccionado}
+              hidden
+            />
           )}
         </div>
 
         <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+
+        {!isOwnProfile && (
+          <BotonAmistad estado={estadoAmistad} onAccion={onAccionAmistad} deshabilitado />
+        )}
       </div>
     </div>
   );

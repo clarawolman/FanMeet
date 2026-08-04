@@ -240,6 +240,34 @@ const usuariosDelConcierto = await Promise.all(
     await cargarConciertoPorId(concierto.id_concierto);
   }
 
+  function guardarDatosRegistro(datos) {
+    setDatosRegistro((anteriores) => ({ ...anteriores, ...datos }));
+  }
+
+  function salirDelRegistro() {
+    setDatosRegistro({});
+    setErrorTexto("");
+    setPantalla("login");
+  }
+
+  function volverDeRegistro2ARegistro1(datosPaso2) {
+    guardarDatosRegistro(datosPaso2);
+    setPantalla("registro1");
+  }
+
+  function volverDeRegistro3ARegistro2(datosPaso3) {
+    guardarDatosRegistro(datosPaso3);
+    setPantalla("registro2");
+  }
+
+  function navegarA(destino) {
+    manejarNavegacion(destino);
+  }
+
+  function volverPantallaAnterior() {
+    setPantalla("concierto");
+  }
+
   function manejarRegistro1(datosPaso1) {
     guardarDatosRegistro(datosPaso1);
     setPantalla("registro2");
@@ -293,6 +321,23 @@ async function manejarFinalizarRegistro(datosPaso3) {
     setErrorTexto("Error al registrar usuario: " + error.message);
     setCargando(false);
     return;
+  }
+
+  const idsGeneros = datosFinales.estilos_musicales || [];
+
+  if (idsGeneros.length > 0) {
+    const { error: errorGeneros } = await supabase
+      .from("estilo_musical_usuario")
+      .insert(
+        idsGeneros.map((idEstilo) => ({
+          id_usuario: usuarioCreado.id_usuario,
+          id_estilo: idEstilo,
+        }))
+      );
+
+    if (errorGeneros) {
+      console.error("Error guardando géneros del usuario:", errorGeneros);
+    }
   }
 
   setUsuarioActual(usuarioCreado);
@@ -393,6 +438,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           isOwnProfile={true}
           onEditarGeneros={() => setPantalla("editarGeneros")}
           onNavegar={manejarNavegacion}
+          onUsuarioActualizado={setUsuarioActual}
         />
       )}
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./EditarGeneros.css";
 import { supabase } from "../../supabase";
+import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 
 function EditarGeneros({ usuarioActual, onVolver }) {
   const [catalogo, setCatalogo] = useState([]);
@@ -46,14 +47,6 @@ function EditarGeneros({ usuarioActual, onVolver }) {
     }
 
     setCargando(false);
-  }
-
-  function idDeGenero(genero) {
-    return genero.id_estilo ?? genero.id ?? genero.id_estilo_musical;
-  }
-
-  function nombreDeGenero(genero) {
-    return genero.nombre ?? genero.nombre_estilo ?? genero.genero ?? "Género";
   }
 
   function manejarGenero(idGenero) {

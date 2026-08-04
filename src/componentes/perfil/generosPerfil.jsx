@@ -23,9 +23,9 @@ export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
             </button>
           )}
 
-          {generos.map((idEstilo) => (
-            <div className="generoChipPerfil" key={idEstilo}>
-              <small>Género #{idEstilo}</small>
+          {generos.map((genero) => (
+            <div className="generoChipPerfil" key={genero.id}>
+              <small>{genero.nombre}</small>
             </div>
           ))}
         </div>
