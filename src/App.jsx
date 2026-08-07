@@ -13,6 +13,7 @@ import MisGrupos from "./componentes/misGrupos/MisGrupos";
 import Perfil from "./componentes/perfil/perfil";
 import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
+import Notificaciones from "./componentes/notificaciones/Notificaciones";
 
 import { supabase } from "./supabase";
 
@@ -270,6 +271,19 @@ const usuariosDelConcierto = await Promise.all(
 
   function guardarDatosRegistro(datos) {
     setDatosRegistro((anteriores) => ({ ...anteriores, ...datos }));
+  async function manejarVerMasNotificacion(notificacion) {
+    if (notificacion.tipo === "concierto_unido" && notificacion.id_concierto) {
+      await manejarEntrarConcierto(notificacion.id_concierto);
+      return;
+    }
+
+    if (notificacion.tipo === "grupo_unido") {
+      setPantalla("misGrupos");
+    }
+  }
+
+  function guardarDatosRegistro(datosNuevos) {
+    setDatosRegistro((anteriores) => ({ ...anteriores, ...datosNuevos }));
   }
 
   function salirDelRegistro() {
@@ -278,22 +292,16 @@ const usuariosDelConcierto = await Promise.all(
     setPantalla("login");
   }
 
-  function volverDeRegistro2ARegistro1(datosPaso2) {
-    guardarDatosRegistro(datosPaso2);
+  function volverDeRegistro2ARegistro1() {
     setPantalla("registro1");
   }
 
-  function volverDeRegistro3ARegistro2(datosPaso3) {
-    guardarDatosRegistro(datosPaso3);
+  function volverDeRegistro3ARegistro2() {
     setPantalla("registro2");
   }
 
-  function navegarA(destino) {
-    manejarNavegacion(destino);
-  }
-
   function volverPantallaAnterior() {
-    setPantalla("concierto");
+    setPantalla(concierto ? "concierto" : "misGrupos");
   }
 
   function manejarRegistro1(datosPaso1) {
@@ -409,6 +417,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "editarGeneros" &&
     pantalla !== "fansUnidos" &&
     pantalla !== "perfilAjeno"
+    pantalla !== "notificaciones"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
@@ -521,6 +530,15 @@ async function manejarFinalizarRegistro(datosPaso3) {
         />
       )}
 
+      {pantalla === "notificaciones" && usuarioActual && (
+        <Notificaciones
+          usuarioActual={usuarioActual}
+          onVolver={() => manejarNavegacion("home")}
+          onNavegar={manejarNavegacion}
+          onVerMas={manejarVerMasNotificacion}
+        />
+      )}
+
       {pantalla === "concierto" && concierto && usuarioActual && (
         <Concierto
           concierto={concierto}
@@ -554,7 +572,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           grupo={grupoSeleccionado}
           concierto={concierto}
           usuarioActual={usuarioActual}
-          onNavegar={navegarA}
+          onNavegar={manejarNavegacion}
           onVolver={volverPantallaAnterior}
         />
       )}

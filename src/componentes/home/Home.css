@@ -515,3 +515,40 @@
     flex-wrap: wrap;
   }
 }
+
+/* CAMPANITA DE NOTIFICACIONES */
+.home-header {
+  justify-content: space-between !important;
+}
+
+.home-header-bell {
+  position: relative;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.home-header-bell:hover {
+  opacity: 0.75;
+}
+
+.home-header-bell-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ff2f7d;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  box-shadow: 0 0 0 2px #ffffff;
+}

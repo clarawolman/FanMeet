@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Home.css";
 import OverlayCodigo from "./OverlayCodigo";
 import { supabase } from "../../supabase";
+import { crearNotificacion } from "../../notificaciones";
 import Footer from "../generales/Footer";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
@@ -13,6 +14,7 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [generosPreferidosIds, setGenerosPreferidosIds] = useState([]);
+  const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
 
   const CODIGO_PRUEBA = "FANMEET2026";
 
@@ -36,9 +38,26 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
       cargarConciertos(),
       cargarConciertosDelUsuario(),
       cargarPreferenciasUsuario(),
+      cargarCantidadNotificaciones(),
     ]);
 
     setCargando(false);
+  }
+
+  async function cargarCantidadNotificaciones() {
+    const { count, error } = await supabase
+      .from("notificacion")
+      .select("*", { count: "exact", head: true })
+      .eq("id_usuario", usuarioActual.id_usuario)
+      .eq("leida", false);
+
+    if (error) {
+      console.error("Error cargando notificaciones:", error);
+      setCantidadNotificaciones(0);
+      return;
+    }
+
+    setCantidadNotificaciones(count || 0);
   }
 
   async function cargarConciertos() {
@@ -193,6 +212,26 @@ const generosOrdenados = [...generos].sort((a, b) => {
         setErrorCodigo("Error guardando acceso: " + errorInsert.message);
         return;
       }
+
+      await crearNotificacion({
+        idUsuario: usuarioActual.id_usuario,
+        tipo: "concierto_unido",
+        titulo: `Te uniste a ${
+          conciertoSeleccionado.nombre ||
+          conciertoSeleccionado.artista?.nombre ||
+          "un concierto"
+        }`,
+        descripcion:
+          conciertoSeleccionado.estadio?.nombre ||
+          conciertoSeleccionado.estadio?.ciudad ||
+          "",
+        imagen:
+          conciertoSeleccionado.imagen ||
+          conciertoSeleccionado.imagenConcierto ||
+          conciertoSeleccionado.foto ||
+          "",
+        idConcierto,
+      });
     }
 
     setConciertosUnidos((anteriores) => {
@@ -279,6 +318,20 @@ const generosOrdenados = [...generos].sort((a, b) => {
         <div className="home-header-icons">
           <p className="home-eyebrow">FanMeet</p>
         </div>
+
+        <button
+          type="button"
+          className="home-header-bell"
+          onClick={() => onNavegar("notificaciones")}
+          aria-label="Notificaciones"
+        >
+          🔔
+          {cantidadNotificaciones > 0 && (
+            <span className="home-header-bell-badge">
+              {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}
+            </span>
+          )}
+        </button>
       </header>
 
       <main className="home-main">
