@@ -16,8 +16,16 @@ function formatearTiempo(fecha) {
   return `Hace ${dias} día${dias === 1 ? "" : "s"}`;
 }
 
-function CardNotificacion({ notificacion, onVerMas, onEliminar }) {
-  const { titulo, descripcion, imagen, created_at } = notificacion;
+function CardNotificacion({
+  notificacion,
+  onVerMas,
+  onEliminar,
+  onAceptarSolicitud,
+  onRechazarSolicitud,
+  procesando = false,
+}) {
+  const { tipo, titulo, descripcion, imagen, created_at } = notificacion;
+  const esSolicitudAmistad = tipo === "solicitud_amistad";
 
   return (
     <article className="cardNotificacion">
@@ -45,13 +53,34 @@ function CardNotificacion({ notificacion, onVerMas, onEliminar }) {
           <p className="cardNotificacionDescripcion">{descripcion}</p>
         )}
 
-        <button
-          type="button"
-          className="cardNotificacionVerMas"
-          onClick={() => onVerMas?.(notificacion)}
-        >
-          Ver más →
-        </button>
+        {esSolicitudAmistad ? (
+          <div className="cardNotificacionAcciones">
+            <button
+              type="button"
+              className="cardNotificacionRechazar"
+              onClick={() => onRechazarSolicitud?.(notificacion)}
+              disabled={procesando}
+            >
+              Rechazar
+            </button>
+            <button
+              type="button"
+              className="cardNotificacionAceptar"
+              onClick={() => onAceptarSolicitud?.(notificacion)}
+              disabled={procesando}
+            >
+              Aceptar
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="cardNotificacionVerMas"
+            onClick={() => onVerMas?.(notificacion)}
+          >
+            Ver más →
+          </button>
+        )}
       </div>
     </article>
   );

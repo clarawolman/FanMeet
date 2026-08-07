@@ -281,6 +281,13 @@ const usuariosDelConcierto = await Promise.all(
     if (notificacion.tipo === "grupo_unido") {
       setPantalla("misGrupos");
     }
+
+    if (
+      notificacion.tipo === "amistad_aceptada" &&
+      notificacion.id_usuario_relacionado
+    ) {
+      await manejarVerUsuario(notificacion.id_usuario_relacionado);
+    }
   }
 
 

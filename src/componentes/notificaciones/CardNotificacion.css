@@ -94,6 +94,43 @@
   opacity: 0.75;
 }
 
+.cardNotificacionAcciones {
+  align-self: flex-end;
+  display: flex;
+  gap: 8px;
+}
+
+.cardNotificacionAcciones button {
+  border: none;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.cardNotificacionAcciones button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cardNotificacionRechazar {
+  background: #ffffff;
+  color: #6c48c5;
+  border: 1.5px solid #ded6ef;
+}
+
+.cardNotificacionAceptar {
+  background: #811cd9;
+  color: #ffffff;
+}
+
+.cardNotificacionAceptar:hover:not(:disabled) {
+  background: #7018bf;
+}
+
 @media (min-width: 768px) {
   .cardNotificacionTitulo {
     font-size: 16px;

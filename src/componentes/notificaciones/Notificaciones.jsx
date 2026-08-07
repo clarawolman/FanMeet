@@ -7,6 +7,7 @@ import { supabase } from "../../supabase";
 function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const [procesandoId, setProcesandoId] = useState(null);
 
   useEffect(() => {
     if (usuarioActual?.id_usuario) {
@@ -74,6 +75,56 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
     }
   }
 
+  async function manejarAceptarSolicitud(notificacion) {
+    if (!notificacion.id_amistad || procesandoId) return;
+
+    setProcesandoId(notificacion.id_notificacion);
+
+    const { error } = await supabase
+      .from("amistad")
+      .update({ estado: "aceptada" })
+      .eq("id_amistad", notificacion.id_amistad);
+
+    setProcesandoId(null);
+
+    if (error) {
+      console.error("Error aceptando solicitud de amistad:", error);
+      alert("No se pudo aceptar la solicitud: " + error.message);
+      return;
+    }
+
+    setNotificaciones((actuales) =>
+      actuales.filter(
+        (n) => n.id_notificacion !== notificacion.id_notificacion
+      )
+    );
+  }
+
+  async function manejarRechazarSolicitud(notificacion) {
+    if (!notificacion.id_amistad || procesandoId) return;
+
+    setProcesandoId(notificacion.id_notificacion);
+
+    const { error } = await supabase
+      .from("amistad")
+      .delete()
+      .eq("id_amistad", notificacion.id_amistad);
+
+    setProcesandoId(null);
+
+    if (error) {
+      console.error("Error rechazando solicitud de amistad:", error);
+      alert("No se pudo rechazar la solicitud: " + error.message);
+      return;
+    }
+
+    setNotificaciones((actuales) =>
+      actuales.filter(
+        (n) => n.id_notificacion !== notificacion.id_notificacion
+      )
+    );
+  }
+
   return (
     <div className="pantallaNotificaciones">
       <header className="home-header">
@@ -112,6 +163,9 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
               notificacion={notificacion}
               onVerMas={onVerMas}
               onEliminar={manejarEliminar}
+              onAceptarSolicitud={manejarAceptarSolicitud}
+              onRechazarSolicitud={manejarRechazarSolicitud}
+              procesando={procesandoId === notificacion.id_notificacion}
             />
           ))}
       </main>
