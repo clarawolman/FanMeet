@@ -48,36 +48,6 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
     }
   }
 
-  async function obtenerNuevoIdGrupo() {
-    const { data, error } = await supabase
-      .from("grupo")
-      .select("id_grupo")
-      .order("id_grupo", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(MENSAJE_ERROR_GENERICO);
-    }
-
-    return data?.id_grupo ? data.id_grupo + 1 : 1;
-  }
-
-  async function obtenerNuevoIdRelacion() {
-    const { data, error } = await supabase
-      .from("grupos_usuarios")
-      .select("id")
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(MENSAJE_ERROR_GENERICO);
-    }
-
-    return data?.id ? data.id + 1 : 1;
-  }
-
   function convertirImagenABase64(archivo) {
     return new Promise((resolve, reject) => {
       const lector = new FileReader();
@@ -144,11 +114,9 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
     setGuardando(true);
 
     try {
-      const nuevoIdGrupo = await obtenerNuevoIdGrupo();
       const imagenUrl = await obtenerImagenGrupo();
 
       const nuevoGrupo = {
-        id_grupo: nuevoIdGrupo,
         nombre: formulario.nombre.trim(),
         ubicacion: formulario.ubicacion.trim(),
         fecha: formulario.fecha,
@@ -170,10 +138,7 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
         throw new Error(MENSAJE_ERROR_GENERICO);
       }
 
-      const nuevoIdRelacion = await obtenerNuevoIdRelacion();
-
       const relacionGrupoUsuario = {
-        id: nuevoIdRelacion,
         id_grupo: grupoCreado.id_grupo,
         id_usuario: idUsuarioActual,
       };

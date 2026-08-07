@@ -10,7 +10,7 @@ import SubEventos from "./SubEventos";
 import Carrusel from "./Carrusel";
 import Footer from "../generales/Footer";
 
-function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver }) {
+function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver, onVerFansUnidos }) {
   const [filtroActivo, setFiltroActivo] = useState("todos");
 
   const filtros = [
@@ -43,7 +43,8 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver 
           <FansUnidos
             fans={concierto.usuarios}
             cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
-          />        
+            onConocerlos={onVerFansUnidos}
+          />
           </section>
 
         <section className="conciertoGrupos">

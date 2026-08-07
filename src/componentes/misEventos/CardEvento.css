@@ -99,6 +99,23 @@
   display: none;
 }
 
+.btnSalirEvento {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: #a3a3ad;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btnSalirEvento:hover {
+  color: #811cd9;
+}
+
 @media (min-width: 768px) {
   .cardEvento {
     width: 100%;

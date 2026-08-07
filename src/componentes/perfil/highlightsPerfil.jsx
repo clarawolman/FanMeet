@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import "./highlightsPerfil.css";
 
+const MAX_HIGHLIGHTS = 4;
+
 export default function HighlightsPerfil({
   highlights,
   isOwnProfile,
@@ -26,6 +28,7 @@ export default function HighlightsPerfil({
   }
 
   const hayContenido = highlights.length > 0 || isOwnProfile;
+  const hayLugar = highlights.length < MAX_HIGHLIGHTS;
 
   return (
     <section className="highlightsPerfil">
@@ -41,13 +44,13 @@ export default function HighlightsPerfil({
 
       {!error && !hayContenido && (
         <p className="highlightsPerfilVacio">
-          Todavía no hay highlights para mostrar.
+          No hay highlights.
         </p>
       )}
 
       {!error && hayContenido && (
         <div className="highlightsPerfilGrid">
-          {isOwnProfile && (
+          {isOwnProfile && hayLugar && (
             <button
               className="highlightAddCard"
               type="button"
@@ -59,7 +62,7 @@ export default function HighlightsPerfil({
             </button>
           )}
 
-          {isOwnProfile && (
+          {isOwnProfile && hayLugar && (
             <input
               ref={inputArchivoRef}
               type="file"
@@ -69,11 +72,8 @@ export default function HighlightsPerfil({
             />
           )}
 
-          {highlights.map((highlight, indice) => (
-            <div
-              className={`highlightCard ${indice === 0 ? "destacado" : ""}`}
-              key={highlight.id_highlight}
-            >
+          {highlights.map((highlight) => (
+            <div className="highlightCard" key={highlight.id_highlight}>
               <img src={highlight.url_imagen} alt="Highlight" />
             </div>
           ))}

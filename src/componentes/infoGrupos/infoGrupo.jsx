@@ -10,11 +10,14 @@ import MapaGrupo from "./mapaGrupo";
 import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
+import ModalConfirmacion from "../generales/ModalConfirmacion";
 
 function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
   const [verificandoConfirmacion, setVerificandoConfirmacion] = useState(true);
+  const [mostrarConfirmarSalida, setMostrarConfirmarSalida] = useState(false);
+  const [saliendo, setSaliendo] = useState(false);
 
   useEffect(() => {
     if (usuarioActual && grupo) {
@@ -66,6 +69,27 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
     setCargandoConfirmacion(false);
   }
 
+  async function confirmarSalirDelGrupo() {
+    setSaliendo(true);
+
+    const { error } = await supabase
+      .from("grupos_usuarios")
+      .delete()
+      .eq("id_usuario", usuarioActual.id_usuario)
+      .eq("id_grupo", grupo.id_grupo);
+
+    setSaliendo(false);
+
+    if (error) {
+      console.error("Error al salir del grupo:", error);
+      alert("No se pudo salir del grupo: " + error.message);
+      return;
+    }
+
+    setMostrarConfirmarSalida(false);
+    setConfirmado(false);
+  }
+
   return (
     <div className="infoGrupo">
       <HeaderGrupo titulo={`Grupo - ${grupo.nombre}`} onVolver={onVolver} />
@@ -87,7 +111,28 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
             cargandoConfirmacion={cargandoConfirmacion}
           />
         )}
+
+        {!verificandoConfirmacion && confirmado && (
+          <button
+            className="botonSalirGrupo"
+            type="button"
+            onClick={() => setMostrarConfirmarSalida(true)}
+          >
+            Salir del grupo
+          </button>
+        )}
       </div>
+
+      {mostrarConfirmarSalida && (
+        <ModalConfirmacion
+          mensaje={`¿Salir de ${grupo.nombre}?`}
+          textoConfirmar="Salir del grupo"
+          textoCancelar="Cancelar"
+          confirmando={saliendo}
+          onConfirmar={confirmarSalirDelGrupo}
+          onCancelar={() => setMostrarConfirmarSalida(false)}
+        />
+      )}
 
       <Footer onNavegar={onNavegar} />
     </div>

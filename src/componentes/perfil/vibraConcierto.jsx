@@ -6,13 +6,30 @@ export default function VibraConcierto({
   isOwnProfile,
   onSeleccionar,
 }) {
+  // En un perfil ajeno no se eligen vibras, solo se muestra la elegida:
+  // no tiene sentido listar las tres opciones si ninguna es editable.
+  const vibrasAMostrar = isOwnProfile
+    ? vibras
+    : vibras.filter((vibra) => vibra.id === vibraActual);
+
+  if (!isOwnProfile && vibrasAMostrar.length === 0) {
+    return (
+      <section className="vibraConcierto">
+        <h3>Vibe de concierto</h3>
+        <p className="vibraConciertoVacio">Todavía no eligió su vibra de concierto.</p>
+      </section>
+    );
+  }
+
   return (
     <section className="vibraConcierto">
-      <h3>Tu vibe de concierto</h3>
-      <p className="vibraConciertoSubtitulo">Dónde disfrutás más los shows</p>
+      <h3>{isOwnProfile ? "Tu vibe de concierto" : "Vibe de concierto"}</h3>
+      {isOwnProfile && (
+        <p className="vibraConciertoSubtitulo">Dónde disfrutás más los shows</p>
+      )}
 
       <div className="vibraConciertoLista">
-        {vibras.map((vibra) => {
+        {vibrasAMostrar.map((vibra) => {
           const activa = vibra.id === vibraActual;
 
           return (

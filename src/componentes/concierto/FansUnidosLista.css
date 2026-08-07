@@ -1,0 +1,110 @@
+.fansUnidosLista {
+  min-height: 100vh;
+  background-color: #f7f7fa;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.fansUnidosListaHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.fansUnidosListaVolver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #7c3aed;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.fansUnidosListaVolver:hover {
+  background-color: rgba(124, 58, 237, 0.07);
+}
+
+.fansUnidosListaHeader h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111111;
+}
+
+.fansUnidosListaHeader p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6f6f78;
+}
+
+.fansUnidosListaMain {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fansUnidosListaVacio {
+  margin: 0;
+  font-size: 13px;
+  color: #888888;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.fanUnidoCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #ececf1;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.fanUnidoCard:hover {
+  background: #f7f4ff;
+}
+
+.fanUnidoFoto {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.fanUnidoNombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+@media (min-width: 768px) {
+  .fansUnidosListaHeader {
+    padding: 14px 32px;
+  }
+
+  .fansUnidosListaMain {
+    padding: 20px 32px;
+  }
+}

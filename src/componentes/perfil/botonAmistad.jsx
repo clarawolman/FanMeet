@@ -20,7 +20,6 @@ export default function BotonAmistad({
       type="button"
       onClick={deshabilitado ? undefined : onAccion}
       disabled={deshabilitado}
-      title={deshabilitado ? "Función de amistad próximamente" : undefined}
     >
       {actual.texto}
     </button>

@@ -1,6 +1,6 @@
 import "./CardEvento.css";
 
-function CardEvento({ evento, onIngresar }) {
+function CardEvento({ evento, onIngresar, onSalir }) {
   const imagen =
     evento.imagen ||
     evento.imagenConcierto ||
@@ -58,6 +58,16 @@ function CardEvento({ evento, onIngresar }) {
           </div>
 
         </div>
+
+        {onSalir && (
+          <button
+            className="btnSalirEvento"
+            type="button"
+            onClick={() => onSalir(evento)}
+          >
+            Salir del concierto
+          </button>
+        )}
 
       </div>
     </article>

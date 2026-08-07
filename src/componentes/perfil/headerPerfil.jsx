@@ -1,14 +1,18 @@
 import { useRef } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
+import signOutIcono from "../../assets/signOut.png";
 
 export default function HeaderPerfil({
   usuario,
   isOwnProfile,
   estadoAmistad,
+  amistadDeshabilitada,
   onAccionAmistad,
   onSubirFoto,
   subiendoFoto,
+  onVolver,
+  onCerrarSesion,
 }) {
   const inputFotoRef = useRef(null);
 
@@ -30,7 +34,30 @@ export default function HeaderPerfil({
   return (
     <div className="headerPerfil">
       <header className="headerPerfilTop">
+        {onVolver && (
+          <button
+            className="headerPerfilVolver"
+            type="button"
+            onClick={onVolver}
+            aria-label="Volver"
+          >
+            ←
+          </button>
+        )}
+
         <p className="headerPerfilEyebrow">FanMeet</p>
+
+        {isOwnProfile && onCerrarSesion && (
+          <button
+            className="headerPerfilCerrarSesion"
+            type="button"
+            onClick={onCerrarSesion}
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <img src={signOutIcono} alt="" />
+          </button>
+        )}
       </header>
 
       <div className="headerPerfilInfo">
@@ -67,7 +94,11 @@ export default function HeaderPerfil({
         <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
 
         {!isOwnProfile && (
-          <BotonAmistad estado={estadoAmistad} onAccion={onAccionAmistad} deshabilitado />
+          <BotonAmistad
+            estado={estadoAmistad}
+            onAccion={onAccionAmistad}
+            deshabilitado={amistadDeshabilitada}
+          />
         )}
       </div>
     </div>

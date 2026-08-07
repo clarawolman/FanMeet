@@ -16,6 +16,12 @@
   color: #9a95a6;
 }
 
+.vibraConciertoVacio {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9a95a6;
+}
+
 .vibraConciertoLista {
   display: flex;
   flex-direction: column;

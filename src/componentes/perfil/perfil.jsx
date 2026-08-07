@@ -39,6 +39,8 @@ function Perfil({
   onEditarGeneros,
   onNavegar,
   onUsuarioActualizado,
+  onVolver,
+  onCerrarSesion,
 }) {
   const usuarioBase = usuarioPerfil || usuarioActual;
 
@@ -58,7 +60,9 @@ function Perfil({
   const [highlightsError, setHighlightsError] = useState("");
   const [subiendoHighlight, setSubiendoHighlight] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
-  const [estadoAmistad] = useState("conectar");
+  const [estadoAmistad, setEstadoAmistad] = useState("conectar");
+  const [idAmistad, setIdAmistad] = useState(null);
+  const [cargandoAmistad, setCargandoAmistad] = useState(false);
 
   useEffect(() => {
     if (usuario?.id_usuario) {
@@ -74,9 +78,92 @@ function Perfil({
       cargarGeneros(),
       cargarCatalogoGeneros(),
       cargarHighlights(),
+      cargarAmistad(),
     ]);
 
     setCargando(false);
+  }
+
+  async function cargarAmistad() {
+    if (isOwnProfile || !usuarioActual?.id_usuario) return;
+
+    const { data, error } = await supabase
+      .from("amistad")
+      .select("*")
+      .or(
+        `and(id_solicitante.eq.${usuarioActual.id_usuario},id_receptor.eq.${usuario.id_usuario}),and(id_solicitante.eq.${usuario.id_usuario},id_receptor.eq.${usuarioActual.id_usuario})`
+      )
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error cargando estado de amistad:", error);
+      return;
+    }
+
+    if (!data) {
+      setEstadoAmistad("conectar");
+      setIdAmistad(null);
+      return;
+    }
+
+    setIdAmistad(data.id_amistad);
+
+    if (data.estado === "aceptada") {
+      setEstadoAmistad("amigos");
+    } else if (data.id_solicitante === usuarioActual.id_usuario) {
+      setEstadoAmistad("solicitudEnviada");
+    } else {
+      setEstadoAmistad("aceptarSolicitud");
+    }
+  }
+
+  async function manejarAccionAmistad() {
+    if (isOwnProfile || !usuarioActual?.id_usuario || cargandoAmistad) return;
+
+    setCargandoAmistad(true);
+
+    if (estadoAmistad === "conectar") {
+      const { data, error } = await supabase
+        .from("amistad")
+        .insert([
+          {
+            id_solicitante: usuarioActual.id_usuario,
+            id_receptor: usuario.id_usuario,
+          },
+        ])
+        .select()
+        .single();
+
+      setCargandoAmistad(false);
+
+      if (error) {
+        alert("No se pudo enviar la solicitud: " + error.message);
+        return;
+      }
+
+      setIdAmistad(data.id_amistad);
+      setEstadoAmistad("solicitudEnviada");
+      return;
+    }
+
+    if (estadoAmistad === "aceptarSolicitud" && idAmistad) {
+      const { error } = await supabase
+        .from("amistad")
+        .update({ estado: "aceptada" })
+        .eq("id_amistad", idAmistad);
+
+      setCargandoAmistad(false);
+
+      if (error) {
+        alert("No se pudo aceptar la solicitud: " + error.message);
+        return;
+      }
+
+      setEstadoAmistad("amigos");
+      return;
+    }
+
+    setCargandoAmistad(false);
   }
 
   async function cargarCatalogoGeneros() {
@@ -92,26 +179,34 @@ function Perfil({
   }
 
   async function cargarEstadisticas() {
-    const [{ count: conciertos, error: errorConciertos }, { count: grupos, error: errorGrupos }] =
-      await Promise.all([
-        supabase
-          .from("usuarios_conciertos")
-          .select("*", { count: "exact", head: true })
-          .eq("id_usuario", usuario.id_usuario),
-        supabase
-          .from("grupos_usuarios")
-          .select("*", { count: "exact", head: true })
-          .eq("id_usuario", usuario.id_usuario),
-      ]);
+    const [
+      { count: conciertos, error: errorConciertos },
+      { count: grupos, error: errorGrupos },
+      { count: amigos, error: errorAmigos },
+    ] = await Promise.all([
+      supabase
+        .from("usuarios_conciertos")
+        .select("*", { count: "exact", head: true })
+        .eq("id_usuario", usuario.id_usuario),
+      supabase
+        .from("grupos_usuarios")
+        .select("*", { count: "exact", head: true })
+        .eq("id_usuario", usuario.id_usuario),
+      supabase
+        .from("amistad")
+        .select("*", { count: "exact", head: true })
+        .eq("estado", "aceptada")
+        .or(`id_solicitante.eq.${usuario.id_usuario},id_receptor.eq.${usuario.id_usuario}`),
+    ]);
 
     if (errorConciertos) console.error("Error contando conciertos:", errorConciertos);
     if (errorGrupos) console.error("Error contando grupos:", errorGrupos);
+    if (errorAmigos) console.error("Error contando amigos:", errorAmigos);
 
-    // No existe todavía una tabla de amistades: hasta que se cree, "Amigos" queda en 0.
     setEstadisticas({
       conciertos: conciertos || 0,
       grupos: grupos || 0,
-      amigos: 0,
+      amigos: amigos || 0,
     });
   }
 
@@ -167,7 +262,7 @@ function Perfil({
   }
 
   async function manejarSubirHighlight(archivo) {
-    if (!isOwnProfile) return;
+    if (!isOwnProfile || highlights.length >= 4) return;
 
     setSubiendoHighlight(true);
 
@@ -258,9 +353,14 @@ function Perfil({
         usuario={usuario}
         isOwnProfile={isOwnProfile}
         estadoAmistad={estadoAmistad}
-        onAccionAmistad={() => {}}
+        amistadDeshabilitada={
+          cargandoAmistad || estadoAmistad === "solicitudEnviada" || estadoAmistad === "amigos"
+        }
+        onAccionAmistad={manejarAccionAmistad}
         onSubirFoto={manejarSubirFoto}
         subiendoFoto={subiendoFoto}
+        onVolver={onVolver}
+        onCerrarSesion={onCerrarSesion}
       />
 
       <div className="perfilContenido">

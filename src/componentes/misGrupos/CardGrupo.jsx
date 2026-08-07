@@ -1,6 +1,6 @@
 import "./CardGrupo.css";
 
-function CardGrupo({ grupo, onAbrirGrupo }) {
+function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
   const usuarios = grupo.usuarios || [];
 
   const mostrarUsuarios = usuarios.slice(0, 3);
@@ -64,12 +64,24 @@ function CardGrupo({ grupo, onAbrirGrupo }) {
         </div>
       </div>
 
-      <button
-        className="btnVerMasGrupo"
-        onClick={() => onAbrirGrupo(grupo)}
-      >
-        Ver más
-      </button>
+      <div className="cardGrupoAcciones">
+        {onSalir && (
+          <button
+            className="btnSalirGrupo"
+            type="button"
+            onClick={() => onSalir(grupo)}
+          >
+            Salir
+          </button>
+        )}
+
+        <button
+          className="btnVerMasGrupo"
+          onClick={() => onAbrirGrupo(grupo)}
+        >
+          Ver más
+        </button>
+      </div>
     </article>
   );
 }

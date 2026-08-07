@@ -13,6 +13,23 @@
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
 
+.botonSalirGrupo {
+  margin: 10px 16px 0;
+  padding: 14px;
+  background: #ffffff;
+  color: #811cd9;
+  border: 1px solid #e7e1f0;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.botonSalirGrupo:hover {
+  background: #f7f4ff;
+}
+
 @media (min-width: 768px) {
   .infoGrupo {
     background: #f2f2f2;
@@ -28,5 +45,9 @@
   .infoGrupoContenido .heroGrupo .heroImageContainer {
     border-radius: 16px;
     overflow: hidden;
+  }
+
+  .botonSalirGrupo {
+    margin: 12px 0 0;
   }
 }

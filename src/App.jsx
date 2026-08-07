@@ -12,6 +12,7 @@ import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
 import Perfil from "./componentes/perfil/perfil";
 import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
+import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 
 import { supabase } from "./supabase";
 
@@ -22,6 +23,7 @@ function App() {
   const [datosRegistro, setDatosRegistro] = useState({});
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+  const [usuarioVisitado, setUsuarioVisitado] = useState(null);
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
@@ -215,6 +217,16 @@ const usuariosDelConcierto = await Promise.all(
     setPantalla("home");
   }
 
+  async function manejarCerrarSesion() {
+    await supabase.auth.signOut();
+    setUsuarioActual(null);
+    setUsuarioVisitado(null);
+    setConcierto(null);
+    setGrupoSeleccionado(null);
+    setErrorTexto("");
+    setPantalla("login");
+  }
+
   function manejarNavegacion(destino) {
     if (destino === "home") {
       setConcierto(null);
@@ -225,6 +237,22 @@ const usuariosDelConcierto = await Promise.all(
     }
 
     setPantalla(destino);
+  }
+
+  async function manejarVerUsuario(idUsuario) {
+    const { data, error } = await supabase
+      .from("usuario")
+      .select("*")
+      .eq("id_usuario", idUsuario)
+      .maybeSingle();
+
+    if (error || !data) {
+      console.error("Error cargando usuario:", error);
+      return;
+    }
+
+    setUsuarioVisitado(data);
+    setPantalla("perfilAjeno");
   }
 
   async function manejarEntrarConcierto(idConcierto) {
@@ -296,7 +324,20 @@ async function manejarFinalizarRegistro(datosPaso3) {
   });
 
   if (authError) {
-    setErrorTexto("Error al crear usuario en Auth: " + authError.message);
+    // Si el mail ya tiene cuenta en auth.users pero su fila en "usuario"
+    // se borró a mano (la app no puede borrar de auth con la anon key),
+    // supabase.auth.signUp sigue rechazando el mail como duplicado. El
+    // mensaje crudo ("User already registered") no explica eso, así que
+    // lo reemplazamos por uno accionable.
+    const yaRegistrado =
+      authError.code === "user_already_exists" ||
+      authError.message?.toLowerCase().includes("already registered");
+
+    setErrorTexto(
+      yaRegistrado
+        ? "Ese mail ya tiene una cuenta. Iniciá sesión, o si la cuenta quedó sin perfil, pedile a quien administra Supabase que la elimine desde Authentication → Users."
+        : "Error al crear usuario en Auth: " + authError.message
+    );
     setCargando(false);
     return;
   }
@@ -365,7 +406,9 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "infoGrupo" &&
     pantalla !== "concierto" &&
     pantalla !== "perfil" &&
-    pantalla !== "editarGeneros"
+    pantalla !== "editarGeneros" &&
+    pantalla !== "fansUnidos" &&
+    pantalla !== "perfilAjeno"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
@@ -439,6 +482,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onEditarGeneros={() => setPantalla("editarGeneros")}
           onNavegar={manejarNavegacion}
           onUsuarioActualizado={setUsuarioActual}
+          onCerrarSesion={manejarCerrarSesion}
         />
       )}
 
@@ -446,6 +490,26 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <EditarGeneros
           usuarioActual={usuarioActual}
           onVolver={() => setPantalla("perfil")}
+        />
+      )}
+
+      {pantalla === "perfilAjeno" && usuarioVisitado && usuarioActual && (
+        <Perfil
+          usuarioActual={usuarioActual}
+          usuarioPerfil={usuarioVisitado}
+          isOwnProfile={false}
+          onNavegar={manejarNavegacion}
+          onVolver={() => setPantalla("fansUnidos")}
+        />
+      )}
+
+      {pantalla === "fansUnidos" && concierto && (
+        <FansUnidosLista
+          fans={concierto.usuarios}
+          cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
+          usuarioActualId={usuarioActual?.id_usuario}
+          onVolver={() => setPantalla("concierto")}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
 
@@ -468,6 +532,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
             setGrupoSeleccionado(grupo);
             setPantalla("infoGrupo");
           }}
+          onVerFansUnidos={() => setPantalla("fansUnidos")}
         />
       )}
 
