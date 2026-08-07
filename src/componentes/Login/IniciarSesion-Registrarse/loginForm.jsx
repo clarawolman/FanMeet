@@ -66,7 +66,14 @@ function LoginForm({ onIngresar, onRegistrarse }) {
         .single();
 
       if (errorPerfil || !usuarioPerfil) {
-        setErrorLogin("No se pudo cargar el perfil del usuario");
+        // La cuenta de auth existe pero su fila en "usuario" ya no (por
+        // ejemplo, se borró a mano desde Supabase). Para quien está
+        // logueándose esto es indistinguible de "el usuario no existe",
+        // así que mostramos el mismo mensaje que en ese caso. Además
+        // cerramos la sesión de auth que se acaba de abrir para no dejar
+        // a la persona logueada sin perfil.
+        await supabase.auth.signOut();
+        setErrorLogin("Este usuario no existe");
         setCargandoLogin(false);
         return;
       }

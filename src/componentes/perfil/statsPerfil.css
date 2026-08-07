@@ -1,0 +1,38 @@
+.statsPerfil {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 16px 16px 4px;
+  background: #ffffff;
+}
+
+.statItemPerfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.statItemPerfil .statValuePerfil {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #6c48c5;
+  line-height: 1.2;
+}
+
+.statItemPerfil .statLabelPerfil {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9a95a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (min-width: 768px) {
+  .statsPerfil {
+    padding: 18px 40px 4px;
+    gap: 44px;
+  }
+}

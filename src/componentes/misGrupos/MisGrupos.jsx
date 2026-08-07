@@ -6,6 +6,7 @@ import { supabase } from "../../supabase";
 import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
 import Footer from "../generales/Footer";
+import ModalConfirmacion from "../generales/ModalConfirmacion";
 
 function MisGrupos({
   usuarioActual,
@@ -16,6 +17,8 @@ function MisGrupos({
   const [misGrupos, setMisGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorTexto, setErrorTexto] = useState("");
+  const [grupoParaSalir, setGrupoParaSalir] = useState(null);
+  const [saliendo, setSaliendo] = useState(false);
 
   useEffect(() => {
     if (usuarioActual?.id_usuario) {
@@ -95,6 +98,29 @@ function MisGrupos({
     setMisGrupos(grupos);
     setCargando(false);
   }
+
+  async function confirmarSalirDelGrupo() {
+    if (!grupoParaSalir) return;
+
+    setSaliendo(true);
+
+    const { error } = await supabase
+      .from("grupos_usuarios")
+      .delete()
+      .eq("id_usuario", usuarioActual.id_usuario)
+      .eq("id_grupo", grupoParaSalir.id_grupo);
+
+    setSaliendo(false);
+
+    if (error) {
+      alert("No se pudo salir del grupo: " + error.message);
+      return;
+    }
+
+    setGrupoParaSalir(null);
+    await cargarMisGrupos();
+  }
+
   const gruposPorConcierto = misGrupos.reduce((acumulador, grupo) => {
     const idConcierto = String(grupo.id_concierto || "sin-concierto");
 
@@ -155,6 +181,7 @@ function MisGrupos({
                       key={grupo.id_grupo}
                       grupo={grupo}
                       onAbrirGrupo={() => onAbrirGrupo(grupo)}
+                      onSalir={setGrupoParaSalir}
                     />
                   ))}
                 </div>
@@ -163,6 +190,17 @@ function MisGrupos({
           </div>
         )}
       </main>
+
+      {grupoParaSalir && (
+        <ModalConfirmacion
+          mensaje={`¿Salir de ${grupoParaSalir.nombre}?`}
+          textoConfirmar="Salir del grupo"
+          textoCancelar="Cancelar"
+          confirmando={saliendo}
+          onConfirmar={confirmarSalirDelGrupo}
+          onCancelar={() => setGrupoParaSalir(null)}
+        />
+      )}
 
       <Footer onNavegar={onNavegar} pantallaActiva="misGrupos" />
     </div>

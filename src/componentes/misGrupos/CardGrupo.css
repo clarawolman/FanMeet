@@ -125,6 +125,14 @@
   white-space: nowrap;
 }
 
+.cardGrupoAcciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .btnVerMasGrupo {
   flex-shrink: 0;
   border: none;
@@ -143,6 +151,25 @@
 .btnVerMasGrupo:hover {
   transform: translateY(-1px);
   opacity: 0.95;
+}
+
+.btnSalirGrupo {
+  flex-shrink: 0;
+  border: 1px solid #e7e1f0;
+  cursor: pointer;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #6f6f78;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btnSalirGrupo:hover {
+  background: #f7f7fa;
+  color: #811cd9;
 }
 
 /* ============================

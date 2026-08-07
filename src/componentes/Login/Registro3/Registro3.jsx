@@ -1,14 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Registro3.css";
-
-const generosMusicales = [
-  { id: "rock", nombre: "Rock", icono: "⚡" },
-  { id: "pop", nombre: "Pop", icono: "♪" },
-  { id: "techno", nombre: "Techno", icono: "▥" },
-  { id: "indie", nombre: "Indie", icono: "▤" },
-  { id: "hiphop", nombre: "Hip Hop", icono: "🎧" },
-  { id: "jazz", nombre: "Jazz", icono: "♨" },
-];
+import { supabase } from "../../../supabase";
+import { idDeGenero, nombreDeGenero } from "../../../utils/generos";
 
 const ambientes = [
   {
@@ -32,6 +25,10 @@ const ambientes = [
 ];
 
 function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
+  const [catalogoGeneros, setCatalogoGeneros] = useState([]);
+  const [catalogoError, setCatalogoError] = useState("");
+  const [cargandoCatalogo, setCargandoCatalogo] = useState(true);
+
   const [generosSeleccionados, setGenerosSeleccionados] = useState(
     datosIniciales.generos || []
   );
@@ -39,6 +36,27 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
     datosIniciales.estilo_asistencia || ""
   );
   const [errorRegistro3, setErrorRegistro3] = useState("");
+
+  useEffect(() => {
+    cargarCatalogoGeneros();
+  }, []);
+
+  async function cargarCatalogoGeneros() {
+    setCargandoCatalogo(true);
+
+    const { data, error } = await supabase.from("estilo_musical").select("*");
+
+    if (error) {
+      console.error("Error cargando catálogo de géneros:", error);
+      setCatalogoError(error.message);
+      setCatalogoGeneros([]);
+    } else {
+      setCatalogoError("");
+      setCatalogoGeneros(data || []);
+    }
+
+    setCargandoCatalogo(false);
+  }
 
   function manejarGenero(idGenero) {
     setErrorRegistro3("");
@@ -73,10 +91,10 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
 
     setErrorRegistro3("");
 
-  onFinalizar({
-  estilos_musicales: generosSeleccionados,
-  estilo_asistencia: ambienteSeleccionado,
-});
+    onFinalizar({
+      estilos_musicales: generosSeleccionados,
+      estilo_asistencia: ambienteSeleccionado,
+    });
   }
 
   return (
@@ -105,23 +123,36 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
           Elegí al menos 2 géneros favoritos para encontrar a tu grupo
         </p>
 
-        <div className="registro3Generos">
-          {generosMusicales.map((genero) => {
-            const activo = generosSeleccionados.includes(genero.id);
+        {cargandoCatalogo && (
+          <p className="registro3Subtitulo">Cargando géneros...</p>
+        )}
 
-            return (
-              <button
-                key={genero.id}
-                className={`registro3Genero ${activo ? "activo" : ""}`}
-                type="button"
-                onClick={() => manejarGenero(genero.id)}
-              >
-                <span>{genero.icono}</span>
-                <strong>{genero.nombre}</strong>
-              </button>
-            );
-          })}
-        </div>
+        {!cargandoCatalogo && catalogoError && (
+          <p className="registro3Error">
+            No pudimos cargar el catálogo de géneros ({catalogoError}).
+          </p>
+        )}
+
+        {!cargandoCatalogo && !catalogoError && (
+          <div className="registro3Generos">
+            {catalogoGeneros.map((genero) => {
+              const idGenero = idDeGenero(genero);
+              const activo = generosSeleccionados.includes(idGenero);
+
+              return (
+                <button
+                  key={idGenero}
+                  className={`registro3Genero ${activo ? "activo" : ""}`}
+                  type="button"
+                  onClick={() => manejarGenero(idGenero)}
+                >
+                  <span>♪</span>
+                  <strong>{nombreDeGenero(genero)}</strong>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <h3 className="registro3SeccionTitulo">♚ Ambiente de Concierto</h3>
 

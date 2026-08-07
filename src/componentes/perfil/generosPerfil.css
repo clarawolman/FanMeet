@@ -1,0 +1,88 @@
+.generosPerfil {
+  margin-top: 18px;
+}
+
+.generosPerfilHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 10px;
+}
+
+.generosPerfilHeader h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.generosPerfilBadge {
+  background: #f0eefe;
+  color: #6c48c5;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.generosPerfilScroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 0 16px 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.generosPerfilScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.generoChipAdd {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px dashed #cdbdf0;
+  background: #ffffff;
+  color: #6c48c5;
+  font-size: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.generoChipPerfil {
+  flex: 0 0 auto;
+  background: #f0eefe;
+  color: #6c48c5;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 14px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.generosPerfilVacio {
+  margin: 0;
+  padding: 0 16px;
+  font-size: 13px;
+  color: #888888;
+}
+
+@media (min-width: 768px) {
+  .generosPerfilHeader {
+    padding: 0 40px;
+  }
+
+  .generosPerfilScroll {
+    padding: 0 40px 4px;
+  }
+}
