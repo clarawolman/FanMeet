@@ -12,14 +12,14 @@
 
 .highlightsPerfilHeader h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 700;
   color: #1a1a1a;
 }
 
 .highlightsPerfilVacio {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: #888888;
 }
 
@@ -43,9 +43,9 @@
   border-radius: 16px;
   border: 1.5px dashed #cdbdf0;
   background: #f7f4ff;
-  color: #6c48c5;
+  color: #811cd9;
   font-size: 26px;
-  font-weight: 300;
+  font-weight: 800;
   cursor: pointer;
   font-family: inherit;
 }
@@ -55,6 +55,10 @@
   border-radius: 16px;
   overflow: hidden;
   background: #f2f2f2;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
 }
 
 .highlightCard img {
@@ -62,10 +66,104 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.2s;
+}
+
+.highlightCard:hover img {
+  transform: scale(1.03);
+}
+
+/* ===== Overlay tipo historias/feed ===== */
+.highlightOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(15, 10, 20, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.highlightOverlayBarras {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  gap: 4px;
+}
+
+.highlightOverlayBarra {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.highlightOverlayBarra.activa {
+  background: #ffffff;
+}
+
+.highlightOverlayCerrar {
+  position: absolute;
+  top: 34px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlightOverlayImagen {
+  max-width: min(92vw, 480px);
+  max-height: 80vh;
+  border-radius: 18px;
+  object-fit: contain;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.highlightOverlayNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlightOverlayNavPrev {
+  left: 12px;
+}
+
+.highlightOverlayNavNext {
+  right: 12px;
 }
 
 @media (min-width: 768px) {
   .highlightsPerfil {
     padding: 0 40px;
+  }
+
+  .highlightOverlayNav {
+    width: 46px;
+    height: 46px;
   }
 }

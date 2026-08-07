@@ -7,21 +7,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .generosPerfilHeader h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 700;
   color: #1a1a1a;
 }
 
 .generosPerfilBadge {
-  background: #f0eefe;
-  color: #6c48c5;
-  font-size: 11px;
-  font-weight: 700;
+  background: #ffe3f0;
+  color: #ff3f97;
+  font-size: 12px;
+  font-weight: 600;
   padding: 4px 10px;
   border-radius: 999px;
   white-space: nowrap;
@@ -29,9 +29,10 @@
 
 .generosPerfilScroll {
   display: flex;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 16px;
   overflow-x: auto;
-  padding: 0 16px 4px;
+  padding: 2px 16px 4px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -42,14 +43,14 @@
 
 .generoChipAdd {
   flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 1.5px dashed #cdbdf0;
   background: #ffffff;
-  color: #6c48c5;
-  font-size: 18px;
-  font-weight: 400;
+  color: #811cd9;
+  font-size: 20px;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -58,22 +59,43 @@
 
 .generoChipPerfil {
   flex: 0 0 auto;
-  background: #f0eefe;
-  color: #6c48c5;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 0 14px;
-  height: 40px;
-  border-radius: 999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 52px;
+}
+
+.generoChipIcono {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f4effc;
+  color: #811cd9;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.generoChipIcono svg {
+  width: 20px;
+  height: 20px;
+}
+
+.generoChipPerfil small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #811cd9;
+  text-align: center;
   white-space: nowrap;
+  text-transform: capitalize;
 }
 
 .generosPerfilVacio {
   margin: 0;
   padding: 0 16px;
-  font-size: 13px;
+  font-size: 14px;
   color: #888888;
 }
 
@@ -83,6 +105,6 @@
   }
 
   .generosPerfilScroll {
-    padding: 0 40px 4px;
+    padding: 2px 40px 4px;
   }
 }

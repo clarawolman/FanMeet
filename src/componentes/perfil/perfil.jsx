@@ -7,7 +7,10 @@ import StatsPerfil from "./statsPerfil";
 import GenerosPerfil from "./generosPerfil";
 import VibraConcierto from "./vibraConcierto";
 import HighlightsPerfil from "./highlightsPerfil";
+import EditarGeneros from "../editarGeneros/EditarGeneros";
+import ListaAmigosPerfil from "./listaAmigosPerfil";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
+import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
 
 // Mismos valores que usa Registro3 para usuario.estilo_asistencia:
 // no son datos inventados, son el vocabulario real ya persistido en esa columna.
@@ -16,19 +19,19 @@ const AMBIENTES_CONCIERTO = [
     id: "pogo",
     nombre: "Pogos, campos",
     descripcion: "Mucha energía, sudor y movimiento.",
-    icono: "☍",
+    icono: <IconoPogo />,
   },
   {
     id: "tranquilo",
     nombre: "Platea",
     descripcion: "Sentado y relajado con una bebida.",
-    icono: "▣",
+    icono: <IconoSentado />,
   },
   {
     id: "campo",
     nombre: "Primera Fila",
     descripcion: "Ojos en el escenario, cantando cada palabra.",
-    icono: "★",
+    icono: <IconoPrimeraFila />,
   },
 ];
 
@@ -36,11 +39,11 @@ function Perfil({
   usuarioActual,
   usuarioPerfil,
   isOwnProfile = true,
-  onEditarGeneros,
   onNavegar,
   onUsuarioActualizado,
   onVolver,
   onCerrarSesion,
+  onVerUsuario,
 }) {
   const usuarioBase = usuarioPerfil || usuarioActual;
 
@@ -50,6 +53,9 @@ function Perfil({
   const usuario = fotoLocal
     ? { ...usuarioBase, fotoperfil: fotoLocal }
     : usuarioBase;
+
+  const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
+  const [mostrarAmigos, setMostrarAmigos] = useState(false);
 
   const [cargando, setCargando] = useState(true);
   const [estadisticas, setEstadisticas] = useState({ conciertos: 0, grupos: 0, amigos: 0 });
@@ -360,16 +366,22 @@ function Perfil({
         onSubirFoto={manejarSubirFoto}
         subiendoFoto={subiendoFoto}
         onVolver={onVolver}
+        onNavegar={onNavegar}
         onCerrarSesion={onCerrarSesion}
       />
 
       <div className="perfilContenido">
-        <StatsPerfil estadisticas={estadisticas} />
+        <StatsPerfil
+          estadisticas={estadisticas}
+          onVerConciertos={() => onNavegar?.("misEventos")}
+          onVerAmigos={() => setMostrarAmigos(true)}
+          onVerGrupos={() => onNavegar?.("misGrupos")}
+        />
 
         <GenerosPerfil
           generos={generosConNombre}
           isOwnProfile={isOwnProfile}
-          onEditar={onEditarGeneros}
+          onEditar={() => setMostrarEditorGeneros(true)}
         />
 
         <VibraConcierto
@@ -391,6 +403,29 @@ function Perfil({
       </div>
 
       <Footer onNavegar={onNavegar} pantallaActiva="perfil" />
+
+      {mostrarEditorGeneros && (
+        <div className="perfilOverlayPantalla">
+          <EditarGeneros
+            usuarioActual={usuario}
+            onVolver={() => {
+              setMostrarEditorGeneros(false);
+              cargarGeneros();
+            }}
+          />
+        </div>
+      )}
+
+      {mostrarAmigos && (
+        <ListaAmigosPerfil
+          usuario={usuario}
+          onVolver={() => setMostrarAmigos(false)}
+          onVerUsuario={(idUsuario) => {
+            setMostrarAmigos(false);
+            onVerUsuario?.(idUsuario);
+          }}
+        />
+      )}
     </div>
   );
 }

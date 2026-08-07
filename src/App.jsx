@@ -269,8 +269,6 @@ const usuariosDelConcierto = await Promise.all(
     await cargarConciertoPorId(concierto.id_concierto);
   }
 
-  function guardarDatosRegistro(datos) {
-    setDatosRegistro((anteriores) => ({ ...anteriores, ...datos }));
   async function manejarVerMasNotificacion(notificacion) {
     if (notificacion.tipo === "concierto_unido" && notificacion.id_concierto) {
       await manejarEntrarConcierto(notificacion.id_concierto);
@@ -416,7 +414,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "perfil" &&
     pantalla !== "editarGeneros" &&
     pantalla !== "fansUnidos" &&
-    pantalla !== "perfilAjeno"
+    pantalla !== "perfilAjeno" &&
     pantalla !== "notificaciones"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
@@ -492,6 +490,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onNavegar={manejarNavegacion}
           onUsuarioActualizado={setUsuarioActual}
           onCerrarSesion={manejarCerrarSesion}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
 
@@ -509,6 +508,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           isOwnProfile={false}
           onNavegar={manejarNavegacion}
           onVolver={() => setPantalla("fansUnidos")}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
 

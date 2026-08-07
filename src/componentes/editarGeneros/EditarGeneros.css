@@ -115,9 +115,9 @@
 }
 
 .editarGenerosChip.activo {
-  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
+  background: #811cd9 !important;
   color: #ffffff !important;
-  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  box-shadow: 0 8px 18px rgba(129, 28, 217, 0.28) !important;
   opacity: 1 !important;
 }
 
@@ -175,9 +175,9 @@
 }
 
 .editarGenerosBotonGuardar {
-  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%);
+  background: #811cd9;
   color: #ffffff;
-  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28);
+  box-shadow: 0 8px 18px rgba(129, 28, 217, 0.28);
 }
 
 .editarGenerosBotonCancelar:active,
