@@ -91,7 +91,7 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
     }
 
     if (usuarioConMail) {
-      setErrorRegistro("Ese mail ya está registrado");
+      setErrorRegistro("Mail ya está registrado");
       setCargando(false);
       return;
     }
@@ -109,7 +109,7 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
     }
 
     if (usuarioConNombre) {
-      setErrorRegistro("Ese nombre de usuario ya está en uso");
+      setErrorRegistro("Nombre de usuario en uso");
       setCargando(false);
       return;
     }

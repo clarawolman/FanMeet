@@ -397,7 +397,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
   setUsuarioActual(usuarioCreado);
   setDatosRegistro({});
   setCargando(false);
-  setPantalla("login");
+  setPantalla("home");
 }
 
   const esPantallaLogin =
