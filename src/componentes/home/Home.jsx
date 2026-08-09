@@ -4,6 +4,7 @@ import OverlayCodigo from "./OverlayCodigo";
 import { supabase } from "../../supabase";
 import { crearNotificacion } from "../../notificaciones";
 import Footer from "../generales/Footer";
+import IconoCampana from "../generales/IconoCampana";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
@@ -325,7 +326,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
           onClick={() => onNavegar("notificaciones")}
           aria-label="Notificaciones"
         >
-          🔔
+          <IconoCampana />
           {cantidadNotificaciones > 0 && (
             <span className="home-header-bell-badge">
               {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}

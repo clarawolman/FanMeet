@@ -2,7 +2,7 @@
   border: none;
   border-radius: 999px;
   padding: 9px 20px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
@@ -15,18 +15,18 @@
 }
 
 .botonAmistad.conectar {
-  background: #6c48c5;
+  background: #811cd9;
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(108, 72, 197, 0.35);
+  box-shadow: 0 4px 14px rgba(129, 28, 217, 0.35);
 }
 
 .botonAmistad.conectar:hover {
-  background: #5a3aad;
+  background: #6f18ba;
 }
 
 .botonAmistad.enviada {
   background: #ffffff;
-  color: #6c48c5;
+  color: #811cd9;
   border: 1.5px solid #ded6ef;
 }
 
@@ -42,7 +42,7 @@
 
 .botonAmistad.amigos {
   background: #f0eefe;
-  color: #6c48c5;
+  color: #811cd9;
   border: 1px solid #e2dbf7;
 }
 

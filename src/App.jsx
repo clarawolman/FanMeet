@@ -497,6 +497,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onNavegar={manejarNavegacion}
           onUsuarioActualizado={setUsuarioActual}
           onCerrarSesion={manejarCerrarSesion}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
 
@@ -514,6 +515,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           isOwnProfile={false}
           onNavegar={manejarNavegacion}
           onVolver={() => setPantalla("fansUnidos")}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
 

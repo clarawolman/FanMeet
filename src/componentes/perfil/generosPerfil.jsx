@@ -1,4 +1,5 @@
 import "./generosPerfil.css";
+import IconoGenero from "./generoIconos";
 
 export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
   return (
@@ -25,6 +26,9 @@ export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
 
           {generos.map((genero) => (
             <div className="generoChipPerfil" key={genero.id}>
+              <span className="generoChipIcono">
+                <IconoGenero nombre={genero.nombre} />
+              </span>
               <small>{genero.nombre}</small>
             </div>
           ))}

@@ -523,13 +523,23 @@
 
 .home-header-bell {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   border: none;
-  background: none;
+  border-radius: 50%;
+  background: #f5f5f7;
+  color: #33333a;
   padding: 0;
   cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
   flex-shrink: 0;
+}
+
+.home-header-bell svg {
+  width: 18px;
+  height: 18px;
 }
 
 .home-header-bell:hover {

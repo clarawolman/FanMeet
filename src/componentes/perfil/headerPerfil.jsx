@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
+import IconoCampana from "../generales/IconoCampana";
 import signOutIcono from "../../assets/signOut.png";
 
 export default function HeaderPerfil({
@@ -12,6 +13,7 @@ export default function HeaderPerfil({
   onSubirFoto,
   subiendoFoto,
   onVolver,
+  onNavegar,
   onCerrarSesion,
 }) {
   const inputFotoRef = useRef(null);
@@ -47,16 +49,31 @@ export default function HeaderPerfil({
 
         <p className="headerPerfilEyebrow">FanMeet</p>
 
-        {isOwnProfile && onCerrarSesion && (
-          <button
-            className="headerPerfilCerrarSesion"
-            type="button"
-            onClick={onCerrarSesion}
-            aria-label="Cerrar sesión"
-            title="Cerrar sesión"
-          >
-            <img src={signOutIcono} alt="" />
-          </button>
+        {isOwnProfile && (
+          <div className="headerPerfilAcciones">
+            {onNavegar && (
+              <button
+                className="headerPerfilCampana"
+                type="button"
+                onClick={() => onNavegar("notificaciones")}
+                aria-label="Notificaciones"
+              >
+                <IconoCampana />
+              </button>
+            )}
+
+            {onCerrarSesion && (
+              <button
+                className="headerPerfilCerrarSesion"
+                type="button"
+                onClick={onCerrarSesion}
+                aria-label="Cerrar sesión"
+                title="Cerrar sesión"
+              >
+                <img src={signOutIcono} alt="" />
+              </button>
+            )}
+          </div>
         )}
       </header>
 

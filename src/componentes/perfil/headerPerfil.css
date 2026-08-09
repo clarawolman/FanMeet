@@ -4,10 +4,8 @@
 
 .headerPerfilTop {
   width: 100%;
-  padding: 22px 24px 18px;
+  padding: 18px 20px 14px;
   background: #ffffff;
-  border-bottom: 1px solid #ececf1;
-  box-shadow: 0 2px 10px rgba(20, 20, 30, 0.04);
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -36,13 +34,44 @@
   background: #f7f4ff;
 }
 
+.headerPerfilAcciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.headerPerfilCampana {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #f5f5f7;
+  color: #33333a;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.12s;
+}
+
+.headerPerfilCampana svg {
+  width: 18px;
+  height: 18px;
+}
+
+.headerPerfilCampana:hover {
+  opacity: 0.75;
+}
+
 .headerPerfilCerrarSesion {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-left: auto;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
   background: none;
@@ -50,11 +79,12 @@
   cursor: pointer;
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
-  transition: transform 0.12s;
+  opacity: 0.85;
+  transition: transform 0.12s, opacity 0.12s;
 }
 
 .headerPerfilCerrarSesion:hover {
+  opacity: 1;
   transform: scale(1.05);
 }
 
@@ -71,9 +101,9 @@
 .headerPerfilEyebrow {
   margin: 0;
   color: #811cd9;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: -0.8px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   line-height: 1;
   text-align: left;
 }
@@ -83,38 +113,38 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 18px 16px 14px;
+  gap: 10px;
+  padding: 6px 16px 22px;
 }
 
 .headerPerfilFotoWrap {
   position: relative;
-  width: 76px;
-  height: 76px;
+  width: 92px;
+  height: 92px;
 }
 
 .headerPerfilFoto {
-  width: 76px;
-  height: 76px;
+  width: 92px;
+  height: 92px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 10px rgba(108, 72, 197, 0.2);
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 16px rgba(129, 28, 217, 0.22);
   display: block;
   background: #f0eefe;
 }
 
 .headerPerfilFotoEditar {
   position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 22px;
-  height: 22px;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
+  border: 2.5px solid #ffffff;
   background: #ff3f97;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,7 +153,7 @@
 
 .headerPerfilNombre {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #1a1a1a;
   display: flex;
@@ -133,10 +163,10 @@
 
 @media (min-width: 768px) {
   .headerPerfilTop {
-    padding: 22px 40px 18px;
+    padding: 22px 40px 16px;
   }
 
   .headerPerfilInfo {
-    padding: 18px 40px 14px;
+    padding: 8px 40px 26px;
   }
 }
