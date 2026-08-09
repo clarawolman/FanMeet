@@ -269,6 +269,9 @@ const usuariosDelConcierto = await Promise.all(
     await cargarConciertoPorId(concierto.id_concierto);
   }
 
+  function guardarDatosRegistro(datos) {
+    setDatosRegistro((anteriores) => ({ ...anteriores, ...datos }));
+  }
   async function manejarVerMasNotificacion(notificacion) {
     if (notificacion.tipo === "concierto_unido" && notificacion.id_concierto) {
       await manejarEntrarConcierto(notificacion.id_concierto);
@@ -278,11 +281,15 @@ const usuariosDelConcierto = await Promise.all(
     if (notificacion.tipo === "grupo_unido") {
       setPantalla("misGrupos");
     }
+
+    if (
+      notificacion.tipo === "amistad_aceptada" &&
+      notificacion.id_usuario_relacionado
+    ) {
+      await manejarVerUsuario(notificacion.id_usuario_relacionado);
+    }
   }
 
-  function guardarDatosRegistro(datosNuevos) {
-    setDatosRegistro((anteriores) => ({ ...anteriores, ...datosNuevos }));
-  }
 
   function salirDelRegistro() {
     setDatosRegistro({});
