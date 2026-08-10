@@ -16,6 +16,8 @@ import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 
 import { supabase } from "./supabase";
+import { authService } from "./services/authService";
+import { usuariosService } from "./services/usuariosService";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -219,7 +221,7 @@ const usuariosDelConcierto = await Promise.all(
   }
 
   async function manejarCerrarSesion() {
-    await supabase.auth.signOut();
+    await authService.logout();
     setUsuarioActual(null);
     setUsuarioVisitado(null);
     setConcierto(null);
@@ -241,19 +243,13 @@ const usuariosDelConcierto = await Promise.all(
   }
 
   async function manejarVerUsuario(idUsuario) {
-    const { data, error } = await supabase
-      .from("usuario")
-      .select("*")
-      .eq("id_usuario", idUsuario)
-      .maybeSingle();
-
-    if (error || !data) {
+    try {
+      const usuario = await usuariosService.obtenerPerfil(idUsuario);
+      setUsuarioVisitado(usuario);
+      setPantalla("perfilAjeno");
+    } catch (error) {
       console.error("Error cargando usuario:", error);
-      return;
     }
-
-    setUsuarioVisitado(data);
-    setPantalla("perfilAjeno");
   }
 
   async function manejarEntrarConcierto(idConcierto) {
@@ -328,76 +324,20 @@ async function manejarFinalizarRegistro(datosPaso3) {
     ...datosPaso3,
   };
 
-  const fotoDefault =
-    "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
-
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: datosFinales.mail,
-    password: datosFinales.contrasena,
-  });
-
-  if (authError) {
-    // Si el mail ya tiene cuenta en auth.users pero su fila en "usuario"
-    // se borró a mano (la app no puede borrar de auth con la anon key),
-    // supabase.auth.signUp sigue rechazando el mail como duplicado. El
-    // mensaje crudo ("User already registered") no explica eso, así que
-    // lo reemplazamos por uno accionable.
-    const yaRegistrado =
-      authError.code === "user_already_exists" ||
-      authError.message?.toLowerCase().includes("already registered");
-
-    setErrorTexto(
-      yaRegistrado
-        ? "Ese mail ya tiene una cuenta. Iniciá sesión, o si la cuenta quedó sin perfil, pedile a quien administra Supabase que la elimine desde Authentication → Users."
-        : "Error al crear usuario en Auth: " + authError.message
-    );
+  // Reemplaza signUp + insert en "usuario" + insert en
+  // "estilo_musical_usuario" por una sola llamada al backend, que hace las
+  // 3 cosas en ese mismo orden (backend/src/services/authService.js) y
+  // devuelve exactamente los mismos mensajes de error.
+  try {
+    const usuarioCreado = await authService.registro(datosFinales);
+    setUsuarioActual(usuarioCreado);
+    setDatosRegistro({});
     setCargando(false);
-    return;
-  }
-
-  const { data: usuarioCreado, error } = await supabase
-    .from("usuario")
-    .insert([
-      {
-        id_usuario: authData.user.id,
-        nombre: datosFinales.nombre,
-        mail: datosFinales.mail,
-        fechanac: datosFinales.fechanac,
-        genero: datosFinales.genero,
-        fotoperfil: datosFinales.previewFoto || fotoDefault,
-        estilo_asistencia: datosFinales.estilo_asistencia,
-      },
-    ])
-    .select()
-    .single();
-
-  if (error) {
-    setErrorTexto("Error al registrar usuario: " + error.message);
+    setPantalla("home");
+  } catch (error) {
+    setErrorTexto(error.message || "Error al registrar usuario");
     setCargando(false);
-    return;
   }
-
-  const idsGeneros = datosFinales.estilos_musicales || [];
-
-  if (idsGeneros.length > 0) {
-    const { error: errorGeneros } = await supabase
-      .from("estilo_musical_usuario")
-      .insert(
-        idsGeneros.map((idEstilo) => ({
-          id_usuario: usuarioCreado.id_usuario,
-          id_estilo: idEstilo,
-        }))
-      );
-
-    if (errorGeneros) {
-      console.error("Error guardando géneros del usuario:", errorGeneros);
-    }
-  }
-
-  setUsuarioActual(usuarioCreado);
-  setDatosRegistro({});
-  setCargando(false);
-  setPantalla("home");
 }
 
   const esPantallaLogin =
@@ -581,6 +521,11 @@ async function manejarFinalizarRegistro(datosPaso3) {
           usuarioActual={usuarioActual}
           onNavegar={manejarNavegacion}
           onVolver={volverPantallaAnterior}
+          onGrupoEliminado={async () => {
+            setGrupoSeleccionado(null);
+            await recargarDatos();
+            setPantalla("concierto");
+          }}
         />
       )}
     </>

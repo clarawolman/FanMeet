@@ -13,12 +13,24 @@ import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 
-function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
+function InfoGrupo({
+  grupo,
+  concierto,
+  onVolver,
+  usuarioActual,
+  onNavegar,
+  onGrupoEliminado,
+}) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
   const [verificandoConfirmacion, setVerificandoConfirmacion] = useState(true);
   const [mostrarConfirmarSalida, setMostrarConfirmarSalida] = useState(false);
   const [saliendo, setSaliendo] = useState(false);
+  const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] =
+    useState(false);
+  const [eliminando, setEliminando] = useState(false);
+
+  const esCreador = usuarioActual?.id_usuario === grupo.id_creador;
 
   useEffect(() => {
     if (usuarioActual && grupo) {
@@ -100,6 +112,43 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
     setConfirmado(false);
   }
 
+  async function confirmarEliminarGrupo() {
+    setEliminando(true);
+
+    const { error: errorParticipantes } = await supabase
+      .from("grupos_usuarios")
+      .delete()
+      .eq("id_grupo", grupo.id_grupo);
+
+    if (errorParticipantes) {
+      console.error("Error al eliminar participantes del grupo:", errorParticipantes);
+      alert("No se pudo eliminar el grupo: " + errorParticipantes.message);
+      setEliminando(false);
+      return;
+    }
+
+    const { error: errorGrupo } = await supabase
+      .from("grupo")
+      .delete()
+      .eq("id_grupo", grupo.id_grupo);
+
+    setEliminando(false);
+
+    if (errorGrupo) {
+      console.error("Error al eliminar el grupo:", errorGrupo);
+      alert("No se pudo eliminar el grupo: " + errorGrupo.message);
+      return;
+    }
+
+    setMostrarConfirmarEliminar(false);
+
+    if (onGrupoEliminado) {
+      await onGrupoEliminado();
+    } else {
+      onVolver();
+    }
+  }
+
   return (
     <div className="infoGrupo">
       <HeaderGrupo titulo={`Grupo - ${grupo.nombre}`} onVolver={onVolver} />
@@ -131,6 +180,16 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
             Salir del grupo
           </button>
         )}
+
+        {!verificandoConfirmacion && confirmado && esCreador && (
+          <button
+            className="botonEliminarGrupo"
+            type="button"
+            onClick={() => setMostrarConfirmarEliminar(true)}
+          >
+            Eliminar grupo
+          </button>
+        )}
       </div>
 
       {mostrarConfirmarSalida && (
@@ -141,6 +200,17 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
           confirmando={saliendo}
           onConfirmar={confirmarSalirDelGrupo}
           onCancelar={() => setMostrarConfirmarSalida(false)}
+        />
+      )}
+
+      {mostrarConfirmarEliminar && (
+        <ModalConfirmacion
+          mensaje={`¿Eliminar ${grupo.nombre}? Esta acción no se puede deshacer.`}
+          textoConfirmar="Eliminar grupo"
+          textoCancelar="Cancelar"
+          confirmando={eliminando}
+          onConfirmar={confirmarEliminarGrupo}
+          onCancelar={() => setMostrarConfirmarEliminar(false)}
         />
       )}
 

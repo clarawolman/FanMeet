@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./loginForm.css";
-import { supabase } from "../../../supabase";
+import { authService } from "../../../services/authService";
 
 function LoginForm({ onIngresar, onRegistrarse }) {
   const [usuarioOMail, setUsuarioOMail] = useState("");
@@ -24,65 +24,20 @@ function LoginForm({ onIngresar, onRegistrarse }) {
     try {
       const usuarioOMailLimpio = usuarioOMail.trim();
 
-      let mailParaLogin = usuarioOMailLimpio;
-
-      // Supabase Auth inicia sesión con MAIL.
-      // Si la persona escribió su nombre de usuario, primero buscamos su mail.
-      if (!usuarioOMailLimpio.includes("@")) {
-        const { data: usuarioEncontrado, error: errorUsuario } = await supabase
-          .from("usuario")
-          .select("mail")
-          .eq("nombre", usuarioOMailLimpio)
-          .single();
-
-        if (errorUsuario || !usuarioEncontrado) {
-          setErrorLogin("Este usuario no existe");
-          setCargandoLogin(false);
-          return;
-        }
-
-        mailParaLogin = usuarioEncontrado.mail;
-      }
-
-      // Login real con Supabase Auth.
-      // Acá Supabase genera y maneja el JWT automáticamente.
-      const { data: authData, error: errorAuth } =
-        await supabase.auth.signInWithPassword({
-          email: mailParaLogin,
-          password: contrasena,
-        });
-
-      if (errorAuth) {
-        setErrorLogin("Usuario/mail o contraseña incorrectos");
-        setCargandoLogin(false);
-        return;
-      }
-
-      // Buscamos el perfil completo de FanMeet en tu tabla usuario.
-      const { data: usuarioPerfil, error: errorPerfil } = await supabase
-        .from("usuario")
-        .select("*")
-        .eq("id_usuario", authData.user.id)
-        .single();
-
-      if (errorPerfil || !usuarioPerfil) {
-        // La cuenta de auth existe pero su fila en "usuario" ya no (por
-        // ejemplo, se borró a mano desde Supabase). Para quien está
-        // logueándose esto es indistinguible de "el usuario no existe",
-        // así que mostramos el mismo mensaje que en ese caso. Además
-        // cerramos la sesión de auth que se acaba de abrir para no dejar
-        // a la persona logueada sin perfil.
-        await supabase.auth.signOut();
-        setErrorLogin("Este usuario no existe");
-        setCargandoLogin(false);
-        return;
-      }
+      // Login vía la API de Node, que a su vez habla con Supabase Auth y
+      // con la tabla "usuario" (mismo flujo y mismos mensajes que antes,
+      // ver backend/src/services/authService.js).
+      const usuarioPerfil = await authService.login(usuarioOMailLimpio, contrasena);
 
       setCargandoLogin(false);
       onIngresar(usuarioPerfil);
     } catch (error) {
       console.error(error);
-      setErrorLogin("Error al iniciar sesión");
+      // Si el backend respondió con un error conocido (401), su mensaje ya
+      // es el mismo texto que mostraba esta pantalla antes. Si fue un
+      // fallo de red/servidor sin status, usamos el mensaje genérico de
+      // siempre.
+      setErrorLogin(error.status ? error.message : "Error al iniciar sesión");
       setCargandoLogin(false);
     }
   }
