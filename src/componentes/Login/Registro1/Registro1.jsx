@@ -96,6 +96,25 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
       return;
     }
 
+    const { data: mailEnAuth, error: errorMailAuth } = await supabase.rpc(
+      "mail_existe_en_auth",
+      { mail_input: mailLimpio }
+    );
+
+    if (errorMailAuth) {
+      setErrorRegistro("Hubo un error al verificar el mail");
+      setCargando(false);
+      return;
+    }
+
+    if (mailEnAuth) {
+      setErrorRegistro(
+        "E-mail ya registrado."
+      );
+      setCargando(false);
+      return;
+    }
+
     const { data: usuarioConNombre, error: errorNombre } = await supabase
       .from("usuario")
       .select("id_usuario")

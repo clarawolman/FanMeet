@@ -1,9 +1,9 @@
 import "./statsPerfil.css";
 
-export default function StatsPerfil({ estadisticas, onVerConciertos, onVerAmigos, onVerGrupos }) {
+export default function StatsPerfil({ estadisticas, onVerAmigos }) {
   return (
     <div className="statsPerfil">
-      <button className="statItemPerfil" type="button" onClick={onVerConciertos}>
+      <button className="statItemPerfil" type="button"> 
         <p className="statValuePerfil">{estadisticas?.conciertos ?? 0}</p>
         <p className="statLabelPerfil">Conciertos</p>
       </button>
@@ -13,7 +13,7 @@ export default function StatsPerfil({ estadisticas, onVerConciertos, onVerAmigos
         <p className="statLabelPerfil">Amigos</p>
       </button>
 
-      <button className="statItemPerfil" type="button" onClick={onVerGrupos}>
+      <button className="statItemPerfil" type="button">
         <p className="statValuePerfil">{estadisticas?.grupos ?? 0}</p>
         <p className="statLabelPerfil">Grupos</p>
       </button>
