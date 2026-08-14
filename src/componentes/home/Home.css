@@ -436,6 +436,21 @@
   min-width: 140px;
 }
 
+/* "Ver concierto" (ya unido) se diferencia de "Unirme": un poco más
+   grande y en rosa en vez de violeta, para que no se confundan de un
+   vistazo en el listado. */
+.home-card-btn-unirme.home-card-btn-unirme--ver {
+  padding: 13px 40px !important;
+  font-size: 15px !important;
+  background: var(--color-pink, #e91e8c) !important;
+  border-color: var(--color-pink, #e91e8c) !important;
+  box-shadow: 0 6px 18px rgba(233, 30, 140, 0.35) !important;
+}
+
+.home-card-btn-unirme.home-card-btn-unirme--ver:hover {
+  background: #c8106f !important;
+}
+
 /* CELULAR: cards verticales sin cortar botón y con margen correcto */
 @media (max-width: 767px) {
   .home-catalogo {
