@@ -1,16 +1,25 @@
-# React + Vite
+Terminal 1 — Backend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+cd C:\Users\48860067\FanMeet\backend
+set NODE_TLS_REJECT_UNAUTHORIZED=0
+npm run dev
+Tiene que quedar mostrando:
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+FanMeet backend escuchando en http://localhost:4000
+Dejá esta terminal abierta y sin tocar.
 
-## React Compiler
+(El set NODE_TLS_REJECT_UNAUTHORIZED=0 es el que estamos usando para diagnosticar el problema de certificados de esta compu — hay que ponerlo cada vez que abrís una terminal nueva para el backend, porque es una variable temporal que no queda guardada. Una vez que confirmemos que esto soluciona el problema, vemos un fix definitivo que no dependa de escribir esto cada vez.)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Terminal 2 — Frontend
 
-## Expanding the ESLint configuration
+cd C:\Users\48860067\FanMeet
+npm run dev
+Tiene que quedar mostrando algo como:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+➜  Local:   http://localhost:5173/
+Dejá esta terminal también abierta y sin tocar.
+
+Después
+Abrí http://localhost:5173 en el navegador y usá la app ahí. Mientras las dos terminales sigan abiertas y mostrando esos mensajes, podés seguir probando. Pegame lo que aparece en la terminal del backend cuando intentes registrarte o loguearte.
