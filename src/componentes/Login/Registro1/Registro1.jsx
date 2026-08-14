@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Registro1.css";
-import { supabase } from "../../../supabase";
+import { authService } from "../../../services/authService";
 
 function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
   const [nombre, setNombre] = useState(datosIniciales.nombre || "");
@@ -78,57 +78,23 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
 
     setCargando(true);
 
-    const { data: usuarioConMail, error: errorMail } = await supabase
-      .from("usuario")
-      .select("id_usuario")
-      .eq("mail", mailLimpio)
-      .maybeSingle();
-
-    if (errorMail) {
-      setErrorRegistro("Hubo un error al verificar el mail");
-      setCargando(false);
-      return;
-    }
-
-    if (usuarioConMail) {
-      setErrorRegistro("Mail ya está registrado");
-      setCargando(false);
-      return;
-    }
-
-    const { data: mailEnAuth, error: errorMailAuth } = await supabase.rpc(
-      "mail_existe_en_auth",
-      { mail_input: mailLimpio }
-    );
-
-    if (errorMailAuth) {
-      setErrorRegistro("Hubo un error al verificar el mail");
-      setCargando(false);
-      return;
-    }
-
-    if (mailEnAuth) {
-      setErrorRegistro(
-        "E-mail ya registrado."
+    // Reemplaza los 3 chequeos directos a Supabase (mail en "usuario", RPC
+    // mail_existe_en_auth, nombre en "usuario") por una sola llamada al
+    // backend, que hace exactamente esos 3 chequeos en el mismo orden y
+    // devuelve los mismos mensajes.
+    try {
+      const resultado = await authService.verificarDisponibilidadRegistro(
+        nombreLimpio,
+        mailLimpio
       );
-      setCargando(false);
-      return;
-    }
 
-    const { data: usuarioConNombre, error: errorNombre } = await supabase
-      .from("usuario")
-      .select("id_usuario")
-      .eq("nombre", nombreLimpio)
-      .maybeSingle();
-
-    if (errorNombre) {
-      setErrorRegistro("Hubo un error al verificar el nombre de usuario");
-      setCargando(false);
-      return;
-    }
-
-    if (usuarioConNombre) {
-      setErrorRegistro("Nombre de usuario en uso");
+      if (!resultado.disponible) {
+        setErrorRegistro(resultado.mensaje);
+        setCargando(false);
+        return;
+      }
+    } catch (error) {
+      setErrorRegistro(error.message || "Hubo un error al verificar los datos");
       setCargando(false);
       return;
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./perfil.css";
-import { supabase } from "../../supabase";
+import { usuariosService } from "../../services/usuariosService";
+import { amistadService } from "../../services/amistadService";
 import Footer from "../generales/Footer";
 import HeaderPerfil from "./headerPerfil";
 import StatsPerfil from "./statsPerfil";
@@ -93,33 +94,14 @@ function Perfil({
   async function cargarAmistad() {
     if (isOwnProfile || !usuarioActual?.id_usuario) return;
 
-    const { data, error } = await supabase
-      .from("amistad")
-      .select("*")
-      .or(
-        `and(id_solicitante.eq.${usuarioActual.id_usuario},id_receptor.eq.${usuario.id_usuario}),and(id_solicitante.eq.${usuario.id_usuario},id_receptor.eq.${usuarioActual.id_usuario})`
-      )
-      .maybeSingle();
-
-    if (error) {
+    try {
+      const { idAmistad: idAmistadCargado, estado } = await amistadService.obtenerEstado(
+        usuario.id_usuario
+      );
+      setIdAmistad(idAmistadCargado);
+      setEstadoAmistad(estado);
+    } catch (error) {
       console.error("Error cargando estado de amistad:", error);
-      return;
-    }
-
-    if (!data) {
-      setEstadoAmistad("conectar");
-      setIdAmistad(null);
-      return;
-    }
-
-    setIdAmistad(data.id_amistad);
-
-    if (data.estado === "aceptada") {
-      setEstadoAmistad("amigos");
-    } else if (data.id_solicitante === usuarioActual.id_usuario) {
-      setEstadoAmistad("solicitudEnviada");
-    } else {
-      setEstadoAmistad("aceptarSolicitud");
     }
   }
 
@@ -129,43 +111,27 @@ function Perfil({
     setCargandoAmistad(true);
 
     if (estadoAmistad === "conectar") {
-      const { data, error } = await supabase
-        .from("amistad")
-        .insert([
-          {
-            id_solicitante: usuarioActual.id_usuario,
-            id_receptor: usuario.id_usuario,
-          },
-        ])
-        .select()
-        .single();
-
-      setCargandoAmistad(false);
-
-      if (error) {
+      try {
+        const amistadCreada = await amistadService.crearSolicitud(usuario.id_usuario);
+        setIdAmistad(amistadCreada.id_amistad);
+        setEstadoAmistad("solicitudEnviada");
+      } catch (error) {
         alert("No se pudo enviar la solicitud: " + error.message);
-        return;
       }
 
-      setIdAmistad(data.id_amistad);
-      setEstadoAmistad("solicitudEnviada");
+      setCargandoAmistad(false);
       return;
     }
 
     if (estadoAmistad === "aceptarSolicitud" && idAmistad) {
-      const { error } = await supabase
-        .from("amistad")
-        .update({ estado: "aceptada" })
-        .eq("id_amistad", idAmistad);
-
-      setCargandoAmistad(false);
-
-      if (error) {
+      try {
+        await amistadService.aceptar(idAmistad);
+        setEstadoAmistad("amigos");
+      } catch (error) {
         alert("No se pudo aceptar la solicitud: " + error.message);
-        return;
       }
 
-      setEstadoAmistad("amigos");
+      setCargandoAmistad(false);
       return;
     }
 
@@ -173,80 +139,44 @@ function Perfil({
   }
 
   async function cargarCatalogoGeneros() {
-    const { data, error } = await supabase.from("estilo_musical").select("*");
-
-    if (error) {
+    try {
+      const datos = await usuariosService.obtenerCatalogoGeneros();
+      setCatalogoGeneros(datos || []);
+    } catch (error) {
       console.error("Error cargando catálogo de géneros:", error);
       setCatalogoGeneros([]);
-      return;
     }
-
-    setCatalogoGeneros(data || []);
   }
 
   async function cargarEstadisticas() {
-    const [
-      { count: conciertos, error: errorConciertos },
-      { count: grupos, error: errorGrupos },
-      { count: amigos, error: errorAmigos },
-    ] = await Promise.all([
-      supabase
-        .from("usuarios_conciertos")
-        .select("*", { count: "exact", head: true })
-        .eq("id_usuario", usuario.id_usuario),
-      supabase
-        .from("grupos_usuarios")
-        .select("*", { count: "exact", head: true })
-        .eq("id_usuario", usuario.id_usuario),
-      supabase
-        .from("amistad")
-        .select("*", { count: "exact", head: true })
-        .eq("estado", "aceptada")
-        .or(`id_solicitante.eq.${usuario.id_usuario},id_receptor.eq.${usuario.id_usuario}`),
-    ]);
-
-    if (errorConciertos) console.error("Error contando conciertos:", errorConciertos);
-    if (errorGrupos) console.error("Error contando grupos:", errorGrupos);
-    if (errorAmigos) console.error("Error contando amigos:", errorAmigos);
-
-    setEstadisticas({
-      conciertos: conciertos || 0,
-      grupos: grupos || 0,
-      amigos: amigos || 0,
-    });
+    try {
+      const datos = await usuariosService.obtenerEstadisticas(usuario.id_usuario);
+      setEstadisticas(datos);
+    } catch (error) {
+      console.error("Error cargando estadísticas:", error);
+    }
   }
 
   async function cargarGeneros() {
-    const { data, error } = await supabase
-      .from("estilo_musical_usuario")
-      .select("id_estilo")
-      .eq("id_usuario", usuario.id_usuario);
-
-    if (error) {
+    try {
+      const idsGeneros = await usuariosService.obtenerGenerosDe(usuario.id_usuario);
+      setGenerosSeleccionadosIds(idsGeneros || []);
+    } catch (error) {
       console.error("Error cargando géneros del usuario:", error);
       setGenerosSeleccionadosIds([]);
-      return;
     }
-
-    setGenerosSeleccionadosIds((data || []).map((fila) => fila.id_estilo));
   }
 
   async function cargarHighlights() {
-    const { data, error } = await supabase
-      .from("highlight")
-      .select("*")
-      .eq("id_usuario", usuario.id_usuario)
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const datos = await usuariosService.listarHighlights(usuario.id_usuario);
+      setHighlightsError("");
+      setHighlights(datos || []);
+    } catch (error) {
       console.error("Error cargando highlights:", error);
       setHighlights([]);
       setHighlightsError(error.message);
-      return;
     }
-
-    setHighlightsError("");
-    setHighlights(data || []);
   }
 
   async function manejarSeleccionarVibra(idVibra) {
@@ -255,12 +185,9 @@ function Perfil({
     const anterior = vibraActual;
     setVibraActual(idVibra);
 
-    const { error } = await supabase
-      .from("usuario")
-      .update({ estilo_asistencia: idVibra })
-      .eq("id_usuario", usuario.id_usuario);
-
-    if (error) {
+    try {
+      await usuariosService.actualizarVibra(idVibra);
+    } catch (error) {
       console.error("Error actualizando vibra de concierto:", error);
       setVibraActual(anterior);
       alert("No se pudo actualizar tu vibra: " + error.message);
@@ -272,36 +199,13 @@ function Perfil({
 
     setSubiendoHighlight(true);
 
-    const nombreArchivo = `${usuario.id_usuario}/${Date.now()}-${archivo.name}`;
-
-    const { error: errorSubida } = await supabase.storage
-      .from("highlights")
-      .upload(nombreArchivo, archivo);
-
-    if (errorSubida) {
-      alert("No se pudo subir la imagen: " + errorSubida.message);
-      setSubiendoHighlight(false);
-      return;
+    try {
+      await usuariosService.subirHighlight(archivo);
+      await cargarHighlights();
+    } catch (error) {
+      alert("No se pudo subir la imagen: " + error.message);
     }
 
-    const { data: urlData } = supabase.storage
-      .from("highlights")
-      .getPublicUrl(nombreArchivo);
-
-    const { error: errorInsert } = await supabase.from("highlight").insert([
-      {
-        id_usuario: usuario.id_usuario,
-        url_imagen: urlData.publicUrl,
-      },
-    ]);
-
-    if (errorInsert) {
-      alert("No se pudo guardar el highlight: " + errorInsert.message);
-      setSubiendoHighlight(false);
-      return;
-    }
-
-    await cargarHighlights();
     setSubiendoHighlight(false);
   }
 
@@ -310,35 +214,14 @@ function Perfil({
 
     setSubiendoFoto(true);
 
-    const nombreArchivo = `${usuario.id_usuario}/${Date.now()}-${archivo.name}`;
-
-    const { error: errorSubida } = await supabase.storage
-      .from("avatars")
-      .upload(nombreArchivo, archivo);
-
-    if (errorSubida) {
-      alert("No se pudo subir la foto: " + errorSubida.message);
-      setSubiendoFoto(false);
-      return;
+    try {
+      const usuarioActualizado = await usuariosService.subirFoto(archivo);
+      setFotoLocal(usuarioActualizado.fotoperfil);
+      onUsuarioActualizado?.({ ...usuarioBase, fotoperfil: usuarioActualizado.fotoperfil });
+    } catch (error) {
+      alert("No se pudo subir la foto: " + error.message);
     }
 
-    const { data: urlData } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(nombreArchivo);
-
-    const { error: errorUpdate } = await supabase
-      .from("usuario")
-      .update({ fotoperfil: urlData.publicUrl })
-      .eq("id_usuario", usuario.id_usuario);
-
-    if (errorUpdate) {
-      alert("No se pudo guardar la foto: " + errorUpdate.message);
-      setSubiendoFoto(false);
-      return;
-    }
-
-    setFotoLocal(urlData.publicUrl);
-    onUsuarioActualizado?.({ ...usuarioBase, fotoperfil: urlData.publicUrl });
     setSubiendoFoto(false);
   }
 

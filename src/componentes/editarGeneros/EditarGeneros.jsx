@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./EditarGeneros.css";
-import { supabase } from "../../supabase";
+import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 
 function EditarGeneros({ usuarioActual, onVolver }) {
@@ -21,29 +21,22 @@ function EditarGeneros({ usuarioActual, onVolver }) {
   async function cargarDatos() {
     setCargando(true);
 
-    const [{ data: catalogoData, error: errorCatalogo }, { data: seleccionData, error: errorSeleccion }] =
-      await Promise.all([
-        supabase.from("estilo_musical").select("*"),
-        supabase
-          .from("estilo_musical_usuario")
-          .select("id_estilo")
-          .eq("id_usuario", usuarioActual.id_usuario),
-      ]);
-
-    if (errorCatalogo) {
-      console.error("Error cargando catálogo de géneros:", errorCatalogo);
-      setCatalogoError(errorCatalogo.message);
-      setCatalogo([]);
-    } else {
+    try {
+      const catalogoData = await usuariosService.obtenerCatalogoGeneros();
       setCatalogoError("");
       setCatalogo(catalogoData || []);
+    } catch (error) {
+      console.error("Error cargando catálogo de géneros:", error);
+      setCatalogoError(error.message);
+      setCatalogo([]);
     }
 
-    if (errorSeleccion) {
-      console.error("Error cargando géneros del usuario:", errorSeleccion);
+    try {
+      const idsSeleccionados = await usuariosService.obtenerMisGeneros();
+      setSeleccionados(idsSeleccionados || []);
+    } catch (error) {
+      console.error("Error cargando géneros del usuario:", error);
       setSeleccionados([]);
-    } else {
-      setSeleccionados((seleccionData || []).map((fila) => fila.id_estilo));
     }
 
     setCargando(false);
@@ -68,34 +61,14 @@ function EditarGeneros({ usuarioActual, onVolver }) {
 
     setGuardando(true);
 
-    const { error: errorBorrado } = await supabase
-      .from("estilo_musical_usuario")
-      .delete()
-      .eq("id_usuario", usuarioActual.id_usuario);
-
-    if (errorBorrado) {
-      setError("No se pudieron guardar los géneros: " + errorBorrado.message);
+    try {
+      await usuariosService.guardarMisGeneros(seleccionados);
       setGuardando(false);
-      return;
-    }
-
-    const { error: errorInsercion } = await supabase
-      .from("estilo_musical_usuario")
-      .insert(
-        seleccionados.map((idEstilo) => ({
-          id_usuario: usuarioActual.id_usuario,
-          id_estilo: idEstilo,
-        }))
-      );
-
-    if (errorInsercion) {
-      setError("No se pudieron guardar los géneros: " + errorInsercion.message);
+      onVolver();
+    } catch (error) {
+      setError("No se pudieron guardar los géneros: " + error.message);
       setGuardando(false);
-      return;
     }
-
-    setGuardando(false);
-    onVolver();
   }
 
   const catalogoFiltrado = catalogo.filter((genero) =>

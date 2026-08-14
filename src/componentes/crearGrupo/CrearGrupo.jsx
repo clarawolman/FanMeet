@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../../supabase";
+import { gruposService } from "../../services/gruposService";
 import "./CrearGrupo.css";
 
 import HeaderCrearGrupo from "./HeaderCrearGrupo";
@@ -116,6 +116,8 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
     try {
       const imagenUrl = await obtenerImagenGrupo();
 
+      // id_creador ya no se manda: el backend lo determina desde la
+      // sesión autenticada (req.user.id), no desde un valor de React.
       const nuevoGrupo = {
         nombre: formulario.nombre.trim(),
         ubicacion: formulario.ubicacion.trim(),
@@ -124,34 +126,10 @@ function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
         descripcion: formulario.descripcion.trim(),
         categoria: formulario.categoria,
         id_concierto: concierto.id_concierto,
-        id_creador: idUsuarioActual,
         foto: imagenUrl,
       };
 
-      const { data: grupoCreado, error: errorGrupo } = await supabase
-        .from("grupo")
-        .insert([nuevoGrupo])
-        .select()
-        .single();
-
-      if (errorGrupo) {
-        throw new Error(MENSAJE_ERROR_GENERICO);
-      }
-
-      const relacionGrupoUsuario = {
-        id_grupo: grupoCreado.id_grupo,
-        id_usuario: idUsuarioActual,
-      };
-
-      const { error: errorRelacion } = await supabase
-        .from("grupos_usuarios")
-        .insert([relacionGrupoUsuario]);
-
-      if (errorRelacion) {
-        setErrorTexto("El grupo se creó, pero no se pudo agregarte como integrante.");
-        setGuardando(false);
-        return;
-      }
+      await gruposService.crear(nuevoGrupo);
 
       setGuardando(false);
       onGrupoCreado();

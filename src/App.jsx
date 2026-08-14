@@ -15,7 +15,9 @@ import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 
-import { supabase } from "./supabase";
+import { authService } from "./services/authService";
+import { usuariosService } from "./services/usuariosService";
+import { conciertosService } from "./services/conciertosService";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -35,179 +37,16 @@ function App() {
     setCargando(true);
     setErrorTexto("");
 
-    const { data: conciertoData, error: errorConcierto } = await supabase
-      .from("concierto")
-      .select("*")
-      .eq("id_concierto", idConcierto)
-      .maybeSingle();
-
-    if (errorConcierto) {
-      setErrorTexto("Error en concierto: " + errorConcierto.message);
+    try {
+      const conciertoFinal = await conciertosService.obtenerDetalle(idConcierto);
+      setConcierto(conciertoFinal);
+      setCargando(false);
+      return true;
+    } catch (error) {
+      setErrorTexto(error.message || "No se pudo cargar el concierto");
       setCargando(false);
       return false;
     }
-
-    if (!conciertoData) {
-      setErrorTexto("No existe el concierto con id " + idConcierto);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: artistaData, error: errorArtista } = await supabase
-      .from("artista")
-      .select("*")
-      .eq("id_artista", conciertoData.id_artista)
-      .maybeSingle();
-
-    if (errorArtista) {
-      setErrorTexto("Error en artista: " + errorArtista.message);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: estadioData, error: errorEstadio } = await supabase
-      .from("estadio")
-      .select("*")
-      .eq("id_estadio", conciertoData.id_estadio)
-      .maybeSingle();
-
-    if (errorEstadio) {
-      setErrorTexto("Error en estadio: " + errorEstadio.message);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: gruposData, error: errorGrupos } = await supabase
-      .from("grupo")
-      .select("*")
-      .eq("id_concierto", conciertoData.id_concierto);
-
-    if (errorGrupos) {
-      setErrorTexto("Error en grupo: " + errorGrupos.message);
-      setCargando(false);
-      return false;
-    }
-
-    const gruposConUsuarios = await Promise.all(
-      (gruposData || []).map(async (grupo) => {
-        const { data: relacionesGrupo, error: errorRelacionesGrupo } =
-          await supabase
-            .from("grupos_usuarios")
-            .select("*")
-            .eq("id_grupo", grupo.id_grupo);
-
-        if (errorRelacionesGrupo) {
-          console.error("Error en grupos_usuarios:", errorRelacionesGrupo);
-        }
-
-        const usuarios = await Promise.all(
-          (relacionesGrupo || []).map(async (relacion) => {
-            const { data: usuarioData, error: errorUsuario } = await supabase
-              .from("usuario")
-              .select("*")
-              .eq("id_usuario", relacion.id_usuario)
-              .maybeSingle();
-
-            if (errorUsuario) {
-              console.error("Error en usuario:", errorUsuario);
-            }
-
-            return {
-              id_usuario: usuarioData?.id_usuario,
-              nombre: usuarioData?.nombre || "Usuario",
-              foto_perfil:
-                usuarioData?.fotoperfil ||
-                usuarioData?.foto_perfil ||
-                "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
-            };
-          })
-        );
-
-        return {
-          ...grupo,
-          foto: grupo.foto || grupo.imagen || grupo.imagenGrupo || "",
-          categoria: grupo.categoria,
-          usuarios,
-        };
-      })
-    );
-
-const { data: relacionesConcierto, error: errorRelacionesConcierto } =
-  await supabase
-    .from("usuarios_conciertos")
-    .select("id_usuario")
-    .eq("id_concierto", conciertoData.id_concierto);
-
-if (errorRelacionesConcierto) {
-  console.error("Error cargando usuarios_conciertos:", errorRelacionesConcierto);
-}
-
-const idsUsuariosConcierto = [
-  ...new Set((relacionesConcierto || []).map((relacion) => relacion.id_usuario)),
-];
-
-const usuariosDelConcierto = await Promise.all(
-  idsUsuariosConcierto.map(async (idUsuario) => {
-    const { data: usuarioData, error: errorUsuarioConcierto } = await supabase
-      .from("usuario")
-      .select("*")
-      .eq("id_usuario", idUsuario)
-      .maybeSingle();
-
-    if (errorUsuarioConcierto) {
-      console.error("Error cargando usuario del concierto:", errorUsuarioConcierto);
-    }
-
-    return {
-      id_usuario: usuarioData?.id_usuario || idUsuario,
-      nombre: usuarioData?.nombre || "Usuario",
-      foto_perfil:
-        usuarioData?.fotoperfil ||
-        usuarioData?.foto_perfil ||
-        "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
-    };
-  })
-);
-
-    const conciertoFinal = {
-      ...conciertoData,
-
-      artista: artistaData || {
-        id_artista: conciertoData.id_artista,
-        nombre: "Artista",
-      },
-
-      estadio: {
-        ...(estadioData || {
-          id_estadio: conciertoData.id_estadio,
-          nombre: "Estadio",
-          direccion: "",
-          ciudad: "",
-        }),
-        imagen:
-          estadioData?.imagen ||
-          estadioData?.venueImage ||
-          estadioData?.foto ||
-          "",
-      },
-
-      imagen:
-        conciertoData.imagen ||
-        conciertoData.imagenConcierto ||
-        conciertoData.foto ||
-        "",
-
-      hora: conciertoData.hora || "",
-
-      grupos: gruposConUsuarios,
-      usuarios: usuariosDelConcierto,
-      asistentes: usuariosDelConcierto.length,
-      cantidadFans: usuariosDelConcierto.length,
-    };
-
-    setConcierto(conciertoFinal);
-    setCargando(false);
-    return true;
   }
 
   async function manejarIngreso(usuario) {
@@ -219,7 +58,7 @@ const usuariosDelConcierto = await Promise.all(
   }
 
   async function manejarCerrarSesion() {
-    await supabase.auth.signOut();
+    await authService.logout();
     setUsuarioActual(null);
     setUsuarioVisitado(null);
     setConcierto(null);
@@ -241,19 +80,13 @@ const usuariosDelConcierto = await Promise.all(
   }
 
   async function manejarVerUsuario(idUsuario) {
-    const { data, error } = await supabase
-      .from("usuario")
-      .select("*")
-      .eq("id_usuario", idUsuario)
-      .maybeSingle();
-
-    if (error || !data) {
+    try {
+      const usuario = await usuariosService.obtenerPerfil(idUsuario);
+      setUsuarioVisitado(usuario);
+      setPantalla("perfilAjeno");
+    } catch (error) {
       console.error("Error cargando usuario:", error);
-      return;
     }
-
-    setUsuarioVisitado(data);
-    setPantalla("perfilAjeno");
   }
 
   async function manejarEntrarConcierto(idConcierto) {
@@ -328,76 +161,20 @@ async function manejarFinalizarRegistro(datosPaso3) {
     ...datosPaso3,
   };
 
-  const fotoDefault =
-    "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
-
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: datosFinales.mail,
-    password: datosFinales.contrasena,
-  });
-
-  if (authError) {
-    // Si el mail ya tiene cuenta en auth.users pero su fila en "usuario"
-    // se borró a mano (la app no puede borrar de auth con la anon key),
-    // supabase.auth.signUp sigue rechazando el mail como duplicado. El
-    // mensaje crudo ("User already registered") no explica eso, así que
-    // lo reemplazamos por uno accionable.
-    const yaRegistrado =
-      authError.code === "user_already_exists" ||
-      authError.message?.toLowerCase().includes("already registered");
-
-    setErrorTexto(
-      yaRegistrado
-        ? "Ese mail ya tiene una cuenta. Iniciá sesión, o si la cuenta quedó sin perfil, pedile a quien administra Supabase que la elimine desde Authentication → Users."
-        : "Error al crear usuario en Auth: " + authError.message
-    );
+  // Reemplaza signUp + insert en "usuario" + insert en
+  // "estilo_musical_usuario" por una sola llamada al backend, que hace las
+  // 3 cosas en ese mismo orden (backend/src/services/authService.js) y
+  // devuelve exactamente los mismos mensajes de error.
+  try {
+    const usuarioCreado = await authService.registro(datosFinales);
+    setUsuarioActual(usuarioCreado);
+    setDatosRegistro({});
     setCargando(false);
-    return;
-  }
-
-  const { data: usuarioCreado, error } = await supabase
-    .from("usuario")
-    .insert([
-      {
-        id_usuario: authData.user.id,
-        nombre: datosFinales.nombre,
-        mail: datosFinales.mail,
-        fechanac: datosFinales.fechanac,
-        genero: datosFinales.genero,
-        fotoperfil: datosFinales.previewFoto || fotoDefault,
-        estilo_asistencia: datosFinales.estilo_asistencia,
-      },
-    ])
-    .select()
-    .single();
-
-  if (error) {
-    setErrorTexto("Error al registrar usuario: " + error.message);
+    setPantalla("home");
+  } catch (error) {
+    setErrorTexto(error.message || "Error al registrar usuario");
     setCargando(false);
-    return;
   }
-
-  const idsGeneros = datosFinales.estilos_musicales || [];
-
-  if (idsGeneros.length > 0) {
-    const { error: errorGeneros } = await supabase
-      .from("estilo_musical_usuario")
-      .insert(
-        idsGeneros.map((idEstilo) => ({
-          id_usuario: usuarioCreado.id_usuario,
-          id_estilo: idEstilo,
-        }))
-      );
-
-    if (errorGeneros) {
-      console.error("Error guardando géneros del usuario:", errorGeneros);
-    }
-  }
-
-  setUsuarioActual(usuarioCreado);
-  setDatosRegistro({});
-  setCargando(false);
-  setPantalla("home");
 }
 
   const esPantallaLogin =
@@ -581,6 +358,11 @@ async function manejarFinalizarRegistro(datosPaso3) {
           usuarioActual={usuarioActual}
           onNavegar={manejarNavegacion}
           onVolver={volverPantallaAnterior}
+          onGrupoEliminado={async () => {
+            setGrupoSeleccionado(null);
+            await recargarDatos();
+            setPantalla("concierto");
+          }}
         />
       )}
     </>

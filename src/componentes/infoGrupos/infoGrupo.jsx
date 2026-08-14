@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./infoGrupo.css";
-import { supabase } from "../../supabase";
-import { crearNotificacion } from "../../notificaciones";
+import { gruposService } from "../../services/gruposService";
 
 import HeaderGrupo from "./headerGrupo";
 import HeroGrupo from "./heroGrupo";
@@ -13,12 +12,24 @@ import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 
-function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
+function InfoGrupo({
+  grupo,
+  concierto,
+  onVolver,
+  usuarioActual,
+  onNavegar,
+  onGrupoEliminado,
+}) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
   const [verificandoConfirmacion, setVerificandoConfirmacion] = useState(true);
   const [mostrarConfirmarSalida, setMostrarConfirmarSalida] = useState(false);
   const [saliendo, setSaliendo] = useState(false);
+  const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] =
+    useState(false);
+  const [eliminando, setEliminando] = useState(false);
+
+  const esCreador = usuarioActual?.id_usuario === grupo.id_creador;
 
   useEffect(() => {
     if (usuarioActual && grupo) {
@@ -26,24 +37,15 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
     }
   }, [usuarioActual, grupo]);
 
+  // El grupo ya viaja con su lista de usuarios (armada por el backend en
+  // conciertoService/grupoService), asi que la confirmacion se deriva de
+  // ahi en vez de pedirle al backend un chequeo aparte.
   async function verificarConfirmacion() {
     setVerificandoConfirmacion(true);
-
-    const { data, error } = await supabase
-      .from("grupos_usuarios")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_grupo", grupo.id_grupo)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error verificando asistencia:", error);
-      setConfirmado(false);
-      setVerificandoConfirmacion(false);
-      return;
-    }
-
-    setConfirmado(!!data);
+    const yaConfirmado = (grupo.usuarios || []).some(
+      (u) => u.id_usuario === usuarioActual.id_usuario
+    );
+    setConfirmado(yaConfirmado);
     setVerificandoConfirmacion(false);
   }
 
@@ -52,28 +54,16 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
 
     setCargandoConfirmacion(true);
 
-    const { error } = await supabase.from("grupos_usuarios").insert([
-      {
-        id_usuario: usuarioActual.id_usuario,
-        id_grupo: grupo.id_grupo,
-      },
-    ]);
-
-    if (error) {
+    try {
+      // La notificación "grupo_unido" ya la crea el backend como parte de
+      // grupoService.unirse, no hace falta dispararla desde acá.
+      await gruposService.unirse(grupo.id_grupo);
+    } catch (error) {
       console.error("Error al sumarse al grupo:", error);
       alert("No se pudo confirmar la asistencia: " + error.message);
       setCargandoConfirmacion(false);
       return;
     }
-
-    await crearNotificacion({
-      idUsuario: usuarioActual.id_usuario,
-      tipo: "grupo_unido",
-      titulo: `Te uniste al grupo ${grupo.nombre}`,
-      descripcion: concierto?.nombre || concierto?.artista?.nombre || "",
-      imagen: grupo.foto || grupo.imagen || grupo.imagenGrupo || "",
-      idGrupo: grupo.id_grupo,
-    });
 
     setConfirmado(true);
     setCargandoConfirmacion(false);
@@ -82,22 +72,40 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
   async function confirmarSalirDelGrupo() {
     setSaliendo(true);
 
-    const { error } = await supabase
-      .from("grupos_usuarios")
-      .delete()
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_grupo", grupo.id_grupo);
-
-    setSaliendo(false);
-
-    if (error) {
+    try {
+      await gruposService.salir(grupo.id_grupo);
+    } catch (error) {
+      setSaliendo(false);
       console.error("Error al salir del grupo:", error);
       alert("No se pudo salir del grupo: " + error.message);
       return;
     }
 
+    setSaliendo(false);
     setMostrarConfirmarSalida(false);
     setConfirmado(false);
+  }
+
+  async function confirmarEliminarGrupo() {
+    setEliminando(true);
+
+    try {
+      await gruposService.eliminar(grupo.id_grupo);
+    } catch (error) {
+      setEliminando(false);
+      console.error("Error al eliminar el grupo:", error);
+      alert("No se pudo eliminar el grupo: " + error.message);
+      return;
+    }
+
+    setEliminando(false);
+    setMostrarConfirmarEliminar(false);
+
+    if (onGrupoEliminado) {
+      await onGrupoEliminado();
+    } else {
+      onVolver();
+    }
   }
 
   return (
@@ -131,6 +139,16 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
             Salir del grupo
           </button>
         )}
+
+        {!verificandoConfirmacion && confirmado && esCreador && (
+          <button
+            className="botonEliminarGrupo"
+            type="button"
+            onClick={() => setMostrarConfirmarEliminar(true)}
+          >
+            Eliminar grupo
+          </button>
+        )}
       </div>
 
       {mostrarConfirmarSalida && (
@@ -141,6 +159,17 @@ function InfoGrupo({ grupo, concierto, onVolver, usuarioActual, onNavegar }) {
           confirmando={saliendo}
           onConfirmar={confirmarSalirDelGrupo}
           onCancelar={() => setMostrarConfirmarSalida(false)}
+        />
+      )}
+
+      {mostrarConfirmarEliminar && (
+        <ModalConfirmacion
+          mensaje={`¿Eliminar ${grupo.nombre}? Esta acción no se puede deshacer.`}
+          textoConfirmar="Eliminar grupo"
+          textoCancelar="Cancelar"
+          confirmando={eliminando}
+          onConfirmar={confirmarEliminarGrupo}
+          onCancelar={() => setMostrarConfirmarEliminar(false)}
         />
       )}
 

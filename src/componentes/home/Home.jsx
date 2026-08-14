@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
 import OverlayCodigo from "./OverlayCodigo";
-import { supabase } from "../../supabase";
-import { crearNotificacion } from "../../notificaciones";
+import { conciertosService } from "../../services/conciertosService";
+import { usuariosService } from "../../services/usuariosService";
+import { notificacionesService } from "../../services/notificacionesService";
 import Footer from "../generales/Footer";
 import IconoCampana from "../generales/IconoCampana";
 
@@ -16,8 +17,6 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [busqueda, setBusqueda] = useState("");
   const [generosPreferidosIds, setGenerosPreferidosIds] = useState([]);
   const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
-
-  const CODIGO_PRUEBA = "FANMEET2026";
 
   const generos = [
     { id: "1", nombre: "Pop" },
@@ -46,71 +45,44 @@ function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   }
 
   async function cargarCantidadNotificaciones() {
-    const { count, error } = await supabase
-      .from("notificacion")
-      .select("*", { count: "exact", head: true })
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("leida", false);
-
-    if (error) {
+    try {
+      const count = await notificacionesService.contarNoLeidas();
+      setCantidadNotificaciones(count || 0);
+    } catch (error) {
       console.error("Error cargando notificaciones:", error);
       setCantidadNotificaciones(0);
-      return;
     }
-
-    setCantidadNotificaciones(count || 0);
   }
 
   async function cargarConciertos() {
-    const { data, error } = await supabase
-      .from("concierto")
-      .select(`
-        *,
-        artista (*),
-        estadio (*)
-      `);
-
-    if (error) {
+    try {
+      const data = await conciertosService.listar();
+      setConciertos(data || []);
+    } catch (error) {
       console.error("Error cargando conciertos:", error);
       setConciertos([]);
-      return;
     }
-
-    setConciertos(data || []);
   }
 
   async function cargarConciertosDelUsuario() {
-    const { data, error } = await supabase
-      .from("usuarios_conciertos")
-      .select("id_concierto")
-      .eq("id_usuario", usuarioActual.id_usuario);
-
-    if (error) {
+    try {
+      const data = await conciertosService.listarMisEventos();
+      setConciertosUnidos((data || []).map((item) => item.id_concierto));
+    } catch (error) {
       console.error("Error cargando conciertos del usuario:", error);
       setConciertosUnidos([]);
-      return;
     }
-
-    setConciertosUnidos((data || []).map((item) => item.id_concierto));
-  }
-async function cargarPreferenciasUsuario() {
-  const { data, error } = await supabase
-    .from("estilo_musical_usuario")
-    .select("id_estilo")
-    .eq("id_usuario", usuarioActual.id_usuario);
-
-  if (error) {
-    console.error("Error cargando preferencias del usuario:", error);
-    setGenerosPreferidosIds([]);
-    return;
   }
 
-  const idsPreferidos = (data || []).map((item) => String(item.id_estilo));
-
-  console.log("Preferencias del usuario:", idsPreferidos);
-
-  setGenerosPreferidosIds(idsPreferidos);
-}
+  async function cargarPreferenciasUsuario() {
+    try {
+      const idsPreferidos = await usuariosService.obtenerMisGeneros();
+      setGenerosPreferidosIds((idsPreferidos || []).map((id) => String(id)));
+    } catch (error) {
+      console.error("Error cargando preferencias del usuario:", error);
+      setGenerosPreferidosIds([]);
+    }
+  }
 
   function usuarioYaEstaUnido(idConcierto) {
     return conciertosUnidos.some(
@@ -178,61 +150,14 @@ const generosOrdenados = [...generos].sort((a, b) => {
   async function validarCodigo() {
     if (!conciertoSeleccionado) return;
 
-    if (codigoIngresado.trim() !== CODIGO_PRUEBA) {
-      setErrorCodigo("Código incorrecto.");
-      return;
-    }
-
     const idConcierto = conciertoSeleccionado.id_concierto;
 
-    const { data: relacionExistente, error: errorConsulta } = await supabase
-      .from("usuarios_conciertos")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_concierto", idConcierto)
-      .maybeSingle();
-
-    if (errorConsulta) {
-      console.error("Error verificando acceso:", errorConsulta);
-      setErrorCodigo("Error verificando acceso.");
+    try {
+      await conciertosService.unirsePorCodigo(idConcierto, codigoIngresado.trim());
+    } catch (error) {
+      console.error("Error validando código:", error);
+      setErrorCodigo(error.message || "Código incorrecto.");
       return;
-    }
-
-    if (!relacionExistente) {
-      const { error: errorInsert } = await supabase
-        .from("usuarios_conciertos")
-        .insert([
-          {
-            id_usuario: usuarioActual.id_usuario,
-            id_concierto: idConcierto,
-          },
-        ]);
-
-      if (errorInsert) {
-        console.error("Error guardando acceso:", errorInsert);
-        setErrorCodigo("Error guardando acceso: " + errorInsert.message);
-        return;
-      }
-
-      await crearNotificacion({
-        idUsuario: usuarioActual.id_usuario,
-        tipo: "concierto_unido",
-        titulo: `Te uniste a ${
-          conciertoSeleccionado.nombre ||
-          conciertoSeleccionado.artista?.nombre ||
-          "un concierto"
-        }`,
-        descripcion:
-          conciertoSeleccionado.estadio?.nombre ||
-          conciertoSeleccionado.estadio?.ciudad ||
-          "",
-        imagen:
-          conciertoSeleccionado.imagen ||
-          conciertoSeleccionado.imagenConcierto ||
-          conciertoSeleccionado.foto ||
-          "",
-        idConcierto,
-      });
     }
 
     setConciertosUnidos((anteriores) => {
