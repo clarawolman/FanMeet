@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./infoGrupo.css";
-import { supabase } from "../../supabase";
-import { crearNotificacion } from "../../notificaciones";
+import { gruposService } from "../../services/gruposService";
 
 import HeaderGrupo from "./headerGrupo";
 import HeroGrupo from "./heroGrupo";
@@ -38,24 +37,15 @@ function InfoGrupo({
     }
   }, [usuarioActual, grupo]);
 
+  // El grupo ya viaja con su lista de usuarios (armada por el backend en
+  // conciertoService/grupoService), asi que la confirmacion se deriva de
+  // ahi en vez de pedirle al backend un chequeo aparte.
   async function verificarConfirmacion() {
     setVerificandoConfirmacion(true);
-
-    const { data, error } = await supabase
-      .from("grupos_usuarios")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_grupo", grupo.id_grupo)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error verificando asistencia:", error);
-      setConfirmado(false);
-      setVerificandoConfirmacion(false);
-      return;
-    }
-
-    setConfirmado(!!data);
+    const yaConfirmado = (grupo.usuarios || []).some(
+      (u) => u.id_usuario === usuarioActual.id_usuario
+    );
+    setConfirmado(yaConfirmado);
     setVerificandoConfirmacion(false);
   }
 
@@ -64,28 +54,16 @@ function InfoGrupo({
 
     setCargandoConfirmacion(true);
 
-    const { error } = await supabase.from("grupos_usuarios").insert([
-      {
-        id_usuario: usuarioActual.id_usuario,
-        id_grupo: grupo.id_grupo,
-      },
-    ]);
-
-    if (error) {
+    try {
+      // La notificación "grupo_unido" ya la crea el backend como parte de
+      // grupoService.unirse, no hace falta dispararla desde acá.
+      await gruposService.unirse(grupo.id_grupo);
+    } catch (error) {
       console.error("Error al sumarse al grupo:", error);
       alert("No se pudo confirmar la asistencia: " + error.message);
       setCargandoConfirmacion(false);
       return;
     }
-
-    await crearNotificacion({
-      idUsuario: usuarioActual.id_usuario,
-      tipo: "grupo_unido",
-      titulo: `Te uniste al grupo ${grupo.nombre}`,
-      descripcion: concierto?.nombre || concierto?.artista?.nombre || "",
-      imagen: grupo.foto || grupo.imagen || grupo.imagenGrupo || "",
-      idGrupo: grupo.id_grupo,
-    });
 
     setConfirmado(true);
     setCargandoConfirmacion(false);
@@ -94,20 +72,16 @@ function InfoGrupo({
   async function confirmarSalirDelGrupo() {
     setSaliendo(true);
 
-    const { error } = await supabase
-      .from("grupos_usuarios")
-      .delete()
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_grupo", grupo.id_grupo);
-
-    setSaliendo(false);
-
-    if (error) {
+    try {
+      await gruposService.salir(grupo.id_grupo);
+    } catch (error) {
+      setSaliendo(false);
       console.error("Error al salir del grupo:", error);
       alert("No se pudo salir del grupo: " + error.message);
       return;
     }
 
+    setSaliendo(false);
     setMostrarConfirmarSalida(false);
     setConfirmado(false);
   }
@@ -115,31 +89,16 @@ function InfoGrupo({
   async function confirmarEliminarGrupo() {
     setEliminando(true);
 
-    const { error: errorParticipantes } = await supabase
-      .from("grupos_usuarios")
-      .delete()
-      .eq("id_grupo", grupo.id_grupo);
-
-    if (errorParticipantes) {
-      console.error("Error al eliminar participantes del grupo:", errorParticipantes);
-      alert("No se pudo eliminar el grupo: " + errorParticipantes.message);
+    try {
+      await gruposService.eliminar(grupo.id_grupo);
+    } catch (error) {
       setEliminando(false);
+      console.error("Error al eliminar el grupo:", error);
+      alert("No se pudo eliminar el grupo: " + error.message);
       return;
     }
-
-    const { error: errorGrupo } = await supabase
-      .from("grupo")
-      .delete()
-      .eq("id_grupo", grupo.id_grupo);
 
     setEliminando(false);
-
-    if (errorGrupo) {
-      console.error("Error al eliminar el grupo:", errorGrupo);
-      alert("No se pudo eliminar el grupo: " + errorGrupo.message);
-      return;
-    }
-
     setMostrarConfirmarEliminar(false);
 
     if (onGrupoEliminado) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./MisEventos.css";
 
-import { supabase } from "../../supabase";
+import { conciertosService } from "../../services/conciertosService";
 
 import HeaderMisEventos from "./HeaderMisEventos";
 import CardEvento from "./CardEvento";
@@ -30,62 +30,14 @@ function MisEventos({
     setCargando(true);
     setErrorTexto("");
 
-    const { data: relaciones, error: errorRelaciones } = await supabase
-      .from("usuarios_conciertos")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario);
-
-    if (errorRelaciones) {
-      console.error("Error cargando relaciones:", errorRelaciones);
+    try {
+      const eventos = await conciertosService.listarMisEventos();
+      setMisEventos(eventos || []);
+    } catch (error) {
+      console.error("Error cargando mis eventos:", error);
       setErrorTexto("No se pudieron cargar tus eventos.");
-      setCargando(false);
-      return;
     }
 
-    const eventos = [];
-
-    for (const relacion of relaciones || []) {
-      const { data: concierto, error: errorConcierto } = await supabase
-        .from("concierto")
-        .select("*")
-        .eq("id_concierto", relacion.id_concierto)
-        .maybeSingle();
-
-      if (errorConcierto || !concierto) {
-        console.error("Error cargando concierto:", errorConcierto);
-        continue;
-      }
-
-      const { data: artista } = await supabase
-        .from("artista")
-        .select("*")
-        .eq("id_artista", concierto.id_artista)
-        .maybeSingle();
-
-      const { data: estadio } = await supabase
-        .from("estadio")
-        .select("*")
-        .eq("id_estadio", concierto.id_estadio)
-        .maybeSingle();
-
-      eventos.push({
-        ...concierto,
-        artista: artista || {
-          nombre: "Artista",
-        },
-        estadio: estadio || {
-          nombre: "Estadio",
-          ciudad: "",
-        },
-        imagen:
-          concierto.imagen ||
-          concierto.imagenConcierto ||
-          concierto.foto ||
-          "",
-      });
-    }
-
-    setMisEventos(eventos);
     setCargando(false);
   }
 
@@ -94,45 +46,19 @@ function MisEventos({
 
     setSaliendo(true);
 
-    // Salir de un concierto también saca a la persona de todos los
-    // grupos que haya confirmado dentro de ese concierto: no tendría
-    // sentido seguir en el grupo de un evento al que ya no vas.
-    const { data: gruposDelConcierto, error: errorGrupos } = await supabase
-      .from("grupo")
-      .select("id_grupo")
-      .eq("id_concierto", eventoParaSalir.id_concierto);
-
-    if (errorGrupos) {
-      console.error("Error buscando grupos del concierto:", errorGrupos);
-    }
-
-    const idsGrupos = (gruposDelConcierto || []).map((grupo) => grupo.id_grupo);
-
-    if (idsGrupos.length > 0) {
-      const { error: errorSalirGrupos } = await supabase
-        .from("grupos_usuarios")
-        .delete()
-        .eq("id_usuario", usuarioActual.id_usuario)
-        .in("id_grupo", idsGrupos);
-
-      if (errorSalirGrupos) {
-        console.error("Error saliendo de los grupos del concierto:", errorSalirGrupos);
-      }
-    }
-
-    const { error: errorSalirConcierto } = await supabase
-      .from("usuarios_conciertos")
-      .delete()
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_concierto", eventoParaSalir.id_concierto);
-
-    setSaliendo(false);
-
-    if (errorSalirConcierto) {
-      alert("No se pudo salir del concierto: " + errorSalirConcierto.message);
+    // Salir de un concierto también saca a la persona de todos los grupos
+    // que haya confirmado dentro de ese concierto: mismo efecto en cascada
+    // que antes hacía este componente, ahora resuelto en el backend
+    // (conciertoService.salirDeConcierto).
+    try {
+      await conciertosService.salir(eventoParaSalir.id_concierto);
+    } catch (error) {
+      setSaliendo(false);
+      alert("No se pudo salir del concierto: " + error.message);
       return;
     }
 
+    setSaliendo(false);
     setEventoParaSalir(null);
     await cargarMisEventos();
   }

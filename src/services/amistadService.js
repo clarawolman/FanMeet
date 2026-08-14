@@ -13,6 +13,10 @@ export const amistadService = {
     return api.patch(`/amistades/${idAmistad}/aceptar`);
   },
 
+  async rechazar(idAmistad) {
+    return api.del(`/amistades/${idAmistad}`);
+  },
+
   async listarAmigos(idUsuario) {
     return api.get(`/amistades/amigos/${idUsuario}`);
   },

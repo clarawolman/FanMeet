@@ -23,7 +23,9 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
     obtenerArtista: vi.fn(),
     obtenerEstadio: vi.fn(),
   },
-  usuariosConciertosRepository: {},
+  usuariosConciertosRepository: {
+    existeRelacion: vi.fn(),
+  },
 }));
 
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
@@ -38,7 +40,9 @@ vi.mock("../src/services/notificacionService.js", () => ({
 }));
 
 const { grupoRepository, grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
-const { conciertoRepository } = await import("../src/repositories/conciertoRepository.js");
+const { conciertoRepository, usuariosConciertosRepository } = await import(
+  "../src/repositories/conciertoRepository.js"
+);
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
 const { notificacionService } = await import("../src/services/notificacionService.js");
 const { grupoService } = await import("../src/services/grupoService.js");
@@ -51,6 +55,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: CREADOR, nombre: "Creador" });
   usuarioRepository.listarPorIds.mockResolvedValue([]);
+  usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
 });
 
 describe("grupoService.crear", () => {
@@ -71,6 +76,48 @@ describe("grupoService.crear", () => {
 
     await expect(grupoService.crear(CREADOR, GRUPO)).rejects.toMatchObject({ status: 404 });
     expect(grupoRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 403 si el usuario no pertenece al concierto donde quiere crear el grupo", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue({ id_concierto: 10 });
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(grupoService.crear(CREADOR, GRUPO)).rejects.toMatchObject({ status: 403 });
+    expect(grupoRepository.crear).not.toHaveBeenCalled();
+  });
+});
+
+describe("grupoService.obtenerDetalle (autorización)", () => {
+  it("rechaza con 404 si el grupo no existe", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(null);
+
+    await expect(grupoService.obtenerDetalle(OTRO_USUARIO, 999)).rejects.toMatchObject({
+      status: 404,
+    });
+    expect(usuariosConciertosRepository.existeRelacion).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 403 si el usuario no pertenece al concierto del grupo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(grupoService.obtenerDetalle(OTRO_USUARIO, GRUPO.id_grupo)).rejects.toMatchObject({
+      status: 403,
+    });
+  });
+
+  it("devuelve el detalle si el usuario pertenece al concierto del grupo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+
+    const resultado = await grupoService.obtenerDetalle(OTRO_USUARIO, GRUPO.id_grupo);
+
+    expect(usuariosConciertosRepository.existeRelacion).toHaveBeenCalledWith(
+      OTRO_USUARIO,
+      GRUPO.id_concierto
+    );
+    expect(resultado.id_grupo).toBe(GRUPO.id_grupo);
   });
 });
 

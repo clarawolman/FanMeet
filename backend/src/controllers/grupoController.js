@@ -8,7 +8,7 @@ export const grupoController = {
   }),
 
   obtenerDetalle: asyncHandler(async (req, res) => {
-    const grupo = await grupoService.obtenerDetalle(req.params.idGrupo);
+    const grupo = await grupoService.obtenerDetalle(req.user.id, req.params.idGrupo);
     res.json(grupo);
   }),
 

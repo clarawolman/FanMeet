@@ -86,6 +86,35 @@ describe("conciertoService.unirsePorCodigo", () => {
   });
 });
 
+describe("conciertoService.obtenerDetalle (autorización)", () => {
+  it("rechaza con 404 si el concierto no existe", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(null);
+
+    await expect(conciertoService.obtenerDetalle(YO, 1)).rejects.toMatchObject({ status: 404 });
+    expect(usuariosConciertosRepository.existeRelacion).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 403 si el usuario no pertenece al concierto", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(CONCIERTO);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(conciertoService.obtenerDetalle(YO, 1)).rejects.toMatchObject({ status: 403 });
+  });
+
+  it("devuelve el detalle si el usuario pertenece al concierto", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(CONCIERTO);
+    conciertoRepository.obtenerArtista.mockResolvedValue(null);
+    conciertoRepository.obtenerEstadio.mockResolvedValue(null);
+    grupoRepository.listarPorConcierto.mockResolvedValue([]);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    usuariosConciertosRepository.listarUsuariosPorConcierto.mockResolvedValue([]);
+
+    const resultado = await conciertoService.obtenerDetalle(YO, 1);
+
+    expect(resultado.id_concierto).toBe(CONCIERTO.id_concierto);
+  });
+});
+
 describe("conciertoService.salirDeConcierto", () => {
   it("saca al usuario de los grupos del concierto antes de sacarlo del concierto", async () => {
     grupoRepository.listarPorConcierto.mockResolvedValue([{ id_grupo: 1 }, { id_grupo: 2 }]);

@@ -3,8 +3,15 @@ import { asyncHandler } from "../helpers/asyncHandler.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 export const usuarioController = {
+  // Si el id pedido es el del propio usuario autenticado, devuelve el
+  // perfil completo (mail/fechanac/genero); para cualquier otro id, solo
+  // la versión pública. Nunca hay que confiar en el id del :params para
+  // decidir qué tan completa es la respuesta, solo en req.user.id.
   obtenerPerfil: asyncHandler(async (req, res) => {
-    const usuario = await usuarioService.obtenerPerfil(req.params.idUsuario);
+    const usuario =
+      req.params.idUsuario === req.user.id
+        ? await usuarioService.obtenerPerfil(req.user.id)
+        : await usuarioService.obtenerPerfilPublico(req.params.idUsuario);
     res.json(usuario);
   }),
 

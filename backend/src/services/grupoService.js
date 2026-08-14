@@ -1,5 +1,8 @@
 import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRepository.js";
-import { conciertoRepository } from "../repositories/conciertoRepository.js";
+import {
+  conciertoRepository,
+  usuariosConciertosRepository,
+} from "../repositories/conciertoRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { notificacionService } from "./notificacionService.js";
 import { toGrupo, toGrupoConConcierto } from "../entities/Grupo.js";
@@ -23,6 +26,16 @@ export const grupoService = {
     const concierto = await conciertoRepository.obtenerPorId(datosGrupo.id_concierto);
     if (!concierto) throw ApiError.notFound("El concierto no existe");
 
+    // Sin esto, cualquier cuenta autenticada podía crear grupos dentro de
+    // conciertos a los que nunca entró con el código de acceso.
+    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
+      idUsuarioAutenticado,
+      datosGrupo.id_concierto
+    );
+    if (!perteneceAlConcierto) {
+      throw ApiError.forbidden("No pertenecés a este concierto");
+    }
+
     const grupoCreado = await grupoRepository.crear({
       ...datosGrupo,
       id_creador: idUsuarioAutenticado,
@@ -33,9 +46,21 @@ export const grupoService = {
     return toGrupo(grupoCreado, { usuarios: [toUsuarioResumen(await usuarioRepository.obtenerPorId(idUsuarioAutenticado))] });
   },
 
-  async obtenerDetalle(idGrupo) {
+  // Mismo criterio que conciertoService.obtenerDetalle: ver un grupo
+  // requiere pertenecer al concierto al que ese grupo pertenece (los ids
+  // de grupo son enteros secuenciales, fáciles de enumerar).
+  async obtenerDetalle(idUsuarioAutenticado, idGrupo) {
     const grupo = await grupoRepository.obtenerPorId(idGrupo);
     if (!grupo) throw ApiError.notFound("El grupo no existe");
+
+    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
+      idUsuarioAutenticado,
+      grupo.id_concierto
+    );
+    if (!perteneceAlConcierto) {
+      throw ApiError.forbidden("No pertenecés al concierto de este grupo");
+    }
+
     const usuarios = await armarUsuariosDeGrupo(idGrupo);
     return toGrupo(grupo, { usuarios });
   },
