@@ -7,6 +7,10 @@
   padding: 14px 16px;
   margin: 12px 16px 0;
   border: 1px solid #f0eefe;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
 }
 
 .imagenesParticipantes {

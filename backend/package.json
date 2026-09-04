@@ -7,8 +7,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
+    "dev": "cross-env NODE_EXTRA_CA_CERTS=./certs/fortinet-ca.pem node --watch src/server.js",
+    "start": "cross-env NODE_EXTRA_CA_CERTS=./certs/fortinet-ca.pem node src/server.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -25,6 +25,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "supertest": "^7.0.0",
     "vitest": "^4.1.10"
   }

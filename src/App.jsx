@@ -198,6 +198,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "perfil" &&
     pantalla !== "editarGeneros" &&
     pantalla !== "fansUnidos" &&
+    pantalla !== "fansConfirmadosGrupo" &&
     pantalla !== "perfilAjeno" &&
     pantalla !== "notificaciones"
   ) {
@@ -363,6 +364,19 @@ async function manejarFinalizarRegistro(datosPaso3) {
             await recargarDatos();
             setPantalla("concierto");
           }}
+          onVerFansConfirmados={() => setPantalla("fansConfirmadosGrupo")}
+        />
+      )}
+
+      {pantalla === "fansConfirmadosGrupo" && grupoSeleccionado && (
+        <FansUnidosLista
+          fans={grupoSeleccionado.usuarios}
+          cantidadFans={(grupoSeleccionado.usuarios || []).length}
+          usuarioActualId={usuarioActual?.id_usuario}
+          titulo="Fans confirmados"
+          subtitulo={`${(grupoSeleccionado.usuarios || []).length} personas confirmaron su asistencia a este grupo`}
+          onVolver={() => setPantalla("infoGrupo")}
+          onVerUsuario={manejarVerUsuario}
         />
       )}
     </>

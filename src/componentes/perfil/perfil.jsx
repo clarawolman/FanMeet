@@ -285,7 +285,10 @@ function Perfil({
         {cargando && <p className="perfilCargando">Cargando perfil...</p>}
       </div>
 
-      <Footer onNavegar={onNavegar} pantallaActiva="perfil" />
+      <Footer
+        onNavegar={onNavegar}
+        pantallaActiva={isOwnProfile ? "perfil" : "perfilAjeno"}
+      />
 
       {mostrarEditorGeneros && (
         <div className="perfilOverlayPantalla">
