@@ -15,5 +15,5 @@ export const env = {
   supabaseUrl: requerido("SUPABASE_URL"),
   supabaseServiceRoleKey: requerido("SUPABASE_SERVICE_ROLE_KEY"),
   supabaseAnonKey: requerido("SUPABASE_ANON_KEY"),
-  conciertoAccessCode: process.env.CONCIERTO_ACCESS_CODE || "FANMEET2026",
+  conciertoAccessCode: requerido("CONCIERTO_ACCESS_CODE"),
 };

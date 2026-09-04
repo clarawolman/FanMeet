@@ -1,7 +1,7 @@
 import { amistadRepository } from "../repositories/amistadRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { toAmistad, calcularEstadoAmistad } from "../entities/Amistad.js";
-import { toUsuarioCompleto } from "../entities/Usuario.js";
+import { toUsuarioPublico } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 export const amistadService = {
@@ -55,12 +55,9 @@ export const amistadService = {
     return { ok: true };
   },
 
-  // Misma forma que hoy devuelve listaAmigosPerfil.jsx (select("*") sobre
-  // "usuario"): se mantiene la fila completa para no romper ese componente
-  // cuando migre, aunque la auditoría marcó esto como sobre-exposición de
-  // columnas (mail, fechanac). Si se decide recortarlo, es un cambio de
-  // contrato de API a acordar con el frontend, no algo para resolver acá
-  // en silencio.
+  // listaAmigosPerfil.jsx solo lee id_usuario/nombre/fotoperfil, así que se
+  // devuelve la forma pública (sin mail/fechanac). Antes se devolvía la fila
+  // completa; se corrigió por la auditoría de seguridad.
   async listarAmigos(idUsuario) {
     const relaciones = await amistadRepository.listarAceptadasDeUsuario(idUsuario);
     const idsAmigos = relaciones.map((r) =>
@@ -69,6 +66,6 @@ export const amistadService = {
 
     if (idsAmigos.length === 0) return [];
     const filas = await usuarioRepository.listarPorIds(idsAmigos);
-    return filas.map(toUsuarioCompleto);
+    return filas.map(toUsuarioPublico);
   },
 };

@@ -15,9 +15,9 @@ import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 
-import { supabase } from "./supabase";
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
+import { conciertosService } from "./services/conciertosService";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -37,179 +37,16 @@ function App() {
     setCargando(true);
     setErrorTexto("");
 
-    const { data: conciertoData, error: errorConcierto } = await supabase
-      .from("concierto")
-      .select("*")
-      .eq("id_concierto", idConcierto)
-      .maybeSingle();
-
-    if (errorConcierto) {
-      setErrorTexto("Error en concierto: " + errorConcierto.message);
+    try {
+      const conciertoFinal = await conciertosService.obtenerDetalle(idConcierto);
+      setConcierto(conciertoFinal);
+      setCargando(false);
+      return true;
+    } catch (error) {
+      setErrorTexto(error.message || "No se pudo cargar el concierto");
       setCargando(false);
       return false;
     }
-
-    if (!conciertoData) {
-      setErrorTexto("No existe el concierto con id " + idConcierto);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: artistaData, error: errorArtista } = await supabase
-      .from("artista")
-      .select("*")
-      .eq("id_artista", conciertoData.id_artista)
-      .maybeSingle();
-
-    if (errorArtista) {
-      setErrorTexto("Error en artista: " + errorArtista.message);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: estadioData, error: errorEstadio } = await supabase
-      .from("estadio")
-      .select("*")
-      .eq("id_estadio", conciertoData.id_estadio)
-      .maybeSingle();
-
-    if (errorEstadio) {
-      setErrorTexto("Error en estadio: " + errorEstadio.message);
-      setCargando(false);
-      return false;
-    }
-
-    const { data: gruposData, error: errorGrupos } = await supabase
-      .from("grupo")
-      .select("*")
-      .eq("id_concierto", conciertoData.id_concierto);
-
-    if (errorGrupos) {
-      setErrorTexto("Error en grupo: " + errorGrupos.message);
-      setCargando(false);
-      return false;
-    }
-
-    const gruposConUsuarios = await Promise.all(
-      (gruposData || []).map(async (grupo) => {
-        const { data: relacionesGrupo, error: errorRelacionesGrupo } =
-          await supabase
-            .from("grupos_usuarios")
-            .select("*")
-            .eq("id_grupo", grupo.id_grupo);
-
-        if (errorRelacionesGrupo) {
-          console.error("Error en grupos_usuarios:", errorRelacionesGrupo);
-        }
-
-        const usuarios = await Promise.all(
-          (relacionesGrupo || []).map(async (relacion) => {
-            const { data: usuarioData, error: errorUsuario } = await supabase
-              .from("usuario")
-              .select("*")
-              .eq("id_usuario", relacion.id_usuario)
-              .maybeSingle();
-
-            if (errorUsuario) {
-              console.error("Error en usuario:", errorUsuario);
-            }
-
-            return {
-              id_usuario: usuarioData?.id_usuario,
-              nombre: usuarioData?.nombre || "Usuario",
-              foto_perfil:
-                usuarioData?.fotoperfil ||
-                usuarioData?.foto_perfil ||
-                "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
-            };
-          })
-        );
-
-        return {
-          ...grupo,
-          foto: grupo.foto || grupo.imagen || grupo.imagenGrupo || "",
-          categoria: grupo.categoria,
-          usuarios,
-        };
-      })
-    );
-
-const { data: relacionesConcierto, error: errorRelacionesConcierto } =
-  await supabase
-    .from("usuarios_conciertos")
-    .select("id_usuario")
-    .eq("id_concierto", conciertoData.id_concierto);
-
-if (errorRelacionesConcierto) {
-  console.error("Error cargando usuarios_conciertos:", errorRelacionesConcierto);
-}
-
-const idsUsuariosConcierto = [
-  ...new Set((relacionesConcierto || []).map((relacion) => relacion.id_usuario)),
-];
-
-const usuariosDelConcierto = await Promise.all(
-  idsUsuariosConcierto.map(async (idUsuario) => {
-    const { data: usuarioData, error: errorUsuarioConcierto } = await supabase
-      .from("usuario")
-      .select("*")
-      .eq("id_usuario", idUsuario)
-      .maybeSingle();
-
-    if (errorUsuarioConcierto) {
-      console.error("Error cargando usuario del concierto:", errorUsuarioConcierto);
-    }
-
-    return {
-      id_usuario: usuarioData?.id_usuario || idUsuario,
-      nombre: usuarioData?.nombre || "Usuario",
-      foto_perfil:
-        usuarioData?.fotoperfil ||
-        usuarioData?.foto_perfil ||
-        "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
-    };
-  })
-);
-
-    const conciertoFinal = {
-      ...conciertoData,
-
-      artista: artistaData || {
-        id_artista: conciertoData.id_artista,
-        nombre: "Artista",
-      },
-
-      estadio: {
-        ...(estadioData || {
-          id_estadio: conciertoData.id_estadio,
-          nombre: "Estadio",
-          direccion: "",
-          ciudad: "",
-        }),
-        imagen:
-          estadioData?.imagen ||
-          estadioData?.venueImage ||
-          estadioData?.foto ||
-          "",
-      },
-
-      imagen:
-        conciertoData.imagen ||
-        conciertoData.imagenConcierto ||
-        conciertoData.foto ||
-        "",
-
-      hora: conciertoData.hora || "",
-
-      grupos: gruposConUsuarios,
-      usuarios: usuariosDelConcierto,
-      asistentes: usuariosDelConcierto.length,
-      cantidadFans: usuariosDelConcierto.length,
-    };
-
-    setConcierto(conciertoFinal);
-    setCargando(false);
-    return true;
   }
 
   async function manejarIngreso(usuario) {

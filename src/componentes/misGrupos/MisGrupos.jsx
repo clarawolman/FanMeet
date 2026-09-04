@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./MisGrupos.css";
 
-import { supabase } from "../../supabase";
+import { gruposService } from "../../services/gruposService";
 
 import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
@@ -30,72 +30,14 @@ function MisGrupos({
     setCargando(true);
     setErrorTexto("");
 
-    const { data: relaciones, error: errorRelaciones } = await supabase
-      .from("grupos_usuarios")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario);
-
-    if (errorRelaciones) {
+    try {
+      const grupos = await gruposService.listarMisGrupos();
+      setMisGrupos(grupos || []);
+    } catch (error) {
+      console.error("Error cargando mis grupos:", error);
       setErrorTexto("No se pudieron cargar tus grupos.");
-      setCargando(false);
-      return;
     }
 
-    const grupos = [];
-
-    for (const relacion of relaciones || []) {
-      const { data: grupo } = await supabase
-        .from("grupo")
-        .select("*")
-        .eq("id_grupo", relacion.id_grupo)
-        .maybeSingle();
-
-
-      const { data: concierto } = await supabase
-        .from("concierto")
-        .select(`
-        *,
-        artista (*),
-        estadio (*)
-      `)
-        .eq("id_concierto", grupo.id_concierto)
-        .maybeSingle();
-
-
-
-      const { data: integrantes } = await supabase
-        .from("grupos_usuarios")
-        .select("*")
-        .eq("id_grupo", grupo.id_grupo);
-
-      const usuarios = [];
-
-      for (const integrante of integrantes || []) {
-        const { data: usuario } = await supabase
-          .from("usuario")
-          .select("*")
-          .eq("id_usuario", integrante.id_usuario)
-          .maybeSingle();
-
-        if (usuario) {
-          usuarios.push({
-            id_usuario: usuario.id_usuario,
-            nombre: usuario.nombre,
-            foto_perfil:
-              usuario.fotoperfil ||
-              "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg",
-          });
-        }
-      }
-
-      grupos.push({
-        ...grupo,
-        concierto: concierto || null,
-        usuarios,
-      });
-    }
-
-    setMisGrupos(grupos);
     setCargando(false);
   }
 
@@ -104,19 +46,15 @@ function MisGrupos({
 
     setSaliendo(true);
 
-    const { error } = await supabase
-      .from("grupos_usuarios")
-      .delete()
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .eq("id_grupo", grupoParaSalir.id_grupo);
-
-    setSaliendo(false);
-
-    if (error) {
+    try {
+      await gruposService.salir(grupoParaSalir.id_grupo);
+    } catch (error) {
+      setSaliendo(false);
       alert("No se pudo salir del grupo: " + error.message);
       return;
     }
 
+    setSaliendo(false);
     setGrupoParaSalir(null);
     await cargarMisGrupos();
   }

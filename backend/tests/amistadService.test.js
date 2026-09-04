@@ -115,7 +115,7 @@ describe("amistadService.rechazarOEliminar (autorización)", () => {
 });
 
 describe("amistadService.listarAmigos", () => {
-  it("devuelve el id contrario al del usuario consultado, con la fila completa (igual que hoy select('*'))", async () => {
+  it("devuelve el id contrario al del usuario consultado, en la forma pública (sin mail/fechanac)", async () => {
     amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([
       { id_solicitante: YO, id_receptor: OTRO },
       { id_solicitante: AJENO, id_receptor: YO },
@@ -128,6 +128,7 @@ describe("amistadService.listarAmigos", () => {
     const resultado = await amistadService.listarAmigos(YO);
 
     expect(usuarioRepository.listarPorIds).toHaveBeenCalledWith([OTRO, AJENO]);
-    expect(resultado.map((amigo) => amigo.mail)).toEqual(["otro@mail.com", "ajeno@mail.com"]);
+    expect(resultado.map((amigo) => amigo.id_usuario)).toEqual([OTRO, AJENO]);
+    expect(resultado.every((amigo) => !("mail" in amigo) && !("fechanac" in amigo))).toBe(true);
   });
 });

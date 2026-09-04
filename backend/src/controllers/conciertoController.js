@@ -8,7 +8,7 @@ export const conciertoController = {
   }),
 
   obtenerDetalle: asyncHandler(async (req, res) => {
-    const concierto = await conciertoService.obtenerDetalle(req.params.idConcierto);
+    const concierto = await conciertoService.obtenerDetalle(req.user.id, req.params.idConcierto);
     res.json(concierto);
   }),
 

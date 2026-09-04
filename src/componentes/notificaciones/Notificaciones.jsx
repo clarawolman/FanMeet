@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import "./Notificaciones.css";
 import CardNotificacion from "./CardNotificacion";
 import Footer from "../generales/Footer";
-import { supabase } from "../../supabase";
+import { notificacionesService } from "../../services/notificacionesService";
+import { amistadService } from "../../services/amistadService";
 
 function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -18,40 +19,18 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
   async function cargarNotificaciones() {
     setCargando(true);
 
-    const { data, error } = await supabase
-      .from("notificacion")
-      .select("*")
-      .eq("id_usuario", usuarioActual.id_usuario)
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      // El backend ya marca como leídas las notificaciones no leídas al
+      // listarlas (notificacionService.listar), mismo comportamiento que
+      // tenía este componente al llamar marcarComoLeidas() después de cargar.
+      const data = await notificacionesService.listar();
+      setNotificaciones(data || []);
+    } catch (error) {
       console.error("Error cargando notificaciones:", error);
       setNotificaciones([]);
-      setCargando(false);
-      return;
     }
 
-    setNotificaciones(data || []);
     setCargando(false);
-
-    marcarComoLeidas(data || []);
-  }
-
-  async function marcarComoLeidas(lista) {
-    const idsSinLeer = lista
-      .filter((n) => !n.leida)
-      .map((n) => n.id_notificacion);
-
-    if (idsSinLeer.length === 0) return;
-
-    const { error } = await supabase
-      .from("notificacion")
-      .update({ leida: true })
-      .in("id_notificacion", idsSinLeer);
-
-    if (error) {
-      console.error("Error marcando notificaciones como leídas:", error);
-    }
   }
 
   async function manejarEliminar(notificacion) {
@@ -63,12 +42,9 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
       )
     );
 
-    const { error } = await supabase
-      .from("notificacion")
-      .delete()
-      .eq("id_notificacion", notificacion.id_notificacion);
-
-    if (error) {
+    try {
+      await notificacionesService.eliminar(notificacion.id_notificacion);
+    } catch (error) {
       console.error("Error eliminando notificación:", error);
       setNotificaciones(notificacionesAnteriores);
       alert("No se pudo eliminar la notificación. Probá de nuevo.");
@@ -80,19 +56,16 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
 
     setProcesandoId(notificacion.id_notificacion);
 
-    const { error } = await supabase
-      .from("amistad")
-      .update({ estado: "aceptada" })
-      .eq("id_amistad", notificacion.id_amistad);
-
-    setProcesandoId(null);
-
-    if (error) {
+    try {
+      await amistadService.aceptar(notificacion.id_amistad);
+    } catch (error) {
+      setProcesandoId(null);
       console.error("Error aceptando solicitud de amistad:", error);
       alert("No se pudo aceptar la solicitud: " + error.message);
       return;
     }
 
+    setProcesandoId(null);
     setNotificaciones((actuales) =>
       actuales.filter(
         (n) => n.id_notificacion !== notificacion.id_notificacion
@@ -105,19 +78,16 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
 
     setProcesandoId(notificacion.id_notificacion);
 
-    const { error } = await supabase
-      .from("amistad")
-      .delete()
-      .eq("id_amistad", notificacion.id_amistad);
-
-    setProcesandoId(null);
-
-    if (error) {
+    try {
+      await amistadService.rechazar(notificacion.id_amistad);
+    } catch (error) {
+      setProcesandoId(null);
       console.error("Error rechazando solicitud de amistad:", error);
       alert("No se pudo rechazar la solicitud: " + error.message);
       return;
     }
 
+    setProcesandoId(null);
     setNotificaciones((actuales) =>
       actuales.filter(
         (n) => n.id_notificacion !== notificacion.id_notificacion

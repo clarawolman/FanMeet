@@ -47,6 +47,7 @@ const { amistadRepository } = await import("../src/repositories/amistadRepositor
 const { usuarioService } = await import("../src/services/usuarioService.js");
 
 const YO = "yo-uuid";
+const JPEG_VALIDO = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -56,6 +57,45 @@ describe("usuarioService.obtenerPerfil", () => {
   it("rechaza con 404 si el usuario no existe", async () => {
     usuarioRepository.obtenerPorId.mockResolvedValue(null);
     await expect(usuarioService.obtenerPerfil("no-existe")).rejects.toMatchObject({ status: 404 });
+  });
+
+  it("incluye mail y fechanac (uso exclusivo del propio usuario)", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({
+      id_usuario: YO,
+      nombre: "Ana",
+      mail: "ana@mail.com",
+      fechanac: "2000-01-01",
+    });
+
+    const resultado = await usuarioService.obtenerPerfil(YO);
+
+    expect(resultado.mail).toBe("ana@mail.com");
+    expect(resultado.fechanac).toBe("2000-01-01");
+  });
+});
+
+describe("usuarioService.obtenerPerfilPublico", () => {
+  it("nunca incluye mail ni fechanac, aunque la fila los tenga", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({
+      id_usuario: "otro-uuid",
+      nombre: "Otro",
+      mail: "otro@mail.com",
+      fechanac: "1999-05-05",
+      fotoperfil: "https://cdn/foto.jpg",
+    });
+
+    const resultado = await usuarioService.obtenerPerfilPublico("otro-uuid");
+
+    expect(resultado).not.toHaveProperty("mail");
+    expect(resultado).not.toHaveProperty("fechanac");
+    expect(resultado.nombre).toBe("Otro");
+  });
+
+  it("rechaza con 404 si el usuario no existe", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue(null);
+    await expect(usuarioService.obtenerPerfilPublico("no-existe")).rejects.toMatchObject({
+      status: 404,
+    });
   });
 });
 
@@ -101,9 +141,20 @@ describe("usuarioService.actualizarFoto / actualizarVibra (identidad)", () => {
     storageRepository.subirArchivo.mockResolvedValue("https://cdn/avatars/yo-uuid/foto.jpg");
     usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, fotoperfil: "url" });
 
-    await usuarioService.actualizarFoto(YO, { originalname: "foto.jpg", buffer: Buffer.from(""), mimetype: "image/jpeg" });
+    await usuarioService.actualizarFoto(YO, { originalname: "foto.jpg", buffer: JPEG_VALIDO, mimetype: "image/jpeg" });
 
     expect(usuarioRepository.actualizar).toHaveBeenCalledWith(YO, { fotoperfil: expect.any(String) });
+  });
+
+  it("rechaza con 400 si el contenido del archivo no coincide con una imagen real (mimetype falseado)", async () => {
+    await expect(
+      usuarioService.actualizarFoto(YO, {
+        originalname: "foto.jpg",
+        buffer: Buffer.from("<svg onload=alert(1)>"),
+        mimetype: "image/jpeg",
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
   });
 
   it("actualiza estilo_asistencia solo del usuario autenticado", async () => {
@@ -120,7 +171,7 @@ describe("usuarioService.subirHighlight (límite de 4)", () => {
     highlightRepository.listarPorUsuario.mockResolvedValue([{}, {}, {}, {}]);
 
     await expect(
-      usuarioService.subirHighlight(YO, { originalname: "a.jpg", buffer: Buffer.from(""), mimetype: "image/jpeg" })
+      usuarioService.subirHighlight(YO, { originalname: "a.jpg", buffer: JPEG_VALIDO, mimetype: "image/jpeg" })
     ).rejects.toMatchObject({ status: 400 });
     expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
   });
@@ -132,11 +183,22 @@ describe("usuarioService.subirHighlight (límite de 4)", () => {
 
     const resultado = await usuarioService.subirHighlight(YO, {
       originalname: "a.jpg",
-      buffer: Buffer.from(""),
+      buffer: JPEG_VALIDO,
       mimetype: "image/jpeg",
     });
 
     expect(highlightRepository.crear).toHaveBeenCalledWith(YO, expect.any(String));
     expect(resultado.id_usuario).toBe(YO);
+  });
+
+  it("rechaza con 400 si el contenido no es una imagen real, sin llegar a chequear el límite de 4", async () => {
+    await expect(
+      usuarioService.subirHighlight(YO, {
+        originalname: "a.jpg",
+        buffer: Buffer.from("no soy una imagen"),
+        mimetype: "image/jpeg",
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
   });
 });

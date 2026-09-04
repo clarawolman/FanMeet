@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Registro3.css";
-import { supabase } from "../../../supabase";
+import { usuariosService } from "../../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../../utils/generos";
 
 const ambientes = [
@@ -44,15 +44,14 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
   async function cargarCatalogoGeneros() {
     setCargandoCatalogo(true);
 
-    const { data, error } = await supabase.from("estilo_musical").select("*");
-
-    if (error) {
+    try {
+      const datos = await usuariosService.obtenerCatalogoGeneros();
+      setCatalogoError("");
+      setCatalogoGeneros(datos || []);
+    } catch (error) {
       console.error("Error cargando catálogo de géneros:", error);
       setCatalogoError(error.message);
       setCatalogoGeneros([]);
-    } else {
-      setCatalogoError("");
-      setCatalogoGeneros(data || []);
     }
 
     setCargandoCatalogo(false);

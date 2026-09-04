@@ -25,3 +25,16 @@ export function toUsuarioResumen(row) {
     foto_perfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
   };
 }
+
+// Forma para ver el perfil de OTRO usuario (perfil ajeno, lista de amigos):
+// sin mail/fechanac/genero. Ningún componente del frontend lee esos campos
+// salvo el propio dueño de la cuenta, así que no hace falta exponerlos acá.
+export function toUsuarioPublico(row) {
+  if (!row) return null;
+  return {
+    id_usuario: row.id_usuario,
+    nombre: row.nombre,
+    fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
+    estilo_asistencia: row.estilo_asistencia,
+  };
+}

@@ -30,9 +30,21 @@ export const conciertoService = {
     return filas.map(toConciertoResumen);
   },
 
-  async obtenerDetalle(idConcierto) {
+  // Ver el detalle de un concierto (y de los grupos/asistentes que trae
+  // adentro) requiere haberse unido antes con el código de acceso: si no,
+  // cualquier cuenta autenticada podría scrapear todos los conciertos
+  // iterando ids, sin haber entrado nunca.
+  async obtenerDetalle(idUsuarioAutenticado, idConcierto) {
     const concierto = await conciertoRepository.obtenerPorId(idConcierto);
     if (!concierto) throw ApiError.notFound(`No existe el concierto con id ${idConcierto}`);
+
+    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
+      idUsuarioAutenticado,
+      idConcierto
+    );
+    if (!perteneceAlConcierto) {
+      throw ApiError.forbidden("No pertenecés a este concierto");
+    }
 
     const [artista, estadio, gruposCrudos, relacionesConcierto] = await Promise.all([
       conciertoRepository.obtenerArtista(concierto.id_artista),
