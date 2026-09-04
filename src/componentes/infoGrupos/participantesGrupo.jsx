@@ -1,8 +1,12 @@
 import "./participantesGrupo.css";
-export default function ParticipantesGrupo({ participantes }) {
+export default function ParticipantesGrupo({ participantes, onVerFansConfirmados }) {
 
    return (
-      <div className="participantesGrupo">
+      <button
+         className="participantesGrupo"
+         type="button"
+         onClick={onVerFansConfirmados}
+      >
 
          <div className="imagenesParticipantes">
             {participantes.slice(0, 4).map((user) => (
@@ -19,6 +23,6 @@ export default function ParticipantesGrupo({ participantes }) {
             {participantes.length} fans confirmados
          </span>
 
-      </div>
+      </button>
    );
 }

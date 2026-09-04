@@ -300,6 +300,10 @@ const generosOrdenados = [...generos].sort((a, b) => {
         <div className="home-card-info">
           <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
 
+          {concierto.nombre && concierto.artista?.nombre && (
+            <p className="home-card-artista">{concierto.artista.nombre}</p>
+          )}
+
           <div className="home-card-meta">
             <span>
               {concierto.estadio?.nombre ||
@@ -320,19 +324,33 @@ const generosOrdenados = [...generos].sort((a, b) => {
           <p className="home-eyebrow">FanMeet</p>
         </div>
 
-        <button
-          type="button"
-          className="home-header-bell"
-          onClick={() => onNavegar("notificaciones")}
-          aria-label="Notificaciones"
-        >
-          <IconoCampana />
-          {cantidadNotificaciones > 0 && (
-            <span className="home-header-bell-badge">
-              {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}
-            </span>
-          )}
-        </button>
+        <div className="home-header-right">
+          <button
+            type="button"
+            className="home-header-bell"
+            onClick={() => onNavegar("notificaciones")}
+            aria-label="Notificaciones"
+          >
+            <IconoCampana />
+            {cantidadNotificaciones > 0 && (
+              <span className="home-header-bell-badge">
+                {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className="home-header-avatar"
+            onClick={() => onNavegar("perfil")}
+            aria-label="Mi perfil"
+          >
+            <img
+              src={usuarioActual?.fotoperfil || usuarioActual?.foto_perfil}
+              alt={usuarioActual?.nombre}
+            />
+          </button>
+        </div>
       </header>
 
       <main className="home-main">

@@ -6,6 +6,8 @@ function FansUnidosLista({
   usuarioActualId,
   onVolver,
   onVerUsuario,
+  titulo = "Fans unidos",
+  subtitulo = `${cantidadFans} personas van a este concierto`,
 }) {
   // La lista es para conocer a otros fans: uno mismo no tiene que aparecer ahí.
   const otrosFans = fans.filter((fan) => fan.id_usuario !== usuarioActualId);
@@ -18,8 +20,8 @@ function FansUnidosLista({
         </button>
 
         <div>
-          <h1>Fans unidos</h1>
-          <p>{cantidadFans} personas van a este concierto</p>
+          <h1>{titulo}</h1>
+          <p>{subtitulo}</p>
         </div>
       </header>
 

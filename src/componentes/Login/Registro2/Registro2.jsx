@@ -156,13 +156,15 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
             />
           </div>
 
-          <button
-            className="registro2BotonMas"
-            type="button"
-            onClick={abrirLibreria}
-          >
-            +
-          </button>
+          {!fotoPerfil && (
+            <button
+              className="registro2BotonMas"
+              type="button"
+              onClick={abrirLibreria}
+            >
+              +
+            </button>
+          )}
         </div>
 
         <p className="registro2TextoOpcional">

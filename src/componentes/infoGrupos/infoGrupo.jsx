@@ -20,6 +20,7 @@ function InfoGrupo({
   usuarioActual,
   onNavegar,
   onGrupoEliminado,
+  onVerFansConfirmados,
 }) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
@@ -156,7 +157,10 @@ function InfoGrupo({
       <div className="infoGrupoContenido">
         <HeroGrupo grupo={grupo} concierto={concierto} />
 
-        <ParticipantesGrupo participantes={grupo.usuarios} />
+        <ParticipantesGrupo
+          participantes={grupo.usuarios}
+          onVerFansConfirmados={onVerFansConfirmados}
+        />
 
         <StatsGrupo grupo={grupo} />
 
