@@ -8,11 +8,11 @@
 
 .pantallaMisGrupos {
   min-height: 100vh;
-  background: #f3f3f6;
+  background: var(--fm-bg);
   display: flex;
   flex-direction: column;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111827;
+  font-family: var(--fm-font-body);
+  color: var(--fm-ink);
 }
 
 /* ============================
@@ -38,8 +38,9 @@
   width: 100%;
   padding: 52px 20px;
   text-align: center;
-  color: #6f6f78;
-  font-size: 15px;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -68,10 +69,12 @@
 
 .misGruposRowHeader h2 {
   margin: 0;
-  color: #17171f;
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: -0.3px;
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-size: 17px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
   line-height: 1.2;
 
   overflow: hidden;
@@ -84,9 +87,11 @@
   min-width: 26px;
   height: 24px;
   padding: 0 9px;
-  border-radius: 999px;
-  background: #f3e8ff;
-  color: #811cd9;
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-mono);
   font-size: 12px;
   font-weight: 700;
   display: grid;
@@ -112,8 +117,8 @@
 }
 
 .misGruposRowScroll > * {
-  flex: 0 0 240px;
-  width: 240px;
+  flex: 0 0 270px;
+  width: 270px;
   scroll-snap-align: start;
 }
 
@@ -127,12 +132,12 @@
   }
 
   .misGruposRowHeader h2 {
-    font-size: 16.5px;
+    font-size: 15px;
   }
 
   .misGruposRowScroll > * {
-    flex-basis: 222px;
-    width: 222px;
+    flex-basis: 250px;
+    width: 250px;
   }
 }
 
@@ -152,7 +157,7 @@
   }
 
   .misGruposRowHeader h2 {
-    font-size: 21px;
+    font-size: 20px;
   }
 
   .misGruposRowScroll {
@@ -161,18 +166,18 @@
   }
 
   .misGruposRowScroll > * {
-    flex-basis: 260px;
-    width: 260px;
+    flex-basis: 290px;
+    width: 290px;
   }
 }
 
 @media (min-width: 1200px) {
   .misGruposLayout {
-    max-width: 1020px;
+    max-width: 1080px;
   }
 
   .misGruposRowScroll > * {
-    flex-basis: 270px;
-    width: 270px;
+    flex-basis: 300px;
+    width: 300px;
   }
 }

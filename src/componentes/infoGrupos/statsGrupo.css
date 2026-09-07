@@ -3,13 +3,13 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin: 10px 16px 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--fm-font-body);
 }
 
 .statCard {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #f0eefe;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   padding: 14px 12px;
   display: flex;
   flex-direction: column;
@@ -19,18 +19,20 @@
 }
 
 .statCard .statLabel {
+  font-family: var(--fm-font-mono);
   font-size: 10px;
-  font-weight: 600;
-  color: #a89dcf;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--fm-muted);
+  text-transform: none;
+  letter-spacing: 0.01em;
   margin: 0;
 }
 
 .statCard .statValue {
-  font-size: 13px;
+  font-family: var(--fm-font-display);
+  font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--fm-ink);
   margin: 0;
   line-height: 1.2;
   word-break: break-word;
@@ -47,6 +49,6 @@
   }
 
   .statCard .statValue {
-    font-size: 14px;
+    font-size: 15px;
   }
 }

@@ -10,40 +10,45 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 12px 8px;
+  gap: 3px;
+  padding: 14px 8px;
   max-width: 130px;
-  background: #f4effc;
-  border: none;
-  border-radius: 16px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  box-shadow: var(--fm-shadow-sm);
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s, transform 0.12s;
+  transition: background var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease),
+    border-color var(--fm-dur) var(--fm-ease);
 }
 
 .statItemPerfil:hover {
-  background: #ece3fb;
+  border-color: var(--fm-accent);
+  transform: translateY(-2px);
 }
 
 .statItemPerfil:active {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.97);
 }
 
 .statItemPerfil .statValuePerfil {
   margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  color: #811cd9;
+  font-family: var(--fm-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fm-accent);
   line-height: 1.2;
 }
 
 .statItemPerfil .statLabelPerfil {
   margin: 0;
+  font-family: var(--fm-font-body);
   font-size: 11px;
-  font-weight: 700;
-  color: #9a95a6;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--fm-muted);
+  text-transform: none;
+  letter-spacing: 0.005em;
 }
 
 @media (min-width: 768px) {

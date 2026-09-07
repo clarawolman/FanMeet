@@ -5,21 +5,25 @@
 
 .vibraConcierto h3 {
   margin: 0;
-  font-size: 20px;
+  font-family: var(--fm-font-display);
+  font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .vibraConciertoSubtitulo {
   margin: 2px 0 12px;
-  font-size: 13px;
-  color: #9a95a6;
+  font-family: var(--fm-font-mono);
+  font-size: 12px;
+  color: var(--fm-muted);
 }
 
 .vibraConciertoVacio {
   margin: 4px 0 0;
-  font-size: 14px;
-  color: #9a95a6;
+  font-family: var(--fm-font-mono);
+  font-size: 13px;
+  color: var(--fm-muted);
 }
 
 .vibraConciertoLista {
@@ -33,14 +37,21 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  border: 1.5px solid #ececf1;
-  background: #ffffff;
-  border-radius: 16px;
+  border: 1.5px solid var(--fm-border);
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-md);
   padding: 12px 14px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  box-shadow: 0 2px 8px rgba(20, 20, 30, 0.03);
+  box-shadow: none;
+  transition: border-color var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease),
+    transform var(--fm-dur) var(--fm-ease);
+}
+
+.vibraOpcion:hover:not(:disabled) {
+  border-color: var(--fm-accent);
+  transform: translateY(-1px);
 }
 
 .vibraOpcion:disabled {
@@ -51,12 +62,15 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #f4effc;
-  color: #811cd9;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
+    color var(--fm-dur) var(--fm-ease);
 }
 
 .vibraOpcionIcono svg {
@@ -73,36 +87,40 @@
 }
 
 .vibraOpcionTexto strong {
-  font-size: 14px;
+  font-family: var(--fm-font-display);
+  font-size: 13px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .vibraOpcionTexto small {
+  font-family: var(--fm-font-mono);
   font-size: 12px;
-  color: #9a95a6;
+  color: var(--fm-muted);
 }
 
 .vibraOpcionRadio {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1.5px solid #d8d3e4;
+  border: 1px solid var(--fm-border);
   flex-shrink: 0;
 }
 
 .vibraOpcion.activo {
-  border-color: #811cd9;
-  background: #f7f4ff;
+  border-color: var(--fm-accent);
+  background: var(--fm-bg-soft);
 }
 
 .vibraOpcion.activo .vibraOpcionIcono {
-  background: #811cd9;
-  color: #ffffff;
+  background: var(--fm-accent);
+  border-color: var(--fm-accent);
+  color: var(--fm-accent-ink);
 }
 
 .vibraOpcion.activo .vibraOpcionRadio {
-  border-color: #811cd9;
+  border-color: var(--fm-accent);
   border-width: 5px;
 }
 

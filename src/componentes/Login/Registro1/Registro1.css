@@ -1,8 +1,8 @@
 .pantallaRegistro1 {
   width: 100%;
   min-height: 100vh;
-  background: #f6f6f8;
-  color: #05050f;
+  background: var(--fm-bg);
+  color: var(--fm-ink);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,7 +13,8 @@
   max-width: 430px;
   height: 84px;
   padding: 0 24px;
-  background: #ffffff;
+  background: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -23,7 +24,7 @@
 .registroVolver {
   border: none;
   background: transparent;
-  color: #ff3f97;
+  color: var(--fm-accent);
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
@@ -32,9 +33,12 @@
 
 .registroLogo {
   margin: 0;
+  font-family: var(--fm-font-display);
   font-size: 18px;
-  font-weight: 800;
-  color: #7b24df;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  color: var(--fm-ink);
 }
 
 .registroContenido {
@@ -49,18 +53,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #05050f;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
   margin-bottom: 7px;
 }
 
 .registroBarra {
   width: 100%;
-  height: 5px;
-  background: #202036;
-  border-radius: 999px;
+  height: 4px;
+  background: var(--fm-border);
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 40px;
 }
@@ -68,17 +74,19 @@
 .registroBarraActiva {
   width: 33%;
   height: 100%;
-  background: linear-gradient(90deg, #7b4fff 0%, #ff4ca3 100%);
-  border-radius: 999px;
+  background: var(--fm-accent);
+  border-radius: 0;
 }
 
 .registroTitulo {
   margin: 0 0 16px;
+  font-family: var(--fm-font-display);
   font-size: 25px;
   line-height: 1.1;
-  font-weight: 900;
-  letter-spacing: -1px;
-  color: #05050f;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  color: var(--fm-ink);
 }
 
 .registroFormulario {
@@ -96,34 +104,37 @@
 }
 
 .registroCampo > span {
-  font-size: 12px;
-  font-weight: 800;
-  color: #05050f;
+  font-family: var(--fm-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  color: var(--fm-ink);
 }
 
 .registroObligatorio {
-  color: #ff2f7d;
+  color: var(--fm-accent);
   font-weight: 900;
   margin-left: 3px;
 }
 
 .registroInputWrapper {
   width: 100%;
-  height: 54px;
-  border-radius: 999px;
-  border: 1.5px solid #505057;
-  background: #7f7f86;
+  height: 50px;
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
   display: flex;
   align-items: center;
-  padding: 0 18px;
+  padding: 0 16px;
   box-sizing: border-box;
 }
 
 .registroIcono {
   width: 24px;
-  color: #ffffff;
-  font-size: 20px;
-  opacity: 0.95;
+  color: var(--fm-ink);
+  font-size: 18px;
+  opacity: 0.85;
   margin-right: 12px;
   display: flex;
   justify-content: center;
@@ -136,13 +147,14 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #ffffff;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-mono);
   font-size: 14px;
 }
 
 .registroInputWrapper input::placeholder {
-  color: #ffffff;
-  opacity: 0.9;
+  color: var(--fm-muted);
+  opacity: 1;
 }
 
 .registroInputWrapper select {
@@ -153,16 +165,16 @@
 }
 
 .registroInputWrapper select option {
-  color: #111111;
-  background: #ffffff;
+  color: var(--fm-ink);
+  background: var(--fm-surface);
 }
 
 .registroInputWrapper input[type="date"] {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .registroInputWrapper input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+  filter: none;
   cursor: pointer;
 }
 
@@ -180,40 +192,51 @@
   top: 50%;
   width: 9px;
   height: 9px;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid var(--fm-ink);
+  border-bottom: 2px solid var(--fm-ink);
   transform: translateY(-65%) rotate(45deg);
   pointer-events: none;
 }
 
 .registroBotonSiguiente {
   width: 100% !important;
-  height: 54px !important;
+  height: 52px !important;
   margin-top: 36px !important;
-  border: none !important;
-  border-radius: 999px !important;
-  background: linear-gradient(90deg, #8f5cff 0%, #ff5aa6 100%) !important;
-  color: #ffffff !important;
-  font-size: 19px !important;
-  font-weight: 800 !important;
-  line-height: 54px !important;
+  border: 1px solid var(--fm-border) !important;
+  border-radius: var(--fm-radius-sm) !important;
+  background: var(--fm-accent) !important;
+  color: var(--fm-accent-ink) !important;
+  font-family: var(--fm-font-display) !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  letter-spacing: 0.005em !important;
+  line-height: 50px !important;
   text-align: center !important;
   cursor: pointer !important;
-  box-shadow: 0 8px 18px rgba(255, 63, 151, 0.28) !important;
+  box-shadow: none !important;
   padding: 0 !important;
   display: block !important;
   opacity: 1 !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-.registroBotonSiguiente:active {
-  transform: scale(0.98);
+.registroBotonSiguiente:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 10px 24px var(--fm-glow) !important;
+}
+
+.registroBotonSiguiente:active:not(:disabled) {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 4px 12px var(--fm-glow) !important;
 }
 
 .registroError {
   margin: 8px 0 -12px;
-  color: #ff2f7d;
+  color: var(--fm-accent);
+  font-family: var(--fm-font-mono);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -240,7 +263,7 @@
 .registroOjoIcono {
   width: 19px;
   height: 13px;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--fm-ink);
   border-radius: 50%;
   display: inline-block;
   position: relative;
@@ -250,7 +273,7 @@
   content: "";
   width: 6px;
   height: 6px;
-  background: #ffffff;
+  background: var(--fm-ink);
   border-radius: 50%;
   position: absolute;
   left: 50%;
@@ -268,9 +291,10 @@
 }
 
 .registroCondicionesPassword li {
+  font-family: var(--fm-font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: #8b8b94;
+  color: var(--fm-muted);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -281,8 +305,8 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #eeeef2;
-  color: #8b8b94;
+  background: var(--fm-bg-soft);
+  color: var(--fm-muted);
   display: grid;
   place-items: center;
   font-size: 10px;
@@ -291,20 +315,21 @@
 }
 
 .registroCondicionesPassword li.cumplida {
-  color: #178f55;
+  color: #1a6b3d;
 }
 
 .registroCondicionesPassword li.cumplida::before {
   content: "✓";
   background: #dff7ea;
-  color: #178f55;
+  color: #1a6b3d;
 }
 
 .registroPasswordError {
   margin: 4px 0 0;
-  color: #ff2f7d;
+  color: var(--fm-accent);
+  font-family: var(--fm-font-mono);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 @media (max-width: 360px) {
@@ -322,7 +347,7 @@
   }
 
   .registroInputWrapper {
-    height: 52px;
+    height: 48px;
   }
 
   .registroBotonSiguiente {
@@ -335,19 +360,16 @@
     min-height: 100vh;
     padding: 40px 24px;
     justify-content: center;
-    background:
-      radial-gradient(circle at top left, rgba(143, 92, 255, 0.16), transparent 34%),
-      radial-gradient(circle at bottom right, rgba(255, 90, 166, 0.14), transparent 34%),
-      #f6f6f8;
+    background: var(--fm-bg);
   }
 
   .registroHeader {
     max-width: 860px;
     height: 74px;
     padding: 0 36px;
-    border-radius: 28px 28px 0 0;
-    border-bottom: 1px solid #ececf1;
-    box-shadow: 0 16px 42px rgba(35, 25, 55, 0.08);
+    border-radius: 0;
+    border-bottom: 1px solid var(--fm-border);
+    box-shadow: none;
   }
 
   .registroLogo {
@@ -356,10 +378,12 @@
 
   .registroContenido {
     max-width: 860px;
-    background: #ffffff;
+    background: var(--fm-surface);
     padding: 34px 42px 40px;
-    border-radius: 0 0 28px 28px;
-    box-shadow: 0 24px 55px rgba(35, 25, 55, 0.1);
+    border: 1px solid var(--fm-border);
+    border-top: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .registroBarra {

@@ -6,33 +6,36 @@
   align-items: center;
   gap: 12px;
   padding: 0 20px;
-  height: 70px;
-  background-color: #ffffff;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  height: 68px;
+  background-color: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
 }
 
 .HeaderBoton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: none;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  color: #7c3aed;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  font-size: 16px;
+  color: var(--fm-ink);
   cursor: pointer;
   flex-shrink: 0;
   transition: background-color 0.15s ease;
 }
-.HeaderBoton:hover { background-color: rgba(124,58,237,0.07); }
+.HeaderBoton:hover { background-color: var(--fm-bg-soft); }
 
 .HeaderTitulo {
   margin: 0;
-  font-size: 17px;
-  font-weight: 800;
-  color: #111111;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

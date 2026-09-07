@@ -1,44 +1,102 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap");
 
 :root {
-  --fm-bg: #fff7ef;
-  --fm-bg-soft: #fffaf4;
+  /* Night Stage, modo claro (predeterminado) — papel cálido / rosa FanMeet,
+     con el violeta como acento secundario para dar variedad puntual */
+  --fm-bg: #faf9f7;
+  --fm-bg-soft: #f1efec;
   --fm-surface: #ffffff;
-  --fm-surface-warm: #fff1df;
-  --fm-purple: #8517e8;
-  --fm-purple-dark: #4b0d83;
-  --fm-pink: #ff7f9f;
-  --fm-coral: #ff8a63;
-  --fm-yellow: #ffd166;
-  --fm-ink: #201725;
-  --fm-muted: #7b6f82;
-  --fm-border: rgba(75, 13, 131, 0.13);
-  --fm-shadow: 0 18px 45px rgba(65, 21, 93, 0.12);
-  --fm-radius-lg: 34px;
-  --fm-radius-md: 22px;
-  --fm-radius-sm: 14px;
+  --fm-surface-warm: #f5f3f0;
+  --fm-ink: #16151a;
+  --fm-muted: #78746e;
+  --fm-border: rgba(22, 21, 26, 0.14);
+  --fm-accent: #ff2f7d;
+  --fm-accent-ink: #ffffff;
+  --fm-accent-2: #7c3aed;
+  --fm-glow: rgba(255, 47, 125, 0.26);
 
-  font-family: "Archivo", system-ui, sans-serif;
+  /* aliases kept so existing component CSS referencing purple/pink resolves to la identidad */
+  --fm-purple: var(--fm-accent-2);
+  --fm-purple-dark: var(--fm-ink);
+  --fm-pink: var(--fm-accent);
+  --fm-coral: var(--fm-accent);
+  --fm-yellow: var(--fm-accent-2);
+
+  --fm-shadow: 0 10px 30px rgba(22, 21, 26, 0.1);
+  --fm-shadow-sm: 0 4px 14px rgba(22, 21, 26, 0.08);
+  --fm-radius-lg: 22px;
+  --fm-radius-md: 16px;
+  --fm-radius-sm: 10px;
+  --fm-radius-pill: 999px;
+
+  --fm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fm-dur: 220ms;
+
+  --fm-font-display: "Sora", "Archivo", system-ui, sans-serif;
+  --fm-font-mono: "Archivo", system-ui, sans-serif;
+  --fm-font-body: "Archivo", system-ui, sans-serif;
+
+  font-family: var(--fm-font-body);
+}
+
+/* Modo oscuro: se activa con data-theme="dark" en <html>, controlado
+   desde el menú de configuración (App.jsx guarda la preferencia). */
+:root[data-theme="dark"] {
+  --fm-bg: #12100f;
+  --fm-bg-soft: #1a1613;
+  --fm-surface: #171313;
+  --fm-surface-warm: #1f1a17;
+  --fm-ink: #f2ede4;
+  --fm-muted: #8c8479;
+  --fm-border: rgba(242, 237, 228, 0.18);
+  --fm-accent: #ff2f7d;
+  --fm-accent-ink: #ffffff;
+  --fm-accent-2: #9159ff;
+  --fm-glow: rgba(255, 47, 125, 0.35);
+
+  --fm-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+  --fm-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 body {
   margin: 0;
   background: var(--fm-bg);
   color: var(--fm-ink);
-  font-family: "Archivo", system-ui, sans-serif;
+  font-family: var(--fm-font-body);
+  transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
 button {
   font-family: inherit;
 }
 
-/* Mata gradientes genéricos en botones */
+/* Mata gradientes genéricos: esta dirección no usa gradientes */
 button,
 .btn,
 .boton,
 .crearGrupoBoton,
-.btn-crear-grupo {
+.btn-crear-grupo,
+* {
   background-image: none !important;
+}
+
+/* En modo oscuro, la foto se subexpone levemente: tratamiento
+   fotográfico "stage light" en vez de duotone papel/sepia. En modo
+   claro las fotos se muestran naturales. */
+:root[data-theme="dark"] img {
+  filter: brightness(0.82) contrast(1.06) saturate(0.86) !important;
+}
+
+/* Grano sutil, solo en modo oscuro — el aire de una sala en penumbra */
+:root[data-theme="dark"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .counter {
   font-size: 16px;

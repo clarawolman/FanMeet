@@ -1,43 +1,38 @@
-/* ===== GROUP CARD — carousel item ===== */
+/* ===== GROUP CARD — foto de sala a sangre, sin marco ===== */
 .SubEventoCard {
   flex: 0 0 auto;
   flex-shrink: 0;
   width: 220px;
   height: 280px;
-  border-radius: 16px;
+  border-radius: var(--fm-radius-md);
   position: relative;
-  background-color: #1a1a1a;
+  background-color: var(--fm-bg);
   scroll-snap-align: start;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
+  box-shadow: var(--fm-shadow-sm);
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
 .SubEventoCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 0 0 1px var(--fm-accent), 0 16px 34px var(--fm-glow);
 }
 
-/* imagen de fondo — usa foto del grupo si existe, fallback gris */
-.SubEventoCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #2a2a2a;
+.SubEventoCard:hover .SubEventoImagen {
+  transform: scale(1.06);
 }
 
-/* overlay oscuro */
+/* velo al pie para que el texto blanco se lea sobre cualquier foto,
+   sin depender del tema claro/oscuro */
 .SubEventoOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.88) 0%,
-    rgba(0,0,0,0.3) 55%,
-    rgba(0,0,0,0.0) 100%
-  );
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.15) 60%, transparent 100%);
 }
 
-/* imagen de fondo */
+/* misma foto subexpuesta en claro y en oscuro, como el resto de las
+   cards de concierto */
 .SubEventoImagen {
   position: absolute;
   inset: 0;
@@ -45,9 +40,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
+  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
-/* contenido sobre el overlay */
+/* contenido flotando sobre la foto */
 .SubEventoContenido {
   position: absolute;
   bottom: 0;
@@ -62,10 +59,13 @@
 
 .SubEventoTitulo {
   margin: 0;
-  font-size: 14px;
-  font-weight: 800;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1.15;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -74,8 +74,9 @@
 .SubEventoInfo {
   margin: 0;
   font-size: 11px;
-  color: rgba(255,255,255,0.72);
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -86,7 +87,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .SubEventoAvatares {
@@ -99,7 +100,7 @@
   height: 22px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid rgba(255,255,255,0.6);
+  border: 1.5px solid var(--fm-bg);
   margin-right: -7px;
 }
 .SubEventoAvatares .SubEventoAvatar:last-child { margin-right: 0; }
@@ -108,34 +109,38 @@
   margin-left: 10px;
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .SubEventoAsistiran {
   margin: 0;
   font-size: 10px;
   font-weight: 500;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* botón unirme */
+/* botón unirme — ghost, sin relleno, sin glow */
 .SubEventoBoton {
   margin-top: 10px;
   width: 100%;
-  padding: 9px 0;
-  background: #7c3aed;
+  padding: 8px 0;
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.2px;
-  border: none;
-  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--fm-radius-pill);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
 }
-.SubEventoBoton:hover { background: #6d28d9; }
+.SubEventoBoton:hover {
+  border-color: var(--fm-accent);
+  background: rgba(255, 255, 255, 0.22);
+}
 
-/* ===== MOBILE: cards un poco más anchas ===== */
+/* ===== MOBILE ===== */
 @media (max-width: 480px) {
   .SubEventoCard {
     width: 180px;

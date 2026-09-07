@@ -1,10 +1,10 @@
 .cardEvento {
   width: 100%;
-  background: #ffffff;
-  border: 1px solid #e7e1f0;
-  border-radius: 11px;
-  padding: 10px;
-  box-shadow: 0 4px 16px rgba(40, 35, 55, 0.06);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
@@ -28,7 +28,15 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  border-radius: 10px;
+  border-radius: var(--fm-radius-md);
+  border: 1px solid var(--fm-border);
+  box-shadow: var(--fm-shadow-sm);
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
+}
+
+.cardEvento:hover .cardEventoImagen {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 1px var(--fm-accent), 0 14px 32px var(--fm-glow);
 }
 
 .btnIngresarEvento {
@@ -36,16 +44,20 @@
   left: 50%;
   bottom: -20px;
   transform: translateX(-50%);
-  border: none;
+  border: 1px solid var(--fm-border);
   cursor: pointer;
-  padding: 12px 34px;
-  border-radius: 15px;
-  background: #811cd9;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 650;
-  box-shadow: 0 5px 12px rgba(129, 28, 217, 0.22);
+  padding: 11px 30px;
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  box-shadow: none;
   z-index: 5;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
 .btnIngresarEvento:hover {
@@ -62,11 +74,13 @@
 
 .cardEventoInfo h2 {
   margin: 0;
-  font-size: 21px;
-  font-weight: 650;
-  color: #17171f;
-  letter-spacing: -0.4px;
-  line-height: 1.12;
+  font-family: var(--fm-font-display);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--fm-ink);
+  letter-spacing: 0.005em;
+  line-height: 1.15;
+  text-transform: none;
 }
 
 /* INFO DEL EVENTO EN UNA LÍNEA */
@@ -75,24 +89,26 @@
   flex-direction: row;
   align-items: center;
   gap: 6px;
-  color: #6f6f78;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 12px;
-  font-weight: 450;
+  font-weight: 500;
 }
 
 .filaInfo {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #6f6f78;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 12px;
-  font-weight: 450;
+  font-weight: 500;
 }
 
 .filaInfo:not(:last-child)::after {
   content: "•";
   margin-left: 6px;
-  color: #777782;
+  color: var(--fm-muted);
 }
 
 .icono {
@@ -105,7 +121,8 @@
   border: none;
   background: none;
   padding: 0;
-  color: #a3a3ad;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 12px;
   font-weight: 600;
   text-decoration: underline;
@@ -113,7 +130,7 @@
 }
 
 .btnSalirEvento:hover {
-  color: #811cd9;
+  color: var(--fm-accent);
 }
 
 @media (min-width: 768px) {
@@ -129,7 +146,7 @@
   }
 
   .cardEventoInfo h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .infoEvento,
@@ -138,7 +155,7 @@
   }
 
   .btnIngresarEvento {
-    padding: 12px 32px;
-    font-size: 14px;
+    padding: 11px 28px;
+    font-size: 13px;
   }
 }

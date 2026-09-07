@@ -2,10 +2,10 @@
 
 .pantalla-concierto {
   min-height: 100vh;
-  background-color: #F7F7FA;
+  background-color: var(--fm-bg);
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--fm-font-body);
   overflow-x: hidden;
 }
 
@@ -60,18 +60,29 @@
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
-  padding: 14px 0;
-  background: #7c3aed;
-  color: #ffffff;
+  padding: 13px 0;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-  border: none;
-  border-radius: 14px;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  box-shadow: none;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
-.btn-crear-grupo:hover { background: #6d28d9; }
+.btn-crear-grupo:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px var(--fm-glow);
+}
+
+.btn-crear-grupo:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 12px var(--fm-glow);
+}
 
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {

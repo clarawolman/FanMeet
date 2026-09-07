@@ -1,70 +1,84 @@
 .heroGrupo {
   position: relative;
   width: 100%;
+  border: none;
+  border-radius: var(--fm-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--fm-shadow-sm);
 }
 
 .heroImageContainer {
   width: 100%;
-  height: 220px;
+  height: 280px;
   overflow: hidden;
   position: relative;
 }
 
+/* misma foto subexpuesta en claro y en oscuro, como en el resto de
+   las cards de concierto */
 .heroImageContainer img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
 }
 
+/* velo al pie: el título tiene que leerse sobre cualquier foto,
+   sin depender del tema claro/oscuro */
 .heroImageContainer::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 30%,
-    rgba(0, 0, 0, 0.65) 100%
-  );
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.18) 55%, transparent 100%);
 }
 
 .heroGrupo h1 {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  left: 20px;
+  right: 20px;
+  bottom: 18px;
   margin: 0;
-  padding: 16px;
-  font-size: 22px;
-  font-weight: 800;
+  padding: 0;
+  background: transparent;
+  font-family: var(--fm-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: uppercase;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   z-index: 1;
 }
 
 .heroGrupo h1 span {
-  font-size: 13px;
+  font-family: var(--fm-font-body);
+  font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-transform: none;
+  text-shadow: none;
+  color: var(--fm-accent);
+  background: transparent;
+  border: none;
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
+  padding: 0;
+  border-radius: 0;
   width: fit-content;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
 }
 
 @media (min-width: 768px) {
   .heroImageContainer {
-    height: 320px;
+    height: 380px;
   }
 
   .heroGrupo h1 {
-    font-size: 28px;
-    padding: 24px;
+    font-size: 42px;
+    left: 32px;
+    right: 32px;
+    bottom: 28px;
   }
 }

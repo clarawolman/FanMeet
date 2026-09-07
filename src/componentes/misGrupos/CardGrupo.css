@@ -7,18 +7,25 @@
 
 .cardGrupo {
   width: 100%;
-  height: 224px;
-  background: #ffffff;
-  border: 1px solid #e7e1f0;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 16px rgba(40, 35, 55, 0.06);
+  height: 268px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  padding: 20px;
+  box-shadow: var(--fm-shadow-sm);
+  cursor: pointer;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   overflow: hidden;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
+}
+
+.cardGrupo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px var(--fm-accent), 0 14px 32px var(--fm-glow);
 }
 
 /* ============================
@@ -41,28 +48,34 @@
 }
 
 .estadoGrupo {
+  font-family: var(--fm-font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: #811cd9;
-  background: #f3e8ff;
+  text-transform: none;
+  color: var(--fm-accent);
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-accent);
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--fm-radius-sm);
   white-space: nowrap;
 }
 
 .categoriaTextoGrupo {
-  font-size: 12px;
+  font-family: var(--fm-font-mono);
+  font-size: 11px;
   font-weight: 500;
-  color: #6f6f78;
+  color: var(--fm-muted);
   white-space: nowrap;
 }
 
 .cardGrupoInfo h2 {
   margin: 0;
-  font-size: 17px;
+  font-family: var(--fm-font-display);
+  font-size: 19px;
   font-weight: 700;
-  color: #17171f;
-  letter-spacing: -0.3px;
+  text-transform: none;
+  color: var(--fm-ink);
+  letter-spacing: 0.005em;
   line-height: 1.25;
 
   /* máximo 2 líneas, nunca deforma la card */
@@ -75,10 +88,11 @@
 .cardGrupoMeta {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  color: #6f6f78;
-  font-size: 12.5px;
-  font-weight: 450;
+  gap: 4px;
+  font-family: var(--fm-font-body);
+  color: var(--fm-muted);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .cardGrupoMeta span {
@@ -108,18 +122,20 @@
 }
 
 .avatarGrupo {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--fm-surface);
+  outline: 1.5px solid var(--fm-border);
   margin-right: -8px;
   flex-shrink: 0;
 }
 
 .masUsuarios {
   margin-left: 12px;
-  color: #6f6f78;
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -135,41 +151,46 @@
 
 .btnVerMasGrupo {
   flex-shrink: 0;
-  border: none;
+  border: 1px solid var(--fm-border);
   cursor: pointer;
   padding: 9px 16px;
-  border-radius: 12px;
-  background: #811cd9;
-  color: #ffffff;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
   font-size: 13px;
-  font-weight: 650;
-  box-shadow: 0 4px 10px rgba(129, 28, 217, 0.22);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  box-shadow: none;
   white-space: nowrap;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
 .btnVerMasGrupo:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--fm-glow);
 }
 
 .btnSalirGrupo {
   flex-shrink: 0;
-  border: 1px solid #e7e1f0;
+  border: 1px solid var(--fm-border);
   cursor: pointer;
   padding: 9px 14px;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #6f6f78;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-muted);
+  font-family: var(--fm-font-display);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
+  text-transform: none;
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
 .btnSalirGrupo:hover {
-  background: #f7f7fa;
-  color: #811cd9;
+  background: var(--fm-bg-soft);
+  color: var(--fm-accent);
 }
 
 /* ============================
@@ -178,12 +199,12 @@
 
 @media (max-width: 380px) {
   .cardGrupo {
-    height: 214px;
-    padding: 14px;
+    height: 250px;
+    padding: 16px;
   }
 
   .cardGrupoInfo h2 {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .btnVerMasGrupo {
@@ -198,13 +219,12 @@
 
 @media (min-width: 768px) {
   .cardGrupo {
-    height: 236px;
-    padding: 18px;
-    border-radius: 18px;
+    height: 284px;
+    padding: 22px;
   }
 
   .cardGrupoInfo h2 {
-    font-size: 19px;
+    font-size: 21px;
   }
 
   .cardGrupoMeta {

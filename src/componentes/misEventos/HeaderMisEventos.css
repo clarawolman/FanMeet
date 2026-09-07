@@ -1,11 +1,11 @@
-
-
 .logoFanMeet {
   margin: 0;
-  color: #811cd9;
-  font-size: 22px;
-  font-weight: 750;
-  letter-spacing: -0.5px;
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 .headerBoton {
@@ -15,14 +15,14 @@
   height: 28px;
   cursor: pointer;
   font-size: 21px;
-  color: #444;
+  color: var(--fm-ink);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .headerBoton:hover {
-  color: #811cd9;
+  color: var(--fm-accent);
 }
 
 /* ============================
@@ -31,7 +31,7 @@
 
 .barraTituloEventos {
   width: 100%;
-  background: #f3f3f6;
+  background: var(--fm-bg);
   padding: 18px 20px 8px;
   display: flex;
   justify-content: space-between;
@@ -41,24 +41,30 @@
 
 .barraTituloEventos h2 {
   margin: 0;
-  font-size: 21px;
-  font-weight: 720;
-  color: #17171f;
-  letter-spacing: -0.3px;
+  font-family: var(--fm-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  letter-spacing: 0.005em;
 }
 
 .btnMisGrupos {
-  border: none;
-  background: none;
-  color: #811cd9;
-  font-size: 14px;
-  font-weight: 650;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
   cursor: pointer;
-  padding: 6px 0;
+  padding: 6px 12px;
+  border-radius: var(--fm-radius-sm);
 }
 
 .btnMisGrupos:hover {
-  opacity: 0.75;
+  background: var(--fm-bg-soft);
 }
 
 @media (min-width: 768px) {
@@ -77,14 +83,14 @@
   }
 
   .logoFanMeet {
-    font-size: 23px;
+    font-size: 21px;
   }
 
   .barraTituloEventos h2 {
-    font-size: 23px;
+    font-size: 22px;
   }
 
   .btnMisGrupos {
-    font-size: 14px;
+    font-size: 12px;
   }
 }

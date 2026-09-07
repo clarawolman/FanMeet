@@ -12,18 +12,22 @@
 
 .generosPerfilHeader h3 {
   margin: 0;
-  font-size: 20px;
+  font-family: var(--fm-font-display);
+  font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .generosPerfilBadge {
-  background: #ffe3f0;
-  color: #ff3f97;
-  font-size: 12px;
-  font-weight: 600;
+  background: var(--fm-bg-soft);
+  color: var(--fm-accent);
+  border: 1px solid var(--fm-accent);
+  font-family: var(--fm-font-mono);
+  font-size: 11px;
+  font-weight: 700;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--fm-radius-sm);
   white-space: nowrap;
 }
 
@@ -46,11 +50,12 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1.5px dashed #cdbdf0;
-  background: #ffffff;
-  color: #811cd9;
-  font-size: 20px;
-  font-weight: 800;
+  border: 1.5px dashed var(--fm-ink);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  font-size: 18px;
+  transition: transform var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -70,10 +75,13 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #f4effc;
-  color: #811cd9;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
   display: flex;
   align-items: center;
+  transition: transform var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
+    box-shadow var(--fm-dur) var(--fm-ease);
   justify-content: center;
   flex-shrink: 0;
 }
@@ -84,19 +92,21 @@
 }
 
 .generoChipPerfil small {
-  font-size: 12px;
+  font-family: var(--fm-font-mono);
+  font-size: 11px;
   font-weight: 700;
-  color: #811cd9;
+  color: var(--fm-ink);
   text-align: center;
   white-space: nowrap;
-  text-transform: capitalize;
+  text-transform: none;
 }
 
 .generosPerfilVacio {
   margin: 0;
   padding: 0 16px;
-  font-size: 14px;
-  color: #888888;
+  font-family: var(--fm-font-mono);
+  font-size: 13px;
+  color: var(--fm-muted);
 }
 
 @media (min-width: 768px) {

@@ -3,8 +3,8 @@
   inset: 0;
   z-index: 550;
   min-height: 100dvh;
-  background-color: #f7f7fa;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--fm-bg);
+  font-family: var(--fm-font-body);
   overflow-y: auto;
 }
 
@@ -16,41 +16,44 @@
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  background-color: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
 }
 
 .listaAmigosPerfilVolver {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: none;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  color: #811cd9;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  font-size: 16px;
+  color: var(--fm-ink);
   cursor: pointer;
   flex-shrink: 0;
   transition: background-color 0.15s ease;
 }
 
 .listaAmigosPerfilVolver:hover {
-  background-color: rgba(129, 28, 217, 0.07);
+  background-color: var(--fm-bg-soft);
 }
 
 .listaAmigosPerfilHeader h1 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 800;
-  color: #111111;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .listaAmigosPerfilHeader p {
   margin: 2px 0 0;
+  font-family: var(--fm-font-mono);
   font-size: 12px;
-  color: #6f6f78;
+  color: var(--fm-muted);
 }
 
 .listaAmigosPerfilMain {
@@ -64,8 +67,9 @@
 
 .listaAmigosPerfilVacio {
   margin: 0;
+  font-family: var(--fm-font-mono);
   font-size: 13px;
-  color: #888888;
+  color: var(--fm-muted);
   text-align: center;
   padding: 24px 0;
 }
@@ -76,9 +80,9 @@
   gap: 12px;
   width: 100%;
   padding: 10px 12px;
-  background: #ffffff;
-  border: 1px solid #ececf1;
-  border-radius: 14px;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
@@ -86,22 +90,24 @@
 }
 
 .amigoPerfilCard:hover {
-  background: #f7f4ff;
+  background: var(--fm-bg-soft);
 }
 
 .amigoPerfilFoto {
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  border: 1px solid var(--fm-border);
   object-fit: cover;
   flex-shrink: 0;
-  background: #f0eefe;
+  background: var(--fm-bg-soft);
 }
 
 .amigoPerfilNombre {
+  font-family: var(--fm-font-display);
   font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--fm-ink);
 }
 
 @media (min-width: 768px) {

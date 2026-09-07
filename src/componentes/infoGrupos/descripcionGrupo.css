@@ -1,22 +1,24 @@
 .descripcionGrupo {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #f0eefe;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   padding: 16px;
   margin: 10px 16px 0;
 }
 
 .descripcionGrupo h3 {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-family: var(--fm-font-display);
+  font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .descripcionGrupo p {
   margin: 0;
   font-size: 14px;
-  color: #6c48c5;
+  color: var(--fm-muted);
   line-height: 1.6;
 }
 

@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 14px;
-  background: #ffffff;
+  background: var(--fm-surface);
 }
 
 .home-header-icons {
@@ -14,10 +14,12 @@
 
 .home-eyebrow {
   margin: 0;
+  font-family: var(--fm-font-display);
   font-size: 20px;
-  font-weight: 800;
-  color: #6c48c5;
-  letter-spacing: -0.3px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  letter-spacing: 0.02em;
   line-height: 1;
 }
 
@@ -41,8 +43,8 @@
   display: block;
   width: 22px;
   height: 2px;
-  background: #1a1a1a;
-  border-radius: 2px;
+  background: var(--fm-ink);
+  border-radius: 0;
 }
 
 .home-header-bell {
@@ -51,7 +53,7 @@
   padding: 0;
   cursor: pointer;
   font-size: 20px;
-  color: #1a1a1a;
+  color: var(--fm-ink);
   line-height: 1;
 }
 

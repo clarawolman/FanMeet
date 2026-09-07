@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: #f5f5f7;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--fm-bg);
+  font-family: var(--fm-font-body);
 }
 
 .perfilContenido {
@@ -24,15 +24,35 @@
 
 .perfilCargando {
   margin: 0;
-  padding: 12px 16px 0;
-  font-size: 14px;
-  color: #9a95a6;
+  padding: 20px 16px;
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fm-muted);
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.perfilCargando::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid var(--fm-border);
+  border-top-color: var(--fm-accent);
+  animation: fmSpin 0.8s linear infinite;
+}
+
+@keyframes fmSpin {
+  to { transform: rotate(360deg); }
 }
 
 @media (min-width: 768px) {
   .pantallaPerfil {
-    background: #f2f2f2;
+    background: var(--fm-bg);
   }
 
   .perfilContenido {

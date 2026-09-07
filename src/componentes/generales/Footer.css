@@ -1,4 +1,4 @@
-/* ===== FOOTER ===== */
+/* ===== FOOTER — true-black, icon-only, nearly invisible ===== */
 .footer {
   position: fixed;
   bottom: 0;
@@ -9,10 +9,9 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  height: 72px;
-  background-color: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  height: 68px;
+  background-color: var(--fm-bg);
+  border-top: 1px solid var(--fm-border);
   padding: 0 8px;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -22,32 +21,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 0;
   flex: 1;
   height: 100%;
   background: none;
   border: none;
   cursor: pointer;
   padding: 8px 0;
-  border-radius: 12px;
-  transition: background-color 0.15s ease;
+  transition: opacity 0.2s ease;
 }
 
 .footerButton:hover {
-  background-color: rgba(124, 58, 237, 0.06);
+  opacity: 0.7;
 }
 
 .footerButton img {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
 }
 
+/* texto disponible para lectores de pantalla, oculto visualmente:
+   la navegación es solo íconos en esta dirección */
 .footerButton span {
-  font-size: 10px;
-  font-weight: 600;
-  color: #888888;
-  letter-spacing: 0.2px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ===== DESKTOP ===== */
@@ -56,8 +61,7 @@
     max-width: 1200px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 20px 20px 0 0;
-    border-left: 1px solid rgba(0, 0, 0, 0.07);
-    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    border-left: 1px solid var(--fm-border);
+    border-right: 1px solid var(--fm-border);
   }
 }

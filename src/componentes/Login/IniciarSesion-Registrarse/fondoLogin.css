@@ -17,7 +17,7 @@
   height: auto;
   display: block;
   object-fit: contain;
-  opacity: 0.75;
+  opacity: 0.5;
 }
 
 @media (max-width: 360px) {

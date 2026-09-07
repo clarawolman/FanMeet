@@ -3,8 +3,8 @@
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0eefe;
+  background: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -14,28 +14,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
   cursor: pointer;
-  color: #6c48c5;
-  font-size: 20px;
+  color: var(--fm-ink);
+  font-size: 18px;
   line-height: 1;
   transition: background 0.15s;
   flex-shrink: 0;
 }
 
 .headerGrupo .backButton:hover {
-  background: #f0eefe;
+  background: var(--fm-bg-soft);
 }
 
 .headerGrupo h2 {
   margin: 0;
-  font-size: 17px;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

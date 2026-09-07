@@ -1,6 +1,6 @@
 .pantallaNotificaciones {
   min-height: 100vh;
-  background: var(--color-bg);
+  background: var(--fm-bg);
   padding-bottom: 96px;
 }
 
@@ -10,7 +10,7 @@
 
 .barraTituloNotificaciones {
   width: 100%;
-  background: var(--color-bg);
+  background: var(--fm-bg);
   padding: 18px 20px 14px;
   display: flex;
   align-items: center;
@@ -19,10 +19,12 @@
 
 .barraTituloNotificaciones h2 {
   margin: 0;
-  font-size: 21px;
-  font-weight: 720;
-  color: var(--color-text);
-  letter-spacing: -0.3px;
+  font-family: var(--fm-font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  letter-spacing: 0.005em;
 }
 
 .btnVolverNotificaciones {
@@ -32,8 +34,8 @@
   height: 28px;
   cursor: pointer;
   padding: 0;
-  font-size: 20px;
-  color: var(--color-primary);
+  font-size: 19px;
+  color: var(--fm-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,7 +58,8 @@
 }
 
 .mensajeNotificaciones {
-  color: var(--color-text-secondary);
+  font-family: var(--fm-font-mono);
+  color: var(--fm-muted);
   font-size: 14px;
   text-align: center;
   padding: 40px 0;
@@ -70,7 +73,7 @@
   }
 
   .barraTituloNotificaciones h2 {
-    font-size: 23px;
+    font-size: 22px;
   }
 
   .notificacionesLista {

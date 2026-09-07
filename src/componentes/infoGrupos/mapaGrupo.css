@@ -1,7 +1,7 @@
 .mapaGrupo {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #f0eefe;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   padding: 16px;
   margin: 10px 16px 0;
   overflow: hidden;
@@ -9,20 +9,23 @@
 
 .mapaGrupo h3 {
   margin: 0 0 12px;
-  font-size: 15px;
+  font-family: var(--fm-font-display);
+  font-size: 14px;
   font-weight: 700;
-  color: #1a1a1a;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .mapaFake {
-  border-radius: 12px;
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   overflow: hidden;
   width: 100%;
 }
 
 .mapaFake iframe {
   display: block;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 @media (min-width: 768px) {

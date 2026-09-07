@@ -1,7 +1,7 @@
 .confirmacionGrupo {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #f0eefe;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   padding: 20px 16px;
   margin: 10px 16px 0;
   display: flex;
@@ -11,40 +11,46 @@
 
 .confirmacionGrupo h3 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 800;
-  color: #1a1a1a;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
 }
 
 .confirmacionGrupo p {
   margin: 0;
   font-size: 14px;
-  color: #6c48c5;
+  color: var(--fm-muted);
   line-height: 1.55;
 }
 
 .confirmacionGrupo button {
   margin-top: 8px;
   width: 100%;
-  padding: 15px;
-  background: #6c48c5;
-  color: #ffffff;
-  border: none;
-  border-radius: 50px;
-  font-size: 15px;
+  padding: 14px;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  font-family: var(--fm-font-display);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  text-transform: none;
+  letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background 0.18s, transform 0.12s;
+  box-shadow: none;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
-.confirmacionGrupo button:hover {
-  background: #5a3aad;
+.confirmacionGrupo button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px var(--fm-glow);
 }
 
-.confirmacionGrupo button:active {
-  transform: scale(0.98);
-  background: #4d30a0;
+.confirmacionGrupo button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 12px var(--fm-glow);
 }
 
 @media (min-width: 768px) {

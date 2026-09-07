@@ -3,9 +3,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 8px;
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 12px;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
   padding: 10px 12px;
 }
 
@@ -15,15 +15,18 @@
 }
 
 .FansTexto {
-  width: 100%;      
+  width: 100%;
   margin: 0;
-  text-align: left;  
+  text-align: left;
   background: none;
   border: none;
   padding: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #7c3aed;
+  font-family: var(--fm-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  color: var(--fm-accent);
   cursor: pointer;
 }
 .FansTexto:hover { opacity: 0.7; }
@@ -31,15 +34,16 @@
 .FansBarra { display: none; }
 .FansCantidad {
   margin: 0;
+  font-family: var(--fm-font-display);
   font-size: 15px;
-  font-weight: 800;
-  color: #000000;
+  font-weight: 700;
+  color: var(--fm-ink);
   white-space: nowrap;
 }
 
 @media (max-width: 480px){
     .FansTexto{
-        font-size:12px;
+        font-size:11px;
     }
 
     .FansSubtitulo{

@@ -1,49 +1,53 @@
 .botonAmistad {
-  border: none;
-  border-radius: 999px;
-  padding: 9px 20px;
-  font-size: 14px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  padding: 8px 18px;
+  font-family: var(--fm-font-display);
+  font-size: 13px;
   font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, transform 0.12s;
-  font-family: inherit;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
 .botonAmistad:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .botonAmistad.conectar {
-  background: #811cd9;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(129, 28, 217, 0.35);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  box-shadow: none;
 }
 
 .botonAmistad.conectar:hover {
-  background: #6f18ba;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--fm-glow);
 }
 
 .botonAmistad.enviada {
-  background: #ffffff;
-  color: #811cd9;
-  border: 1.5px solid #ded6ef;
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  border: 1px solid var(--fm-border);
 }
 
 .botonAmistad.aceptar {
-  background: #811cd9;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(129, 28, 217, 0.35);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  box-shadow: none;
 }
 
 .botonAmistad.aceptar:hover {
-  background: #7018bf;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--fm-glow);
 }
 
 .botonAmistad.amigos {
-  background: #f0eefe;
-  color: #811cd9;
-  border: 1px solid #e2dbf7;
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  border: 1px solid var(--fm-border);
 }
 
 .botonAmistad.deshabilitado {
@@ -54,4 +58,5 @@
 
 .botonAmistad.deshabilitado:hover {
   background: inherit;
+  transform: none;
 }

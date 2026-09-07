@@ -15,21 +15,21 @@
 .home-filtro {
   flex-shrink: 0;
   padding: 8px 18px;
-  border-radius: 50px;
-  border: 1.5px solid #d0d0d0;
-  background: #ffffff;
-  font-size: 13px;
-  font-weight: 500;
-  color: #1a1a1a;
+  border-radius: var(--fm-radius-pill);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  font-family: var(--fm-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fm-ink);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
-  font-family: inherit;
 }
 
 .home-filtro--activo {
-  background: #6c48c5;
-  border-color: #6c48c5;
-  color: #ffffff;
+  background: var(--fm-accent);
+  border-color: var(--fm-ink);
+  color: var(--fm-accent-ink);
   font-weight: 700;
 }

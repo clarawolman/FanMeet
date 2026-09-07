@@ -1,75 +1,90 @@
-/* ===== HERO ===== */
+/* ===== HERO — foto de sala a sangre, texto flotando encima ===== */
 .CardEvento {
   position: relative;
   width: 100%;
-  border-radius: 18px;
+  height: 340px;
+  border-radius: var(--fm-radius-lg);
   overflow: hidden;
-  background-color: #1a1a1a;
+  background-color: var(--fm-bg);
+  box-shadow: var(--fm-shadow-sm);
 }
 
+/* esta foto se ve igual en claro y en oscuro: siempre con el
+   tratamiento "stage light" subexpuesto, para que el texto blanco de
+   encima se lea siempre igual de bien */
 .EventoImagen {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
-  
+  display: block;
+  filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
 }
 
+/* velo al pie: refuerza la lectura del texto sobre la foto ya oscurecida */
 .EventoOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.82) 0%,
-    rgba(0,0,0,0.38) 45%,
-    rgba(0,0,0,0.05) 100%
-  );
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 100%);
 }
 
 .EventoContenido {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 16px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
   color: #ffffff;
 }
 
 .EventoArtista {
   display: inline-block;
-  margin: 0 0 8px;
-  padding: 3px 10px;
-  border: 1px solid rgba(255,255,255,0.65);
-  border-radius: 999px;
-  font-size: 10px;
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  font-family: var(--fm-font-body);
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fm-accent);
 }
 
 .EventoTitulo {
   margin: 0;
-  font-size: 24px;
-  line-height: 1.1;
-  font-weight: 500;
+  font-family: var(--fm-font-display);
+  font-size: 40px;
+  line-height: 0.98;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .EventoFecha {
-  margin: 6px 0 0;
-  font-size: 12px;
+  margin: 10px 0 0;
+  font-family: var(--fm-font-body);
+  font-size: 13px;
   font-weight: 500;
+  color: #ffffff;
   opacity: 0.85;
 }
 
 .EventoUbicacion {
   display: inline-block;
-  margin: 8px 0 0;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background-color: rgba(0,0,0,0.4);
-  font-size: 11px;
-  font-weight: 600;
+  margin: 6px 0 0;
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  font-family: var(--fm-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  opacity: 0.75;
 }
 
 @media (min-width: 768px) {
-  .CardEvento { height: 300px; border-radius: 20px; }
-  .EventoTitulo { font-size: 30px; }
-  .EventoContenido { left: 24px; right: 24px; bottom: 20px; }
+  .CardEvento { height: 420px; }
+  .EventoTitulo { font-size: 56px; }
+  .EventoContenido { left: 32px; right: 32px; bottom: 32px; }
 }
