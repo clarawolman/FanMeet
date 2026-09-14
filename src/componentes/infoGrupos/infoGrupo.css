@@ -13,6 +13,23 @@
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
 
+.botonChatGrupo {
+  margin: 10px 16px 0;
+  padding: 14px;
+  background: #811cd9;
+  color: #ffffff;
+  border: 1px solid #811cd9;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.botonChatGrupo:hover {
+  background: #7018bf;
+}
+
 .botonSalirGrupo {
   margin: 10px 16px 0;
   padding: 14px;
@@ -62,6 +79,10 @@
   .infoGrupoContenido .heroGrupo .heroImageContainer {
     border-radius: 16px;
     overflow: hidden;
+  }
+
+  .botonChatGrupo {
+    margin: 12px 0 0;
   }
 
   .botonSalirGrupo {

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
+import ChatGrupo from "./componentes/infoGrupos/chatGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
 import Home from "./componentes/home/Home";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
@@ -200,7 +201,8 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "fansUnidos" &&
     pantalla !== "fansConfirmadosGrupo" &&
     pantalla !== "perfilAjeno" &&
-    pantalla !== "notificaciones"
+    pantalla !== "notificaciones" &&
+    pantalla !== "chatGrupo"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
@@ -365,6 +367,15 @@ async function manejarFinalizarRegistro(datosPaso3) {
             setPantalla("concierto");
           }}
           onVerFansConfirmados={() => setPantalla("fansConfirmadosGrupo")}
+          onAbrirChat={() => setPantalla("chatGrupo")}
+        />
+      )}
+
+      {pantalla === "chatGrupo" && grupoSeleccionado && usuarioActual && (
+        <ChatGrupo
+          grupo={grupoSeleccionado}
+          usuarioActual={usuarioActual}
+          onVolver={() => setPantalla("infoGrupo")}
         />
       )}
 
