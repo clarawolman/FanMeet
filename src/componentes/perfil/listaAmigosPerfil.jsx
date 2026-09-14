@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./listaAmigosPerfil.css";
 import { amistadService } from "../../services/amistadService";
+import LoadingSpinner from "../generales/LoadingSpinner";
 
 export default function ListaAmigosPerfil({ usuario, onVolver, onVerUsuario }) {
   const [amigos, setAmigos] = useState([]);
@@ -45,7 +46,7 @@ export default function ListaAmigosPerfil({ usuario, onVolver, onVerUsuario }) {
       </header>
 
       <main className="listaAmigosPerfilMain">
-        {cargando && <p className="listaAmigosPerfilVacio">Cargando amigos...</p>}
+        {cargando && <LoadingSpinner texto="Cargando amigos..." />}
 
         {!cargando && amigos.length === 0 && (
           <p className="listaAmigosPerfilVacio">Todavía no tiene amigos agregados.</p>

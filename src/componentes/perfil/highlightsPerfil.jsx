@@ -61,18 +61,18 @@ export default function HighlightsPerfil({
   return (
     <section className="highlightsPerfil">
       <div className="highlightsPerfilHeader">
-        <h3>Highlights</h3>
+        <h3>Mis momentos</h3>
       </div>
 
       {error && (
         <p className="highlightsPerfilVacio">
-          No pudimos cargar los highlights ({error}).
+          No pudimos cargar tus momentos ({error}).
         </p>
       )}
 
       {!error && !hayContenido && (
         <p className="highlightsPerfilVacio">
-          No hay highlights.
+          Todavía no subiste fotos de tus recitales.
         </p>
       )}
 

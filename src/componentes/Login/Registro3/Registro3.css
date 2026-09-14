@@ -51,13 +51,17 @@
 .registro3ProgresoInfo {
   display: flex;
   justify-content: space-between;
-  font-family: var(--fm-font-mono);
-  color: var(--fm-muted);
-  font-size: 10px;
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.registro3ProgresoInfo span:last-child {
+  color: var(--fm-accent);
 }
 
 .registro3Barra {
@@ -78,7 +82,7 @@
 .registro3Titulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
@@ -86,8 +90,8 @@
 
 .registro3Subtitulo {
   margin: 6px 0 24px;
-  font-size: 13px;
-  line-height: 1.25;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.35;
   color: var(--fm-muted);
 }
 
@@ -98,19 +102,9 @@
 }
 
 .registro3Genero {
-  height: 74px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  background: var(--fm-surface);
-  color: var(--fm-ink);
-  cursor: pointer;
-  display: flex;
+  height: 78px;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 6px;
-  box-shadow: none;
-  opacity: 1;
 }
 
 .registro3Genero span {
@@ -119,31 +113,18 @@
 }
 
 .registro3Genero strong {
-  color: var(--fm-ink);
-  font-family: var(--fm-font-display);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: none;
+  font-size: var(--fm-fs-body);
+  text-transform: capitalize;
 }
 
-.registro3Genero.activo {
-  background: var(--fm-accent) !important;
-  border-color: var(--fm-border) !important;
-  color: var(--fm-accent-ink) !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-}
-
-.registro3Genero.activo span,
-.registro3Genero.activo strong {
-  color: var(--fm-accent-ink) !important;
-  opacity: 1 !important;
+.registro3Genero.activo span {
+  color: var(--fm-accent-soft-ink);
 }
 
 .registro3SeccionTitulo {
-  margin: 28px 0 13px;
+  margin: 28px 0 14px;
   font-family: var(--fm-font-display);
-  font-size: 20px;
+  font-size: var(--fm-fs-xl);
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
@@ -171,65 +152,59 @@
 }
 
 .registro3Ambiente.activo {
-  background: var(--fm-accent) !important;
-  border-color: var(--fm-border) !important;
-  color: var(--fm-accent-ink) !important;
+  background: var(--fm-accent-soft-bg) !important;
+  border-color: var(--fm-accent-soft-border) !important;
+  color: var(--fm-ink) !important;
   box-shadow: none !important;
   opacity: 1 !important;
 }
 
 .registro3AmbienteIcono {
-  width: 39px;
-  height: 39px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--fm-radius-sm);
   background: var(--fm-bg-soft);
   border: 1px solid var(--fm-border);
   display: grid;
   place-items: center;
   color: var(--fm-ink);
-  font-size: 17px;
-  margin-right: 12px;
+  font-size: 18px;
+  margin-right: 14px;
   flex-shrink: 0;
 }
 
 .registro3AmbienteTexto {
   display: flex;
   flex-direction: column;
+  gap: 3px;
   flex: 1;
 }
 
 .registro3AmbienteTexto strong {
   color: var(--fm-ink);
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: var(--fm-fs-body);
   font-weight: 700;
   text-transform: none;
 }
 
 .registro3AmbienteTexto small {
-  margin-top: 3px;
-  font-family: var(--fm-font-mono);
-  font-size: 10px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
   opacity: 1;
 }
 
 .registro3Ambiente.activo .registro3AmbienteIcono {
-  background: var(--fm-accent-ink);
-  border-color: var(--fm-ink);
-  color: var(--fm-ink) !important;
-}
-
-.registro3Ambiente.activo .registro3AmbienteTexto strong,
-.registro3Ambiente.activo .registro3AmbienteTexto small {
-  color: var(--fm-accent-ink) !important;
-  opacity: 1 !important;
+  background: var(--fm-surface);
+  border-color: var(--fm-accent-soft-border);
+  color: var(--fm-accent) !important;
 }
 
 .registro3Check {
-  width: 22px;
-  height: 22px;
-  border: 1.5px solid var(--fm-ink);
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--fm-border);
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -238,12 +213,13 @@
   font-size: 13px;
   font-weight: 900;
   margin-left: 8px;
+  flex-shrink: 0;
 }
 
 .registro3Ambiente.activo .registro3Check {
-  background: var(--fm-accent-ink) !important;
-  border-color: var(--fm-border) !important;
-  color: var(--fm-accent) !important;
+  background: var(--fm-accent) !important;
+  border-color: var(--fm-accent) !important;
+  color: var(--fm-accent-ink) !important;
 }
 
 .registro3Error {
@@ -328,18 +304,19 @@
 @media (min-width: 900px) {
   .pantallaRegistro3 {
     min-height: 100vh;
-    padding: 40px 24px;
-    justify-content: center;
+    padding: 48px 24px;
+    justify-content: flex-start;
     background: var(--fm-bg);
   }
 
   .registro3Header {
-    max-width: 960px;
-    height: 74px;
-    padding: 0 36px;
-    border-radius: 0;
-    border-bottom: 1px solid var(--fm-border);
+    max-width: 840px;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
     box-shadow: none;
+    margin-bottom: 28px;
   }
 
   .registro3Logo {
@@ -347,12 +324,10 @@
   }
 
   .registro3Contenido {
-    max-width: 960px;
-    background: var(--fm-surface);
-    padding: 34px 42px 40px;
-    border: 1px solid var(--fm-border);
-    border-top: none;
-    border-radius: 0;
+    max-width: 840px;
+    background: transparent;
+    padding: 0;
+    border: none;
     box-shadow: none;
 
     display: grid;

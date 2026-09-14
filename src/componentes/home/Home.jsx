@@ -6,6 +6,7 @@ import { usuariosService } from "../../services/usuariosService";
 import { notificacionesService } from "../../services/notificacionesService";
 import Footer from "../generales/Footer";
 import IconoCampana from "../generales/IconoCampana";
+import LoadingSpinner from "../generales/LoadingSpinner";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
@@ -207,6 +208,10 @@ const generosOrdenados = [...generos].sort((a, b) => {
             alt={concierto.nombre || concierto.artista?.nombre}
           />
 
+          {yaUnido && (
+            <span className="home-card-badge-unido">✓ Unido</span>
+          )}
+
           <button
             className={
               yaUnido
@@ -280,15 +285,19 @@ const generosOrdenados = [...generos].sort((a, b) => {
 
       <main className="home-main">
         <div className="home-search">
-          <input
-            type="text"
-            placeholder="Buscá tu concierto o artista"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+          <div className="home-search-campo">
+            <span className="home-search-icono" aria-hidden="true">⌕</span>
+
+            <input
+              type="text"
+              placeholder="Buscá tu concierto o artista"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
         </div>
 
-        {cargando && <p className="home-estado">Cargando conciertos...</p>}
+        {cargando && <LoadingSpinner texto="Cargando conciertos..." />}
 
         {!cargando && conciertos.length === 0 && (
           <p className="home-estado">No hay conciertos disponibles.</p>

@@ -53,13 +53,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: var(--fm-font-mono);
-  color: var(--fm-muted);
-  font-size: 10px;
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.registro2ProgresoInfo span:last-child {
+  color: var(--fm-accent);
 }
 
 .registro2Barra {
@@ -147,10 +151,10 @@
 .registro2TextoOpcional {
   margin: -14px 0 22px;
   text-align: center;
-  font-family: var(--fm-font-mono);
+  font-family: var(--fm-font-body);
   color: var(--fm-muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
 }
 
 .registro2Opciones {
@@ -204,7 +208,7 @@
 
 .registro2OpcionTexto strong {
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: var(--fm-fs-md);
   font-weight: 700;
   line-height: 1.1;
   text-transform: none;
@@ -212,8 +216,8 @@
 
 .registro2OpcionTexto small {
   margin-top: 3px;
-  font-family: var(--fm-font-mono);
-  font-size: 10px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
   font-weight: 500;
   color: var(--fm-muted);
 }
@@ -358,18 +362,19 @@
 @media (min-width: 900px) {
   .pantallaRegistro2 {
     min-height: 100vh;
-    padding: 40px 24px;
-    justify-content: center;
+    padding: 48px 24px;
+    justify-content: flex-start;
     background: var(--fm-bg);
   }
 
   .registro2Header {
-    max-width: 860px;
-    height: 74px;
-    padding: 0 36px;
-    border-radius: 0;
-    border-bottom: 1px solid var(--fm-border);
+    max-width: 720px;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
     box-shadow: none;
+    margin-bottom: 28px;
   }
 
   .registro2Logo {
@@ -377,12 +382,10 @@
   }
 
   .registro2Contenido {
-    max-width: 860px;
-    background: var(--fm-surface);
-    padding: 34px 42px 40px;
-    border: 1px solid var(--fm-border);
-    border-top: none;
-    border-radius: 0;
+    max-width: 720px;
+    background: transparent;
+    padding: 0;
+    border: none;
     box-shadow: none;
 
     display: grid;

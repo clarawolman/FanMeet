@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import "./perfil.css";
 import { usuariosService } from "../../services/usuariosService";
 import { amistadService } from "../../services/amistadService";
+import { conciertosService } from "../../services/conciertosService";
 import Footer from "../generales/Footer";
 import HeaderPerfil from "./headerPerfil";
 import StatsPerfil from "./statsPerfil";
 import GenerosPerfil from "./generosPerfil";
 import VibraConcierto from "./vibraConcierto";
+import ProximosConciertosPerfil from "./proximosConciertosPerfil";
 import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
+import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
 
@@ -45,6 +48,7 @@ function Perfil({
   onVolver,
   onCerrarSesion,
   onVerUsuario,
+  onIngresarConcierto,
 }) {
   const usuarioBase = usuarioPerfil || usuarioActual;
 
@@ -70,6 +74,8 @@ function Perfil({
   const [estadoAmistad, setEstadoAmistad] = useState("conectar");
   const [idAmistad, setIdAmistad] = useState(null);
   const [cargandoAmistad, setCargandoAmistad] = useState(false);
+  const [proximosEventos, setProximosEventos] = useState([]);
+  const [cargandoEventos, setCargandoEventos] = useState(isOwnProfile);
 
   useEffect(() => {
     if (usuario?.id_usuario) {
@@ -86,9 +92,28 @@ function Perfil({
       cargarCatalogoGeneros(),
       cargarHighlights(),
       cargarAmistad(),
+      cargarProximosEventos(),
     ]);
 
     setCargando(false);
+  }
+
+  async function cargarProximosEventos() {
+    // Solo existe endpoint para "mis eventos" del usuario autenticado, así
+    // que en un perfil ajeno no hay de dónde traer esta lista.
+    if (!isOwnProfile) return;
+
+    setCargandoEventos(true);
+
+    try {
+      const eventos = await conciertosService.listarMisEventos();
+      setProximosEventos(eventos || []);
+    } catch (error) {
+      console.error("Error cargando próximos conciertos:", error);
+      setProximosEventos([]);
+    }
+
+    setCargandoEventos(false);
   }
 
   async function cargarAmistad() {
@@ -256,9 +281,9 @@ function Perfil({
       <div className="perfilContenido">
         <StatsPerfil
           estadisticas={estadisticas}
-          onVerConciertos={() => onNavegar?.("misEventos")}
+          onVerConciertos={isOwnProfile ? () => onNavegar?.("misEventos") : undefined}
           onVerAmigos={() => setMostrarAmigos(true)}
-          onVerGrupos={() => onNavegar?.("misGrupos")}
+          onVerGrupos={isOwnProfile ? () => onNavegar?.("misGrupos") : undefined}
         />
 
         <GenerosPerfil
@@ -274,6 +299,16 @@ function Perfil({
           onSeleccionar={manejarSeleccionarVibra}
         />
 
+        {isOwnProfile && (
+          <ProximosConciertosPerfil
+            eventos={proximosEventos}
+            cargando={cargandoEventos}
+            onVerConcierto={(evento) => onIngresarConcierto?.(evento.id_concierto)}
+            onVerTodos={() => onNavegar?.("misEventos")}
+            onDescubrir={() => onNavegar?.("home")}
+          />
+        )}
+
         <HighlightsPerfil
           highlights={highlights}
           isOwnProfile={isOwnProfile}
@@ -282,7 +317,7 @@ function Perfil({
           onSubirHighlight={manejarSubirHighlight}
         />
 
-        {cargando && <p className="perfilCargando">Cargando perfil...</p>}
+        {cargando && <LoadingSpinner texto="Cargando perfil..." />}
       </div>
 
       <Footer

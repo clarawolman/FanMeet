@@ -1,38 +1,38 @@
 import "./generosPerfil.css";
-import IconoGenero from "./generoIconos";
 
 export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
+  const hayGeneros = generos.length > 0;
+
   return (
     <section className="generosPerfil">
       <div className="generosPerfilHeader">
-        <h3>Géneros favoritos</h3>
-        <span className="generosPerfilBadge">{generos.length} seleccionados</span>
+        <h3>Mi música</h3>
+
+        {isOwnProfile && (
+          <button
+            className="generosPerfilEditar"
+            type="button"
+            onClick={onEditar}
+          >
+            {hayGeneros ? "Editar" : "Elegir géneros"}
+          </button>
+        )}
       </div>
 
-      {generos.length === 0 && !isOwnProfile ? (
-        <p className="generosPerfilVacio">Todavía no eligió géneros favoritos.</p>
-      ) : (
-        <div className="generosPerfilScroll">
-          {isOwnProfile && (
-            <button
-              className="generoChipAdd"
-              type="button"
-              onClick={onEditar}
-              aria-label="Editar géneros favoritos"
-            >
-              +
-            </button>
-          )}
-
+      {hayGeneros ? (
+        <div className="generosPerfilTags">
           {generos.map((genero) => (
-            <div className="generoChipPerfil" key={genero.id}>
-              <span className="generoChipIcono">
-                <IconoGenero nombre={genero.nombre} />
-              </span>
-              <small>{genero.nombre}</small>
-            </div>
+            <span className="generoTagPerfil" key={genero.id}>
+              {genero.nombre}
+            </span>
           ))}
         </div>
+      ) : (
+        <p className="generosPerfilVacio">
+          {isOwnProfile
+            ? "Todavía no elegiste tus géneros favoritos."
+            : "Todavía no eligió géneros favoritos."}
+        </p>
       )}
     </section>
   );

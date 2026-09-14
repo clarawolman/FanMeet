@@ -1,14 +1,15 @@
 .botonAmistad {
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
-  padding: 8px 18px;
+  padding: 10px 20px;
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
   white-space: nowrap;
+  margin-top: 4px;
   transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
@@ -45,9 +46,9 @@
 }
 
 .botonAmistad.amigos {
-  background: var(--fm-bg-soft);
-  color: var(--fm-ink);
-  border: 1px solid var(--fm-border);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  border: 1px solid var(--fm-accent-soft-border);
 }
 
 .botonAmistad.deshabilitado {

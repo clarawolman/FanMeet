@@ -10,10 +10,25 @@
   --fm-ink: #16151a;
   --fm-muted: #78746e;
   --fm-border: rgba(22, 21, 26, 0.14);
-  --fm-accent: #ff2f7d;
+  --fm-accent: #e0356f;
   --fm-accent-ink: #ffffff;
   --fm-accent-2: #7c3aed;
-  --fm-glow: rgba(255, 47, 125, 0.26);
+  --fm-glow: rgba(224, 53, 111, 0.22);
+
+  /* rosa suave: para estados "seleccionado", nunca para la acción principal */
+  --fm-accent-soft-bg: rgba(224, 53, 111, 0.1);
+  --fm-accent-soft-border: rgba(224, 53, 111, 0.38);
+  --fm-accent-soft-ink: #9c2354;
+
+  /* escala tipográfica compartida — evita textos diminutos en toda la app */
+  --fm-fs-2xs: 12px;
+  --fm-fs-xs: 13px;
+  --fm-fs-sm: 14px;
+  --fm-fs-body: 15px;
+  --fm-fs-md: 16px;
+  --fm-fs-lg: 19px;
+  --fm-fs-xl: 24px;
+  --fm-fs-2xl: 30px;
 
   /* aliases kept so existing component CSS referencing purple/pink resolves to la identidad */
   --fm-purple: var(--fm-accent-2);
@@ -53,6 +68,10 @@
   --fm-accent-ink: #ffffff;
   --fm-accent-2: #9159ff;
   --fm-glow: rgba(255, 47, 125, 0.35);
+
+  --fm-accent-soft-bg: rgba(255, 47, 125, 0.16);
+  --fm-accent-soft-border: rgba(255, 47, 125, 0.5);
+  --fm-accent-soft-ink: #ffb8d3;
 
   --fm-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
   --fm-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);

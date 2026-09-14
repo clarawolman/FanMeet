@@ -115,60 +115,74 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 6px 16px 22px;
+  gap: 8px;
+  padding: 4px 16px 20px;
 }
 
 .headerPerfilFotoWrap {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
 }
 
 .headerPerfilFoto {
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--fm-surface);
+  border: 2.5px solid var(--fm-surface);
   box-shadow: var(--fm-shadow-sm);
   display: block;
   background: var(--fm-bg-soft);
 }
 
-.headerPerfilFotoEditar {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--fm-surface);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  font-size: 12px;
+.headerPerfilIdentidad {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--fm-shadow-sm);
-  transition: filter var(--fm-dur) var(--fm-ease);
-}
-
-.headerPerfilFotoEditar:hover {
-  filter: brightness(0.9);
+  gap: 1px;
 }
 
 .headerPerfilNombre {
-  margin: 0;
+  margin: 2px 0 0;
   font-family: var(--fm-font-display);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--fm-fs-xl);
+  font-weight: 800;
   text-transform: none;
   color: var(--fm-ink);
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  line-height: 1.2;
+}
+
+.headerPerfilHandle {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  color: var(--fm-muted);
+}
+
+.headerPerfilBotonEditar {
+  margin-top: 6px;
+  padding: 9px 22px;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
+}
+
+.headerPerfilBotonEditar:hover:not(:disabled) {
+  border-color: var(--fm-accent);
+  background: var(--fm-accent-soft-bg);
+}
+
+.headerPerfilBotonEditar:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 @media (min-width: 768px) {
@@ -177,6 +191,20 @@
   }
 
   .headerPerfilInfo {
-    padding: 8px 40px 26px;
+    padding: 6px 40px 24px;
+  }
+
+  .headerPerfilFotoWrap {
+    width: 88px;
+    height: 88px;
+  }
+
+  .headerPerfilFoto {
+    width: 88px;
+    height: 88px;
+  }
+
+  .headerPerfilNombre {
+    font-size: var(--fm-fs-2xl);
   }
 }

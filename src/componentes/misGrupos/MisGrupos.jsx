@@ -7,6 +7,7 @@ import HeaderMisGrupos from "./HeaderMisGrupos";
 import CardGrupo from "./CardGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
+import LoadingSpinner from "../generales/LoadingSpinner";
 
 function MisGrupos({
   usuarioActual,
@@ -90,9 +91,7 @@ function MisGrupos({
       <HeaderMisGrupos onVolver={onVolver} />
 
       <main className="misGruposLayout">
-        {cargando && (
-          <p className="mensajeMisGrupos">Cargando grupos...</p>
-        )}
+        {cargando && <LoadingSpinner texto="Cargando grupos..." />}
 
         {!cargando && errorTexto && (
           <p className="mensajeMisGrupos">{errorTexto}</p>

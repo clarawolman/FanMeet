@@ -1,32 +1,103 @@
 .vibraConcierto {
-  margin-top: 20px;
+  margin-top: 0;
   padding: 0 16px;
 }
 
 .vibraConcierto h3 {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 18px;
+  font-size: var(--fm-fs-lg);
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
 }
 
+.vibraConciertoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.vibraConciertoCambiar {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vibraConciertoCambiar:hover {
+  text-decoration: underline;
+}
+
 .vibraConciertoSubtitulo {
-  margin: 2px 0 12px;
-  font-family: var(--fm-font-mono);
-  font-size: 12px;
+  margin: 3px 0 14px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
 .vibraConciertoVacio {
-  margin: 4px 0 0;
-  font-family: var(--fm-font-mono);
-  font-size: 13px;
+  margin: 4px 0 14px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
-.vibraConciertoLista {
+/* ===== Resultado: lo que se ve por defecto en el propio perfil ===== */
+.vibraResultado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1.5px solid var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+  border-radius: var(--fm-radius-md);
+  padding: 16px;
+}
+
+.vibraResultadoIcono {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-accent-soft-border);
+  color: var(--fm-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vibraResultadoIcono svg {
+  width: 22px;
+  height: 22px;
+}
+
+.vibraResultadoTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vibraResultadoTexto strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  color: var(--fm-ink);
+}
+
+.vibraResultadoTexto small {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+}
+
+.vibraConciertoOpciones {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -40,7 +111,7 @@
   border: 1.5px solid var(--fm-border);
   background: var(--fm-surface);
   border-radius: var(--fm-radius-md);
-  padding: 12px 14px;
+  padding: 14px 16px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -59,8 +130,8 @@
 }
 
 .vibraOpcionIcono {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--fm-border);
   background: var(--fm-bg-soft);
@@ -74,29 +145,29 @@
 }
 
 .vibraOpcionIcono svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .vibraOpcionTexto {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 
 .vibraOpcionTexto strong {
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: var(--fm-fs-body);
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
 }
 
 .vibraOpcionTexto small {
-  font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
 }
 

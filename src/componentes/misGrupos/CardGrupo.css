@@ -48,21 +48,21 @@
 }
 
 .estadoGrupo {
-  font-family: var(--fm-font-mono);
-  font-size: 11px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-2xs);
   font-weight: 700;
   text-transform: none;
-  color: var(--fm-accent);
-  background: var(--fm-bg-soft);
-  border: 1px solid var(--fm-accent);
+  color: var(--fm-accent-soft-ink);
+  background: var(--fm-accent-soft-bg);
+  border: 1px solid var(--fm-accent-soft-border);
   padding: 3px 10px;
-  border-radius: var(--fm-radius-sm);
+  border-radius: var(--fm-radius-pill);
   white-space: nowrap;
 }
 
 .categoriaTextoGrupo {
-  font-family: var(--fm-font-mono);
-  font-size: 11px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
   font-weight: 500;
   color: var(--fm-muted);
   white-space: nowrap;

@@ -291,6 +291,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onUsuarioActualizado={setUsuarioActual}
           onCerrarSesion={manejarCerrarSesion}
           onVerUsuario={manejarVerUsuario}
+          onIngresarConcierto={manejarEntrarConcierto}
         />
       )}
 

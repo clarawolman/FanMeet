@@ -1,5 +1,5 @@
 .highlightsPerfil {
-  margin: 20px 0 8px;
+  margin: 0 0 8px;
   padding: 0 16px;
 }
 
@@ -13,7 +13,7 @@
 .highlightsPerfilHeader h3 {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 18px;
+  font-size: var(--fm-fs-lg);
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
@@ -21,8 +21,8 @@
 
 .highlightsPerfilVacio {
   margin: 0;
-  font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 

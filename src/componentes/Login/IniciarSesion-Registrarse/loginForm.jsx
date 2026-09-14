@@ -56,7 +56,7 @@ function LoginForm({ onIngresar, onRegistrarse }) {
         <input
           className="loginInput passwordInput"
           type={mostrarContrasena ? "text" : "password"}
-          placeholder="Agregue una contraseña"
+          placeholder="Ingrese su contraseña"
           value={contrasena}
           onChange={(e) => setContrasena(e.target.value)}
         />

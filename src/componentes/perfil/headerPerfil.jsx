@@ -86,18 +86,6 @@ export default function HeaderPerfil({
           />
 
           {isOwnProfile && (
-            <button
-              className="headerPerfilFotoEditar"
-              type="button"
-              onClick={manejarClickEditar}
-              disabled={subiendoFoto}
-              aria-label="Cambiar foto"
-            >
-              {subiendoFoto ? "…" : "✎"}
-            </button>
-          )}
-
-          {isOwnProfile && (
             <input
               ref={inputFotoRef}
               type="file"
@@ -108,9 +96,23 @@ export default function HeaderPerfil({
           )}
         </div>
 
-        <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+        <div className="headerPerfilIdentidad">
+          <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+          {usuario?.nombre && (
+            <p className="headerPerfilHandle">@{usuario.nombre}</p>
+          )}
+        </div>
 
-        {!isOwnProfile && (
+        {isOwnProfile ? (
+          <button
+            className="headerPerfilBotonEditar"
+            type="button"
+            onClick={manejarClickEditar}
+            disabled={subiendoFoto}
+          >
+            {subiendoFoto ? "Subiendo foto…" : "Editar perfil"}
+          </button>
+        ) : (
           <BotonAmistad
             estado={estadoAmistad}
             onAccion={onAccionAmistad}

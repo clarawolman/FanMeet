@@ -43,7 +43,7 @@
 .listaAmigosPerfilHeader h1 {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 16px;
+  font-size: var(--fm-fs-lg);
   font-weight: 700;
   text-transform: none;
   color: var(--fm-ink);
@@ -51,8 +51,8 @@
 
 .listaAmigosPerfilHeader p {
   margin: 2px 0 0;
-  font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
 }
 
@@ -67,8 +67,8 @@
 
 .listaAmigosPerfilVacio {
   margin: 0;
-  font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
   text-align: center;
   padding: 24px 0;
@@ -79,9 +79,9 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: var(--fm-surface);
-  border: 1px solid var(--fm-border);
+  border: 1.5px solid var(--fm-border);
   border-radius: var(--fm-radius-sm);
   cursor: pointer;
   text-align: left;
@@ -105,7 +105,7 @@
 
 .amigoPerfilNombre {
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-body);
   font-weight: 700;
   color: var(--fm-ink);
 }

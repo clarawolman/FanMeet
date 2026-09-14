@@ -1,0 +1,146 @@
+.proximosConciertosPerfil {
+  padding: 0 16px;
+}
+
+.proximosConciertosPerfilHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.proximosConciertosPerfil h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.proximosConciertosPerfilVerTodos {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.proximosConciertosPerfilVerTodos:hover {
+  text-decoration: underline;
+}
+
+.proximosConciertosPerfilVacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1.5px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-bg-soft);
+  padding: 18px;
+}
+
+.proximosConciertosPerfilVacio p {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.proximosConciertosPerfilDescubrir {
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  padding: 9px 18px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+.proximosConciertosPerfilDescubrir:hover {
+  background: var(--fm-accent-soft-bg);
+}
+
+.proximosConciertosPerfilLista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proximoConciertoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  padding: 10px 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.proximoConciertoItem:hover {
+  border-color: var(--fm-accent);
+  transform: translateY(-1px);
+}
+
+.proximoConciertoImagen {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--fm-radius-sm);
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  flex-shrink: 0;
+}
+
+.proximoConciertoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.proximoConciertoInfo strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-body);
+  font-weight: 700;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proximoConciertoInfo small {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.proximoConciertoFlecha {
+  color: var(--fm-muted);
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .proximosConciertosPerfil {
+    padding: 0 40px;
+  }
+}

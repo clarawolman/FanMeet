@@ -8,30 +8,31 @@
 
 .statCard {
   background: var(--fm-surface);
-  border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-border);
-  padding: 14px 12px;
+  border-radius: var(--fm-radius-md);
+  border: 1.5px solid var(--fm-border);
+  box-shadow: var(--fm-shadow-sm);
+  padding: 14px 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 4px;
   text-align: center;
 }
 
 .statCard .statLabel {
-  font-family: var(--fm-font-mono);
-  font-size: 10px;
-  font-weight: 700;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
   color: var(--fm-muted);
   text-transform: none;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   margin: 0;
 }
 
 .statCard .statValue {
   font-family: var(--fm-font-display);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--fm-fs-md);
+  font-weight: 800;
   color: var(--fm-ink);
   margin: 0;
   line-height: 1.2;
@@ -49,6 +50,6 @@
   }
 
   .statCard .statValue {
-    font-size: 15px;
+    font-size: var(--fm-fs-lg);
   }
 }

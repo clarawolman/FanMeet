@@ -33,15 +33,15 @@
 }
 
 .filtro-sub-evento__boton--activo {
-  background-color: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  border-color: var(--fm-accent);
-  box-shadow: 0 4px 14px var(--fm-glow);
+  background-color: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  border-color: var(--fm-accent-soft-border);
+  box-shadow: none;
 }
 
 .filtro-sub-evento__boton--activo:hover {
-  background-color: var(--fm-accent);
-  border-color: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background-color: var(--fm-accent-soft-bg);
+  border-color: var(--fm-accent-soft-border);
+  color: var(--fm-accent-soft-ink);
   transform: translateY(-1px);
 }

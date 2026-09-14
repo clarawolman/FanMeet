@@ -1,6 +1,6 @@
 .confirmacionGrupo {
   background: var(--fm-surface);
-  border-radius: var(--fm-radius-sm);
+  border-radius: var(--fm-radius-md);
   border: 1px solid var(--fm-border);
   padding: 20px 16px;
   margin: 10px 16px 0;
@@ -32,7 +32,7 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
+  border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
   font-size: 14px;
   font-weight: 700;

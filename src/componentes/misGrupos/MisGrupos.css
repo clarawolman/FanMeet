@@ -36,11 +36,15 @@
 
 .mensajeMisGrupos {
   width: 100%;
-  padding: 52px 20px;
+  padding: 48px 20px;
   text-align: center;
-  font-family: var(--fm-font-mono);
+  background: var(--fm-bg-soft);
+  border: 1px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  box-sizing: border-box;
+  font-family: var(--fm-font-body);
   color: var(--fm-muted);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 500;
 }
 

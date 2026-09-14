@@ -1,0 +1,33 @@
+.loadingSpinnerInline {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 48px 16px;
+}
+
+.loadingSpinnerPantalla {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--fm-bg);
+}
+
+.loadingSpinnerInline p,
+.loadingSpinnerPantalla p {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  color: var(--fm-muted);
+}
+
+.loadingSpinner {
+  border-width: 3px;
+}

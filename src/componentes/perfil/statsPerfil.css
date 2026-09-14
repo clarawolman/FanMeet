@@ -10,8 +10,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 14px 8px;
+  gap: 4px;
+  padding: 16px 8px;
   max-width: 130px;
   background: var(--fm-surface);
   border: 1.5px solid var(--fm-border);
@@ -35,16 +35,16 @@
 .statItemPerfil .statValuePerfil {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--fm-fs-xl);
+  font-weight: 800;
   color: var(--fm-accent);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .statItemPerfil .statLabelPerfil {
   margin: 0;
-  font-family: var(--fm-font-body);
-  font-size: 11px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
   color: var(--fm-muted);
   text-transform: none;
@@ -59,6 +59,10 @@
 
   .statItemPerfil {
     max-width: 160px;
-    padding: 14px 8px;
+    padding: 18px 10px;
+  }
+
+  .statItemPerfil .statValuePerfil {
+    font-size: var(--fm-fs-2xl);
   }
 }

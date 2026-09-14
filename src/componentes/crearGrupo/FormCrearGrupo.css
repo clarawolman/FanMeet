@@ -130,38 +130,68 @@
   color: var(--fm-muted);
 }
 
-.crearGrupoInputArchivo {
-  width: 100%;
-  min-height: 240px;
+.crearGrupoFotoPicker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 20px 16px;
   border-radius: var(--fm-radius-md);
-  border: 2px dashed var(--fm-border);
+  border: 1.5px dashed var(--fm-border);
   background: var(--fm-bg-soft);
-  padding: 20px;
-  box-sizing: border-box;
-  outline: none;
-  margin-top: 8px;
-  color: var(--fm-muted);
-  font-family: var(--fm-font-body);
-  font-size: 14px;
   cursor: pointer;
   transition: border-color var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
 }
 
-.crearGrupoInputArchivo:hover,
-.crearGrupoInputArchivo:focus {
-  border-color: var(--fm-accent);
-  background: var(--fm-bg-soft);
+.crearGrupoFotoPicker:hover,
+.crearGrupoFotoPicker:focus-within {
+  border-color: var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+}
+
+.crearGrupoFotoCirculo {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  flex-shrink: 0;
+}
+
+.crearGrupoFotoIcono {
+  font-size: 30px;
+  opacity: 0.55;
 }
 
 .crearGrupoPreviewImagen {
   width: 100%;
-  height: 230px;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--fm-radius-sm);
-  margin-top: 14px;
   display: block;
-  border: 1px solid var(--fm-border);
-  box-shadow: none;
+}
+
+.crearGrupoFotoTexto {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  color: var(--fm-accent);
+  text-align: center;
+}
+
+.crearGrupoInputArchivo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
 }
 
 .crearGrupoCategoriaBloque {
@@ -208,9 +238,9 @@
 }
 
 .crearGrupoCategoria.activa {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  border-color: var(--fm-ink);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  border-color: var(--fm-accent-soft-border);
   box-shadow: none;
 }
 
@@ -286,9 +316,6 @@
     grid-row: auto;
   }
 
-  .crearGrupoInputArchivo {
-    min-height: 72px;
-  }
 }
 
 @media (max-width: 520px) {
@@ -321,14 +348,13 @@
     font-size: 14px;
   }
 
-  .crearGrupoInputArchivo {
-    min-height: 58px;
-    font-size: 13px;
-    padding: 14px;
+  .crearGrupoFotoPicker {
+    padding: 16px 12px;
   }
 
-  .crearGrupoPreviewImagen {
-    height: 190px;
+  .crearGrupoFotoCirculo {
+    width: 84px;
+    height: 84px;
   }
 
   .crearGrupoCategorias {

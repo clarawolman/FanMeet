@@ -157,7 +157,7 @@
 .home-card-info h3 {
   margin: 0 0 3px;
   font-family: var(--fm-font-display);
-  font-size: 15px;
+  font-size: var(--fm-fs-md);
   font-weight: 700;
   color: var(--fm-ink);
   line-height: 1.2;
@@ -167,8 +167,28 @@
   display: flex;
   gap: 4px;
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
+}
+
+/* Badge "Unido": el concierto sigue teniendo presencia visual, no se ve
+   apagado ni deshabilitado, solo se distingue del resto. */
+.home-card-badge-unido {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-accent-soft-border);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .home-card-meta span:first-child::after {
@@ -362,32 +382,57 @@
   content: none;
 }
 
-.home-search input {
+.home-search-campo {
   width: 100%;
-  max-width: 390px;
-  height: 46px;
-  box-sizing: border-box;
+  max-width: 420px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 0 18px;
+  box-sizing: border-box;
   border-radius: var(--fm-radius-sm);
   border: 1px solid var(--fm-border);
   background: var(--fm-surface);
+  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
+}
+
+.home-search-campo:focus-within {
+  border-color: var(--fm-accent);
+  box-shadow: 0 0 0 2px var(--fm-glow);
+}
+
+.home-search-icono {
+  flex-shrink: 0;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--fm-muted);
+}
+
+.home-search-campo:focus-within .home-search-icono {
+  color: var(--fm-accent);
+}
+
+.home-search input {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  background: transparent;
   color: var(--fm-ink);
-  font-family: var(--fm-font-mono);
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  font-weight: 500;
   outline: none;
   box-shadow: none;
 }
 
 .home-search input::placeholder {
   color: var(--fm-muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.home-search input:focus {
-  border-color: var(--fm-accent) !important;
-  box-shadow: 0 0 0 2px var(--fm-glow) !important;
+  font-size: var(--fm-fs-body);
+  font-weight: 400;
 }
 
 /* títulos de secciones */
@@ -453,16 +498,16 @@
   }
 
   .home-row-scroll .home-card {
-    flex: 0 0 185px;
-    min-width: 185px;
-    max-width: 185px;
+    flex: 0 0 208px;
+    min-width: 208px;
+    max-width: 208px;
     overflow: visible;
   }
 
   .home-card-imagen {
     position: relative;
     width: 100%;
-    height: 260px;
+    height: 232px;
     aspect-ratio: auto;
     flex-shrink: 0;
   }
@@ -477,7 +522,7 @@
   }
 
   .home-card-info h3 {
-    font-size: 15px;
+    font-size: var(--fm-fs-md);
     line-height: 1.1;
     font-weight: 700;
     color: var(--fm-ink);
@@ -486,13 +531,13 @@
   .home-card-artista {
     margin: 2px 0 0;
     font-family: var(--fm-font-mono);
-    font-size: 12px;
+    font-size: var(--fm-fs-xs);
     font-weight: 600;
     color: var(--fm-accent);
   }
 
   .home-card-meta {
-    font-size: 11px;
+    font-size: var(--fm-fs-2xs);
     line-height: 1.25;
     color: var(--fm-muted);
     display: flex;

@@ -129,47 +129,15 @@
 }
 
 .editarGenerosChip {
-  height: 74px;
-  border: 1.5px solid var(--fm-border);
-  border-radius: var(--fm-radius-md);
-  background: var(--fm-bg-soft);
-  color: var(--fm-ink);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: none;
-  opacity: 1;
-  transition: transform var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
-    background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+  height: 78px;
 }
 
 .editarGenerosChip:hover {
-  border-color: var(--fm-accent);
   transform: translateY(-1px);
 }
 
 .editarGenerosChip strong {
-  color: var(--fm-ink);
-  font-family: var(--fm-font-display);
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: none;
-}
-
-.editarGenerosChip.activo {
-  background: var(--fm-accent) !important;
-  border-color: var(--fm-accent) !important;
-  color: var(--fm-accent-ink) !important;
-  box-shadow: 0 4px 14px var(--fm-glow) !important;
-  opacity: 1 !important;
-}
-
-.editarGenerosChip.activo strong {
-  color: var(--fm-accent-ink) !important;
-  opacity: 1 !important;
+  text-transform: capitalize;
 }
 
 .editarGenerosVacio {

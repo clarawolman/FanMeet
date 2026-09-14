@@ -42,7 +42,7 @@
   border: none;
   border-radius: 0;
   font-family: var(--fm-font-body);
-  font-size: 11px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;

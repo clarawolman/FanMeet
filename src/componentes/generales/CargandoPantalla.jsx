@@ -1,12 +1,7 @@
-import "./CargandoPantalla.css";
+import LoadingSpinner from "./LoadingSpinner";
 
 function CargandoPantalla({ texto = "Cargando..." }) {
-  return (
-    <div className="cargandoPantalla">
-      <span className="cargandoSpinner" aria-hidden="true" />
-      <p>{texto}</p>
-    </div>
-  );
+  return <LoadingSpinner texto={texto} pantallaCompleta tamano={44} />;
 }
 
 export default CargandoPantalla;

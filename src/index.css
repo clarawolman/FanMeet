@@ -28,3 +28,62 @@ html, body {
   background-color: var(--fm-border, rgba(0, 0, 0, 0.12));
   border-radius: 4px;
 }
+
+/* ===== CHIP DE GÉNERO — compartido entre Registro 3 y Perfil/Editar géneros ===== */
+.fmChipGenero {
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
+    color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.fmChipGenero strong,
+.fmChipGenero span {
+  color: inherit;
+}
+
+.fmChipGenero strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+}
+
+.fmChipGenero:hover {
+  border-color: var(--fm-accent-soft-border);
+}
+
+.fmChipGenero:active {
+  transform: scale(0.97);
+}
+
+.fmChipGenero.activo {
+  background: var(--fm-accent-soft-bg) !important;
+  border-color: var(--fm-accent-soft-border) !important;
+  color: var(--fm-ink) !important;
+}
+
+.fmChipGenero.activo strong,
+.fmChipGenero.activo span {
+  color: var(--fm-ink) !important;
+}
+
+/* ===== SPINNER DE CARGA — usado por <LoadingSpinner /> en toda la app ===== */
+.fmSpinner {
+  border-radius: 50%;
+  border: 3px solid var(--fm-border);
+  border-top-color: var(--fm-accent);
+  animation: fmSpin 0.8s linear infinite;
+}
+
+@keyframes fmSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

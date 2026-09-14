@@ -53,13 +53,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: var(--fm-font-mono);
-  color: var(--fm-muted);
-  font-size: 10px;
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: none;
-  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.registroProgresoInfo span:last-child {
+  color: var(--fm-accent);
 }
 
 .registroBarra {
@@ -79,10 +83,10 @@
 }
 
 .registroTitulo {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
   font-family: var(--fm-font-display);
-  font-size: 25px;
-  line-height: 1.1;
+  font-size: 28px;
+  line-height: 1.15;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -104,9 +108,9 @@
 }
 
 .registroCampo > span {
-  font-family: var(--fm-font-mono);
-  font-size: 11px;
-  font-weight: 700;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-ink);
@@ -148,8 +152,8 @@
   outline: none;
   background: transparent;
   color: var(--fm-ink);
-  font-family: var(--fm-font-mono);
-  font-size: 14px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-md);
 }
 
 .registroInputWrapper input::placeholder {
@@ -234,8 +238,8 @@
 .registroError {
   margin: 8px 0 -12px;
   color: var(--fm-accent);
-  font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
   text-align: center;
 }
@@ -291,9 +295,9 @@
 }
 
 .registroCondicionesPassword li {
-  font-family: var(--fm-font-mono);
-  font-size: 11px;
-  font-weight: 700;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
   color: var(--fm-muted);
   display: flex;
   align-items: center;
@@ -327,8 +331,8 @@
 .registroPasswordError {
   margin: 4px 0 0;
   color: var(--fm-accent);
-  font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
   font-weight: 700;
 }
 
@@ -358,18 +362,19 @@
 @media (min-width: 900px) {
   .pantallaRegistro1 {
     min-height: 100vh;
-    padding: 40px 24px;
-    justify-content: center;
+    padding: 48px 24px;
+    justify-content: flex-start;
     background: var(--fm-bg);
   }
 
   .registroHeader {
-    max-width: 860px;
-    height: 74px;
-    padding: 0 36px;
-    border-radius: 0;
-    border-bottom: 1px solid var(--fm-border);
+    max-width: 640px;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border-bottom: none;
     box-shadow: none;
+    margin-bottom: 28px;
   }
 
   .registroLogo {
@@ -377,12 +382,10 @@
   }
 
   .registroContenido {
-    max-width: 860px;
-    background: var(--fm-surface);
-    padding: 34px 42px 40px;
-    border: 1px solid var(--fm-border);
-    border-top: none;
-    border-radius: 0;
+    max-width: 640px;
+    background: transparent;
+    padding: 0;
+    border: none;
     box-shadow: none;
   }
 
@@ -391,8 +394,8 @@
   }
 
   .registroTitulo {
-    margin-bottom: 26px;
-    font-size: 34px;
+    margin-bottom: 30px;
+    font-size: 36px;
     text-align: left;
   }
 
