@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./listaAmigosPerfil.css";
 import { amistadService } from "../../services/amistadService";
 import LoadingSpinner from "../generales/LoadingSpinner";
+import HeaderApp from "../generales/HeaderApp";
 
 export default function ListaAmigosPerfil({ usuario, onVolver, onVerUsuario }) {
   const [amigos, setAmigos] = useState([]);
@@ -29,21 +30,11 @@ export default function ListaAmigosPerfil({ usuario, onVolver, onVerUsuario }) {
 
   return (
     <div className="listaAmigosPerfil">
-      <header className="listaAmigosPerfilHeader">
-        <button
-          className="listaAmigosPerfilVolver"
-          type="button"
-          onClick={onVolver}
-          aria-label="Volver"
-        >
-          ←
-        </button>
-
-        <div>
-          <h1>Amigos</h1>
-          <p>{amigos.length} {amigos.length === 1 ? "amigo" : "amigos"}</p>
-        </div>
-      </header>
+      <HeaderApp
+        onVolver={onVolver}
+        titulo="Amigos"
+        subtitulo={`${amigos.length} ${amigos.length === 1 ? "amigo" : "amigos"}`}
+      />
 
       <main className="listaAmigosPerfilMain">
         {cargando && <LoadingSpinner texto="Cargando amigos..." />}

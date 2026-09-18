@@ -1,0 +1,66 @@
+.carruselFila {
+  position: relative;
+}
+
+.carruselFila .home-row-scroll {
+  scroll-behavior: smooth;
+}
+
+.carruselFila .home-row-scroll img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.carruselFilaFlecha {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .carruselFila .home-row-scroll {
+    cursor: grab;
+    user-select: none;
+  }
+
+  .carruselFila .home-row-scroll:active {
+    cursor: grabbing;
+  }
+
+  .carruselFilaFlecha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--fm-border);
+    background: var(--fm-surface);
+    color: var(--fm-ink);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: var(--fm-shadow-sm);
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .carruselFila:hover .carruselFilaFlecha {
+    opacity: 1;
+  }
+
+  .carruselFilaFlecha:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+
+  .carruselFilaFlechaIzq {
+    left: 6px;
+  }
+
+  .carruselFilaFlechaDer {
+    right: 6px;
+  }
+}

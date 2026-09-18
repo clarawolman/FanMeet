@@ -150,6 +150,10 @@
 ============================ */
 
 @media (min-width: 768px) {
+  .pantallaMisGrupos {
+    padding-left: 240px;
+  }
+
   .misGruposLayout {
     max-width: 860px;
     padding: 30px 28px 120px;

@@ -295,41 +295,11 @@
   background: var(--fm-bg) !important;
 }
 
-/* HEADER */
-.home-header {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 22px 24px 18px !important;
-  background: var(--fm-surface) !important;
-  box-sizing: border-box !important;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-
-  border-bottom: 1px solid var(--fm-border) !important;
-  box-shadow: none !important;
-}
-
-.home-header-icons {
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  gap: 14px !important;
-}
-
-.home-eyebrow {
-  margin: 0 !important;
-  font-family: var(--fm-font-display) !important;
-  color: var(--fm-ink) !important;
-  font-size: 22px !important;
-  font-weight: 700 !important;
-  text-transform: none !important;
-  letter-spacing: 0.02em !important;
-  line-height: 1 !important;
-  text-align: left !important;
+@media (min-width: 768px) {
+  .pantalla-home {
+    padding-left: 240px !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* CTAs FANMEET */

@@ -3,10 +3,10 @@
 :root {
   /* Night Stage, modo claro (predeterminado) — papel cálido / rosa FanMeet,
      con el violeta como acento secundario para dar variedad puntual */
-  --fm-bg: #faf9f7;
-  --fm-bg-soft: #f1efec;
-  --fm-surface: #ffffff;
-  --fm-surface-warm: #f5f3f0;
+  --fm-bg: #f7f3ec;
+  --fm-bg-soft: #efe9df;
+  --fm-surface: #fdfbf7;
+  --fm-surface-warm: #f2ede2;
   --fm-ink: #16151a;
   --fm-muted: #78746e;
   --fm-border: rgba(22, 21, 26, 0.14);

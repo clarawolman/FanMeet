@@ -5,48 +5,6 @@
 }
 
 /* ============================
-        TÍTULO
-============================ */
-
-.barraTituloNotificaciones {
-  width: 100%;
-  background: var(--fm-bg);
-  padding: 18px 20px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.barraTituloNotificaciones h2 {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  font-size: 20px;
-  font-weight: 700;
-  text-transform: none;
-  color: var(--fm-ink);
-  letter-spacing: 0.005em;
-}
-
-.btnVolverNotificaciones {
-  border: none;
-  background: none;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  padding: 0;
-  font-size: 19px;
-  color: var(--fm-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.btnVolverNotificaciones:hover {
-  opacity: 0.75;
-}
-
-/* ============================
         LISTA
 ============================ */
 
@@ -66,14 +24,8 @@
 }
 
 @media (min-width: 768px) {
-  .barraTituloNotificaciones {
-    padding-left: calc((100% - 850px) / 2 + 24px);
-    padding-right: calc((100% - 850px) / 2 + 24px);
-    padding-top: 20px;
-  }
-
-  .barraTituloNotificaciones h2 {
-    font-size: 22px;
+  .pantallaNotificaciones {
+    padding-left: 240px;
   }
 
   .notificacionesLista {

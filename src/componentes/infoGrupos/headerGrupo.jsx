@@ -1,12 +1,5 @@
-import "./headerGrupo.css";
-export default function HeaderGrupo({ titulo, onVolver }) {
-  return (
-    <div className="headerGrupo">
-      <button className="backButton" onClick={onVolver}>
-        ←
-      </button>
+import HeaderApp from "../generales/HeaderApp";
 
-      <h2>{titulo}</h2>
-    </div>
-  );
+export default function HeaderGrupo({ titulo, onVolver }) {
+  return <HeaderApp onVolver={onVolver} titulo={titulo} />;
 }

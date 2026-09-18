@@ -8,54 +8,6 @@
   overflow-y: auto;
 }
 
-.listaAmigosPerfilHeader {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background-color: var(--fm-surface);
-  border-bottom: 1px solid var(--fm-border);
-}
-
-.listaAmigosPerfilVolver {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  background: none;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  font-size: 16px;
-  color: var(--fm-ink);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background-color 0.15s ease;
-}
-
-.listaAmigosPerfilVolver:hover {
-  background-color: var(--fm-bg-soft);
-}
-
-.listaAmigosPerfilHeader h1 {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-lg);
-  font-weight: 700;
-  text-transform: none;
-  color: var(--fm-ink);
-}
-
-.listaAmigosPerfilHeader p {
-  margin: 2px 0 0;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  color: var(--fm-muted);
-}
-
 .listaAmigosPerfilMain {
   max-width: 960px;
   margin: 0 auto;
@@ -111,10 +63,6 @@
 }
 
 @media (min-width: 768px) {
-  .listaAmigosPerfilHeader {
-    padding: 14px 32px;
-  }
-
   .listaAmigosPerfilMain {
     padding: 20px 32px;
   }

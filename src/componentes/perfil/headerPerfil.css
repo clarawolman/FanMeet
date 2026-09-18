@@ -3,38 +3,6 @@
   border-bottom: 1px solid var(--fm-border);
 }
 
-.headerPerfilTop {
-  width: 100%;
-  padding: 18px 20px 14px;
-  background: var(--fm-surface);
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-}
-
-.headerPerfilVolver {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--fm-border);
-  background: var(--fm-surface);
-  border-radius: var(--fm-radius-sm);
-  cursor: pointer;
-  color: var(--fm-ink);
-  font-size: 16px;
-  line-height: 1;
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.headerPerfilVolver:hover {
-  background: var(--fm-bg-soft);
-}
-
 .headerPerfilAcciones {
   display: flex;
   align-items: center;
@@ -96,18 +64,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.headerPerfilEyebrow {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  color: var(--fm-ink);
-  font-size: 19px;
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  text-align: left;
 }
 
 .headerPerfilInfo {
@@ -186,10 +142,6 @@
 }
 
 @media (min-width: 768px) {
-  .headerPerfilTop {
-    padding: 22px 40px 16px;
-  }
-
   .headerPerfilInfo {
     padding: 6px 40px 24px;
   }

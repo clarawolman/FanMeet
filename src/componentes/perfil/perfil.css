@@ -25,6 +25,7 @@
 @media (min-width: 768px) {
   .pantallaPerfil {
     background: var(--fm-bg);
+    padding-left: 240px;
   }
 
   .perfilContenido {

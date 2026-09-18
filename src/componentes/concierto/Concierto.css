@@ -132,6 +132,7 @@
 
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
+  .pantalla-concierto { padding-left: 240px; }
   .conciertoLayout { padding: 20px 32px 96px; gap: 24px; }
   .conciertoBloque { padding: 24px; gap: 16px; }
 }
