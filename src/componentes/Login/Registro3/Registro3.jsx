@@ -141,7 +141,7 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
               return (
                 <button
                   key={idGenero}
-                  className={`registro3Genero ${activo ? "activo" : ""}`}
+                  className={`fmChipGenero registro3Genero ${activo ? "activo" : ""}`}
                   type="button"
                   onClick={() => manejarGenero(idGenero)}
                 >

@@ -7,6 +7,7 @@ import HeaderMisEventos from "./HeaderMisEventos";
 import CardEvento from "./CardEvento";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
+import LoadingSpinner from "../generales/LoadingSpinner";
 
 function MisEventos({
   usuarioActual,
@@ -68,9 +69,7 @@ function MisEventos({
       <HeaderMisEventos onIrMisGrupos={onIrMisGrupos} />
 
       <main className="misEventosLayout">
-        {cargando && (
-          <p className="mensajeMisEventos">Cargando eventos...</p>
-        )}
+        {cargando && <LoadingSpinner texto="Cargando eventos..." />}
 
         {!cargando && errorTexto && (
           <p className="mensajeMisEventos">{errorTexto}</p>

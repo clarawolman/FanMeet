@@ -6,37 +6,15 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #f5f5f7;
-  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--fm-bg, #faf9f7);
+  font-family: "Archivo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #111111;
+  color: var(--fm-ink, #16151a);
 }
 
 #root {
   min-height: 100vh;
-}
-
-/* ===== CSS VARIABLES ===== */
-:root {
-  --color-primary: #7c3aed;
-  --color-primary-light: #a855f7;
-  --color-primary-dark: #6d28d9;
-  --color-pink: #e91e8c;
-  --color-pink-light: #fce4f0;
-  --color-bg: #f5f5f7;
-  --color-white: #ffffff;
-  --color-text: #111111;
-  --color-text-secondary: #666666;
-  --color-text-muted: #999999;
-  --color-border: rgba(0, 0, 0, 0.08);
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 28px;
-  --radius-full: 999px;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --shadow-purple: 0 4px 20px rgba(124, 58, 237, 0.35);
 }
 
 /* ===== SCROLLBAR LIMPIO ===== */
@@ -47,6 +25,65 @@ html, body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.15);
+  background-color: var(--fm-border, rgba(0, 0, 0, 0.12));
   border-radius: 4px;
+}
+
+/* ===== CHIP DE GÉNERO — compartido entre Registro 3 y Perfil/Editar géneros ===== */
+.fmChipGenero {
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
+    color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.fmChipGenero strong,
+.fmChipGenero span {
+  color: inherit;
+}
+
+.fmChipGenero strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+}
+
+.fmChipGenero:hover {
+  border-color: var(--fm-accent-soft-border);
+}
+
+.fmChipGenero:active {
+  transform: scale(0.97);
+}
+
+.fmChipGenero.activo {
+  background: var(--fm-accent-soft-bg) !important;
+  border-color: var(--fm-accent-soft-border) !important;
+  color: var(--fm-ink) !important;
+}
+
+.fmChipGenero.activo strong,
+.fmChipGenero.activo span {
+  color: var(--fm-ink) !important;
+}
+
+/* ===== SPINNER DE CARGA — usado por <LoadingSpinner /> en toda la app ===== */
+.fmSpinner {
+  border-radius: 50%;
+  border: 3px solid var(--fm-border);
+  border-top-color: var(--fm-accent);
+  animation: fmSpin 0.8s linear infinite;
+}
+
+@keyframes fmSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,18 +1,20 @@
 .EstadioCard {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 12px;
-  padding: 10px 12px;
-  height: 70px;
+  gap: 12px;
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  padding: 14px;
+  min-height: 76px;
+  box-sizing: border-box;
 }
 
 .EstadioImagen {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--fm-radius-sm);
+  border: 1px solid var(--fm-border);
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -20,10 +22,12 @@
 .EstadioContenido { min-width: 0; }
 
 .EstadioNombre {
-  margin: 0 0 2px;
-  font-size: 15px;
+  margin: 0 0 3px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
-  color: #111111;
+  text-transform: none;
+  color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,9 +35,10 @@
 
 .EstadioDireccion {
   margin: 0;
-  font-size: 14px;
-  color: #111111;
-  font-weight: 400;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

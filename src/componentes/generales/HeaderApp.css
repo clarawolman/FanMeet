@@ -1,0 +1,136 @@
+.headerApp {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
+}
+
+.headerAppFila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  min-height: 64px;
+  box-sizing: border-box;
+}
+
+.headerAppVolver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-sm);
+  color: var(--fm-ink);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.headerAppVolver:hover {
+  background: var(--fm-bg-soft);
+}
+
+.headerAppLogo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  color: var(--fm-accent);
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.headerAppTitulos {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.headerAppTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerAppSubtitulo {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: 12px;
+  color: var(--fm-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerAppAcciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.headerAppFilaTitulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px 14px;
+}
+
+.headerAppFilaTitulo .headerAppTitulo {
+  font-size: 20px;
+  white-space: normal;
+}
+
+.headerAppBotonAccion {
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  padding: 7px 12px;
+  border-radius: var(--fm-radius-sm);
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.headerAppBotonAccion:hover {
+  background: var(--fm-bg-soft);
+}
+
+@media (min-width: 768px) {
+  .headerAppFila {
+    padding: 18px 40px;
+  }
+
+  .headerAppFilaTitulo {
+    padding: 0 40px 16px;
+  }
+
+  .headerAppTitulo {
+    font-size: 17px;
+  }
+
+  .headerAppFilaTitulo .headerAppTitulo {
+    font-size: 22px;
+  }
+}

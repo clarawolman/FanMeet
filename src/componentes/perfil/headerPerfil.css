@@ -1,37 +1,6 @@
 .headerPerfil {
-  background: #ffffff;
-}
-
-.headerPerfilTop {
-  width: 100%;
-  padding: 18px 20px 14px;
-  background: #ffffff;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-}
-
-.headerPerfilVolver {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  color: #811cd9;
-  font-size: 18px;
-  line-height: 1;
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.headerPerfilVolver:hover {
-  background: #f7f4ff;
+  background: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
 }
 
 .headerPerfilAcciones {
@@ -47,23 +16,23 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border: none;
-  border-radius: 50%;
-  background: #f5f5f7;
-  color: #33333a;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
   padding: 0;
   cursor: pointer;
   flex-shrink: 0;
-  transition: opacity 0.12s;
+  transition: background 0.12s;
 }
 
 .headerPerfilCampana svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .headerPerfilCampana:hover {
-  opacity: 0.75;
+  background: var(--fm-bg-soft);
 }
 
 .headerPerfilCerrarSesion {
@@ -72,24 +41,23 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border: none;
-  border-radius: 50%;
-  background: none;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-surface);
   padding: 0;
   cursor: pointer;
   flex-shrink: 0;
   overflow: hidden;
-  opacity: 0.85;
+  opacity: 0.9;
   transition: transform 0.12s, opacity 0.12s;
 }
 
 .headerPerfilCerrarSesion:hover {
   opacity: 1;
-  transform: scale(1.05);
 }
 
 .headerPerfilCerrarSesion:active {
-  transform: scale(0.94);
+  transform: translate(1px, 1px);
 }
 
 .headerPerfilCerrarSesion img {
@@ -98,75 +66,97 @@
   object-fit: cover;
 }
 
-.headerPerfilEyebrow {
-  margin: 0;
-  color: #811cd9;
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  line-height: 1;
-  text-align: left;
-}
-
 .headerPerfilInfo {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 6px 16px 22px;
+  gap: 8px;
+  padding: 4px 16px 20px;
 }
 
 .headerPerfilFotoWrap {
   position: relative;
-  width: 92px;
-  height: 92px;
+  width: 72px;
+  height: 72px;
 }
 
 .headerPerfilFoto {
-  width: 92px;
-  height: 92px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ffffff;
-  box-shadow: 0 4px 16px rgba(129, 28, 217, 0.22);
+  border: 2.5px solid var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
   display: block;
-  background: #f0eefe;
+  background: var(--fm-bg-soft);
 }
 
-.headerPerfilFotoEditar {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2.5px solid #ffffff;
-  background: #ff3f97;
-  color: #ffffff;
-  font-size: 11px;
+.headerPerfilIdentidad {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  gap: 1px;
 }
 
 .headerPerfilNombre {
+  margin: 2px 0 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl);
+  font-weight: 800;
+  text-transform: none;
+  color: var(--fm-ink);
+  line-height: 1.2;
+}
+
+.headerPerfilHandle {
   margin: 0;
-  font-size: 18px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  color: var(--fm-muted);
+}
+
+.headerPerfilBotonEditar {
+  margin-top: 6px;
+  padding: 9px 22px;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
   font-weight: 700;
-  color: #1a1a1a;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  cursor: pointer;
+  transition: border-color var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
+}
+
+.headerPerfilBotonEditar:hover:not(:disabled) {
+  border-color: var(--fm-accent);
+  background: var(--fm-accent-soft-bg);
+}
+
+.headerPerfilBotonEditar:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 @media (min-width: 768px) {
-  .headerPerfilTop {
-    padding: 22px 40px 16px;
+  .headerPerfilInfo {
+    padding: 6px 40px 24px;
   }
 
-  .headerPerfilInfo {
-    padding: 8px 40px 26px;
+  .headerPerfilFotoWrap {
+    width: 88px;
+    height: 88px;
+  }
+
+  .headerPerfilFoto {
+    width: 88px;
+    height: 88px;
+  }
+
+  .headerPerfilNombre {
+    font-size: var(--fm-fs-2xl);
   }
 }

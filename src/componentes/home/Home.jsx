@@ -5,7 +5,10 @@ import { conciertosService } from "../../services/conciertosService";
 import { usuariosService } from "../../services/usuariosService";
 import { notificacionesService } from "../../services/notificacionesService";
 import Footer from "../generales/Footer";
+import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
+import LoadingSpinner from "../generales/LoadingSpinner";
+import CarruselFila from "./CarruselFila";
 
 function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
   const [conciertos, setConciertos] = useState([]);
@@ -205,7 +208,12 @@ const generosOrdenados = [...generos].sort((a, b) => {
               ""
             }
             alt={concierto.nombre || concierto.artista?.nombre}
+            draggable={false}
           />
+
+          {yaUnido && (
+            <span className="home-card-badge-unido">✓ Unido</span>
+          )}
 
           <button
             className={
@@ -244,51 +252,53 @@ const generosOrdenados = [...generos].sort((a, b) => {
 
   return (
     <div className="pantalla-home">
-      <header className="home-header">
-        <div className="home-header-icons">
-          <p className="home-eyebrow">FanMeet</p>
-        </div>
+      <HeaderApp
+        acciones={
+          <div className="home-header-right">
+            <button
+              type="button"
+              className="home-header-bell"
+              onClick={() => onNavegar("notificaciones")}
+              aria-label="Notificaciones"
+            >
+              <IconoCampana />
+              {cantidadNotificaciones > 0 && (
+                <span className="home-header-bell-badge">
+                  {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}
+                </span>
+              )}
+            </button>
 
-        <div className="home-header-right">
-          <button
-            type="button"
-            className="home-header-bell"
-            onClick={() => onNavegar("notificaciones")}
-            aria-label="Notificaciones"
-          >
-            <IconoCampana />
-            {cantidadNotificaciones > 0 && (
-              <span className="home-header-bell-badge">
-                {cantidadNotificaciones > 9 ? "9+" : cantidadNotificaciones}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            className="home-header-avatar"
-            onClick={() => onNavegar("perfil")}
-            aria-label="Mi perfil"
-          >
-            <img
-              src={usuarioActual?.fotoperfil || usuarioActual?.foto_perfil}
-              alt={usuarioActual?.nombre}
-            />
-          </button>
-        </div>
-      </header>
+            <button
+              type="button"
+              className="home-header-avatar"
+              onClick={() => onNavegar("perfil")}
+              aria-label="Mi perfil"
+            >
+              <img
+                src={usuarioActual?.fotoperfil || usuarioActual?.foto_perfil}
+                alt={usuarioActual?.nombre}
+              />
+            </button>
+          </div>
+        }
+      />
 
       <main className="home-main">
         <div className="home-search">
-          <input
-            type="text"
-            placeholder="Buscá tu concierto o artista"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+          <div className="home-search-campo">
+            <span className="home-search-icono" aria-hidden="true">⌕</span>
+
+            <input
+              type="text"
+              placeholder="Buscá tu concierto o artista"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </div>
         </div>
 
-        {cargando && <p className="home-estado">Cargando conciertos...</p>}
+        {cargando && <LoadingSpinner texto="Cargando conciertos..." />}
 
         {!cargando && conciertos.length === 0 && (
           <p className="home-estado">No hay conciertos disponibles.</p>
@@ -319,11 +329,11 @@ const generosOrdenados = [...generos].sort((a, b) => {
                 <span>Todos</span>
               </div>
 
-              <div className="home-row-scroll">
+              <CarruselFila>
                 {conciertos
                   .slice(0, 10)
                   .map((concierto) => renderCard(concierto))}
-              </div>
+              </CarruselFila>
             </section>
 
             {generosOrdenados.map((genero) => {
@@ -338,11 +348,11 @@ const generosOrdenados = [...generos].sort((a, b) => {
                     <span>{conciertosDelGenero.length}</span>
                   </div>
 
-                  <div className="home-row-scroll">
+                  <CarruselFila>
                     {conciertosDelGenero.map((concierto) =>
                       renderCard(concierto)
                     )}
-                  </div>
+                  </CarruselFila>
                 </section>
               );
             })}

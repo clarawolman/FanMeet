@@ -1,4 +1,5 @@
 import "./FansUnidosLista.css";
+import HeaderApp from "../generales/HeaderApp";
 
 function FansUnidosLista({
   fans = [],
@@ -14,16 +15,7 @@ function FansUnidosLista({
 
   return (
     <div className="fansUnidosLista">
-      <header className="fansUnidosListaHeader">
-        <button className="fansUnidosListaVolver" type="button" onClick={onVolver}>
-          ←
-        </button>
-
-        <div>
-          <h1>{titulo}</h1>
-          <p>{subtitulo}</p>
-        </div>
-      </header>
+      <HeaderApp onVolver={onVolver} titulo={titulo} subtitulo={subtitulo} />
 
       <main className="fansUnidosListaMain">
         {otrosFans.length === 0 && (

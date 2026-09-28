@@ -1,25 +1,15 @@
-import "./HeaderMisGrupos.css";
+import HeaderApp from "../generales/HeaderApp";
 
 function HeaderMisGrupos({ onVolver }) {
   return (
-    <>
-      <header className="home-header">
-        <div className="home-header-icons">
-          <p className="home-eyebrow">FanMeet</p>
-        </div>
-      </header>
-
-      <section className="barraTituloGrupos">
-        <h2>Tus grupos</h2>
-
-        <button
-          className="btnMisEventos"
-          onClick={onVolver}
-        >
+    <HeaderApp
+      titulo="Tus grupos"
+      acciones={
+        <button className="headerAppBotonAccion" type="button" onClick={onVolver}>
           ← Mis eventos
         </button>
-      </section>
-    </>
+      }
+    />
   );
 }
 

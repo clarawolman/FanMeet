@@ -16,7 +16,7 @@ function FormCrearGrupo({
 
   return (
     <main className="crearGrupoContenido">
-      <h1 className="crearGrupoTitulo">NUEVO GRUPO</h1>
+      <h1 className="crearGrupoTitulo">Nuevo grupo</h1>
 
       <form className="crearGrupoForm" onSubmit={crearGrupo}>
         <label className="crearGrupoLabel">
@@ -31,30 +31,40 @@ function FormCrearGrupo({
         </label>
         <label className="crearGrupoLabel">
           Foto del grupo
-          <input
-            className="crearGrupoInputArchivo"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const archivo = e.target.files[0];
+          <span className="crearGrupoFotoPicker">
+            <span className="crearGrupoFotoCirculo">
+              {formulario.imagenPreview ? (
+                <img
+                  className="crearGrupoPreviewImagen"
+                  src={formulario.imagenPreview}
+                  alt="Vista previa del grupo"
+                />
+              ) : (
+                <span className="crearGrupoFotoIcono" aria-hidden="true">
+                  ▣
+                </span>
+              )}
+            </span>
+            <span className="crearGrupoFotoTexto">
+              {formulario.imagenPreview ? "Cambiar foto" : "Elegir foto"}
+            </span>
+            <input
+              className="crearGrupoInputArchivo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const archivo = e.target.files[0];
 
-              if (!archivo) return;
+                if (!archivo) return;
 
-              setFormulario({
-                ...formulario,
-                imagenArchivo: archivo,
-                imagenPreview: URL.createObjectURL(archivo),
-              });
-            }}
-          />
-
-          {formulario.imagenPreview && (
-            <img
-              className="crearGrupoPreviewImagen"
-              src={formulario.imagenPreview}
-              alt="Vista previa del grupo"
+                setFormulario({
+                  ...formulario,
+                  imagenArchivo: archivo,
+                  imagenPreview: URL.createObjectURL(archivo),
+                });
+              }}
             />
-          )}
+          </span>
         </label>
 
         <label className="crearGrupoLabel">
@@ -99,7 +109,7 @@ function FormCrearGrupo({
         </label>
 
         <div className="crearGrupoCategoriaBloque">
-          <p className="crearGrupoLabelTexto">Categoria</p>
+          <p className="crearGrupoLabelTexto">Categoría</p>
 
           <div className="crearGrupoCategorias">
             <button

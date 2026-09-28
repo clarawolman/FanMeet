@@ -38,35 +38,42 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
           <CardEvento concierto={concierto} />
         </section>
 
-        <section className="conciertoInfo">
-          <CardEstadio estadio={concierto.estadio} />
-          <FansUnidos
-            fans={concierto.usuarios}
-            cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
-            onConocerlos={onVerFansUnidos}
-          />
-          </section>
+        <section className="conciertoBloque conciertoInfoBloque">
+          <h2 className="conciertoBloqueTitulo">Sobre el show</h2>
 
-        <section className="conciertoGrupos">
-          <FiltroSubEvento
-            filtros={filtros}
-            filtroActivo={filtroActivo}
-            onCambiarFiltro={setFiltroActivo}
-          />
+          <div className="conciertoInfo">
+            <CardEstadio estadio={concierto.estadio} />
+            <FansUnidos
+              fans={concierto.usuarios}
+              cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
+              onConocerlos={onVerFansUnidos}
+            />
+          </div>
+        </section>
 
-          <Carrusel
-            subEventos={gruposFiltrados}
-            onAbrirGrupo={onAbrirGrupo}
-          />
+        <section className="conciertoBloque conciertoGrupos">
+          <div className="conciertoBloqueHeader">
+            <h2 className="conciertoBloqueTitulo">Grupos del concierto</h2>
+            <FiltroSubEvento
+              filtros={filtros}
+              filtroActivo={filtroActivo}
+              onCambiarFiltro={setFiltroActivo}
+            />
+          </div>
 
-          {gruposFiltrados.length === 0 && (
+          {gruposFiltrados.length > 0 ? (
+            <Carrusel
+              subEventos={gruposFiltrados}
+              onAbrirGrupo={onAbrirGrupo}
+            />
+          ) : (
             <p className="conciertoSinGrupos">
-              No hay grupos en esta categoría todavía.
+              No hay grupos en esta categoría todavía. ¡Creá el primero!
             </p>
           )}
 
           <button className="btn-crear-grupo" onClick={onCrearGrupo}>
-            CREAR GRUPO ＋
+            Crear grupo para este concierto ＋
           </button>
         </section>
       </main>

@@ -124,7 +124,7 @@ function EditarGeneros({ usuarioActual, onVolver }) {
                 return (
                   <button
                     key={idGenero}
-                    className={`editarGenerosChip ${activo ? "activo" : ""}`}
+                    className={`fmChipGenero editarGenerosChip ${activo ? "activo" : ""}`}
                     type="button"
                     onClick={() => manejarGenero(idGenero)}
                   >

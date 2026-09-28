@@ -1,0 +1,33 @@
+.cargandoPantalla {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: var(--fm-bg);
+}
+
+.cargandoSpinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3.5px solid var(--fm-border);
+  border-top-color: var(--fm-accent);
+  animation: fmSpin 0.8s linear infinite;
+}
+
+.cargandoPantalla p {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fm-muted);
+}
+
+@keyframes fmSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -2,10 +2,10 @@
 
 .pantalla-concierto {
   min-height: 100vh;
-  background-color: #F7F7FA;
+  background-color: var(--fm-bg);
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--fm-font-body);
   overflow-x: hidden;
 }
 
@@ -18,16 +18,46 @@
   padding: 16px 16px 96px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .conciertoHero { width: 100%; }
+
+/* ===== BLOQUES: paneles delimitados, mismo lenguaje visual en toda
+   la pantalla (surface + borde + radius-lg) ===== */
+.conciertoBloque {
+  width: 100%;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  padding: 18px;
+  box-shadow: var(--fm-shadow-sm);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.conciertoBloqueTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  color: var(--fm-ink);
+  letter-spacing: 0.005em;
+}
+
+.conciertoBloqueHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 /* ===== INFO ROW: estadio + fans ===== */
 .conciertoInfo {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 12px;
   align-items: stretch;
 }
 .conciertoInfo > * {
@@ -35,11 +65,28 @@
   min-width: 0;
 }
 
+@media (max-width: 480px) {
+  .conciertoInfo {
+    flex-direction: column;
+  }
+}
+
 /* ===== GROUPS SECTION ===== */
 .conciertoGrupos {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+
+.conciertoSinGrupos {
+  margin: 4px 0;
+  padding: 28px 16px;
+  text-align: center;
+  background: var(--fm-bg-soft);
+  border: 1px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  color: var(--fm-muted);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
 }
 
 /* carousel horizontal */
@@ -54,28 +101,40 @@
 }
 .lista-grupos::-webkit-scrollbar { display: none; }
 
-/* ===== BOTÓN CREAR GRUPO ===== */
+/* ===== BOTÓN CREAR GRUPO — CTA principal de la pantalla ===== */
 .btn-crear-grupo {
   display: block;
   width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
-  padding: 14px 0;
-  background: #7c3aed;
-  color: #ffffff;
-  font-size: 13px;
+  margin: 0;
+  padding: 15px 0;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
   font-weight: 700;
-  letter-spacing: 0.3px;
-  border: none;
-  border-radius: 14px;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  box-shadow: none;
+  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
-.btn-crear-grupo:hover { background: #6d28d9; }
+.btn-crear-grupo:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px var(--fm-glow);
+}
+
+.btn-crear-grupo:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 12px var(--fm-glow);
+}
 
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
-  .conciertoLayout { padding: 20px 32px 96px; }
+  .pantalla-concierto { padding-left: 240px; }
+  .conciertoLayout { padding: 20px 32px 96px; gap: 24px; }
+  .conciertoBloque { padding: 24px; gap: 16px; }
 }
 @media (min-width: 1024px) {
   .conciertoLayout { padding: 24px 48px 96px; }

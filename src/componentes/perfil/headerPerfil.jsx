@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
+import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
 import signOutIcono from "../../assets/signOut.png";
 
@@ -35,47 +36,38 @@ export default function HeaderPerfil({
 
   return (
     <div className="headerPerfil">
-      <header className="headerPerfilTop">
-        {onVolver && (
-          <button
-            className="headerPerfilVolver"
-            type="button"
-            onClick={onVolver}
-            aria-label="Volver"
-          >
-            ←
-          </button>
-        )}
+      <HeaderApp
+        onVolver={onVolver}
+        titulo={onVolver ? usuario?.nombre : undefined}
+        acciones={
+          isOwnProfile && (
+            <div className="headerPerfilAcciones">
+              {onNavegar && (
+                <button
+                  className="headerPerfilCampana"
+                  type="button"
+                  onClick={() => onNavegar("notificaciones")}
+                  aria-label="Notificaciones"
+                >
+                  <IconoCampana />
+                </button>
+              )}
 
-        <p className="headerPerfilEyebrow">FanMeet</p>
-
-        {isOwnProfile && (
-          <div className="headerPerfilAcciones">
-            {onNavegar && (
-              <button
-                className="headerPerfilCampana"
-                type="button"
-                onClick={() => onNavegar("notificaciones")}
-                aria-label="Notificaciones"
-              >
-                <IconoCampana />
-              </button>
-            )}
-
-            {onCerrarSesion && (
-              <button
-                className="headerPerfilCerrarSesion"
-                type="button"
-                onClick={onCerrarSesion}
-                aria-label="Cerrar sesión"
-                title="Cerrar sesión"
-              >
-                <img src={signOutIcono} alt="" />
-              </button>
-            )}
-          </div>
-        )}
-      </header>
+              {onCerrarSesion && (
+                <button
+                  className="headerPerfilCerrarSesion"
+                  type="button"
+                  onClick={onCerrarSesion}
+                  aria-label="Cerrar sesión"
+                  title="Cerrar sesión"
+                >
+                  <img src={signOutIcono} alt="" />
+                </button>
+              )}
+            </div>
+          )
+        }
+      />
 
       <div className="headerPerfilInfo">
         <div className="headerPerfilFotoWrap">
@@ -84,18 +76,6 @@ export default function HeaderPerfil({
             src={usuario?.fotoperfil || usuario?.foto_perfil}
             alt={usuario?.nombre}
           />
-
-          {isOwnProfile && (
-            <button
-              className="headerPerfilFotoEditar"
-              type="button"
-              onClick={manejarClickEditar}
-              disabled={subiendoFoto}
-              aria-label="Cambiar foto"
-            >
-              {subiendoFoto ? "…" : "✎"}
-            </button>
-          )}
 
           {isOwnProfile && (
             <input
@@ -108,9 +88,23 @@ export default function HeaderPerfil({
           )}
         </div>
 
-        <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+        <div className="headerPerfilIdentidad">
+          <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+          {usuario?.nombre && (
+            <p className="headerPerfilHandle">@{usuario.nombre}</p>
+          )}
+        </div>
 
-        {!isOwnProfile && (
+        {isOwnProfile ? (
+          <button
+            className="headerPerfilBotonEditar"
+            type="button"
+            onClick={manejarClickEditar}
+            disabled={subiendoFoto}
+          >
+            {subiendoFoto ? "Subiendo foto…" : "Editar perfil"}
+          </button>
+        ) : (
           <BotonAmistad
             estado={estadoAmistad}
             onAccion={onAccionAmistad}

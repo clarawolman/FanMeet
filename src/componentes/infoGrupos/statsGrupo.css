@@ -3,34 +3,37 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin: 10px 16px 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--fm-font-body);
 }
 
 .statCard {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #f0eefe;
-  padding: 14px 12px;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-md);
+  border: 1.5px solid var(--fm-border);
+  box-shadow: var(--fm-shadow-sm);
+  padding: 14px 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 4px;
   text-align: center;
 }
 
 .statCard .statLabel {
-  font-size: 10px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
-  color: #a89dcf;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--fm-muted);
+  text-transform: none;
+  letter-spacing: 0.005em;
   margin: 0;
 }
 
 .statCard .statValue {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 800;
+  color: var(--fm-ink);
   margin: 0;
   line-height: 1.2;
   word-break: break-word;
@@ -47,6 +50,6 @@
   }
 
   .statCard .statValue {
-    font-size: 14px;
+    font-size: var(--fm-fs-lg);
   }
 }

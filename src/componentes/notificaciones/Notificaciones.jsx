@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Notificaciones.css";
 import CardNotificacion from "./CardNotificacion";
 import Footer from "../generales/Footer";
+import HeaderApp from "../generales/HeaderApp";
 import { notificacionesService } from "../../services/notificacionesService";
 import { amistadService } from "../../services/amistadService";
 
@@ -97,23 +98,7 @@ function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
 
   return (
     <div className="pantallaNotificaciones">
-      <header className="home-header">
-        <div className="home-header-icons">
-          <p className="home-eyebrow">FanMeet</p>
-        </div>
-      </header>
-
-      <section className="barraTituloNotificaciones">
-        <button
-          type="button"
-          className="btnVolverNotificaciones"
-          onClick={onVolver}
-          aria-label="Volver"
-        >
-          ←
-        </button>
-        <h2>Notificaciones</h2>
-      </section>
+      <HeaderApp onVolver={onVolver} titulo="Notificaciones" />
 
       <main className="notificacionesLista">
         {cargando && (

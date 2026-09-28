@@ -1,10 +1,12 @@
 import "./Footer.css";
+import { IconoNavInicio, IconoNavEventos, IconoNavGrupos, IconoNavPerfil } from "./iconosNav";
 
-import inicioMarcadoIcon from "../../assets/InicioMarcado.png";
-import inicioNoMarcIcon from "../../assets/FooterInicioNo.png";
-import eventosMarcadoIcon from "../../assets/eventosMarcado.png";
-import eventosNoMarcIcon from "../../assets/eventosNoMarc.png";
-import perfilIcon from "../../assets/PerfilNo.png";
+const ITEMS = [
+  { destino: "home", texto: "Inicio", Icono: IconoNavInicio },
+  { destino: "misEventos", texto: "Eventos", Icono: IconoNavEventos },
+  { destino: "misGrupos", texto: "Grupos", Icono: IconoNavGrupos },
+  { destino: "perfil", texto: "Perfil", Icono: IconoNavPerfil },
+];
 
 function Footer({ onNavegar, pantallaActiva }) {
   function navegar(destino) {
@@ -13,32 +15,26 @@ function Footer({ onNavegar, pantallaActiva }) {
   }
 
   return (
-    <section className="footer">
-      <button className="footerButton" type="button" onClick={() => navegar("home")}>
-        <img
-          src={pantallaActiva === "home" ? inicioMarcadoIcon : inicioNoMarcIcon}
-          alt="Inicio"
-        />
-        <span>Inicio</span>
-      </button>
+    <nav className="footer">
+      {ITEMS.map(({ destino, texto, Icono }) => {
+        const activo = pantallaActiva === destino;
 
-      <button className="footerButton" type="button" onClick={() => navegar("misEventos")}>
-        <img
-          src={
-            pantallaActiva === "misEventos"
-              ? eventosMarcadoIcon
-              : eventosNoMarcIcon
-          }
-          alt="Mis Eventos"
-        />
-        <span>Eventos</span>
-      </button>
-
-      <button className="footerButton" type="button" onClick={() => navegar("perfil")}>
-        <img src={perfilIcon} alt="Perfil" />
-        <span>Perfil</span>
-      </button>
-    </section>
+        return (
+          <button
+            key={destino}
+            className={`footerButton ${activo ? "activo" : ""}`}
+            type="button"
+            onClick={() => navegar(destino)}
+            aria-current={activo ? "page" : undefined}
+          >
+            <span className="footerButtonChip">
+              <Icono className="footerButtonIcono" />
+            </span>
+            <span className="footerButtonTexto">{texto}</span>
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 

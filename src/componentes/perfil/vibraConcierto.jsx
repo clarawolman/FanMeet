@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./vibraConcierto.css";
 
 export default function VibraConcierto({
@@ -6,39 +7,39 @@ export default function VibraConcierto({
   isOwnProfile,
   onSeleccionar,
 }) {
-  // En un perfil ajeno no se eligen vibras, solo se muestra la elegida:
-  // no tiene sentido listar las tres opciones si ninguna es editable.
-  const vibrasAMostrar = isOwnProfile
-    ? vibras
-    : vibras.filter((vibra) => vibra.id === vibraActual);
+  const [cambiando, setCambiando] = useState(false);
 
-  if (!isOwnProfile && vibrasAMostrar.length === 0) {
-    return (
-      <section className="vibraConcierto">
-        <h3>Vibe de concierto</h3>
-        <p className="vibraConciertoVacio">Todavía no eligió su vibra de concierto.</p>
-      </section>
-    );
+  const vibraElegida = vibras.find((vibra) => vibra.id === vibraActual) || null;
+
+  function manejarSeleccionar(idVibra) {
+    onSeleccionar(idVibra);
+    setCambiando(false);
   }
 
-  return (
-    <section className="vibraConcierto">
-      <h3>{isOwnProfile ? "Tu vibe de concierto" : "Vibe de concierto"}</h3>
-      {isOwnProfile && (
-        <p className="vibraConciertoSubtitulo">Dónde disfrutás más los shows</p>
-      )}
+  if (!vibraElegida) {
+    if (!isOwnProfile) {
+      return (
+        <section className="vibraConcierto">
+          <h3>Mi vibe de concierto</h3>
+          <p className="vibraConciertoVacio">Todavía no eligió su vibe de concierto.</p>
+        </section>
+      );
+    }
 
-      <div className="vibraConciertoLista">
-        {vibrasAMostrar.map((vibra) => {
-          const activa = vibra.id === vibraActual;
+    return (
+      <section className="vibraConcierto">
+        <h3>Mi vibe de concierto</h3>
+        <p className="vibraConciertoVacio">
+          Todavía no elegiste tu vibe de concierto.
+        </p>
 
-          return (
+        <div className="vibraConciertoOpciones">
+          {vibras.map((vibra) => (
             <button
               key={vibra.id}
               type="button"
-              className={`vibraOpcion ${activa ? "activo" : ""}`}
-              onClick={() => isOwnProfile && onSeleccionar(vibra.id)}
-              disabled={!isOwnProfile}
+              className="vibraOpcion"
+              onClick={() => manejarSeleccionar(vibra.id)}
             >
               <span className="vibraOpcionIcono">{vibra.icono}</span>
 
@@ -46,12 +47,65 @@ export default function VibraConcierto({
                 <strong>{vibra.nombre}</strong>
                 <small>{vibra.descripcion}</small>
               </span>
-
-              <span className="vibraOpcionRadio" />
             </button>
-          );
-        })}
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="vibraConcierto">
+      <div className="vibraConciertoHeader">
+        <h3>Mi vibe de concierto</h3>
+
+        {isOwnProfile && (
+          <button
+            className="vibraConciertoCambiar"
+            type="button"
+            onClick={() => setCambiando((actual) => !actual)}
+          >
+            {cambiando ? "Cerrar" : "Cambiar"}
+          </button>
+        )}
       </div>
+
+      {!cambiando && (
+        <div className="vibraResultado">
+          <span className="vibraResultadoIcono">{vibraElegida.icono}</span>
+
+          <span className="vibraResultadoTexto">
+            <strong>{vibraElegida.nombre}</strong>
+            <small>{vibraElegida.descripcion}</small>
+          </span>
+        </div>
+      )}
+
+      {cambiando && isOwnProfile && (
+        <div className="vibraConciertoOpciones">
+          {vibras.map((vibra) => {
+            const activa = vibra.id === vibraActual;
+
+            return (
+              <button
+                key={vibra.id}
+                type="button"
+                className={`vibraOpcion ${activa ? "activo" : ""}`}
+                onClick={() => manejarSeleccionar(vibra.id)}
+              >
+                <span className="vibraOpcionIcono">{vibra.icono}</span>
+
+                <span className="vibraOpcionTexto">
+                  <strong>{vibra.nombre}</strong>
+                  <small>{vibra.descripcion}</small>
+                </span>
+
+                <span className="vibraOpcionRadio" />
+              </button>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

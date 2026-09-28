@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import MenuConfiguracion from "./componentes/generales/MenuConfiguracion";
+import CargandoPantalla from "./componentes/generales/CargandoPantalla";
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import ChatGrupo from "./componentes/infoGrupos/chatGrupo";
@@ -31,8 +33,19 @@ function App() {
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
-  
-  
+
+  const [temaOscuro, setTemaOscuro] = useState(
+    () => localStorage.getItem("fm-theme") === "dark"
+  );
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", temaOscuro ? "dark" : "light");
+    localStorage.setItem("fm-theme", temaOscuro ? "dark" : "light");
+  }, [temaOscuro]);
+
+  function alternarTema() {
+    setTemaOscuro((anterior) => !anterior);
+  }
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -185,7 +198,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla === "registro3";
 
   if (!esPantallaLogin && pantalla !== "home" && cargando) {
-    return <p style={{ padding: 20 }}>Cargando concierto...</p>;
+    return <CargandoPantalla texto="Cargando concierto..." />;
   }
 
   if (
@@ -209,6 +222,8 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
   return (
     <>
+      <MenuConfiguracion temaOscuro={temaOscuro} onCambiarTema={alternarTema} />
+
       {errorTexto && esPantallaLogin && (
         <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
       )}
@@ -278,6 +293,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onUsuarioActualizado={setUsuarioActual}
           onCerrarSesion={manejarCerrarSesion}
           onVerUsuario={manejarVerUsuario}
+          onIngresarConcierto={manejarEntrarConcierto}
         />
       )}
 

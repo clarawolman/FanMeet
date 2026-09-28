@@ -29,7 +29,7 @@
 }
 
 /* ========================= */
-/* 🔘 FLECHAS MÁS SUAVES */
+/* FLECHAS */
 /* ========================= */
 
 .CarruselBtn {
@@ -37,18 +37,18 @@
   top: 50%;
   transform: translateY(-50%);
 
-  width: 42px;
-  height: 42px;   /* 👈 más chicas */
+  width: 38px;
+  height: 38px;
 
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(242, 237, 228, 0.35);
 
-  background: rgba(0, 0, 0, 0.35); /* 👈 menos oscuro */
-  backdrop-filter: blur(6px);
+  background: rgba(18, 16, 15, 0.55);
+  backdrop-filter: none;
 
-  color: white;
+  color: var(--fm-ink);
 
-  font-size: 22px; /* 👈 más suave */
+  font-size: 18px;
 
   cursor: pointer;
 
@@ -58,12 +58,12 @@
 
   z-index: 10;
 
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .CarruselBtn:hover {
-  transform: translateY(-50%) scale(1.1);
-  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--fm-accent);
+  color: var(--fm-accent);
 }
 
 .CarruselBtn.left { left: 8px; }

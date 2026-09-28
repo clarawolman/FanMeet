@@ -1,7 +1,7 @@
 .pantallaLogin {
   width: 100%;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--fm-bg);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -21,10 +21,12 @@
 .loginTitulo {
   margin: 0 0 18px;
   text-align: center;
-  font-size: 46px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  color: #7a3fe0;
+  font-family: var(--fm-font-display);
+  font-size: 44px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: var(--fm-ink);
 }
 
 @media (max-width: 430px) {
@@ -39,6 +41,6 @@
   }
 
   .loginTitulo {
-    font-size: 42px;
+    font-size: 38px;
   }
 }
