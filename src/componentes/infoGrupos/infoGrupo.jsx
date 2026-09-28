@@ -20,6 +20,7 @@ function InfoGrupo({
   onNavegar,
   onGrupoEliminado,
   onVerFansConfirmados,
+  onAbrirChat,
 }) {
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
@@ -132,6 +133,16 @@ function InfoGrupo({
             onConfirmar={confirmarAsistenciaGrupo}
             cargandoConfirmacion={cargandoConfirmacion}
           />
+        )}
+
+        {!verificandoConfirmacion && confirmado && (
+          <button
+            className="botonChatGrupo"
+            type="button"
+            onClick={onAbrirChat}
+          >
+            Chat del grupo
+          </button>
         )}
 
         {!verificandoConfirmacion && confirmado && (
