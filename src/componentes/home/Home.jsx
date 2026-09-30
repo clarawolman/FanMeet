@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Home.css";
 import OverlayCodigo from "./OverlayCodigo";
 import { conciertosService } from "../../services/conciertosService";
@@ -9,8 +9,10 @@ import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import CarruselFila from "./CarruselFila";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
-function Home({ usuarioActual, onEntrarConcierto, onNavegar }) {
+function Home({ onEntrarConcierto, onNavegar }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [conciertos, setConciertos] = useState([]);
   const [conciertosUnidos, setConciertosUnidos] = useState([]);
   const [conciertoSeleccionado, setConciertoSeleccionado] = useState(null);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./perfil.css";
 import { usuariosService } from "../../services/usuariosService";
 import { amistadService } from "../../services/amistadService";
@@ -15,6 +15,7 @@ import ListaAmigosPerfil from "./listaAmigosPerfil";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 // Mismos valores que usa Registro3 para usuario.estilo_asistencia:
 // no son datos inventados, son el vocabulario real ya persistido en esa columna.
@@ -40,20 +41,19 @@ const AMBIENTES_CONCIERTO = [
 ];
 
 function Perfil({
-  usuarioActual,
   usuarioPerfil,
   isOwnProfile = true,
   onNavegar,
-  onUsuarioActualizado,
   onVolver,
   onCerrarSesion,
   onVerUsuario,
   onIngresarConcierto,
 }) {
+  const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const usuarioBase = usuarioPerfil || usuarioActual;
 
-  // La foto se actualiza optimistamente acá y también se propaga hacia
-  // arriba (onUsuarioActualizado) para que el resto de la app la vea.
+  // La foto se actualiza optimistamente acá y también se guarda en el
+  // UsuarioContext para que el resto de la app la vea.
   const [fotoLocal, setFotoLocal] = useState(null);
   const usuario = fotoLocal
     ? { ...usuarioBase, fotoperfil: fotoLocal }
@@ -242,7 +242,7 @@ function Perfil({
     try {
       const usuarioActualizado = await usuariosService.subirFoto(archivo);
       setFotoLocal(usuarioActualizado.fotoperfil);
-      onUsuarioActualizado?.({ ...usuarioBase, fotoperfil: usuarioActualizado.fotoperfil });
+      setUsuarioActual({ ...usuarioBase, fotoperfil: usuarioActualizado.fotoperfil });
     } catch (error) {
       alert("No se pudo subir la foto: " + error.message);
     }
@@ -328,7 +328,6 @@ function Perfil({
       {mostrarEditorGeneros && (
         <div className="perfilOverlayPantalla">
           <EditarGeneros
-            usuarioActual={usuario}
             onVolver={() => {
               setMostrarEditorGeneros(false);
               cargarGeneros();

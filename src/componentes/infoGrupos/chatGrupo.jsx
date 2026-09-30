@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import "./chatGrupo.css";
 import HeaderGrupo from "./headerGrupo";
 import { mensajesService } from "../../services/mensajesService";
 import { supabase } from "../../supabase";
 import fotoDefault from "../../assets/fotoDefault.png";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 function usuarioPorId(grupo, idUsuario) {
   return (grupo.usuarios || []).find((u) => u.id_usuario === idUsuario);
 }
 
-function ChatGrupo({ grupo, usuarioActual, onVolver }) {
+function ChatGrupo({ grupo, onVolver }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [mensajes, setMensajes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");

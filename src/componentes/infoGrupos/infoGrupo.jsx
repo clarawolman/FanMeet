@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./infoGrupo.css";
 import { gruposService } from "../../services/gruposService";
 
@@ -11,17 +11,18 @@ import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 function InfoGrupo({
   grupo,
   concierto,
   onVolver,
-  usuarioActual,
   onNavegar,
   onGrupoEliminado,
   onVerFansConfirmados,
   onAbrirChat,
 }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [confirmado, setConfirmado] = useState(false);
   const [cargandoConfirmacion, setCargandoConfirmacion] = useState(false);
   const [verificandoConfirmacion, setVerificandoConfirmacion] = useState(true);

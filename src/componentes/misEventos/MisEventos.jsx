@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./MisEventos.css";
 
 import { conciertosService } from "../../services/conciertosService";
@@ -8,13 +8,14 @@ import CardEvento from "./CardEvento";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import LoadingSpinner from "../generales/LoadingSpinner";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 function MisEventos({
-  usuarioActual,
   onIngresar,
   onIrMisGrupos,
   onNavegar,
 }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [misEventos, setMisEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorTexto, setErrorTexto] = useState("");

@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Notificaciones.css";
 import CardNotificacion from "./CardNotificacion";
 import Footer from "../generales/Footer";
 import HeaderApp from "../generales/HeaderApp";
 import { notificacionesService } from "../../services/notificacionesService";
 import { amistadService } from "../../services/amistadService";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
-function Notificaciones({ usuarioActual, onVolver, onNavegar, onVerMas }) {
+function Notificaciones({ onVolver, onNavegar, onVerMas }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [notificaciones, setNotificaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [procesandoId, setProcesandoId] = useState(null);

@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./EditarGeneros.css";
 import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
-function EditarGeneros({ usuarioActual, onVolver }) {
+function EditarGeneros({ onVolver }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [catalogo, setCatalogo] = useState([]);
   const [catalogoError, setCatalogoError] = useState("");
   const [seleccionados, setSeleccionados] = useState([]);

@@ -1,17 +1,21 @@
+import { useContext } from "react";
 import "./FansUnidosLista.css";
 import HeaderApp from "../generales/HeaderApp";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 function FansUnidosLista({
   fans = [],
   cantidadFans = 0,
-  usuarioActualId,
   onVolver,
   onVerUsuario,
   titulo = "Fans unidos",
   subtitulo = `${cantidadFans} personas van a este concierto`,
 }) {
   // La lista es para conocer a otros fans: uno mismo no tiene que aparecer ahí.
-  const otrosFans = fans.filter((fan) => fan.id_usuario !== usuarioActualId);
+  const { usuarioActual } = useContext(UsuarioContext);
+  const otrosFans = fans.filter(
+    (fan) => fan.id_usuario !== usuarioActual?.id_usuario
+  );
 
   return (
     <div className="fansUnidosLista">

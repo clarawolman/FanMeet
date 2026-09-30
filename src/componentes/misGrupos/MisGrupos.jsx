@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./MisGrupos.css";
 
 import { gruposService } from "../../services/gruposService";
@@ -8,13 +8,14 @@ import CardGrupo from "./CardGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import LoadingSpinner from "../generales/LoadingSpinner";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 function MisGrupos({
-  usuarioActual,
   onAbrirGrupo,
   onVolver,
   onNavegar,
 }) {
+  const { usuarioActual } = useContext(UsuarioContext);
   const [misGrupos, setMisGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorTexto, setErrorTexto] = useState("");

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import MenuConfiguracion from "./componentes/generales/MenuConfiguracion";
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
@@ -21,11 +21,13 @@ import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
+import { UsuarioContext } from "./context/UsuarioContext";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
 
-  const [usuarioActual, setUsuarioActual] = useState(null);
+  // El usuario logueado vive en UsuarioContext (src/context/UsuarioContext.jsx).
+  const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const [datosRegistro, setDatosRegistro] = useState({});
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
@@ -260,7 +262,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
       )}
      {pantalla === "misEventos" && usuarioActual && (
   <MisEventos
-    usuarioActual={usuarioActual}
     onIngresar={async (evento) => {
       const pudoCargar = await cargarConciertoPorId(evento.id_concierto);
 
@@ -274,7 +275,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
 )}
        {pantalla === "misGrupos" && usuarioActual && (
   <MisGrupos
-    usuarioActual={usuarioActual}
     onVolver={() => setPantalla("misEventos")}
     onNavegar={setPantalla}
     onAbrirGrupo={(grupo) => {
@@ -286,11 +286,9 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
       {pantalla === "perfil" && usuarioActual && (
         <Perfil
-          usuarioActual={usuarioActual}
           isOwnProfile={true}
           onEditarGeneros={() => setPantalla("editarGeneros")}
           onNavegar={manejarNavegacion}
-          onUsuarioActualizado={setUsuarioActual}
           onCerrarSesion={manejarCerrarSesion}
           onVerUsuario={manejarVerUsuario}
           onIngresarConcierto={manejarEntrarConcierto}
@@ -299,14 +297,12 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
       {pantalla === "editarGeneros" && usuarioActual && (
         <EditarGeneros
-          usuarioActual={usuarioActual}
           onVolver={() => setPantalla("perfil")}
         />
       )}
 
       {pantalla === "perfilAjeno" && usuarioVisitado && usuarioActual && (
         <Perfil
-          usuarioActual={usuarioActual}
           usuarioPerfil={usuarioVisitado}
           isOwnProfile={false}
           onNavegar={manejarNavegacion}
@@ -319,7 +315,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <FansUnidosLista
           fans={concierto.usuarios}
           cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
-          usuarioActualId={usuarioActual?.id_usuario}
           onVolver={() => setPantalla("concierto")}
           onVerUsuario={manejarVerUsuario}
         />
@@ -327,7 +322,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
       {pantalla === "home" && usuarioActual && (
         <Home
-          usuarioActual={usuarioActual}
           onEntrarConcierto={manejarEntrarConcierto}
           onNavegar={manejarNavegacion}
         />
@@ -335,7 +329,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
       {pantalla === "notificaciones" && usuarioActual && (
         <Notificaciones
-          usuarioActual={usuarioActual}
           onVolver={() => manejarNavegacion("home")}
           onNavegar={manejarNavegacion}
           onVerMas={manejarVerMasNotificacion}
@@ -345,7 +338,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
       {pantalla === "concierto" && concierto && usuarioActual && (
         <Concierto
           concierto={concierto}
-          usuarioActual={usuarioActual}
           onCrearGrupo={() => setPantalla("crearGrupo")}
           onNavegar={manejarNavegacion}
           onVolver={() => manejarNavegacion("home")}
@@ -360,8 +352,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
       {pantalla === "crearGrupo" && concierto && usuarioActual && (
         <CrearGrupo
           concierto={concierto}
-          idUsuarioActual={usuarioActual.id_usuario}
-          usuarioActual={usuarioActual}
           onVolver={() => setPantalla("concierto")}
           onGrupoCreado={async () => {
             await recargarDatos();
@@ -374,7 +364,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <InfoGrupo
           grupo={grupoSeleccionado}
           concierto={concierto}
-          usuarioActual={usuarioActual}
           onNavegar={manejarNavegacion}
           onVolver={volverPantallaAnterior}
           onGrupoEliminado={async () => {
@@ -390,7 +379,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
       {pantalla === "chatGrupo" && grupoSeleccionado && usuarioActual && (
         <ChatGrupo
           grupo={grupoSeleccionado}
-          usuarioActual={usuarioActual}
           onVolver={() => setPantalla("infoGrupo")}
         />
       )}
@@ -399,7 +387,6 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <FansUnidosLista
           fans={grupoSeleccionado.usuarios}
           cantidadFans={(grupoSeleccionado.usuarios || []).length}
-          usuarioActualId={usuarioActual?.id_usuario}
           titulo="Fans confirmados"
           subtitulo={`${(grupoSeleccionado.usuarios || []).length} personas confirmaron su asistencia a este grupo`}
           onVolver={() => setPantalla("infoGrupo")}

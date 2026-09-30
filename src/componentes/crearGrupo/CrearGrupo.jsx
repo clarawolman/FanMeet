@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { gruposService } from "../../services/gruposService";
 import "./CrearGrupo.css";
 
 import HeaderCrearGrupo from "./HeaderCrearGrupo";
 import FormCrearGrupo from "./FormCrearGrupo";
 import DescartarCambios from "./DescartarCambios";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 const IMAGEN_GRUPO_DEFAULT =
   "https://images.unsplash.com/photo-1514525253161-7a46d19cd819";
@@ -12,7 +13,9 @@ const IMAGEN_GRUPO_DEFAULT =
 const MENSAJE_ERROR_GENERICO =
   "No se pudo crear el grupo. Revisá los datos e intentá otra vez.";
 
-function CrearGrupo({ concierto, idUsuarioActual, onVolver, onGrupoCreado }) {
+function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
+  const { usuarioActual } = useContext(UsuarioContext);
+  const idUsuarioActual = usuarioActual?.id_usuario;
   const [mostrarModal, setMostrarModal] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
