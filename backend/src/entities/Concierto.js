@@ -25,11 +25,16 @@ export function toConciertoDetalle(row, { artista, estadio, grupos = [], usuario
 }
 
 // Forma resumida para listados (Home.jsx, MisEventos.jsx): concierto + joins
-// embebidos de artista/estadio, sin grupos/usuarios.
+// embebidos de artista/estadio, sin grupos/usuarios. Si la query trae los
+// conteos embebidos (grupo(count), usuarios_conciertos(count)) se aplanan a
+// cantidadGrupos/cantidadFans para las cards del Home.
 export function toConciertoResumen(row) {
   if (!row) return null;
+  const { grupo, usuarios_conciertos, ...resto } = row;
   return {
-    ...row,
+    ...resto,
     imagen: row.imagen || row.imagenConcierto || row.foto || "",
+    cantidadGrupos: grupo?.[0]?.count ?? 0,
+    cantidadFans: usuarios_conciertos?.[0]?.count ?? 0,
   };
 }

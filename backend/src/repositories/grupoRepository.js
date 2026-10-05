@@ -16,6 +16,12 @@ export const grupoRepository = {
     return unwrap(resultado, "Error cargando grupo");
   },
 
+  async listarPorIds(idsGrupo) {
+    if (idsGrupo.length === 0) return [];
+    const resultado = await supabaseAdmin.from("grupo").select("*").in("id_grupo", idsGrupo);
+    return unwrap(resultado, "Error cargando grupos");
+  },
+
   async listarPorConcierto(idConcierto) {
     const resultado = await supabaseAdmin
       .from("grupo")
@@ -78,6 +84,16 @@ export const grupoUsuarioRepository = {
       .select("id_usuario")
       .eq("id_grupo", idGrupo);
     return unwrap(resultado, "Error cargando participantes del grupo");
+  },
+
+  // Participantes de varios grupos de una sola vez (lista de chats).
+  async listarUsuariosPorGrupos(idsGrupo) {
+    if (idsGrupo.length === 0) return [];
+    const resultado = await supabaseAdmin
+      .from("grupos_usuarios")
+      .select("id_grupo, id_usuario")
+      .in("id_grupo", idsGrupo);
+    return unwrap(resultado, "Error cargando participantes de los grupos");
   },
 
   async listarGruposPorUsuario(idUsuario) {

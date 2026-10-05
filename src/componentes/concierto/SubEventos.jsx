@@ -1,6 +1,14 @@
 import "./SubEventos.css";
+import { formatearFechaDMA } from "../../utils/fechas";
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=400&q=80";
+
+// Mismos nombres que los filtros de Concierto.jsx
+const CATEGORIAS = {
+  pre: "Pre",
+  after: "After",
+  mismo_dia: "Hoy",
+};
 
 function SubEventos({ subEvento, onAbrirGrupo }) {
   return (
@@ -14,11 +22,15 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
 
       <div className="SubEventoOverlay" />
 
+      {CATEGORIAS[subEvento.categoria] && (
+        <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
+      )}
+
       <div className="SubEventoContenido">
         <h3 className="SubEventoTitulo">{subEvento.nombre}</h3>
 
         <p className="SubEventoInfo">
-          {subEvento.ubicacion} · {subEvento.fecha}
+          {subEvento.ubicacion} · {formatearFechaDMA(subEvento.fecha)}
         </p>
 
         <div className="SubEventoUsuarios">

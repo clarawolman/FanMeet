@@ -66,7 +66,9 @@ export const authService = {
       mail: datos.mail,
       fechanac: datos.fechanac,
       genero: datos.genero,
-      fotoperfil: datos.previewFoto || FOTO_PERFIL_DEFAULT,
+      // Solo URLs públicas: una URL blob: o una ruta local del frontend no
+      // se puede ver desde otro navegador. La foto real se sube aparte.
+      fotoperfil: /^https?:\/\//i.test(datos.previewFoto || "") ? datos.previewFoto : FOTO_PERFIL_DEFAULT,
       estilo_asistencia: datos.estilo_asistencia,
     });
 

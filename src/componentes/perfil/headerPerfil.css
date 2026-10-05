@@ -160,3 +160,11 @@
     font-size: var(--fm-fs-2xl);
   }
 }
+
+/* "Amigos" + "Mensaje" en el perfil de otro usuario */
+.headerPerfilAccionesAmistad {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}

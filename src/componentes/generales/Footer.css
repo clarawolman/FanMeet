@@ -26,15 +26,10 @@
   height: 100%;
   background: none;
   border: none;
-  border-left: 1px solid var(--fm-border);
   color: #9a95a6;
   cursor: pointer;
   padding: 8px 0;
   transition: color 0.15s ease;
-}
-
-.footerButton:first-child {
-  border-left: none;
 }
 
 .footerButton:hover {
@@ -53,6 +48,28 @@
   height: 30px;
   border-radius: 10px;
   transition: background-color 0.15s ease;
+}
+
+.footerButtonChip {
+  position: relative;
+}
+
+/* mensajes de chat sin leer */
+.footerButtonBadge {
+  position: absolute;
+  top: -4px;
+  right: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .footerButton.activo .footerButtonChip {
@@ -94,21 +111,21 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: 6px;
+    gap: 0;
     padding: 40px 12px;
     border-top: none;
     border-right: 1px solid var(--fm-border);
   }
 
   .footerButton {
+    flex: 0 0 auto;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     gap: 16px;
     height: auto;
     width: 100%;
-    padding: 10px 12px;
-    border-left: none;
+    padding: 6px 12px;
     border-radius: 14px;
   }
 

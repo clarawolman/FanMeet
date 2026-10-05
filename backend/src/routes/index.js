@@ -6,6 +6,7 @@ import grupoRoutes from "./grupoRoutes.js";
 import mensajeRoutes from "./mensajeRoutes.js";
 import amistadRoutes from "./amistadRoutes.js";
 import notificacionRoutes from "./notificacionRoutes.js";
+import chatRoutes from "./chatRoutes.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/grupos", grupoRoutes);
 router.use("/grupos", mensajeRoutes);
 router.use("/amistades", amistadRoutes);
 router.use("/notificaciones", notificacionRoutes);
+router.use("/chats", chatRoutes);
 
 export default router;

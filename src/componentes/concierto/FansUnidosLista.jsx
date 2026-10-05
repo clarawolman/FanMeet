@@ -1,13 +1,30 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import "./FansUnidosLista.css";
 import HeaderApp from "../generales/HeaderApp";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import { amistadService } from "../../services/amistadService";
+
+// "21 años · En 1 grupo" (cada parte solo si el dato viene)
+function detalleFan(fan) {
+  const partes = [];
+  if (fan.edad != null) partes.push(`${fan.edad} años`);
+  if (fan.cantidadGrupos !== undefined) {
+    partes.push(
+      fan.cantidadGrupos === 0
+        ? "Sin grupos"
+        : `En ${fan.cantidadGrupos} ${fan.cantidadGrupos === 1 ? "grupo" : "grupos"}`
+    );
+  }
+  return partes.join(" · ");
+}
 
 function FansUnidosLista({
   fans = [],
   cantidadFans = 0,
   onVolver,
   onVerUsuario,
+  onCambioAmistad,
+  onEnviarMensaje,
   titulo = "Fans unidos",
   subtitulo = `${cantidadFans} personas van a este concierto`,
 }) {
@@ -16,6 +33,82 @@ function FansUnidosLista({
   const otrosFans = fans.filter(
     (fan) => fan.id_usuario !== usuarioActual?.id_usuario
   );
+
+  // id_usuario del fan cuya solicitud se está enviando/aceptando
+  const [procesando, setProcesando] = useState(null);
+
+  async function conectar(fan) {
+    setProcesando(fan.id_usuario);
+    try {
+      const amistad = await amistadService.crearSolicitud(fan.id_usuario);
+      onCambioAmistad?.(fan.id_usuario, {
+        estadoAmistad: "solicitudEnviada",
+        idAmistad: amistad?.id_amistad ?? null,
+      });
+    } catch (error) {
+      alert("No se pudo enviar la solicitud: " + error.message);
+    }
+    setProcesando(null);
+  }
+
+  async function aceptar(fan) {
+    setProcesando(fan.id_usuario);
+    try {
+      await amistadService.aceptar(fan.idAmistad);
+      onCambioAmistad?.(fan.id_usuario, { estadoAmistad: "amigos" });
+    } catch (error) {
+      alert("No se pudo aceptar la solicitud: " + error.message);
+    }
+    setProcesando(null);
+  }
+
+  function renderAmistad(fan) {
+    const ocupado = procesando === fan.id_usuario;
+
+    switch (fan.estadoAmistad) {
+      case "amigos":
+        return (
+          <span className="fanUnidoAcciones">
+            <span className="fanUnidoEstado fanUnidoEstado--amigos">Amigos</span>
+            {onEnviarMensaje && (
+              <button
+                type="button"
+                className="fanUnidoAccion"
+                onClick={() => onEnviarMensaje(fan.id_usuario)}
+              >
+                Mensaje
+              </button>
+            )}
+          </span>
+        );
+      case "solicitudEnviada":
+        return <span className="fanUnidoEstado">Pendiente</span>;
+      case "aceptarSolicitud":
+        return (
+          <button
+            type="button"
+            className="fanUnidoAccion"
+            disabled={ocupado || !fan.idAmistad}
+            onClick={() => aceptar(fan)}
+          >
+            {ocupado ? "..." : "Aceptar"}
+          </button>
+        );
+      case "conectar":
+        return (
+          <button
+            type="button"
+            className="fanUnidoAccion"
+            disabled={ocupado}
+            onClick={() => conectar(fan)}
+          >
+            {ocupado ? "..." : "Conectar"}
+          </button>
+        );
+      default:
+        return null;
+    }
+  }
 
   return (
     <div className="fansUnidosLista">
@@ -27,19 +120,27 @@ function FansUnidosLista({
         )}
 
         {otrosFans.map((fan) => (
-          <button
-            key={fan.id_usuario}
-            className="fanUnidoCard"
-            type="button"
-            onClick={() => onVerUsuario(fan.id_usuario)}
-          >
-            <img
-              className="fanUnidoFoto"
-              src={fan.foto_perfil}
-              alt={fan.nombre}
-            />
-            <span className="fanUnidoNombre">{fan.nombre}</span>
-          </button>
+          <div key={fan.id_usuario} className="fanUnidoCard">
+            <button
+              className="fanUnidoPerfil"
+              type="button"
+              onClick={() => onVerUsuario(fan.id_usuario)}
+            >
+              <img
+                className="fanUnidoFoto"
+                src={fan.foto_perfil}
+                alt={fan.nombre}
+              />
+              <span className="fanUnidoTexto">
+                <span className="fanUnidoNombre">{fan.nombre}</span>
+                {detalleFan(fan) && (
+                  <span className="fanUnidoGrupos">{detalleFan(fan)}</span>
+                )}
+              </span>
+            </button>
+
+            {renderAmistad(fan)}
+          </div>
         ))}
       </main>
     </div>

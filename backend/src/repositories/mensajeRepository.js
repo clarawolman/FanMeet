@@ -13,6 +13,19 @@ export const mensajeRepository = {
     return unwrap(resultado, "Error enviando el mensaje");
   },
 
+  // Mensajes recientes de varios grupos (mas nuevos primero), para armar
+  // la lista de chats con el ultimo mensaje de cada grupo.
+  async listarRecientesDeGrupos(idsGrupo, limite = 500) {
+    if (idsGrupo.length === 0) return [];
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("*")
+      .in("id_grupo", idsGrupo)
+      .order("id_mensaje", { ascending: false })
+      .limit(limite);
+    return unwrap(resultado, "Error cargando chats de grupos");
+  },
+
   // Trae los ultimos `limite` mensajes del grupo (mas nuevos primero para
   // la query) y los devuelve en orden cronologico, que es como el chat los
   // pinta. Con `antesDeId` pagina hacia atras en el historial.

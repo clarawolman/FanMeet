@@ -46,6 +46,16 @@ export const amistadRepository = {
     return unwrap(resultado, "Error eliminando amistad");
   },
 
+  // Todas las relaciones del usuario (pendientes y aceptadas), para marcar
+  // el estado de amistad de varios usuarios de una sola vez.
+  async listarDeUsuario(idUsuario) {
+    const resultado = await supabaseAdmin
+      .from("amistad")
+      .select("*")
+      .or(`id_solicitante.eq.${idUsuario},id_receptor.eq.${idUsuario}`);
+    return unwrap(resultado, "Error cargando amistades");
+  },
+
   async listarAceptadasDeUsuario(idUsuario) {
     const resultado = await supabaseAdmin
       .from("amistad")

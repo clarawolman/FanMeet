@@ -126,6 +126,19 @@
   scroll-snap-align: start;
 }
 
+/* MOBILE: cards centradas. Con margin auto en los extremos (y no
+   justify-content: center) la fila sigue scrolleando bien cuando hay
+   más cards de las que entran, sin cortar la primera. */
+@media (max-width: 767px) {
+  .misGruposRowScroll > :first-child {
+    margin-left: auto;
+  }
+
+  .misGruposRowScroll > :last-child {
+    margin-right: auto;
+  }
+}
+
 /* ============================
         MOBILE CHICO
 ============================ */
@@ -154,10 +167,18 @@
     padding-left: 240px;
   }
 
+  /* Alineado a la izquierda con el título del header (40px) y a todo el
+     ancho, para que pocas cards no queden flotando en el medio. */
   .misGruposLayout {
-    max-width: 860px;
-    padding: 30px 28px 120px;
+    max-width: none;
+    margin: 0;
+    padding: 30px 40px 120px;
     gap: 28px;
+  }
+
+  /* el contador va al lado del nombre del concierto, no en la otra punta */
+  .misGruposRowHeader {
+    justify-content: flex-start;
   }
 
   .misGruposCatalogo {
@@ -180,10 +201,6 @@
 }
 
 @media (min-width: 1200px) {
-  .misGruposLayout {
-    max-width: 1080px;
-  }
-
   .misGruposRowScroll > * {
     flex-basis: 300px;
     width: 300px;

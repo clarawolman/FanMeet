@@ -16,6 +16,7 @@ export default function HeaderPerfil({
   onVolver,
   onNavegar,
   onCerrarSesion,
+  onEnviarMensaje,
 }) {
   const inputFotoRef = useRef(null);
 
@@ -105,11 +106,22 @@ export default function HeaderPerfil({
             {subiendoFoto ? "Subiendo foto…" : "Editar perfil"}
           </button>
         ) : (
-          <BotonAmistad
-            estado={estadoAmistad}
-            onAccion={onAccionAmistad}
-            deshabilitado={amistadDeshabilitada}
-          />
+          <div className="headerPerfilAccionesAmistad">
+            <BotonAmistad
+              estado={estadoAmistad}
+              onAccion={onAccionAmistad}
+              deshabilitado={amistadDeshabilitada}
+            />
+            {estadoAmistad === "amigos" && onEnviarMensaje && (
+              <button
+                className="botonAmistad conectar"
+                type="button"
+                onClick={onEnviarMensaje}
+              >
+                Mensaje
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

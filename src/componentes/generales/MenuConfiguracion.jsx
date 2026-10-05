@@ -1,65 +1,48 @@
-import { useState } from "react";
+import { useContext } from "react";
 import "./MenuConfiguracion.css";
+import { TemaContext } from "../../context/TemaContext";
 
-function IconoEngranaje() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="10" cy="10" r="2.6" />
-      <path d="M10 2.6v2M10 15.4v2M17.4 10h-2M4.6 10h-2M15.1 4.9l-1.4 1.4M6.3 13.7l-1.4 1.4M15.1 15.1l-1.4-1.4M6.3 6.3 4.9 4.9" />
-    </svg>
-  );
-}
-
-function MenuConfiguracion({ temaOscuro, onCambiarTema }) {
-  const [abierto, setAbierto] = useState(false);
+// Panel de Configuración. Se abre desde el ítem "Configuración" del menú
+// lateral (Footer), que controla si está abierto.
+function MenuConfiguracion({ abierto, onCerrar }) {
+  const { temaOscuro, alternarTema } = useContext(TemaContext);
 
   return (
-    <>
-      <button
-        type="button"
-        className="menuConfigTrigger"
-        onClick={() => setAbierto(true)}
-        aria-label="Abrir configuración"
+    <div className={`menuConfigOverlay ${abierto ? "abierto" : ""}`} onClick={onCerrar}>
+      <aside
+        className={`menuConfigPanel ${abierto ? "abierto" : ""}`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <IconoEngranaje />
-      </button>
+        <div className="menuConfigHeader">
+          <h2>Configuración</h2>
+          <button
+            type="button"
+            className="menuConfigCerrar"
+            onClick={onCerrar}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
 
-      <div className={`menuConfigOverlay ${abierto ? "abierto" : ""}`} onClick={() => setAbierto(false)}>
-        <aside
-          className={`menuConfigPanel ${abierto ? "abierto" : ""}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="menuConfigHeader">
-            <h2>Configuración</h2>
-            <button
-              type="button"
-              className="menuConfigCerrar"
-              onClick={() => setAbierto(false)}
-              aria-label="Cerrar"
-            >
-              ×
-            </button>
+        <div className="menuConfigItem">
+          <div className="menuConfigItemTexto">
+            <strong>Modo oscuro</strong>
+            <span>{temaOscuro ? "Activado" : "Desactivado"}</span>
           </div>
 
-          <div className="menuConfigItem">
-            <div className="menuConfigItemTexto">
-              <strong>Modo oscuro</strong>
-              <span>{temaOscuro ? "Activado" : "Desactivado"}</span>
-            </div>
-
-            <button
-              type="button"
-              role="switch"
-              aria-checked={temaOscuro}
-              className={`themeSwitch ${temaOscuro ? "on" : ""}`}
-              onClick={onCambiarTema}
-            >
-              <span className="themeSwitchThumb" />
-            </button>
-          </div>
-        </aside>
-      </div>
-    </>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={temaOscuro}
+            className={`themeSwitch ${temaOscuro ? "on" : ""}`}
+            onClick={alternarTema}
+          >
+            <span className="themeSwitchThumb" />
+          </button>
+        </div>
+      </aside>
+    </div>
   );
 }
 

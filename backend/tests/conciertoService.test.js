@@ -25,6 +25,10 @@ vi.mock("../src/repositories/usuarioRepository.js", () => ({
   usuarioRepository: { listarPorIds: vi.fn() },
 }));
 
+vi.mock("../src/repositories/amistadRepository.js", () => ({
+  amistadRepository: { listarDeUsuario: vi.fn().mockResolvedValue([]) },
+}));
+
 vi.mock("../src/services/notificacionService.js", () => ({
   notificacionService: { crear: vi.fn() },
 }));

@@ -31,6 +31,23 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.15) 60%, transparent 100%);
 }
 
+/* Pre / After / Hoy, arriba a la izquierda de la foto */
+.SubEventoCategoria {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 4px 11px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-accent);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 /* misma foto subexpuesta en claro y en oscuro, como el resto de las
    cards de concierto */
 .SubEventoImagen {

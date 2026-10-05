@@ -247,6 +247,17 @@ const generosOrdenados = [...generos].sort((a, b) => {
             </span>
             <span>{formatearFecha(concierto.fecha)}</span>
           </div>
+
+          <div className="home-card-stats">
+            <span>
+              {concierto.cantidadGrupos ?? 0}{" "}
+              {concierto.cantidadGrupos === 1 ? "grupo" : "grupos"}
+            </span>
+            <span>
+              {concierto.cantidadFans ?? 0}{" "}
+              {concierto.cantidadFans === 1 ? "fan unido" : "fans unidos"}
+            </span>
+          </div>
         </div>
       </article>
     );

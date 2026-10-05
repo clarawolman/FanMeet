@@ -1,4 +1,5 @@
 import "./CardGrupo.css";
+import { formatearFechaDMA } from "../../utils/fechas";
 
 function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
   const usuarios = grupo.usuarios || [];
@@ -43,7 +44,7 @@ function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
         <div className="cardGrupoMeta">
           <span>{grupo.ubicacion}</span>
           <span>
-            {grupo.fecha}
+            {formatearFechaDMA(grupo.fecha)}
             {horaFormateada && ` - ${horaFormateada}`}
           </span>
         </div>

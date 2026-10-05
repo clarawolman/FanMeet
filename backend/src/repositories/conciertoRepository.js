@@ -3,7 +3,8 @@ import { unwrap } from "../helpers/supabaseResult.js";
 
 export const conciertoRepository = {
   async listarTodos() {
-    const resultado = await supabaseAdmin.from("concierto").select("*, artista(*), estadio(*)");
+    const resultado = await supabaseAdmin.from("concierto")
+      .select("*, artista(*), estadio(*), grupo(count), usuarios_conciertos(count)");
     return unwrap(resultado, "Error cargando conciertos");
   },
 

@@ -18,6 +18,43 @@ export const notificacionRepository = {
     return unwrap(resultado, "Error cargando notificaciones");
   },
 
+  // Al abrir un chat privado: las notificaciones de mensajes de ese amigo
+  // ya no hace falta verlas.
+  async marcarLeidasMensajesPrivados(idUsuario, idEmisor) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .update({ leida: true })
+      .eq("id_usuario", idUsuario)
+      .eq("tipo", "mensaje_privado")
+      .eq("id_usuario_relacionado", idEmisor)
+      .eq("leida", false);
+    return unwrap(resultado, "Error marcando notificaciones como leídas");
+  },
+
+  // El chat de grupo no guarda "leído" por persona: los mensajes sin leer
+  // de un grupo son sus notificaciones 'mensaje_grupo' sin leer (el
+  // trigger fn_notificar_mensaje_grupo crea una por mensaje y por miembro).
+  async listarNoLeidasMensajesGrupo(idUsuario) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("id_grupo")
+      .eq("id_usuario", idUsuario)
+      .eq("tipo", "mensaje_grupo")
+      .eq("leida", false);
+    return unwrap(resultado, "Error contando mensajes de grupo no leídos");
+  },
+
+  async marcarLeidasMensajesGrupo(idUsuario, idGrupo) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .update({ leida: true })
+      .eq("id_usuario", idUsuario)
+      .eq("tipo", "mensaje_grupo")
+      .eq("id_grupo", idGrupo)
+      .eq("leida", false);
+    return unwrap(resultado, "Error marcando notificaciones como leídas");
+  },
+
   async contarNoLeidas(idUsuario) {
     const resultado = await supabaseAdmin
       .from(TABLA)

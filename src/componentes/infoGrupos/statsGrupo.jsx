@@ -1,4 +1,5 @@
 import "./statsGrupo.css";
+import { formatearFechaDMA } from "../../utils/fechas";
 export default function StatsGrupo({ grupo }) {
 
    return (
@@ -6,7 +7,7 @@ export default function StatsGrupo({ grupo }) {
 
          <div className="statCard">
             <p className="statLabel">Fecha</p>
-            <p className="statValue">{grupo.fecha}</p>
+            <p className="statValue">{formatearFechaDMA(grupo.fecha)}</p>
          </div>
 
          <div className="statCard">

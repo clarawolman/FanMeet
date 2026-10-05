@@ -4,6 +4,8 @@ import {
 } from "../repositories/conciertoRepository.js";
 import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
+import { amistadRepository } from "../repositories/amistadRepository.js";
+import { calcularEstadoAmistad } from "../entities/Amistad.js";
 import { notificacionService } from "./notificacionService.js";
 import { toConciertoDetalle, toConciertoResumen } from "../entities/Concierto.js";
 import { toGrupo } from "../entities/Grupo.js";
@@ -53,8 +55,27 @@ export const conciertoService = {
       usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto),
     ]);
 
-    const grupos = await Promise.all(gruposCrudos.map(armarGrupoConUsuarios));
-    const usuarios = await armarUsuariosResumen(relacionesConcierto.map((r) => r.id_usuario));
+    const [grupos, usuariosBase, amistades] = await Promise.all([
+      Promise.all(gruposCrudos.map(armarGrupoConUsuarios)),
+      armarUsuariosResumen(relacionesConcierto.map((r) => r.id_usuario)),
+      amistadRepository.listarDeUsuario(idUsuarioAutenticado),
+    ]);
+
+    // Para la lista de "Fans unidos": estado de amistad con quien mira y
+    // a cuántos grupos de este concierto está unido cada fan.
+    const usuarios = usuariosBase.map((usuario) => {
+      const amistad = amistades.find(
+        (a) => a.id_solicitante === usuario.id_usuario || a.id_receptor === usuario.id_usuario
+      );
+      return {
+        ...usuario,
+        estadoAmistad: calcularEstadoAmistad(amistad, idUsuarioAutenticado),
+        idAmistad: amistad?.id_amistad ?? null,
+        cantidadGrupos: grupos.filter((g) =>
+          (g.usuarios || []).some((u) => u.id_usuario === usuario.id_usuario)
+        ).length,
+      };
+    });
 
     return toConciertoDetalle(concierto, { artista, estadio, grupos, usuarios });
   },

@@ -47,6 +47,7 @@ function Perfil({
   onVolver,
   onCerrarSesion,
   onVerUsuario,
+  onEnviarMensaje,
   onIngresarConcierto,
 }) {
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
@@ -276,6 +277,9 @@ function Perfil({
         onVolver={onVolver}
         onNavegar={onNavegar}
         onCerrarSesion={onCerrarSesion}
+        onEnviarMensaje={
+          !isOwnProfile && onEnviarMensaje ? () => onEnviarMensaje(usuario.id_usuario) : undefined
+        }
       />
 
       <div className="perfilContenido">

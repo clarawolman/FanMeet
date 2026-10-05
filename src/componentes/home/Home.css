@@ -196,6 +196,26 @@
   margin-right: 2px;
 }
 
+/* Grupos creados y fans unidos de cada concierto */
+.home-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.home-card-stats span {
+  padding: 3px 9px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-mono);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Tablet: respeta la lógica original de 2 columnas */
 @media (min-width: 768px) {
   .home-row-header {
@@ -421,6 +441,8 @@
 .home-row-scroll {
   padding: 0 20px 8px !important;
   gap: 16px !important;
+  /* el snap respeta el mismo margen izquierdo en filas con scroll */
+  scroll-padding-inline: 20px;
 }
 .home-card-btn-unirme--ver {
   min-width: 140px;

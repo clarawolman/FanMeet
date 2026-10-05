@@ -1,10 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
-import MenuConfiguracion from "./componentes/generales/MenuConfiguracion";
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
-import ChatGrupo from "./componentes/infoGrupos/chatGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
 import Home from "./componentes/home/Home";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
@@ -17,6 +15,7 @@ import Perfil from "./componentes/perfil/perfil";
 import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
+import Chats from "./componentes/chats/Chats";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
@@ -32,22 +31,16 @@ function App() {
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
   const [usuarioVisitado, setUsuarioVisitado] = useState(null);
+  // Chat a abrir al entrar a "chats": { tipo: "privado" | "grupo", id }
+  // (desde el perfil de un amigo, fans unidos, un grupo o una notificación)
+  const [chatInicial, setChatInicial] = useState(null);
+  // Pantalla a la que vuelve la info del grupo (concierto, mis grupos, chats)
+  const [pantallaAntesDeGrupo, setPantallaAntesDeGrupo] = useState("concierto");
+  // Pantalla a la que vuelve el perfil ajeno (fans unidos, chats, ...)
+  const [pantallaAntesDePerfil, setPantallaAntesDePerfil] = useState("fansUnidos");
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
-
-  const [temaOscuro, setTemaOscuro] = useState(
-    () => localStorage.getItem("fm-theme") === "dark"
-  );
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", temaOscuro ? "dark" : "light");
-    localStorage.setItem("fm-theme", temaOscuro ? "dark" : "light");
-  }, [temaOscuro]);
-
-  function alternarTema() {
-    setTemaOscuro((anterior) => !anterior);
-  }
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -63,6 +56,21 @@ function App() {
       setCargando(false);
       return false;
     }
+  }
+
+  // Cuando se conecta/acepta desde "Fans unidos", se actualiza el concierto
+  // en memoria para que el estado se mantenga al volver a la lista.
+  function actualizarAmistadFan(idUsuario, cambios) {
+    setConcierto((anterior) =>
+      anterior
+        ? {
+            ...anterior,
+            usuarios: (anterior.usuarios || []).map((u) =>
+              u.id_usuario === idUsuario ? { ...u, ...cambios } : u
+            ),
+          }
+        : anterior
+    );
   }
 
   async function manejarIngreso(usuario) {
@@ -92,13 +100,39 @@ function App() {
       return;
     }
 
+    if (destino === "chats") setChatInicial(null);
     setPantalla(destino);
+  }
+
+  function manejarEnviarMensaje(idUsuario) {
+    setChatInicial({ tipo: "privado", id: idUsuario });
+    setPantalla("chats");
+  }
+
+  function manejarAbrirChatGrupo(idGrupo) {
+    setChatInicial({ tipo: "grupo", id: idGrupo });
+    setPantalla("chats");
+  }
+
+  // Abre la info de un grupo desde fuera del concierto (Mis grupos, Chats):
+  // InfoGrupo necesita el concierto del grupo (fans, etc.), así que se
+  // carga antes.
+  async function abrirGrupoConConcierto(grupo, origen) {
+    const pudoCargar = await cargarConciertoPorId(grupo.id_concierto);
+    if (!pudoCargar) {
+      setPantalla(origen);
+      return;
+    }
+    setGrupoSeleccionado(grupo);
+    setPantallaAntesDeGrupo(origen);
+    setPantalla("infoGrupo");
   }
 
   async function manejarVerUsuario(idUsuario) {
     try {
       const usuario = await usuariosService.obtenerPerfil(idUsuario);
       setUsuarioVisitado(usuario);
+      if (pantalla !== "perfilAjeno") setPantallaAntesDePerfil(pantalla);
       setPantalla("perfilAjeno");
     } catch (error) {
       console.error("Error cargando usuario:", error);
@@ -131,6 +165,16 @@ function App() {
       setPantalla("misGrupos");
     }
 
+    if (notificacion.tipo === "mensaje_grupo" && notificacion.id_grupo) {
+      manejarAbrirChatGrupo(notificacion.id_grupo);
+      return;
+    }
+
+    if (notificacion.tipo === "mensaje_privado" && notificacion.id_usuario_relacionado) {
+      manejarEnviarMensaje(notificacion.id_usuario_relacionado);
+      return;
+    }
+
     if (
       notificacion.tipo === "amistad_aceptada" &&
       notificacion.id_usuario_relacionado
@@ -155,7 +199,11 @@ function App() {
   }
 
   function volverPantallaAnterior() {
-    setPantalla(concierto ? "concierto" : "misGrupos");
+    if (pantallaAntesDeGrupo === "concierto" && !concierto) {
+      setPantalla("misGrupos");
+      return;
+    }
+    setPantalla(pantallaAntesDeGrupo);
   }
 
   function manejarRegistro1(datosPaso1) {
@@ -181,8 +229,27 @@ async function manejarFinalizarRegistro(datosPaso3) {
   // "estilo_musical_usuario" por una sola llamada al backend, que hace las
   // 3 cosas en ese mismo orden (backend/src/services/authService.js) y
   // devuelve exactamente los mismos mensajes de error.
+  // La foto elegida en Registro2 es un File con una URL blob: de preview,
+  // que solo existe en esta pestaña: no se manda al backend. El archivo se
+  // sube a Storage recién cuando la cuenta ya existe (necesita sesión).
+  const archivoFoto = datosFinales.foto_perfil;
+  const datosSinFoto = { ...datosFinales };
+  delete datosSinFoto.foto_perfil;
+  delete datosSinFoto.previewFoto;
+
   try {
-    const usuarioCreado = await authService.registro(datosFinales);
+    let usuarioCreado = await authService.registro(datosSinFoto);
+
+    if (archivoFoto instanceof File) {
+      try {
+        usuarioCreado = await usuariosService.subirFoto(archivoFoto);
+      } catch (errorFoto) {
+        // La cuenta ya está creada: si falla la foto queda la de por
+        // defecto y se puede cambiar después desde el perfil.
+        console.error("No se pudo subir la foto de perfil:", errorFoto);
+      }
+    }
+
     setUsuarioActual(usuarioCreado);
     setDatosRegistro({});
     setCargando(false);
@@ -217,15 +284,13 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "fansConfirmadosGrupo" &&
     pantalla !== "perfilAjeno" &&
     pantalla !== "notificaciones" &&
-    pantalla !== "chatGrupo"
+    pantalla !== "chats"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
 
   return (
     <>
-      <MenuConfiguracion temaOscuro={temaOscuro} onCambiarTema={alternarTema} />
-
       {errorTexto && esPantallaLogin && (
         <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
       )}
@@ -277,10 +342,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
   <MisGrupos
     onVolver={() => setPantalla("misEventos")}
     onNavegar={setPantalla}
-    onAbrirGrupo={(grupo) => {
-      setGrupoSeleccionado(grupo);
-      setPantalla("infoGrupo");
-    }}
+    onAbrirGrupo={(grupo) => abrirGrupoConConcierto(grupo, "misGrupos")}
   />
 )}
 
@@ -306,8 +368,9 @@ async function manejarFinalizarRegistro(datosPaso3) {
           usuarioPerfil={usuarioVisitado}
           isOwnProfile={false}
           onNavegar={manejarNavegacion}
-          onVolver={() => setPantalla("fansUnidos")}
+          onVolver={() => setPantalla(pantallaAntesDePerfil)}
           onVerUsuario={manejarVerUsuario}
+          onEnviarMensaje={manejarEnviarMensaje}
         />
       )}
 
@@ -317,6 +380,8 @@ async function manejarFinalizarRegistro(datosPaso3) {
           cantidadFans={concierto.cantidadFans || concierto.asistentes || 0}
           onVolver={() => setPantalla("concierto")}
           onVerUsuario={manejarVerUsuario}
+          onCambioAmistad={actualizarAmistadFan}
+          onEnviarMensaje={manejarEnviarMensaje}
         />
       )}
 
@@ -324,6 +389,15 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <Home
           onEntrarConcierto={manejarEntrarConcierto}
           onNavegar={manejarNavegacion}
+        />
+      )}
+
+      {pantalla === "chats" && usuarioActual && (
+        <Chats
+          onNavegar={manejarNavegacion}
+          onVerUsuario={manejarVerUsuario}
+          chatInicial={chatInicial}
+          onVerGrupo={(grupo) => abrirGrupoConConcierto(grupo, "chats")}
         />
       )}
 
@@ -343,6 +417,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onVolver={() => manejarNavegacion("home")}
           onAbrirGrupo={(grupo) => {
             setGrupoSeleccionado(grupo);
+            setPantallaAntesDeGrupo("concierto");
             setPantalla("infoGrupo");
           }}
           onVerFansUnidos={() => setPantalla("fansUnidos")}
@@ -372,25 +447,22 @@ async function manejarFinalizarRegistro(datosPaso3) {
             setPantalla("concierto");
           }}
           onVerFansConfirmados={() => setPantalla("fansConfirmadosGrupo")}
-          onAbrirChat={() => setPantalla("chatGrupo")}
-        />
-      )}
-
-      {pantalla === "chatGrupo" && grupoSeleccionado && usuarioActual && (
-        <ChatGrupo
-          grupo={grupoSeleccionado}
-          onVolver={() => setPantalla("infoGrupo")}
+          onAbrirChat={() => manejarAbrirChatGrupo(grupoSeleccionado.id_grupo)}
         />
       )}
 
       {pantalla === "fansConfirmadosGrupo" && grupoSeleccionado && (
         <FansUnidosLista
-          fans={grupoSeleccionado.usuarios}
+          fans={(grupoSeleccionado.usuarios || []).map(
+            (u) => concierto?.usuarios?.find((c) => c.id_usuario === u.id_usuario) || u
+          )}
           cantidadFans={(grupoSeleccionado.usuarios || []).length}
           titulo="Fans confirmados"
           subtitulo={`${(grupoSeleccionado.usuarios || []).length} personas confirmaron su asistencia a este grupo`}
           onVolver={() => setPantalla("infoGrupo")}
           onVerUsuario={manejarVerUsuario}
+          onCambioAmistad={actualizarAmistadFan}
+          onEnviarMensaje={manejarEnviarMensaje}
         />
       )}
     </>
