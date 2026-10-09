@@ -1,4 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { mensajeChatbotRepository } from "../repositories/mensajeChatbotRepository.js";
 import {
   conciertoRepository,
@@ -9,7 +8,9 @@ import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository
 import { toMensajeChatbot } from "../entities/MensajeChatbot.js";
 import { ApiError } from "../helpers/ApiError.js";
 
-const MODELO = "claude-opus-5-5";
+// Google Gemini, capa gratuita (key en https://aistudio.google.com/apikey).
+const MODELO = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const URL_GEMINI = "https://generativelanguage.googleapis.com/v1beta/models";
 // Cuántos mensajes anteriores del chat se le pasan a la IA como memoria.
 const MENSAJES_DE_HISTORIAL = 30;
 const MAIL_QUEJAS = "fanmeet100@gmail.com";
@@ -23,7 +24,7 @@ const NOMBRES_CATEGORIA_GRUPO = {
 const INSTRUCCIONES = `Sos Fani, la asistente virtual de la app FanMeet (tu logo es un robotito violeta que saluda). FanMeet conecta fans que van al mismo concierto: cada usuario se une a un concierto con un código de acceso y, una vez adentro, puede ver a los otros fans unidos, armar o sumarse a grupos (previa, after o mismo día), y chatear con sus amigos y con sus grupos.
 
 Tu trabajo:
-- Responder sobre los próximos conciertos de cada categoría (género musical): artista, fecha, hora, estadio, ciudad, cuántos fans y grupos tiene.
+- Responder sobre los conciertos de la app de cada categoría (género musical): nombre del show, artista, fecha, hora, estadio, ciudad, cuántos fans y grupos tiene. Si un concierto tiene ya_paso en true, aclaralo ("fue el ...").
 - Si el usuario está unido a un concierto, también podés contarle sobre los grupos de ese concierto.
 - Ayudar con cómo usar la app: unirse a un concierto con el código, crear o sumarse a un grupo, agregar amigos, chatear, editar el perfil y los géneros favoritos.
 
@@ -36,19 +37,6 @@ Reglas:
 - Si el usuario tiene un problema que no podés resolver, quiere hacer un reclamo, reportar a alguien o un error de la app, ofrecele mandar un mail de queja a ${MAIL_QUEJAS} contando qué pasó.
 - Hablá en español rioplatense, con voseo, en tono amigable y cercano. Respuestas cortas, como en un chat de WhatsApp: texto plano, sin títulos ni tablas ni markdown; podés usar algún emoji.
 - Si te preguntan algo que no tiene nada que ver con FanMeet o la música en vivo, respondé brevemente y volvé a ofrecer ayuda con la app.`;
-
-let cliente = null;
-
-function obtenerCliente() {
-  if (!cliente) {
-    try {
-      cliente = new Anthropic();
-    } catch {
-      throw new ApiError(503, "El chatbot todavía no está configurado (falta ANTHROPIC_API_KEY)");
-    }
-  }
-  return cliente;
-}
 
 function hoyISO() {
   return new Date().toISOString().slice(0, 10);
@@ -68,8 +56,10 @@ function resumirConcierto(fila, nombresEstilo) {
     nombre: fila.nombre,
     artista: fila.artista?.nombre,
     categoria: nombresEstilo.get(String(fila.id_estiloMusical)) || "Sin categoría",
-    fecha: fila.fecha,
-    hora: fila.hora || "a confirmar",
+    // La hora viene dentro de fecha ("2026-08-28T21:00:00").
+    fecha: fila.fecha ? String(fila.fecha).slice(0, 10) : "a confirmar",
+    hora: fila.fecha && String(fila.fecha).length > 10 ? String(fila.fecha).slice(11, 16) : "a confirmar",
+    ya_paso: Boolean(fila.fecha) && String(fila.fecha).slice(0, 10) < hoyISO(),
     estadio: fila.estadio?.nombre,
     direccion: fila.estadio?.direccion,
     ciudad: fila.estadio?.ciudad,
@@ -95,9 +85,9 @@ async function armarDatosParaUsuario(idUsuario) {
   const idsMisGrupos = new Set(misGrupos.map((r) => r.id_grupo));
   const hoy = hoyISO();
 
-  const proximos = conciertos
-    .filter((c) => !c.fecha || String(c.fecha).slice(0, 10) >= hoy)
-    .sort((a, b) => String(a.fecha || "9999").localeCompare(String(b.fecha || "9999")));
+  // Van todos los conciertos que muestra la app, también los que ya
+  // pasaron (resumirConcierto los marca con ya_paso).
+  const ordenados = [...conciertos].sort((a, b) => String(a.fecha || "9999").localeCompare(String(b.fecha || "9999")));
 
   const unidos = conciertos.filter((c) => idsUnidos.has(c.id_concierto));
   const gruposPorConcierto = await Promise.all(
@@ -110,7 +100,7 @@ async function armarDatosParaUsuario(idUsuario) {
 
   return {
     fecha_de_hoy: hoy,
-    proximos_conciertos: proximos.map((c) => ({
+    conciertos: ordenados.map((c) => ({
       ...resumirConcierto(c, nombresEstilo),
       el_usuario_esta_unido: idsUnidos.has(c.id_concierto),
     })),
@@ -130,53 +120,73 @@ async function armarDatosParaUsuario(idUsuario) {
   };
 }
 
-// El historial guardado pasa a formato de la API. La conversación tiene
-// que arrancar con un mensaje del usuario.
+// El historial guardado pasa al formato de Gemini (el rol de la IA se
+// llama "model"). La conversación tiene que arrancar con un mensaje del usuario.
 function armarHistorial(filas) {
   const desdePrimeroDelUsuario = filas.slice(filas.findIndex((f) => f.rol === "user"));
-  return desdePrimeroDelUsuario.map((f) => ({ role: f.rol, content: f.contenido }));
+  return desdePrimeroDelUsuario.map((f) => ({
+    role: f.rol === "assistant" ? "model" : "user",
+    parts: [{ text: f.contenido }],
+  }));
 }
 
 async function preguntarALaIA(idUsuario, historial) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new ApiError(503, "El chatbot todavía no está configurado (falta GEMINI_API_KEY)");
+  }
+
   const datos = await armarDatosParaUsuario(idUsuario);
 
   let respuesta;
   try {
-    respuesta = await obtenerCliente().beta.messages.create({
-      model: MODELO,
-      max_tokens: 16000,
-      output_config: { effort: "low" },
-      // Si la IA principal rechaza una consulta por sus filtros de
-      // seguridad, la API la reintenta sola con otro modelo.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      system: [
-        { type: "text", text: INSTRUCCIONES },
-        { type: "text", text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
-      ],
-      messages: historial,
+    respuesta = await fetch(`${URL_GEMINI}/${MODELO}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            { text: INSTRUCCIONES },
+            { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
+          ],
+        },
+        contents: historial,
+        generationConfig: {
+          // El límite incluye lo que el modelo "piensa" antes de responder.
+          maxOutputTokens: 2048,
+          // Pensar poco: más rápido y gasta menos cuota gratis.
+          thinkingConfig: { thinkingLevel: "low" },
+        },
+      }),
     });
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    if (error instanceof Anthropic.AuthenticationError) {
-      throw new ApiError(503, "El chatbot no está bien configurado (revisá ANTHROPIC_API_KEY)");
-    }
-    if (error instanceof Anthropic.RateLimitError) {
-      throw new ApiError(429, "Fani está con muchas consultas, probá de nuevo en un ratito");
-    }
-    if (error instanceof Anthropic.APIError) {
-      throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
-    }
-    throw error;
+  } catch {
+    throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
   }
 
-  const texto = respuesta.content
-    .filter((bloque) => bloque.type === "text")
-    .map((bloque) => bloque.text)
+  if (!respuesta.ok) {
+    // 429: se acabó la cuota gratis por ahora. 503: Gemini está saturado.
+    if (respuesta.status === 429 || respuesta.status === 503) {
+      throw new ApiError(429, "Fani está con muchas consultas, probá de nuevo en un ratito");
+    }
+    const detalle = await respuesta.text().catch(() => "");
+    console.error(`Gemini respondió ${respuesta.status}: ${detalle}`);
+    const keyInvalida = detalle.includes("API_KEY_INVALID");
+    if (keyInvalida || respuesta.status === 401 || respuesta.status === 403) {
+      throw new ApiError(503, "El chatbot no está bien configurado (revisá GEMINI_API_KEY)");
+    }
+    throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+  }
+
+  const cuerpo = await respuesta.json();
+  const candidato = cuerpo.candidates?.[0];
+  const texto = (candidato?.content?.parts ?? [])
+    .map((parte) => parte.text ?? "")
     .join("")
     .trim();
 
-  if (respuesta.stop_reason === "refusal" || !texto) {
+  // Bloqueado por los filtros de seguridad de Gemini, o respuesta vacía.
+  const bloqueado = cuerpo.promptFeedback?.blockReason || candidato?.finishReason === "SAFETY";
+  if (bloqueado || !texto) {
     return `Perdón, con eso no te puedo ayudar 😕 Si necesitás algo más, escribinos a ${MAIL_QUEJAS}.`;
   }
   return texto;
