@@ -7,6 +7,8 @@ import mensajeRoutes from "./mensajeRoutes.js";
 import amistadRoutes from "./amistadRoutes.js";
 import notificacionRoutes from "./notificacionRoutes.js";
 import chatRoutes from "./chatRoutes.js";
+import spotifyRoutes from "./spotifyRoutes.js";
+import lastfmRoutes from "./lastfmRoutes.js";
 
 const router = Router();
 
@@ -18,5 +20,7 @@ router.use("/grupos", mensajeRoutes);
 router.use("/amistades", amistadRoutes);
 router.use("/notificaciones", notificacionRoutes);
 router.use("/chats", chatRoutes);
+router.use("/spotify", spotifyRoutes);
+router.use("/lastfm", lastfmRoutes);
 
 export default router;

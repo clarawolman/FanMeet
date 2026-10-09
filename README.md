@@ -23,6 +23,19 @@ Esto instala las dependencias del frontend y del backend, y levanta ambos juntos
 - Frontend (Vite): http://localhost:5173
 - Backend (Express): http://localhost:4000
 
+## Música en el perfil: Last.fm + Spotify (opcional)
+
+- **"Lo que escuchás"** (top artistas, canciones y álbumes por período y escuchas recientes) sale de **Last.fm**. Cada usuario escribe su nombre de usuario de Last.fm en el perfil; para que refleje lo que escucha en Spotify, tiene que vincular Spotify en last.fm -> Settings -> Applications.
+- **Artistas favoritos** (carrusel) se buscan en el catálogo de **Spotify** con el token de la app, sin login de usuarios (no aplica el límite de usuarios del Development mode). Spotify también completa las fotos que Last.fm ya no da.
+
+Setup:
+
+1. Correr `supabase/spotify.sql` y después `supabase/lastfm.sql` en el SQL Editor de Supabase.
+2. API key de Last.fm: https://www.last.fm/api/account/create -> `LASTFM_API_KEY` en `backend/.env`.
+3. App de Spotify: https://developer.spotify.com/dashboard (marcar "Web API") -> Client ID y Client Secret en `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` de `backend/.env`.
+
+Sin estas variables el backend arranca igual; solo esos endpoints responden 503.
+
 ## TP React Context
 
 ### Qué información se comparte

@@ -12,6 +12,8 @@ import ProximosConciertosPerfil from "./proximosConciertosPerfil";
 import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
+import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
+import EscuchasPerfil from "./escuchasPerfil";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
@@ -295,6 +297,14 @@ function Perfil({
           isOwnProfile={isOwnProfile}
           onEditar={() => setMostrarEditorGeneros(true)}
         />
+
+        <ArtistasFavoritosPerfil
+          key={usuario.id_usuario}
+          idUsuario={usuario.id_usuario} isOwnProfile={isOwnProfile} />
+
+        <EscuchasPerfil
+          key={usuario.id_usuario}
+          idUsuario={usuario.id_usuario} isOwnProfile={isOwnProfile} />
 
         <VibraConcierto
           vibras={AMBIENTES_CONCIERTO}

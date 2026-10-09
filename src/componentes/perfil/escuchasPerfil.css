@@ -1,0 +1,329 @@
+.escuchasHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 12px;
+}
+
+.escuchasHeader h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.escuchasAccion {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.escuchasAccion:hover {
+  text-decoration: underline;
+}
+
+.escuchasMensaje {
+  margin: 0;
+  padding: 0 16px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+/* Estado "sin conectar": mismo lenguaje que el vacío de Próximos conciertos */
+.escuchasConectar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 16px;
+  border: 1.5px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-bg-soft);
+  padding: 18px;
+}
+
+.escuchasConectar p {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.escuchasBotonConectar {
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  padding: 9px 18px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+.escuchasBotonConectar:hover:not(:disabled) {
+  background: var(--fm-accent-soft-bg);
+}
+
+.escuchasBotonConectar:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.escuchasAviso {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-accent);
+}
+
+.escuchasForm {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.escuchasInput {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  padding: 9px 16px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  outline: none;
+  transition: border-color var(--fm-dur) var(--fm-ease);
+}
+
+.escuchasInput:focus {
+  border-color: var(--fm-accent);
+}
+
+.escuchasAyuda {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  line-height: 1.45;
+  color: var(--fm-muted);
+}
+
+.escuchasAyuda a,
+.escuchasFuente a {
+  color: var(--fm-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.escuchasAyuda a:hover,
+.escuchasFuente a:hover {
+  text-decoration: underline;
+}
+
+.escuchasResumen {
+  margin: -4px 0 12px;
+  padding: 0 16px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.escuchasResumen strong {
+  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+}
+
+/* "Sonando ahora": misma fila de canción, resaltada con el acento */
+.cancionEscucha.destacado {
+  border-color: var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+}
+
+.cancionEscucha.destacado .cancionEscuchaDetalle {
+  color: var(--fm-accent);
+  font-weight: 700;
+}
+
+/* Selector de período, estilo Last.fm */
+.escuchasRangos {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.escuchasRango {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: var(--fm-radius-pill);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
+    color var(--fm-dur) var(--fm-ease);
+}
+
+.escuchasRango.activo {
+  background: var(--fm-accent);
+  border-color: var(--fm-accent);
+  color: var(--fm-accent-ink);
+}
+
+.escuchasCuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: opacity var(--fm-dur) var(--fm-ease);
+}
+
+.escuchasCuerpo.cargando {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.escuchasBloque h4 {
+  margin: 0 0 10px;
+  padding: 0 16px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-muted);
+}
+
+.escuchasLista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.escuchasLista h4 {
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+.escuchasVerMas {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.cancionEscucha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  padding: 8px 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.cancionEscucha:hover {
+  border-color: var(--fm-accent);
+  transform: translateY(-1px);
+}
+
+.cancionEscuchaPosicion {
+  width: 18px;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-accent);
+}
+
+.cancionEscuchaImagen {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--fm-radius-sm);
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  flex-shrink: 0;
+}
+
+.cancionEscuchaInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cancionEscuchaInfo strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cancionEscuchaInfo small {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cancionEscuchaDetalle {
+  flex-shrink: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+.escuchasFuente {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 0;
+  padding: 0 16px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+@media (min-width: 768px) {
+  .escuchasHeader,
+  .escuchasMensaje,
+  .escuchasResumen,
+  .escuchasRangos,
+  .escuchasBloque h4,
+  .escuchasLista,
+  .escuchasFuente {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .escuchasLista h4 {
+    padding: 0;
+  }
+
+  .escuchasConectar {
+    margin: 0 40px;
+  }
+}

@@ -16,4 +16,11 @@ export const env = {
   supabaseServiceRoleKey: requerido("SUPABASE_SERVICE_ROLE_KEY"),
   supabaseAnonKey: requerido("SUPABASE_ANON_KEY"),
   conciertoAccessCode: requerido("CONCIERTO_ACCESS_CODE"),
+  // Last.fm y Spotify son opcionales: si faltan, el backend arranca igual y
+  // solo sus endpoints responden 503.
+  lastfmApiKey: process.env.LASTFM_API_KEY || "",
+  // Spotify se usa solo con el token de la app (busqueda de artistas y
+  // fotos), nunca con login de usuarios.
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID || "",
+  spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET || "",
 };

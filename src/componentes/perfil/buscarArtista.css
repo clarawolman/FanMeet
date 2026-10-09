@@ -1,0 +1,165 @@
+.buscarArtistaOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 560;
+  background: rgba(22, 21, 26, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.buscarArtistaPanel {
+  width: 100%;
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg) var(--fm-radius-lg) 0 0;
+  padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  box-shadow: var(--fm-shadow);
+}
+
+.buscarArtistaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buscarArtistaHeader h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  color: var(--fm-ink);
+}
+
+.buscarArtistaCerrar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--fm-radius-sm);
+  border: 1.5px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buscarArtistaInput {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  padding: 12px 18px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  outline: none;
+  transition: border-color var(--fm-dur) var(--fm-ease);
+}
+
+.buscarArtistaInput:focus {
+  border-color: var(--fm-accent);
+}
+
+.buscarArtistaResultados {
+  flex: 1;
+  min-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.buscarArtistaMensaje {
+  margin: 8px 2px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.buscarArtistaFila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 2px;
+}
+
+.buscarArtistaImagen {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  flex-shrink: 0;
+}
+
+.buscarArtistaNombre {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-body);
+  font-weight: 700;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buscarArtistaBoton {
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  padding: 7px 14px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+.buscarArtistaBoton:hover:not(:disabled) {
+  background: var(--fm-accent-soft-bg);
+}
+
+.buscarArtistaBoton:disabled {
+  cursor: default;
+}
+
+.buscarArtistaBoton.agregado {
+  border-color: var(--fm-border);
+  color: var(--fm-muted);
+}
+
+.buscarArtistaFuente {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+@media (min-width: 768px) {
+  .buscarArtistaOverlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .buscarArtistaPanel {
+    max-width: 480px;
+    max-height: 70vh;
+    border-radius: var(--fm-radius-lg);
+    padding: 22px;
+  }
+}

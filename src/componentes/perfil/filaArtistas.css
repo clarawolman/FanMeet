@@ -1,0 +1,151 @@
+/* Pisa los paddings de .home-row-scroll (pensados para el Home) para que
+   la fila quede alineada con el resto de las secciones del perfil. */
+.filaArtistas .home-row-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 0 16px 6px;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.filaArtistas .home-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.artistaCirculo {
+  position: relative;
+  flex: 0 0 112px;
+  width: 112px;
+  scroll-snap-align: start;
+}
+
+.artistaCirculoLink,
+.artistaAgregar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.artistaCirculoImagen {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+  object-fit: cover;
+  display: block;
+  margin-bottom: 6px;
+  transition: transform var(--fm-dur) var(--fm-ease);
+}
+
+.filaArtistas.cuadrado .artistaCirculoImagen {
+  border-radius: var(--fm-radius-sm);
+}
+
+.artistaCirculoLink:hover .artistaCirculoImagen {
+  transform: scale(1.03);
+}
+
+.artistaCirculoInicial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-2xl);
+  font-weight: 700;
+  color: var(--fm-muted);
+}
+
+.artistaCirculoLink strong,
+.artistaAgregar strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistaCirculoLink small,
+.artistaAgregar small {
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+.artistaCirculoQuitar {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--fm-shadow-sm);
+}
+
+.artistaCirculoQuitar:hover {
+  border-color: var(--fm-accent);
+  color: var(--fm-accent);
+}
+
+/* Primer círculo "+" para sumar artistas (mismo lenguaje que el
+   botón de agregar highlights). */
+.artistaAgregar {
+  flex: 0 0 112px;
+  width: 112px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.artistaAgregarCirculo {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 1.5px dashed var(--fm-ink);
+  background: var(--fm-bg-soft);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  transition: border-color var(--fm-dur) var(--fm-ease);
+}
+
+.artistaAgregar:hover .artistaAgregarCirculo {
+  border-color: var(--fm-accent);
+}
+
+@media (min-width: 768px) {
+  .filaArtistas .home-row-scroll {
+    gap: 18px;
+    padding: 0 40px 8px;
+  }
+
+  .artistaCirculo,
+  .artistaAgregar {
+    flex-basis: 128px;
+    width: 128px;
+  }
+}
