@@ -1,19 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const crearMensaje = vi.fn();
+// Simula la API de Gemini: cada test define qué JSON devuelve.
+const respuestaGemini = vi.fn();
+const fetchFalso = vi.fn(async () => ({ ok: true, status: 200, json: async () => respuestaGemini() }));
+vi.stubGlobal("fetch", fetchFalso);
+process.env.GEMINI_API_KEY = "key-de-prueba";
 
-vi.mock("@anthropic-ai/sdk", () => {
-  class APIError extends Error {}
-  class Anthropic {
-    constructor() {
-      this.beta = { messages: { create: crearMensaje } };
-    }
-  }
-  Anthropic.APIError = APIError;
-  Anthropic.AuthenticationError = class extends APIError {};
-  Anthropic.RateLimitError = class extends APIError {};
-  return { default: Anthropic };
-});
+function cuerpoEnviado() {
+  return JSON.parse(fetchFalso.mock.calls[0][1].body);
+}
 
 vi.mock("../src/repositories/mensajeChatbotRepository.js", () => ({
   mensajeChatbotRepository: { crear: vi.fn(), listarDeUsuario: vi.fn() },
@@ -72,14 +67,13 @@ beforeEach(() => {
   grupoUsuarioRepository.listarGruposPorUsuario.mockResolvedValue([]);
   grupoUsuarioRepository.listarUsuariosPorGrupos.mockResolvedValue([{ id_grupo: 10, id_usuario: YO }]);
 
-  crearMensaje.mockResolvedValue({
-    stop_reason: "end_turn",
-    content: [{ type: "text", text: "Hay una previa 🎸" }],
+  respuestaGemini.mockReturnValue({
+    candidates: [{ finishReason: "STOP", content: { parts: [{ text: "Hay una previa 🎸" }] } }],
   });
 });
 
 function textoDelSystem() {
-  return crearMensaje.mock.calls[0][0].system.map((b) => b.text).join("\n");
+  return cuerpoEnviado().systemInstruction.parts.map((p) => p.text).join("\n");
 }
 
 describe("chatbotService.enviar", () => {
@@ -110,7 +104,7 @@ describe("chatbotService.enviar", () => {
   });
 
   it("si la IA rechaza la consulta responde con un mensaje que sugiere el mail de quejas", async () => {
-    crearMensaje.mockResolvedValue({ stop_reason: "refusal", content: [] });
+    respuestaGemini.mockReturnValue({ promptFeedback: { blockReason: "SAFETY" } });
 
     const { respuesta } = await chatbotService.enviar(YO, "algo raro");
 
@@ -125,6 +119,12 @@ describe("chatbotService.enviar", () => {
 
     await chatbotService.enviar(YO, "nueva pregunta");
 
-    expect(crearMensaje.mock.calls[0][0].messages).toEqual([{ role: "user", content: "nueva pregunta" }]);
+    expect(cuerpoEnviado().contents).toEqual([{ role: "user", parts: [{ text: "nueva pregunta" }] }]);
+  });
+
+  it("si Gemini está saturado (429) devuelve un error amigable", async () => {
+    fetchFalso.mockResolvedValueOnce({ ok: false, status: 429, text: async () => "" });
+
+    await expect(chatbotService.enviar(YO, "hola")).rejects.toMatchObject({ status: 429 });
   });
 });
