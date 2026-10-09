@@ -1,0 +1,58 @@
+/* ===== BOTÓN FLOTANTE DEL CHATBOT — abajo a la derecha del Inicio ===== */
+.botonChatbot {
+  position: fixed;
+  right: 18px;
+  /* arriba de la barra de navegación inferior (68px) en mobile */
+  bottom: calc(68px + 18px + env(safe-area-inset-bottom));
+  z-index: 190;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 18px rgba(91, 18, 168, 0.35));
+  transition: transform 0.18s ease;
+}
+
+.botonChatbot:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.botonChatbot:active {
+  transform: scale(0.96);
+}
+
+/* el robot va suelto, sin círculo: la imagen ya tiene fondo transparente */
+.botonChatbotLogo {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* el texto aparece al lado del logo solo cuando hay lugar */
+.botonChatbotTexto {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .botonChatbot {
+    right: 28px;
+    bottom: 28px;
+    flex-direction: row-reverse;
+  }
+
+  .botonChatbotTexto {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: var(--fm-surface, #fff);
+    color: var(--fm-ink, #16151a);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}

@@ -727,3 +727,61 @@
     flex-basis: 400px;
   }
 }
+
+/* ===== CHAT CON EL ASISTENTE FANMEET (IA) ===== */
+/* el robot de Fani tiene fondo transparente: entero (sin recortar la
+   antena ni la mano) sobre un círculo lila */
+.chatsAvatar--bot {
+  object-fit: contain;
+  padding: 4px;
+  background: #f1e9fd;
+  border-color: #e2d3fa;
+}
+
+.chatsEtiquetaBot {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: var(--fm-radius-pill, 999px);
+  background: var(--fm-accent, #811cd9);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+/* "escribiendo..." con tres puntitos, como en WhatsApp */
+.chatsEscribiendo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.chatsEscribiendo span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fm-muted, #9a95a6);
+  animation: chatsEscribiendo 1.2s infinite ease-in-out;
+}
+
+.chatsEscribiendo span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chatsEscribiendo span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes chatsEscribiendo {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}

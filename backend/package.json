@@ -13,6 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.132.1",
     "@supabase/supabase-js": "^2.105.4",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",

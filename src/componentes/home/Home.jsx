@@ -9,9 +9,10 @@ import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import CarruselFila from "./CarruselFila";
+import BotonChatbot from "../chatbot/BotonChatbot";
 import { UsuarioContext } from "../../context/UsuarioContext";
 
-function Home({ onEntrarConcierto, onNavegar }) {
+function Home({ onEntrarConcierto, onNavegar, onAbrirChatbot }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [conciertos, setConciertos] = useState([]);
   const [conciertosUnidos, setConciertosUnidos] = useState([]);
@@ -386,6 +387,8 @@ const generosOrdenados = [...generos].sort((a, b) => {
           onValidar={validarCodigo}
         />
       )}
+
+      <BotonChatbot onAbrir={onAbrirChatbot} />
 
       <Footer onNavegar={onNavegar} pantallaActiva="home" />
     </div>
