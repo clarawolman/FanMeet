@@ -1,8 +1,17 @@
 import { usuarioService } from "../services/usuarioService.js";
+import { generoService } from "../services/generoService.js";
 import { asyncHandler } from "../helpers/asyncHandler.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 export const usuarioController = {
+  buscarGeneros: asyncHandler(async (req, res) => {
+    res.json(await generoService.buscar(req.query.q));
+  }),
+
+  agregarGenero: asyncHandler(async (req, res) => {
+    res.status(201).json(await generoService.obtenerOCrear(req.body.nombre));
+  }),
+
   // Si el id pedido es el del propio usuario autenticado, devuelve el
   // perfil completo (mail/fechanac/genero); para cualquier otro id, solo
   // la versión pública. Nunca hay que confiar en el id del :params para

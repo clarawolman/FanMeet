@@ -1,0 +1,188 @@
+.pantallaDescubrir {
+  min-height: 100vh;
+  background: var(--fm-bg);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--fm-font-body);
+  color: var(--fm-ink);
+}
+
+.descubrirLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px 110px;
+  box-sizing: border-box;
+}
+
+.descubrirMensaje {
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  background: var(--fm-bg-soft);
+  border: 1px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.descubrirMensaje p {
+  margin: 0;
+}
+
+.descubrirBoton {
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  padding: 11px 20px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.descubrirGrilla {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.descubrirCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  overflow: hidden;
+  transition: border-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.descubrirCard:hover {
+  border-color: var(--fm-accent-soft-border);
+  transform: translateY(-2px);
+}
+
+.descubrirCardFotoBoton {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  background: var(--fm-bg-soft);
+  cursor: pointer;
+}
+
+.descubrirCardFoto {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Fondo detrás del anillo para que se lea sobre cualquier foto */
+.descubrirCardPorcentaje {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  border-radius: 50%;
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+}
+
+.descubrirCardInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 12px 4px;
+  min-width: 0;
+}
+
+.descubrirCardInfo h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.descubrirCardInfo h3 small {
+  font-weight: 400;
+  color: var(--fm-muted);
+}
+
+.descubrirCardResumen {
+  margin: 0;
+  font-size: var(--fm-fs-xs);
+  line-height: 1.35;
+  color: var(--fm-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.descubrirCardGeneros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.descubrirCardGeneros span {
+  padding: 2px 8px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border);
+  font-size: var(--fm-fs-2xs);
+  text-transform: capitalize;
+  color: var(--fm-ink);
+}
+
+.descubrirCardBoton {
+  margin: 10px 12px 12px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-accent);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+.descubrirCardBoton:hover {
+  background: var(--fm-accent-soft-bg);
+}
+
+@media (min-width: 768px) {
+  .pantallaDescubrir {
+    padding-left: 240px;
+  }
+
+  .descubrirLayout {
+    max-width: 1080px;
+    padding: 26px 24px 60px;
+  }
+
+  .descubrirGrilla {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+}

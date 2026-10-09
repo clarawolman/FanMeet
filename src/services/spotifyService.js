@@ -15,8 +15,9 @@ export const spotifyService = {
   },
 
   // tipo: "artista" | "album" | "cancion"
+  // Funciona sin sesión (lo usa el registro).
   async buscar(texto, tipo = "artista") {
     const parametros = new URLSearchParams({ q: texto, tipo });
-    return api.get(`/spotify/buscar?${parametros}`);
+    return api.get(`/spotify/buscar?${parametros}`, { autenticado: false });
   },
 };

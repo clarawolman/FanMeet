@@ -1,0 +1,146 @@
+.sugerenciasLastfm {
+  margin: 0 16px 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-accent-soft-border);
+  border-radius: var(--fm-radius-lg);
+}
+
+.sugerenciasLastfm h4 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.sugerenciasLastfm h5 {
+  margin: 6px 0 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-muted);
+}
+
+.sugerenciasLastfmSubtitulo,
+.sugerenciasLastfmCargando,
+.sugerenciasLastfmAviso {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.sugerenciasLastfmCargando {
+  padding: 0 16px 16px;
+}
+
+.sugerenciasLastfmAviso {
+  color: var(--fm-accent);
+  font-weight: 600;
+}
+
+.sugerenciasLastfmOpciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sugerenciasLastfmArtista {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-muted);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
+}
+
+.sugerenciasLastfmArtista.activo {
+  background: var(--fm-accent-soft-bg);
+  border-color: var(--fm-accent-soft-border);
+  color: var(--fm-ink);
+}
+
+.sugerenciasLastfmArtista img,
+.sugerenciasLastfmInicial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+}
+
+.sugerenciasLastfmArtista > span:last-child,
+.sugerenciasLastfmGenero > span {
+  font-size: 11px;
+}
+
+.sugerenciasLastfmGenero {
+  border-radius: var(--fm-radius-pill);
+  padding: 7px 12px;
+}
+
+.sugerenciasLastfmGenero strong {
+  text-transform: capitalize;
+}
+
+.sugerenciasLastfmBotones {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.sugerenciasLastfmOmitir,
+.sugerenciasLastfmAgregar {
+  flex: 1;
+  height: 44px;
+  border-radius: var(--fm-radius-pill);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sugerenciasLastfmOmitir {
+  border: 1.5px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+}
+
+.sugerenciasLastfmAgregar {
+  border: none;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+}
+
+.sugerenciasLastfmAgregar:disabled,
+.sugerenciasLastfmOmitir:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (min-width: 768px) {
+  .sugerenciasLastfm {
+    margin: 0 40px 16px;
+  }
+
+  .sugerenciasLastfmCargando {
+    padding: 0 40px 16px;
+  }
+}

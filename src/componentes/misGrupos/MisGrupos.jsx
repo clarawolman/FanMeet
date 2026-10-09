@@ -18,7 +18,6 @@ function MisGrupos({
   const { usuarioActual } = useContext(UsuarioContext);
   const [misGrupos, setMisGrupos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorTexto, setErrorTexto] = useState("");
   const [grupoParaSalir, setGrupoParaSalir] = useState(null);
   const [saliendo, setSaliendo] = useState(false);
 
@@ -30,14 +29,14 @@ function MisGrupos({
 
   async function cargarMisGrupos() {
     setCargando(true);
-    setErrorTexto("");
 
     try {
       const grupos = await gruposService.listarMisGrupos();
       setMisGrupos(grupos || []);
     } catch (error) {
+      // Si no se pudo cargar, se muestra como vacío: sin errores técnicos.
       console.error("Error cargando mis grupos:", error);
-      setErrorTexto("No se pudieron cargar tus grupos.");
+      setMisGrupos([]);
     }
 
     setCargando(false);
@@ -94,17 +93,11 @@ function MisGrupos({
       <main className="misGruposLayout">
         {cargando && <LoadingSpinner texto="Cargando grupos..." />}
 
-        {!cargando && errorTexto && (
-          <p className="mensajeMisGrupos">{errorTexto}</p>
+        {!cargando && misGrupos.length === 0 && (
+          <p className="mensajeMisGrupos">No tenés grupos.</p>
         )}
 
-        {!cargando && !errorTexto && misGrupos.length === 0 && (
-          <p className="mensajeMisGrupos">
-            Todavía no participás en ningún grupo.
-          </p>
-        )}
-
-        {!cargando && !errorTexto && (
+        {!cargando && (
           <div className="misGruposCatalogo">
             {seccionesConciertos.map((seccion) => (
               <section className="misGruposRow" key={seccion.id_concierto}>

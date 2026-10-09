@@ -1,0 +1,113 @@
+.selectorGeneros {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.selectorGenerosElegidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selectorGenerosElegido {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--fm-accent-soft-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-ink);
+  padding: 7px 12px 7px 14px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.selectorGenerosElegido span {
+  font-size: 11px;
+  color: var(--fm-muted);
+}
+
+.selectorGenerosElegido:hover span {
+  color: var(--fm-accent);
+}
+
+.selectorGenerosBuscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--fm-bg-soft);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  padding: 0 16px;
+  transition: border-color var(--fm-dur) var(--fm-ease);
+}
+
+.selectorGenerosBuscador:focus-within {
+  border-color: var(--fm-accent);
+}
+
+.selectorGenerosBuscadorIcono {
+  font-size: 16px;
+  color: var(--fm-accent);
+}
+
+.selectorGenerosBuscador input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  height: 46px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  color: var(--fm-ink);
+}
+
+.selectorGenerosTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  color: var(--fm-muted);
+}
+
+.selectorGenerosMensaje {
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.selectorGenerosOpciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.selectorGenerosOpcion {
+  border-radius: var(--fm-radius-pill);
+  padding: 9px 14px;
+}
+
+.selectorGenerosOpcion strong {
+  text-transform: capitalize;
+}
+
+.selectorGenerosOpcion span {
+  font-size: 12px;
+}
+
+.selectorGenerosOpcion:disabled {
+  cursor: wait;
+}
+
+.selectorGenerosFuente {
+  margin: 0;
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}

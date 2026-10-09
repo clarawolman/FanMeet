@@ -12,6 +12,14 @@ export const artistaFavoritoRepository = {
     return unwrap(resultado, "Error cargando artistas favoritos");
   },
 
+  // Favoritos de todos los usuarios (para el matching).
+  async listarTodos() {
+    const resultado = await supabaseAdmin
+      .from("artista_favorito")
+      .select("id_usuario, spotify_id, nombre");
+    return unwrap(resultado, "Error cargando artistas favoritos");
+  },
+
   async crear(idUsuario, artista) {
     const resultado = await supabaseAdmin
       .from("artista_favorito")

@@ -607,3 +607,15 @@
   object-fit: cover;
   display: block;
 }
+
+/* Motivo de la recomendación en las cards de "Para vos" */
+.home-card-motivo {
+  margin: 6px 0 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  color: var(--fm-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

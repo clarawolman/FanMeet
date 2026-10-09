@@ -163,7 +163,6 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
   const [chats, setChats] = useState([]);
   const [cargandoChats, setCargandoChats] = useState(true);
-  const [errorChats, setErrorChats] = useState("");
   const [busqueda, setBusqueda] = useState("");
 
   // datosDe(chat) del chat abierto: { tipo, id, nombre, foto, usuarios?, grupo? }
@@ -265,7 +264,6 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   }, [mensajes, cargandoMensajes]);
 
   async function cargarChats(paraAbrir) {
-    setErrorChats("");
     try {
       const data = (await chatsService.listar()) || [];
       setChats(data);
@@ -276,8 +274,10 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
         if (chat) abrirChat(chat);
       }
     } catch (error) {
+      // Si no se pudo cargar, se muestra como vacío: sin errores técnicos.
       console.error("Error cargando chats:", error);
-      setErrorChats("No se pudieron cargar tus chats");
+      setChats([]);
+      chatsRef.current = [];
     }
     setCargandoChats(false);
   }
@@ -627,13 +627,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
           <div className="chatsListaItems">
             {cargandoChats && <p className="chatsListaEstado">Cargando chats...</p>}
 
-            {!cargandoChats && errorChats && <p className="chatsListaEstado">{errorChats}</p>}
-
-            {!cargandoChats && !errorChats && chats.length === 0 && (
-              <p className="chatsListaEstado">
-                Todavía no tenés chats. Conectá con otros fans o sumate a un grupo
-                en los conciertos y vas a poder chatear acá.
-              </p>
+            {!cargandoChats && chats.length === 0 && (
+              <p className="chatsListaEstado">No tenés chats.</p>
             )}
 
             {!cargandoChats && chats.length > 0 && chatsFiltrados.length === 0 && (

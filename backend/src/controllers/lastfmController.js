@@ -12,6 +12,14 @@ export const lastfmController = {
     res.status(204).end();
   }),
 
+  obtenerResumen: asyncHandler(async (req, res) => {
+    res.json(await lastfmService.obtenerResumen(req.params.idUsuario));
+  }),
+
+  obtenerSugerencias: asyncHandler(async (req, res) => {
+    res.json(await lastfmService.obtenerSugerencias(req.user.id));
+  }),
+
   obtenerEscuchas: asyncHandler(async (req, res) => {
     const escuchas = await lastfmService.obtenerEscuchas(req.params.idUsuario, req.query.periodo);
     res.json(escuchas);

@@ -9,6 +9,14 @@ const router = Router();
 
 router.put("/me", authMiddleware, validate(vincularLastfmSchema), lastfmController.vincular);
 router.delete("/me", authMiddleware, lastfmController.desvincular);
+router.get("/me/sugerencias", authMiddleware, lastfmController.obtenerSugerencias);
+
+router.get(
+  "/usuarios/:idUsuario/resumen",
+  authMiddleware,
+  validate(idUsuarioParamSchema, "params"),
+  lastfmController.obtenerResumen
+);
 
 router.get(
   "/usuarios/:idUsuario/escuchas",

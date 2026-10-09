@@ -18,7 +18,6 @@ function MisEventos({
   const { usuarioActual } = useContext(UsuarioContext);
   const [misEventos, setMisEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorTexto, setErrorTexto] = useState("");
   const [eventoParaSalir, setEventoParaSalir] = useState(null);
   const [saliendo, setSaliendo] = useState(false);
 
@@ -30,14 +29,14 @@ function MisEventos({
 
   async function cargarMisEventos() {
     setCargando(true);
-    setErrorTexto("");
 
     try {
       const eventos = await conciertosService.listarMisEventos();
       setMisEventos(eventos || []);
     } catch (error) {
+      // Si no se pudo cargar, se muestra como vacío: sin errores técnicos.
       console.error("Error cargando mis eventos:", error);
-      setErrorTexto("No se pudieron cargar tus eventos.");
+      setMisEventos([]);
     }
 
     setCargando(false);
@@ -72,18 +71,11 @@ function MisEventos({
       <main className="misEventosLayout">
         {cargando && <LoadingSpinner texto="Cargando eventos..." />}
 
-        {!cargando && errorTexto && (
-          <p className="mensajeMisEventos">{errorTexto}</p>
-        )}
-
-        {!cargando && !errorTexto && misEventos.length === 0 && (
-          <p className="mensajeMisEventos">
-            Todavía no estás asociado a ningún evento.
-          </p>
+        {!cargando && misEventos.length === 0 && (
+          <p className="mensajeMisEventos">No tenés eventos.</p>
         )}
 
         {!cargando &&
-          !errorTexto &&
           misEventos.map((evento) => (
             <CardEvento
               key={evento.id_concierto}

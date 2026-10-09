@@ -8,6 +8,7 @@ import {
   toArtistaFavorito,
 } from "../entities/Spotify.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { normalizarGenero } from "../helpers/generos.js";
 
 const MAX_FAVORITOS = 20;
 const BUSQUEDA_LIMITE = 10;
@@ -29,7 +30,7 @@ export function spotifyConfigurado() {
 
 function asegurarConfigurado() {
   if (!spotifyConfigurado()) {
-    throw new ApiError(503, "La búsqueda de artistas no está configurada en el servidor.");
+    throw new ApiError(503, "La búsqueda de artistas no está disponible por ahora.");
   }
 }
 
@@ -75,6 +76,30 @@ export const spotifyService = {
       return imagen;
     } catch (error) {
       console.error("No se pudo buscar imagen en Spotify:", error.message);
+      return null;
+    }
+  },
+
+  // Artista de Spotify para un nombre que viene de Last.fm (para sugerirlo
+  // como favorito). Solo acepta el que se llama igual (sin importar
+  // mayusculas ni acentos): mejor no sugerir nada que sugerir otro artista.
+  // Nunca falla: si no lo encuentra devuelve null.
+  async buscarArtistaPorNombre(nombre) {
+    if (!spotifyConfigurado() || !nombre) return null;
+
+    const clave = `artista-exacto|${nombre.toLowerCase()}`;
+    if (cacheImagenes.has(clave)) return cacheImagenes.get(clave);
+
+    try {
+      const token = await obtenerTokenApp();
+      const datos = await spotifyApiRepository.buscar(token, `artist:${nombre}`, "artist", 5);
+      const items = (datos?.artists?.items || []).filter(Boolean);
+      const exacto = items.find((a) => normalizarGenero(a.name) === normalizarGenero(nombre));
+      const artista = exacto ? toArtistaSpotify(exacto) : null;
+      cacheImagenes.set(clave, artista);
+      return artista;
+    } catch (error) {
+      console.error("No se pudo buscar el artista en Spotify:", error.message);
       return null;
     }
   },

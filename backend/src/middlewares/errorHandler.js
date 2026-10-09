@@ -13,6 +13,12 @@ export function notFoundHandler(req, _res, next) {
 // completo solo queda en el log del servidor.
 export function errorHandler(err, _req, res, _next) {
   if (err instanceof ApiError) {
+    // Los 503 los lanzamos a proposito con un texto pensado para el usuario
+    // ("Last.fm está limitando las consultas..."): esos si pasan.
+    if (err.status === 503) {
+      console.error(err);
+      return res.status(503).json({ error: err.message });
+    }
     if (err.status >= 500) {
       console.error(err);
       return res.status(err.status).json({ error: "Error interno del servidor" });

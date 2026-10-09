@@ -14,6 +14,8 @@ import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
 import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
 import EscuchasPerfil from "./escuchasPerfil";
+import CompatibilidadPerfil from "./compatibilidadPerfil";
+import ResumenLastfmPerfil from "./resumenLastfmPerfil";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
@@ -64,6 +66,9 @@ function Perfil({
 
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
+  // Sube cuando cambia la música del perfil desde Last.fm (vincular o sumar
+  // sugerencias): remonta el resumen y los favoritos para que se recarguen.
+  const [versionMusica, setVersionMusica] = useState(0);
 
   const [cargando, setCargando] = useState(true);
   const [estadisticas, setEstadisticas] = useState({ conciertos: 0, grupos: 0, amigos: 0 });
@@ -185,6 +190,12 @@ function Perfil({
     }
   }
 
+  // Al editar géneros o sumar sugerencias de Last.fm se pueden haber creado
+  // géneros nuevos: sin recargar el catálogo se verían como "Género #id".
+  function recargarGeneros() {
+    return Promise.all([cargarGeneros(), cargarCatalogoGeneros()]);
+  }
+
   async function cargarGeneros() {
     try {
       const idsGeneros = await usuariosService.obtenerGenerosDe(usuario.id_usuario);
@@ -285,6 +296,20 @@ function Perfil({
       />
 
       <div className="perfilContenido">
+        <ResumenLastfmPerfil
+          key={`resumen-${usuario.id_usuario}-${versionMusica}`}
+          idUsuario={usuario.id_usuario}
+          isOwnProfile={isOwnProfile}
+        />
+
+        {!isOwnProfile && (
+          <CompatibilidadPerfil
+            key={`compatibilidad-${usuario.id_usuario}`}
+            idUsuario={usuario.id_usuario}
+            nombre={usuario.nombre}
+          />
+        )}
+
         <StatsPerfil
           estadisticas={estadisticas}
           onVerConciertos={isOwnProfile ? () => onNavegar?.("misEventos") : undefined}
@@ -298,13 +323,23 @@ function Perfil({
           onEditar={() => setMostrarEditorGeneros(true)}
         />
 
+        {/* Keys distintas entre hermanos: con la misma key React duplica u
+            omite secciones. Cambian con el usuario para reiniciar su estado. */}
         <ArtistasFavoritosPerfil
-          key={usuario.id_usuario}
-          idUsuario={usuario.id_usuario} isOwnProfile={isOwnProfile} />
+          key={`favoritos-${usuario.id_usuario}-${versionMusica}`}
+          idUsuario={usuario.id_usuario}
+          isOwnProfile={isOwnProfile}
+        />
 
         <EscuchasPerfil
-          key={usuario.id_usuario}
-          idUsuario={usuario.id_usuario} isOwnProfile={isOwnProfile} />
+          key={`escuchas-${usuario.id_usuario}`}
+          idUsuario={usuario.id_usuario}
+          isOwnProfile={isOwnProfile}
+          onPerfilMusicalActualizado={() => {
+            setVersionMusica((v) => v + 1);
+            recargarGeneros();
+          }}
+        />
 
         <VibraConcierto
           vibras={AMBIENTES_CONCIERTO}
@@ -344,7 +379,7 @@ function Perfil({
           <EditarGeneros
             onVolver={() => {
               setMostrarEditorGeneros(false);
-              cargarGeneros();
+              recargarGeneros();
             }}
           />
         </div>

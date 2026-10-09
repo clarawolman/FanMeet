@@ -121,6 +121,32 @@
   color: var(--fm-accent-soft-ink);
 }
 
+.registro3Artistas {
+  margin-top: 28px;
+}
+
+/* El carrusel del perfil trae su propio margen lateral: acá el contenedor
+   ya tiene padding. */
+.registro3Artistas .filaArtistas .home-row-scroll {
+  padding: 0 0 6px;
+}
+
+.registro3ArtistasTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.registro3ArtistasSubtitulo {
+  margin: 6px 0 14px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--fm-muted);
+}
+
 .registro3SeccionTitulo {
   margin: 28px 0 14px;
   font-family: var(--fm-font-display);
@@ -356,6 +382,16 @@
     grid-row: 4;
     margin: 8px 0 24px;
     font-size: 14px;
+  }
+
+  .registro3Selector {
+    grid-column: 1;
+    grid-row: 5;
+  }
+
+  .registro3Artistas {
+    grid-column: 1;
+    grid-row: 6;
   }
 
   .registro3Generos {

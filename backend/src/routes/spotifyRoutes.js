@@ -11,9 +11,10 @@ import {
 
 const router = Router();
 
+// Sin login: el registro (paso 3) tambien busca artistas favoritos. Es solo
+// el catalogo publico de Spotify, con el token de la app.
 router.get(
   "/buscar",
-  authMiddleware,
   validate(busquedaSpotifySchema, "query"),
   spotifyController.buscar
 );

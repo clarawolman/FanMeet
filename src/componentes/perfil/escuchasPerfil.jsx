@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { lastfmService } from "../../services/lastfmService";
 import FilaArtistas from "./filaArtistas";
 import IconoLastfm from "./iconoLastfm";
+import SugerenciasLastfm from "./sugerenciasLastfm";
 import "./escuchasPerfil.css";
 
 // Los mismos períodos que ofrece la web de Last.fm.
@@ -127,7 +128,7 @@ function VincularLastfm({ onVinculado }) {
   );
 }
 
-export default function EscuchasPerfil({ idUsuario, isOwnProfile }) {
+export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusicalActualizado }) {
   const [periodo, setPeriodo] = useState("mes");
   const [escuchas, setEscuchas] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -135,6 +136,8 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile }) {
   const [verTodasCanciones, setVerTodasCanciones] = useState(false);
   // Se incrementa para volver a pedir los datos (ej. después de vincular).
   const [recarga, setRecarga] = useState(0);
+  // Recién vinculado: ofrecer sumar sus artistas y géneros al perfil.
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
 
   useEffect(() => {
     let cancelado = false;
@@ -164,6 +167,17 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile }) {
     setRecarga((n) => n + 1);
   }
 
+  function manejarVinculado() {
+    recargar();
+    setMostrarSugerencias(true);
+    onPerfilMusicalActualizado?.();
+  }
+
+  function terminarSugerencias(agrego) {
+    setMostrarSugerencias(false);
+    if (agrego) onPerfilMusicalActualizado?.();
+  }
+
   function cambiarPeriodo(nuevoPeriodo) {
     if (nuevoPeriodo === periodo) return;
     setCargando(true);
@@ -174,6 +188,8 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile }) {
     try {
       await lastfmService.desvincular();
       setEscuchas({ conectado: false });
+      setMostrarSugerencias(false);
+      onPerfilMusicalActualizado?.();
     } catch (err) {
       alert("No se pudo desvincular Last.fm: " + err.message);
     }
@@ -209,8 +225,10 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile }) {
       {error && <p className="escuchasMensaje">No pudimos cargar lo que escucha ({error}).</p>}
 
       {!error && !cargando && !conectado && isOwnProfile && (
-        <VincularLastfm onVinculado={recargar} />
+        <VincularLastfm onVinculado={manejarVinculado} />
       )}
+
+      {mostrarSugerencias && isOwnProfile && <SugerenciasLastfm onListo={terminarSugerencias} />}
 
       {!error && conectado && (
         <>

@@ -20,6 +20,11 @@ export const lastfmCuentaRepository = {
     return unwrap(resultado, "Error cargando cuenta de Last.fm");
   },
 
+  async listarTodas() {
+    const resultado = await supabaseAdmin.from("lastfm_cuenta").select("id_usuario, usuario_lastfm");
+    return unwrap(resultado, "Error cargando cuentas de Last.fm");
+  },
+
   async guardar(idUsuario, usuarioLastfm) {
     const resultado = await supabaseAdmin
       .from("lastfm_cuenta")
@@ -91,5 +96,19 @@ export const lastfmApiRepository = {
 
   obtenerRecientes(usuario, limite) {
     return llamar("user.getRecentTracks", { user: usuario, limit: limite });
+  },
+
+  // Generos (tags) de un artista, con un peso de 0 a 100 cada uno.
+  obtenerTagsArtista(artista) {
+    return llamar("artist.getTopTags", { artist: artista, autocorrect: 1 });
+  },
+
+  obtenerSimilares(artista, limite) {
+    return llamar("artist.getSimilar", { artist: artista, limit: limite, autocorrect: 1 });
+  },
+
+  // reach = cuanta gente usa ese tag. Un tag inventado da reach 0.
+  obtenerInfoTag(tag) {
+    return llamar("tag.getInfo", { tag });
   },
 };

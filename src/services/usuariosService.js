@@ -33,6 +33,18 @@ export const usuariosService = {
     return api.get("/usuarios/generos/catalogo", { autenticado: false });
   },
 
+  // Busca en todos los géneros que existen (MusicBrainz + Last.fm), no solo
+  // en los que ya eligió alguien. Funciona sin sesión (lo usa el registro).
+  async buscarGeneros(texto) {
+    const parametros = new URLSearchParams({ q: texto });
+    return api.get(`/usuarios/generos/buscar?${parametros}`, { autenticado: false });
+  },
+
+  // Devuelve el género del catálogo con su id, creándolo si hacía falta.
+  async agregarGeneroAlCatalogo(nombre) {
+    return api.post("/usuarios/generos/catalogo", { nombre }, { autenticado: false });
+  },
+
   async obtenerMisGeneros() {
     return api.get("/usuarios/me/generos");
   },

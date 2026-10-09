@@ -9,6 +9,7 @@ import notificacionRoutes from "./notificacionRoutes.js";
 import chatRoutes from "./chatRoutes.js";
 import spotifyRoutes from "./spotifyRoutes.js";
 import lastfmRoutes from "./lastfmRoutes.js";
+import matchingRoutes from "./matchingRoutes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/notificaciones", notificacionRoutes);
 router.use("/chats", chatRoutes);
 router.use("/spotify", spotifyRoutes);
 router.use("/lastfm", lastfmRoutes);
+router.use("/matching", matchingRoutes);
 
 export default router;

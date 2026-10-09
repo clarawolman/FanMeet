@@ -1,0 +1,73 @@
+.fansHomeVerTodos {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fm-accent);
+  cursor: pointer;
+}
+
+.fansHomeItem {
+  flex: 0 0 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--fm-ink);
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.fansHomeFotoWrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.fansHomeFoto {
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  border: 2px solid var(--fm-accent-soft-border);
+}
+
+.fansHomePorcentaje {
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.fansHomeItem strong,
+.fansHomeItem small {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fansHomeItem strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+}
+
+.fansHomeItem small {
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}

@@ -4,6 +4,7 @@ import MenuConfiguracion from "./MenuConfiguracion";
 import { chatsService } from "../../services/chatsService";
 import {
   IconoNavInicio,
+  IconoNavDescubrir,
   IconoNavEventos,
   IconoNavGrupos,
   IconoNavChat,
@@ -13,6 +14,7 @@ import {
 
 const ITEMS = [
   { destino: "home", texto: "Inicio", Icono: IconoNavInicio },
+  { destino: "descubrir", texto: "Descubrir", Icono: IconoNavDescubrir },
   { destino: "misEventos", texto: "Eventos", Icono: IconoNavEventos },
   { destino: "misGrupos", texto: "Grupos", Icono: IconoNavGrupos },
   { destino: "chats", texto: "Chat", Icono: IconoNavChat },
