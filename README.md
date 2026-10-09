@@ -19,9 +19,33 @@ npm i
 npm run dev
 ```
 
-Esto instala las dependencias del frontend y del backend, y levanta ambos juntos:
+Esto instala las dependencias del frontend, el backend y el backoffice, y levanta los tres juntos:
 - Frontend (Vite): http://localhost:5173
 - Backend (Express): http://localhost:4000
+- Backoffice (Vite): http://localhost:5175
+
+## Backoffice (moderación)
+
+App aparte en `backoffice/` para moderadores: ver reportes con la conversación donde pasó, suspender o reactivar usuarios, ver todos los usuarios y grupos, crear y editar conciertos y mandar novedades a los fans.
+
+Setup (una sola vez):
+
+1. Correr `supabase/backoffice.sql` en Supabase → SQL Editor.
+2. Hacerse moderador: `update usuario set rol = 'moderador' where mail = 'tu-mail';`
+3. `cp backoffice/.env.example backoffice/.env` y completar la anon key.
+4. En `backend/.env`, completar `GMAIL_CONTRASENA_APP` (contraseña de aplicación de Google de fanmeet100@gmail.com) para que lleguen los mails de reportes. Sin eso, los mails se muestran en la consola del backend.
+5. Confirmación de mail: Supabase → Authentication → Sign In / Providers → Email → activar "Confirm email". En Authentication → URL Configuration, agregar la URL de la app de fans a "Redirect URLs".
+
+Reglas de moderación:
+- Un usuario `suspendido` no puede iniciar sesión ni usar la API (se lo saca en su próxima acción) y su mail no se puede volver a registrar.
+- Los mensajes de chats y los nombres de grupos pasan por un filtro de malas palabras (`backend/src/helpers/filtroPalabras.js`).
+- Las novedades y cambios de un concierto se notifican a sus fans solo si tiene al menos `MINIMO_UNIDOS_PARA_NOTIFICAR` unidos (10 por defecto).
+
+### Deploy en Vercel (dos proyectos, mismo repo)
+
+- App de fans: Root Directory = `/` (raíz). Variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_URL`.
+- Backoffice: Root Directory = `backoffice`. Mismas tres variables.
+- En el backend, poner `FRONTEND_URL` y `BACKOFFICE_URL` con las URLs de Vercel, y `CORS_ORIGIN` con la de la app de fans. El backend acepta las dos URLs por CORS.
 
 ## TP React Context
 

@@ -12,6 +12,7 @@ import ProximosConciertosPerfil from "./proximosConciertosPerfil";
 import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
+import ModalReportar from "./ModalReportar";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
@@ -62,6 +63,7 @@ function Perfil({
 
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
+  const [mostrarReportar, setMostrarReportar] = useState(false);
 
   const [cargando, setCargando] = useState(true);
   const [estadisticas, setEstadisticas] = useState({ conciertos: 0, grupos: 0, amigos: 0 });
@@ -280,7 +282,12 @@ function Perfil({
         onEnviarMensaje={
           !isOwnProfile && onEnviarMensaje ? () => onEnviarMensaje(usuario.id_usuario) : undefined
         }
+        onReportar={!isOwnProfile ? () => setMostrarReportar(true) : undefined}
       />
+
+      {mostrarReportar && (
+        <ModalReportar usuario={usuario} onCerrar={() => setMostrarReportar(false)} />
+      )}
 
       <div className="perfilContenido">
         <StatsPerfil

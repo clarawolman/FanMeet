@@ -1,0 +1,67 @@
+.modalReportarCaja {
+  align-items: stretch;
+}
+
+.modalReportarForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modalReportarLabel {
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fm-ink);
+  margin-bottom: 6px;
+}
+
+.modalReportarCampo {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font: inherit;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.modalReportarTexto {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.modalReportarAyuda {
+  margin: -12px 0 22px;
+  text-align: center;
+  color: var(--fm-ink);
+  opacity: 0.75;
+}
+
+.modalReportarError {
+  margin: -6px 0 14px;
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.modalReportarCancelar {
+  margin: 12px 0 0;
+}
+
+.headerPerfilReportar {
+  background: none;
+  border: none;
+  color: var(--fm-ink);
+  opacity: 0.6;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.headerPerfilReportar:hover {
+  opacity: 1;
+}

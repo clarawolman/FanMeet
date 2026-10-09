@@ -194,3 +194,47 @@ describe("authService.registro", () => {
     expect(usuarioRepository.crear).not.toHaveBeenCalled();
   });
 });
+
+describe("authService: moderación", () => {
+  it("un usuario suspendido no puede iniciar sesión", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: { user: { id: "u1" }, session: SESSION },
+      error: null,
+    });
+    usuarioRepository.obtenerPorId.mockResolvedValue({ ...USUARIO_ROW, estado: "suspendido" });
+
+    await expect(authService.login({ usuarioOMail: "ana@mail.com", contrasena: "x" })).rejects.toMatchObject({
+      status: 403,
+      details: { codigo: "CUENTA_SUSPENDIDA" },
+    });
+  });
+
+  it("avisa que falta confirmar el mail", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: {},
+      error: { code: "email_not_confirmed", message: "Email not confirmed" },
+    });
+
+    await expect(authService.login({ usuarioOMail: "ana@mail.com", contrasena: "x" })).rejects.toThrow(
+      /confirmaste tu mail/
+    );
+  });
+
+  it("si Supabase no devuelve sesión al registrarse, pide confirmar el mail", async () => {
+    authRepository.signUp.mockResolvedValue({ data: { user: { id: "u1" }, session: null }, error: null });
+    usuarioRepository.crear.mockResolvedValue(USUARIO_ROW);
+
+    const resultado = await authService.registro({
+      nombre: "Ana",
+      mail: "ana@mail.com",
+      contrasena: "Abcdef1!",
+      fechanac: "2000-01-01",
+      genero: "F",
+      estilo_asistencia: "pogo",
+      estilos_musicales: [],
+    });
+
+    expect(resultado.requiereConfirmacion).toBe(true);
+    expect(resultado.session).toBeNull();
+  });
+});

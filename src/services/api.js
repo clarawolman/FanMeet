@@ -40,6 +40,18 @@ async function solicitar(path, { method = "GET", body, formData, autenticado = t
   const datos = texto ? JSON.parse(texto) : null;
 
   if (!respuesta.ok) {
+    // La cuenta fue suspendida por un moderador: se cierra la sesión y se
+    // vuelve al login mostrando el motivo (ver App.jsx).
+    if (datos?.details?.codigo === "CUENTA_SUSPENDIDA" && autenticado) {
+      await supabase.auth.signOut();
+      try {
+        sessionStorage.setItem("fanmeet-aviso-login", datos.error);
+      } catch {
+        // sin sessionStorage, igual se cierra la sesión
+      }
+      window.location.reload();
+    }
+
     const error = new Error(datos?.error || "Ocurrió un error");
     error.status = respuesta.status;
     error.details = datos?.details;

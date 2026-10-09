@@ -4,6 +4,7 @@ import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository
 import { toUsuarioCompleto } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { FOTO_PERFIL_DEFAULT } from "../helpers/constants.js";
+import { errorCuentaSuspendida } from "../middlewares/authMiddleware.js";
 
 function formatearSesion(session) {
   if (!session) return null;
@@ -30,6 +31,13 @@ export const authService = {
 
     const { data, error } = await authRepository.signInWithPassword(mail, contrasena);
     if (error) {
+      // Con "Confirm email" activado en Supabase, no se puede entrar hasta
+      // tocar el link del mail.
+      if (error.code === "email_not_confirmed") {
+        throw ApiError.unauthorized(
+          "Todavía no confirmaste tu mail. Buscá el mail de FanMeet (fijate en spam) y tocá el link."
+        );
+      }
       throw ApiError.unauthorized("Usuario/mail o contraseña incorrectos");
     }
 
@@ -37,6 +45,9 @@ export const authService = {
     if (!usuario) {
       // Mismo caso borde que documenta App.jsx: cuenta de auth sin fila en "usuario".
       throw ApiError.unauthorized("Este usuario no existe");
+    }
+    if (usuario.estado === "suspendido") {
+      throw errorCuentaSuspendida();
     }
 
     return { usuario: toUsuarioCompleto(usuario), session: formatearSesion(data.session) };
@@ -79,7 +90,13 @@ export const authService = {
       );
     }
 
-    return { usuario: toUsuarioCompleto(usuarioCreado), session: formatearSesion(data.session) };
+    // Sin sesión = Supabase está esperando que confirme el mail: la app
+    // le avisa que lo revise en vez de entrar directo.
+    return {
+      usuario: toUsuarioCompleto(usuarioCreado),
+      session: formatearSesion(data.session),
+      requiereConfirmacion: !data.session,
+    };
   },
 
   // Replica exactamente los 3 chequeos que hace Registro1.jsx antes de

@@ -31,10 +31,12 @@ export const authService = {
     return api.post("/auth/verificar-registro", { nombre, mail }, { autenticado: false });
   },
 
+  // Devuelve { usuario, requiereConfirmacion }: si Supabase pide confirmar
+  // el mail, todavía no hay sesión y hay que avisarle al usuario.
   async registro(datosRegistro) {
     const resultado = await api.post("/auth/registro", datosRegistro, { autenticado: false });
     await aplicarSesion(resultado.session);
-    return resultado.usuario;
+    return { usuario: resultado.usuario, requiereConfirmacion: Boolean(resultado.requiereConfirmacion) };
   },
 
   async logout() {

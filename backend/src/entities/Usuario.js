@@ -12,6 +12,7 @@ export function toUsuarioCompleto(row) {
     genero: row.genero,
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     estilo_asistencia: row.estilo_asistencia,
+    rol: row.rol || "usuario",
   };
 }
 

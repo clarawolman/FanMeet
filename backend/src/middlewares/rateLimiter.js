@@ -21,6 +21,17 @@ export const chatbotRateLimiter = rateLimit({
   message: { error: "Mandaste muchos mensajes seguidos a Fani. Esperá un minuto." },
 });
 
+// Cada reporte manda un mail al moderador: limite propio por usuario para
+// que nadie llene la casilla.
+export const reporteRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user.id,
+  message: { error: "Mandaste muchos reportes seguidos. Probá de nuevo más tarde." },
+});
+
 // Limite general para el resto de la API.
 export const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000,

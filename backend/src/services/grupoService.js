@@ -9,6 +9,7 @@ import { toGrupo, toGrupoConConcierto } from "../entities/Grupo.js";
 import { toConciertoDetalle } from "../entities/Concierto.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 
 async function armarUsuariosDeGrupo(idGrupo) {
   const relaciones = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
@@ -23,6 +24,10 @@ export const grupoService = {
   // del body: cierra el hallazgo donde CrearGrupo.jsx mandaba id_creador
   // como prop de React sin verificacion server-side.
   async crear(idUsuarioAutenticado, datosGrupo) {
+    if (contieneMalasPalabras(`${datosGrupo.nombre} ${datosGrupo.descripcion || ""} ${datosGrupo.ubicacion}`)) {
+      throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
+    }
+
     const concierto = await conciertoRepository.obtenerPorId(datosGrupo.id_concierto);
     if (!concierto) throw ApiError.notFound("El concierto no existe");
 

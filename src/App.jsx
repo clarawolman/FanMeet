@@ -23,6 +23,18 @@ import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
 import { UsuarioContext } from "./context/UsuarioContext";
 
+// Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
+// motivo acá para mostrarlo en el login después de recargar.
+function leerAvisoLogin() {
+  try {
+    const aviso = sessionStorage.getItem("fanmeet-aviso-login") || "";
+    sessionStorage.removeItem("fanmeet-aviso-login");
+    return aviso;
+  } catch {
+    return "";
+  }
+}
+
 function App() {
   const [pantalla, setPantalla] = useState("login");
 
@@ -41,7 +53,9 @@ function App() {
   const [pantallaAntesDePerfil, setPantallaAntesDePerfil] = useState("fansUnidos");
 
   const [cargando, setCargando] = useState(false);
-  const [errorTexto, setErrorTexto] = useState("");
+  const [errorTexto, setErrorTexto] = useState(leerAvisoLogin);
+  // Mensaje informativo (no error) en el login, ej. "confirmá tu mail".
+  const [avisoLogin, setAvisoLogin] = useState("");
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -244,7 +258,20 @@ async function manejarFinalizarRegistro(datosPaso3) {
   delete datosSinFoto.previewFoto;
 
   try {
-    let usuarioCreado = await authService.registro(datosSinFoto);
+    const { usuario, requiereConfirmacion } = await authService.registro(datosSinFoto);
+    let usuarioCreado = usuario;
+
+    // Hay que confirmar el mail antes de poder entrar: sin sesión tampoco
+    // se puede subir la foto (queda la de por defecto, se cambia desde el perfil).
+    if (requiereConfirmacion) {
+      setDatosRegistro({});
+      setCargando(false);
+      setAvisoLogin(
+        `¡Listo! Te mandamos un mail a ${datosFinales.mail}. Tocá el link para confirmar tu cuenta y después iniciá sesión.`
+      );
+      setPantalla("login");
+      return;
+    }
 
     if (archivoFoto instanceof File) {
       try {
@@ -299,6 +326,9 @@ async function manejarFinalizarRegistro(datosPaso3) {
     <>
       {errorTexto && esPantallaLogin && (
         <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
+      )}
+      {avisoLogin && pantalla === "login" && (
+        <p style={{ padding: "16px 20px", margin: 0, textAlign: "center", fontWeight: 600 }}>{avisoLogin}</p>
       )}
 
       {pantalla === "login" && (

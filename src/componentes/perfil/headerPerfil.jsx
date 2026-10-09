@@ -17,6 +17,7 @@ export default function HeaderPerfil({
   onNavegar,
   onCerrarSesion,
   onEnviarMensaje,
+  onReportar,
 }) {
   const inputFotoRef = useRef(null);
 
@@ -119,6 +120,11 @@ export default function HeaderPerfil({
                 onClick={onEnviarMensaje}
               >
                 Mensaje
+              </button>
+            )}
+            {onReportar && (
+              <button className="headerPerfilReportar" type="button" onClick={onReportar}>
+                Reportar
               </button>
             )}
           </div>

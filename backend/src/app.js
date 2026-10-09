@@ -9,8 +9,8 @@ import { notFoundHandler, errorHandler } from "./middlewares/errorHandler.js";
 
 // Vite corre en un puerto que cambia si el elegido por defecto (5173) esta
 // ocupado, asi que en desarrollo aceptamos cualquier puerto de localhost en
-// vez de depender de CORS_ORIGIN. En produccion se respeta unicamente ese
-// valor exacto.
+// vez de depender de CORS_ORIGIN. En produccion se respetan unicamente
+// CORS_ORIGIN y BACKOFFICE_URL, con su valor exacto.
 function resolverOrigenCors(origin, callback) {
   if (!origin) return callback(null, true);
 
@@ -18,7 +18,8 @@ function resolverOrigenCors(origin, callback) {
     return callback(null, true);
   }
 
-  if (origin === env.corsOrigin) return callback(null, true);
+  // La app de fans y el backoffice se deployan por separado.
+  if (origin === env.corsOrigin || origin === env.backofficeUrl) return callback(null, true);
 
   return callback(new Error("Origen no permitido por CORS"));
 }

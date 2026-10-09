@@ -8,6 +8,8 @@ import amistadRoutes from "./amistadRoutes.js";
 import notificacionRoutes from "./notificacionRoutes.js";
 import chatRoutes from "./chatRoutes.js";
 import chatbotRoutes from "./chatbotRoutes.js";
+import reporteRoutes from "./reporteRoutes.js";
+import backofficeRoutes from "./backofficeRoutes.js";
 
 const router = Router();
 
@@ -20,5 +22,7 @@ router.use("/amistades", amistadRoutes);
 router.use("/notificaciones", notificacionRoutes);
 router.use("/chats", chatRoutes);
 router.use("/chatbot", chatbotRoutes);
+router.use("/reportes", reporteRoutes);
+router.use("/backoffice", backofficeRoutes);
 
 export default router;

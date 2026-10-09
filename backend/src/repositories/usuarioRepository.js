@@ -13,6 +13,16 @@ export const usuarioRepository = {
     return unwrap(resultado, "Error cargando usuario");
   },
 
+  // Lo usa authMiddleware en cada request: solo trae lo necesario.
+  async obtenerEstadoYRol(idUsuario) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("estado, rol")
+      .eq("id_usuario", idUsuario)
+      .maybeSingle();
+    return unwrap(resultado, "Error cargando estado del usuario");
+  },
+
   async obtenerMailPorNombre(nombre) {
     const resultado = await supabaseAdmin
       .from(TABLA)
