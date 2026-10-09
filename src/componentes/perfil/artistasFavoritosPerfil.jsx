@@ -86,7 +86,7 @@ export default function ArtistasFavoritosPerfil({ idUsuario, isOwnProfile }) {
                   +
                 </span>
                 <strong>Agregar</strong>
-                <small>{hayFavoritos ? "Sumá otro artista" : "Tu primer artista"}</small>
+                <small>{hayFavoritos ? "Sumá otro artista" : "Primer artista"}</small>
               </button>
             )
           }

@@ -32,7 +32,7 @@ export default function CompatibilidadPerfil({ idUsuario, nombre }) {
   if (cargando) {
     return (
       <section className="compatibilidadPerfil cargando">
-        <p className="compatibilidadPerfilVacio">Comparando sus gustos…</p>
+        <p className="compatibilidadPerfilVacio">Comparando gustos…</p>
       </section>
     );
   }
@@ -43,8 +43,8 @@ export default function CompatibilidadPerfil({ idUsuario, nombre }) {
     return (
       <section className="compatibilidadPerfil">
         <p className="compatibilidadPerfilVacio">
-          Todavía no hay suficientes gustos cargados para calcular su compatibilidad. Sumá
-          artistas o géneros a tu perfil, o vinculá Last.fm.
+          Todavía no hay suficientes gustos cargados para calcular la compatibilidad. Sumá
+          artistas o géneros al perfil, o vinculá Last.fm.
         </p>
       </section>
     );

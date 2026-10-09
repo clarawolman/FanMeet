@@ -1,6 +1,10 @@
+import { useContext } from "react";
 import "./HeaderApp.css";
+import { MenuLateralContext } from "../../context/MenuLateralContext";
+import { IconoNavMenu } from "./iconosNav";
 
 export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
+  const { abrirMenu } = useContext(MenuLateralContext);
   const filaTitulo = Boolean(onVolver) && Boolean(titulo);
   const filaTituloSola = !onVolver && Boolean(titulo);
 
@@ -30,6 +34,16 @@ export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
         {acciones && !filaTituloSola && (
           <div className="headerAppAcciones">{acciones}</div>
         )}
+
+        {/* Solo mobile: abre el menú lateral con lo que no entra en la barra de abajo */}
+        <button
+          className="headerAppMenu"
+          type="button"
+          onClick={abrirMenu}
+          aria-label="Abrir menú"
+        >
+          <IconoNavMenu />
+        </button>
       </div>
 
       {filaTituloSola && (

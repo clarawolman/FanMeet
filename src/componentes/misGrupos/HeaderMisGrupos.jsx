@@ -1,14 +1,11 @@
 import HeaderApp from "../generales/HeaderApp";
+import TabsEventosGrupos from "../generales/TabsEventosGrupos";
 
 function HeaderMisGrupos({ onVolver }) {
   return (
     <HeaderApp
       titulo="Tus grupos"
-      acciones={
-        <button className="headerAppBotonAccion" type="button" onClick={onVolver}>
-          ← Mis eventos
-        </button>
-      }
+      acciones={<TabsEventosGrupos activo="grupos" onEventos={onVolver} />}
     />
   );
 }

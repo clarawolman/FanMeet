@@ -3,14 +3,23 @@
   background: none;
   padding: 0;
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--fm-accent);
   cursor: pointer;
 }
 
 .fansHomeItem {
-  flex: 0 0 96px;
+  flex: 0 0 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  scroll-snap-align: start;
+}
+
+.fansHomePerfil {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,7 +29,12 @@
   background: none;
   color: var(--fm-ink);
   cursor: pointer;
-  scroll-snap-align: start;
+}
+
+.fansHomeConectar {
+  padding: 6px 10px;
+  font-size: var(--fm-fs-2xs);
+  max-width: 100%;
 }
 
 .fansHomeFotoWrap {
@@ -48,26 +62,33 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.fansHomeItem strong,
-.fansHomeItem small {
+.fansHomePerfil strong,
+.fansHomePerfil small {
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.fansHomeItem strong {
+.fansHomePerfil strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
   font-weight: 700;
 }
 
-.fansHomeItem small {
+.fansHomePerfil small {
   font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+.fansHomeAviso {
+  margin: -4px 0 0;
+  padding: 0 20px;
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
 }

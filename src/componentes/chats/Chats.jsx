@@ -1,6 +1,9 @@
 import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import "./Chats.css";
 import Footer from "../generales/Footer";
+import "../generales/HeaderApp.css";
+import { IconoNavMenu } from "../generales/iconosNav";
+import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { chatsService } from "../../services/chatsService";
 import { mensajesService } from "../../services/mensajesService";
 import { supabase } from "../../supabase";
@@ -159,6 +162,7 @@ function Tildes({ leido }) {
 
 function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   const { usuarioActual } = useContext(UsuarioContext);
+  const { abrirMenu } = useContext(MenuLateralContext);
   const idYo = usuarioActual?.id_usuario;
 
   const [chats, setChats] = useState([]);
@@ -612,7 +616,12 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
         {/* ===== LISTA DE CHATS ===== */}
         <aside className="chatsLista">
           <header className="chatsListaHeader">
-            <h1>Chats</h1>
+            <div className="chatsListaTitulo">
+              <h1>Chats</h1>
+              <button type="button" className="headerAppMenu" onClick={abrirMenu} aria-label="Abrir menú">
+                <IconoNavMenu />
+              </button>
+            </div>
             <label className="chatsBuscador">
               <IconoBuscar />
               <input

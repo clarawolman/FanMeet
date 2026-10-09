@@ -1,0 +1,310 @@
+/* ============================
+   Pantallas de lista "Tus eventos" y "Tus grupos": mismo layout y misma
+   card, para que las dos se vean iguales. La card no se mueve ni hace
+   sombra al pasar el mouse: solo cambia el color del borde.
+============================ */
+
+.pantallaLista {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--fm-bg);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--fm-font-body);
+  color: var(--fm-ink);
+}
+
+.listaLayout {
+  flex: 1;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px calc(100px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.listaTarjetas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tus grupos: un bloque por concierto */
+.listaSeccion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.listaSeccionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.listaSeccionHeader h2 {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--fm-font-display);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--fm-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listaSeccionCantidad {
+  flex-shrink: 0;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  font-size: 14px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.listaMensaje {
+  margin: 0;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  background: var(--fm-bg-soft);
+  border: 1px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  color: var(--fm-muted);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.listaMensaje p {
+  margin: 0;
+}
+
+/* ===== CARD ===== */
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  overflow: hidden;
+  transition: border-color var(--fm-dur) var(--fm-ease);
+}
+
+@media (hover: hover) {
+  .tarjeta:hover {
+    border-color: var(--fm-accent-soft-border);
+  }
+}
+
+.tarjetaMedia {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden; /* sin esto la foto estira el alto de la card */
+  background: var(--fm-bg-soft);
+}
+
+.tarjetaImagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* etiquetas arriba de la foto */
+.tarjetaChips {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tarjetaChip {
+  padding: 5px 11px;
+  border-radius: var(--fm-radius-pill);
+  background: rgba(15, 13, 18, 0.72);
+  color: #fff;
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+
+.tarjetaChip--fuerte {
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+}
+
+.tarjetaCuerpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.tarjetaTitulos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--fm-ink);
+  overflow-wrap: anywhere;
+}
+
+.tarjetaSubtitulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fm-accent);
+}
+
+.tarjetaMeta {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tarjetaMeta li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--fm-muted);
+  min-width: 0;
+}
+
+.tarjetaMeta svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+.tarjetaMeta span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* avatares de quienes van */
+.tarjetaPersonas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--fm-muted);
+}
+
+.tarjetaAvatares {
+  display: flex;
+}
+
+.tarjetaAvatares img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--fm-surface);
+  background: var(--fm-bg-soft);
+  margin-left: -8px;
+}
+
+.tarjetaAvatares img:first-child {
+  margin-left: 0;
+}
+
+.tarjetaAcciones {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.tarjetaBoton {
+  flex: 1;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
+}
+
+.tarjetaBoton:hover {
+  filter: brightness(1.06);
+}
+
+.tarjetaBoton--secundario {
+  flex: 0 0 auto;
+  border-color: var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+}
+
+.tarjetaBoton--secundario:hover {
+  filter: none;
+  background: var(--fm-bg-soft);
+}
+
+/* ===== DESKTOP: grilla, alineada con el título del header ===== */
+@media (min-width: 768px) {
+  .pantallaLista {
+    padding-left: 240px;
+  }
+
+  .listaLayout {
+    max-width: none;
+    margin: 0;
+    padding: 28px 40px 80px;
+    gap: 36px;
+  }
+
+  .listaTarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .listaSeccionHeader h2 {
+    font-size: 21px;
+  }
+}

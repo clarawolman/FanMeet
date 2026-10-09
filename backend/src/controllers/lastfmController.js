@@ -21,7 +21,7 @@ export const lastfmController = {
   }),
 
   obtenerEscuchas: asyncHandler(async (req, res) => {
-    const escuchas = await lastfmService.obtenerEscuchas(req.params.idUsuario, req.query.periodo);
+    const escuchas = await lastfmService.obtenerEscuchas(req.params.idUsuario);
     res.json(escuchas);
   }),
 };

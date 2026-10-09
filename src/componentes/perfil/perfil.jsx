@@ -46,7 +46,7 @@ const AMBIENTES_CONCIERTO = [
 
 function Perfil({
   usuarioPerfil,
-  isOwnProfile = true,
+  isOwnProfile: esPerfilPropio = true,
   onNavegar,
   onVolver,
   onCerrarSesion,
@@ -56,6 +56,11 @@ function Perfil({
 }) {
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const usuarioBase = usuarioPerfil || usuarioActual;
+  // Si el perfil es el tuyo, se trata como propio aunque se haya abierto
+  // como "ajeno": nunca se puede conectar con uno mismo.
+  const isOwnProfile =
+    esPerfilPropio ||
+    (Boolean(usuarioPerfil?.id_usuario) && usuarioPerfil.id_usuario === usuarioActual?.id_usuario);
 
   // La foto se actualiza optimistamente acá y también se guarda en el
   // UsuarioContext para que el resto de la app la vea.
@@ -229,7 +234,7 @@ function Perfil({
     } catch (error) {
       console.error("Error actualizando vibra de concierto:", error);
       setVibraActual(anterior);
-      alert("No se pudo actualizar tu vibra: " + error.message);
+      alert("No se pudo actualizar la vibe: " + error.message);
     }
   }
 
@@ -299,7 +304,6 @@ function Perfil({
         <ResumenLastfmPerfil
           key={`resumen-${usuario.id_usuario}-${versionMusica}`}
           idUsuario={usuario.id_usuario}
-          isOwnProfile={isOwnProfile}
         />
 
         {!isOwnProfile && (

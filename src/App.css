@@ -37,6 +37,12 @@
   --fm-coral: var(--fm-accent);
   --fm-yellow: var(--fm-accent-2);
 
+  /* navegación (barra de abajo, sidebar y menú lateral) */
+  --fm-nav-ink: #8a8596;
+  --fm-nav-activo: #811cd9;
+  --fm-nav-activo-bg: #f1e9fc;
+  --fm-nav-hover-bg: #f5f0fd;
+
   --fm-shadow: 0 10px 30px rgba(22, 21, 26, 0.1);
   --fm-shadow-sm: 0 4px 14px rgba(22, 21, 26, 0.08);
   --fm-radius-lg: 22px;
@@ -73,8 +79,27 @@
   --fm-accent-soft-border: rgba(255, 47, 125, 0.5);
   --fm-accent-soft-ink: #ffb8d3;
 
+  /* en oscuro el resaltado es un violeta translúcido, no un parche claro */
+  --fm-nav-ink: #9a9288;
+  --fm-nav-activo: #c4a3ff;
+  --fm-nav-activo-bg: rgba(145, 89, 255, 0.18);
+  --fm-nav-hover-bg: rgba(242, 237, 228, 0.06);
+
   --fm-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
   --fm-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* En el celular todo un punto más grande: se lee a distancia de brazo. */
+@media (max-width: 767px) {
+  :root {
+    --fm-fs-2xs: 13px;
+    --fm-fs-xs: 14px;
+    --fm-fs-sm: 15px;
+    --fm-fs-body: 16px;
+    --fm-fs-md: 17px;
+    --fm-fs-lg: 20px;
+    --fm-fs-xl: 25px;
+  }
 }
 
 body {

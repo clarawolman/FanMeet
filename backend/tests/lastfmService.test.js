@@ -105,9 +105,9 @@ describe("lastfmService.obtenerEscuchas", () => {
     spotifyService.buscarImagen.mockResolvedValue("foto-spotify");
     mockearRespuestasLastfm();
 
-    const escuchas = await lastfmService.obtenerEscuchas(otro, "semana");
+    const escuchas = await lastfmService.obtenerEscuchas(otro);
 
-    expect(lastfmApiRepository.obtenerTopArtistas).toHaveBeenCalledWith("fan", "7day", 10);
+    expect(lastfmApiRepository.obtenerTopArtistas).toHaveBeenCalledWith("fan", "1month", 10);
     expect(escuchas.total_reproducciones).toBe(5000);
     expect(escuchas.topArtistas[0]).toMatchObject({
       nombre: "Banda",

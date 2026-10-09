@@ -33,7 +33,9 @@ function Home({ onEntrarConcierto, onNavegar, onVerUsuario }) {
   // Lo que depende del matching tarda más (consulta Last.fm): se carga
   // aparte, sin frenar el resto de la home.
   const [recomendados, setRecomendados] = useState([]);
+  const [cargandoRecomendados, setCargandoRecomendados] = useState(true);
   const [fansCompatibles, setFansCompatibles] = useState([]);
+  const [soloFansCercanos, setSoloFansCercanos] = useState(false);
 
   useEffect(() => {
     if (!usuarioActual?.id_usuario) return;
@@ -42,11 +44,16 @@ function Home({ onEntrarConcierto, onNavegar, onVerUsuario }) {
     matchingService
       .conciertosRecomendados()
       .then((datos) => !cancelado && setRecomendados(datos || []))
-      .catch((error) => console.error("Error cargando recomendaciones:", error));
+      .catch((error) => console.error("Error cargando recomendaciones:", error))
+      .finally(() => !cancelado && setCargandoRecomendados(false));
 
     matchingService
       .descubrir()
-      .then((datos) => !cancelado && setFansCompatibles(datos?.fans || []))
+      .then((datos) => {
+        if (cancelado) return;
+        setFansCompatibles(datos?.fans || []);
+        setSoloFansCercanos(Boolean(datos?.soloCercanos));
+      })
       .catch((error) => console.error("Error cargando fans compatibles:", error));
 
     return () => {
@@ -158,6 +165,24 @@ const generosOrdenados = [...generos].sort((a, b) => {
       (concierto) => String(concierto.id_estiloMusical) === String(idGenero)
     );
   }
+
+  // Conciertos recomendados según los gustos del usuario (artistas, Last.fm
+  // y géneros, calculado en el backend). Si el backend no encuentra nada,
+  // se usan los conciertos de sus géneros preferidos a los que no se unió.
+  const recomendadosPorGenero = conciertos
+    .filter(
+      (concierto) =>
+        generosPreferidosIds.includes(String(concierto.id_estiloMusical)) &&
+        !usuarioYaEstaUnido(concierto.id_concierto)
+    )
+    .slice(0, 10)
+    .map((concierto) => {
+      const genero = generos.find((g) => g.id === String(concierto.id_estiloMusical));
+      return { ...concierto, motivo: genero ? `Te gusta el ${genero.nombre.toLowerCase()}` : null };
+    });
+
+  const conciertosRecomendados =
+    recomendados.length > 0 ? recomendados : recomendadosPorGenero;
 
   async function abrirConcierto(concierto) {
     if (usuarioYaEstaUnido(concierto.id_concierto)) {
@@ -362,25 +387,44 @@ const generosOrdenados = [...generos].sort((a, b) => {
 
         {!cargando && !hayBusqueda && conciertos.length > 0 && (
           <section className="home-catalogo">
+            <section className="home-row">
+              <div className="home-row-header">
+                <h2>Conciertos recomendados</h2>
+                <span>Según tus gustos</span>
+              </div>
+
+              {cargandoRecomendados && conciertosRecomendados.length === 0 && (
+                <p className="home-estado">Buscando conciertos para vos...</p>
+              )}
+
+              {!cargandoRecomendados && conciertosRecomendados.length === 0 && (
+                <div className="home-recomendados-vacio">
+                  <p>
+                    Sumá tus artistas favoritos y géneros (o vinculá Last.fm) para
+                    recibir conciertos recomendados.
+                  </p>
+                  <button type="button" onClick={() => onNavegar("perfil")}>
+                    Completar mi perfil
+                  </button>
+                </div>
+              )}
+
+              {conciertosRecomendados.length > 0 && (
+                <CarruselFila>
+                  {conciertosRecomendados.map((concierto) =>
+                    renderCard(concierto, concierto.motivo)
+                  )}
+                </CarruselFila>
+              )}
+            </section>
+
             {fansCompatibles.length > 0 && (
               <FansCompatiblesHome
                 fans={fansCompatibles}
+                soloCercanos={soloFansCercanos}
                 onVerUsuario={onVerUsuario}
                 onVerTodos={() => onNavegar("descubrir")}
               />
-            )}
-
-            {recomendados.length > 0 && (
-              <section className="home-row">
-                <div className="home-row-header">
-                  <h2>Para vos</h2>
-                  <span>Según tus gustos</span>
-                </div>
-
-                <CarruselFila>
-                  {recomendados.map((concierto) => renderCard(concierto, concierto.motivo))}
-                </CarruselFila>
-              </section>
             )}
 
             <section className="home-row">

@@ -119,15 +119,18 @@
   color: var(--fm-muted);
 }
 
-.escuchasAyuda a,
-.escuchasFuente a {
+.escuchasFuente strong {
+  color: var(--fm-ink);
+  font-weight: 600;
+}
+
+.escuchasAyuda a {
   color: var(--fm-accent);
   font-weight: 600;
   text-decoration: none;
 }
 
-.escuchasAyuda a:hover,
-.escuchasFuente a:hover {
+.escuchasAyuda a:hover {
   text-decoration: underline;
 }
 
@@ -156,34 +159,14 @@
 }
 
 /* Selector de período, estilo Last.fm */
-.escuchasRangos {
-  display: flex;
-  gap: 8px;
+/* etiqueta del período (solo últimos 30 días) */
+.escuchasPeriodo {
+  margin: 0 0 16px;
   padding: 0 16px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.escuchasRango {
-  flex-shrink: 0;
-  padding: 7px 14px;
-  border-radius: var(--fm-radius-pill);
-  border: 1px solid var(--fm-border);
-  background: var(--fm-bg-soft);
-  color: var(--fm-ink);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease),
-    color var(--fm-dur) var(--fm-ease);
-}
-
-.escuchasRango.activo {
-  background: var(--fm-accent);
-  border-color: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  font-weight: 700;
+  color: var(--fm-accent);
 }
 
 .escuchasCuerpo {
@@ -234,12 +217,6 @@
   padding: 8px 12px;
   color: inherit;
   text-decoration: none;
-  transition: border-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
-}
-
-.cancionEscucha:hover {
-  border-color: var(--fm-accent);
-  transform: translateY(-1px);
 }
 
 .cancionEscuchaPosicion {
@@ -311,7 +288,7 @@
   .escuchasHeader,
   .escuchasMensaje,
   .escuchasResumen,
-  .escuchasRangos,
+  .escuchasPeriodo,
   .escuchasBloque h4,
   .escuchasLista,
   .escuchasFuente {

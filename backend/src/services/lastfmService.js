@@ -21,26 +21,15 @@ const RECIENTES_LIMITE = 10;
 // Last.fm pide no consultarlo de mas: guardamos cada respuesta un minuto.
 const CACHE_MS = 60 * 1000;
 
-// Los mismos periodos que ofrece la web de Last.fm.
-const PERIODOS = {
-  semana: "7day",
-  mes: "1month",
-  trimestre: "3month",
-  semestre: "6month",
-  anio: "12month",
-  siempre: "overall",
-};
+// De Last.fm solo usamos lo de los ultimos 30 dias: es lo que dice como
+// esta hoy cada persona, y pedir un solo periodo hace todo mas rapido.
+export const PERIODO_LASTFM = "1month";
 
 const cacheEscuchas = new Map();
 
-// Top artistas de un periodo; si no escucho nada ahi, los de siempre.
-async function topConRespaldo(usuario, periodoLastfm, limite) {
-  const datos = await lastfmApiRepository.obtenerTopArtistas(usuario, periodoLastfm, limite);
-  const artistas = comoLista(datos?.topartists?.artist).map(toArtistaLastfm);
-  if (artistas.length > 0) return { artistas, deSiempre: false };
-
-  const historico = await lastfmApiRepository.obtenerTopArtistas(usuario, "overall", limite);
-  return { artistas: comoLista(historico?.topartists?.artist).map(toArtistaLastfm), deSiempre: true };
+async function topArtistasDelMes(usuario, limite) {
+  const datos = await lastfmApiRepository.obtenerTopArtistas(usuario, PERIODO_LASTFM, limite);
+  return comoLista(datos?.topartists?.artist).map(toArtistaLastfm);
 }
 
 function asegurarConfigurado() {
@@ -83,22 +72,21 @@ export const lastfmService = {
     }
   },
 
-  // Lo que escucha un usuario (propio o ajeno), estilo Last.fm.
-  async obtenerEscuchas(idUsuario, periodo = "mes") {
+  // Lo que escuchó un usuario (propio o ajeno) en los últimos 30 días.
+  async obtenerEscuchas(idUsuario) {
     const cuenta = await lastfmCuentaRepository.obtenerPorUsuario(idUsuario);
     if (!cuenta) return { conectado: false };
 
     asegurarConfigurado();
-    const periodoLastfm = PERIODOS[periodo] || PERIODOS.mes;
-    const claveCache = `${idUsuario}|${cuenta.usuario_lastfm}|${periodoLastfm}`;
+    const claveCache = `${idUsuario}|${cuenta.usuario_lastfm}|escuchas`;
     const cacheado = cacheEscuchas.get(claveCache);
     if (cacheado && cacheado.expira > Date.now()) return cacheado.datos;
 
     const usuario = cuenta.usuario_lastfm;
     const [artistas, canciones, albumes, recientes] = await Promise.all([
-      lastfmApiRepository.obtenerTopArtistas(usuario, periodoLastfm, TOP_LIMITE),
-      lastfmApiRepository.obtenerTopCanciones(usuario, periodoLastfm, TOP_LIMITE),
-      lastfmApiRepository.obtenerTopAlbumes(usuario, periodoLastfm, TOP_LIMITE),
+      lastfmApiRepository.obtenerTopArtistas(usuario, PERIODO_LASTFM, TOP_LIMITE),
+      lastfmApiRepository.obtenerTopCanciones(usuario, PERIODO_LASTFM, TOP_LIMITE),
+      lastfmApiRepository.obtenerTopAlbumes(usuario, PERIODO_LASTFM, TOP_LIMITE),
       lastfmApiRepository.obtenerRecientes(usuario, RECIENTES_LIMITE),
     ]);
 
@@ -116,7 +104,6 @@ export const lastfmService = {
       conectado: true,
       usuario_lastfm: usuario,
       url_perfil: `https://www.last.fm/user/${encodeURIComponent(usuario)}`,
-      periodo,
       total_reproducciones: Number(recientes?.recenttracks?.["@attr"]?.total) || 0,
       topArtistas,
       topCanciones,
@@ -128,8 +115,8 @@ export const lastfmService = {
     return datos;
   },
 
-  // Tarjeta corta de arriba del perfil: lo que mas escucho este mes (o de
-  // siempre, si este mes no escucho nada), sus generos y el total.
+  // Tarjeta corta de arriba del perfil: lo que mas escucho en los ultimos
+  // 30 dias, sus generos y el total.
   async obtenerResumen(idUsuario) {
     const cuenta = await lastfmCuentaRepository.obtenerPorUsuario(idUsuario);
     if (!cuenta) return { conectado: false };
@@ -140,7 +127,7 @@ export const lastfmService = {
     const cacheado = cacheEscuchas.get(claveCache);
     if (cacheado && cacheado.expira > Date.now()) return cacheado.datos;
 
-    const { artistas, deSiempre } = await topConRespaldo(usuario, PERIODOS.mes, TOP_LIMITE);
+    const artistas = await topArtistasDelMes(usuario, TOP_LIMITE);
     const [info, generos, artistaTop] = await Promise.all([
       lastfmApiRepository.obtenerInfoUsuario(usuario).catch(() => null),
       generosPrincipales(artistas.map((a) => a.nombre), 4),
@@ -151,7 +138,6 @@ export const lastfmService = {
       conectado: true,
       usuario_lastfm: usuario,
       url_perfil: `https://www.last.fm/user/${encodeURIComponent(usuario)}`,
-      periodo: deSiempre ? "siempre" : "mes",
       total_reproducciones: Number(info?.user?.playcount) || 0,
       artistaTop,
       otrosArtistas: artistas.slice(1, 4).map((a) => a.nombre),
@@ -169,8 +155,8 @@ export const lastfmService = {
     const cuenta = await lastfmCuentaRepository.obtenerPorUsuario(idUsuario);
     if (!cuenta || !env.lastfmApiKey) return { artistas: [], generos: [] };
 
-    const [{ artistas: top }, favoritos, catalogo, elegidos] = await Promise.all([
-      topConRespaldo(cuenta.usuario_lastfm, PERIODOS.semestre, 15),
+    const [top, favoritos, catalogo, elegidos] = await Promise.all([
+      topArtistasDelMes(cuenta.usuario_lastfm, 15),
       artistaFavoritoRepository.listarPorUsuario(idUsuario),
       estiloMusicalRepository.listarCatalogo(),
       estiloMusicalRepository.listarIdsPorUsuario(idUsuario),

@@ -1,9 +1,9 @@
 import { api } from "./api";
 
 export const lastfmService = {
-  // periodo: "semana" | "mes" | "trimestre" | "semestre" | "anio" | "siempre"
-  async obtenerEscuchas(idUsuario, periodo = "mes") {
-    return api.get(`/lastfm/usuarios/${idUsuario}/escuchas?periodo=${periodo}`);
+  // Lo que escuchó en los últimos 30 días.
+  async obtenerEscuchas(idUsuario) {
+    return api.get(`/lastfm/usuarios/${idUsuario}/escuchas`);
   },
 
   // Tarjeta corta de arriba del perfil. { conectado: false } si no vinculó.

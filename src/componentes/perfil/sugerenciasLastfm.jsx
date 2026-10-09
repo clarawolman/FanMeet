@@ -88,14 +88,14 @@ export default function SugerenciasLastfm({ onListo }) {
 
     setGuardando(false);
     if (fallos > 0) {
-      setAviso("Algunas cosas no se pudieron sumar. Podés agregarlas a mano desde tu perfil.");
+      setAviso("Algunas cosas no se pudieron sumar. Se pueden agregar a mano desde el perfil.");
       return;
     }
     onListo(true);
   }
 
   if (!sugerencias) {
-    return <p className="sugerenciasLastfmCargando">Buscando lo que escuchás…</p>;
+    return <p className="sugerenciasLastfmCargando">Buscando escuchas…</p>;
   }
 
   const { artistas, generos } = sugerencias;
@@ -105,9 +105,9 @@ export default function SugerenciasLastfm({ onListo }) {
 
   return (
     <div className="sugerenciasLastfm">
-      <h4>¿Sumamos esto a tu perfil?</h4>
+      <h4>¿Sumamos esto al perfil?</h4>
       <p className="sugerenciasLastfmSubtitulo">
-        Lo sacamos de lo que escuchás en Last.fm. Tocá para sacar lo que no quieras.
+        Sale de las escuchas de Last.fm. Tocá para sacar lo que no quieras.
       </p>
 
       {artistas.length > 0 && (
@@ -186,7 +186,7 @@ export default function SugerenciasLastfm({ onListo }) {
               onClick={agregar}
               disabled={guardando || nadaElegido}
             >
-              {guardando ? "Agregando…" : "Agregar a mi perfil"}
+              {guardando ? "Agregando…" : "Agregar al perfil"}
             </button>
           </>
         )}

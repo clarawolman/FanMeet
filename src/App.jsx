@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
 import Concierto from "./componentes/concierto/Concierto";
@@ -17,6 +17,7 @@ import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
 import Descubrir from "./componentes/descubrir/Descubrir";
+import MenuLateral from "./componentes/generales/MenuLateral";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
@@ -26,6 +27,12 @@ import { UsuarioContext } from "./context/UsuarioContext";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
+
+  // Cada pantalla nueva arranca desde arriba (si no, hereda el scroll de
+  // la anterior y se abre "a la mitad").
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pantalla]);
 
   // El usuario logueado vive en UsuarioContext (src/context/UsuarioContext.jsx).
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
@@ -131,6 +138,13 @@ function App() {
   }
 
   async function manejarVerUsuario(idUsuario) {
+    // Tocar tu propia foto (en amigos de otro, fans, chats...) abre tu
+    // perfil, nunca la vista "ajena" con el botón de conectar.
+    if (idUsuario === usuarioActual?.id_usuario) {
+      manejarNavegacion("perfil");
+      return;
+    }
+
     try {
       const usuario = await usuariosService.obtenerPerfil(idUsuario);
       setUsuarioVisitado(usuario);
@@ -308,6 +322,14 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
   return (
     <>
+      {!esPantallaLogin && usuarioActual && (
+        <MenuLateral
+          pantallaActiva={pantalla}
+          onNavegar={manejarNavegacion}
+          onCerrarSesion={manejarCerrarSesion}
+        />
+      )}
+
       {errorTexto && esPantallaLogin && (
         <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
       )}

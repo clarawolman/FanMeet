@@ -24,7 +24,7 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
   usuariosConciertosRepository: { listarTodas: vi.fn() },
 }));
 vi.mock("../src/repositories/amistadRepository.js", () => ({
-  amistadRepository: { listarAceptadasDeUsuario: vi.fn() },
+  amistadRepository: { listarAceptadasDeUsuario: vi.fn(), listarDeUsuario: vi.fn() },
 }));
 vi.mock("../src/services/generoService.js", () => ({
   generoService: { vocabulario: vi.fn() },
@@ -93,6 +93,7 @@ beforeEach(() => {
   ]);
   lastfmCuentaRepository.listarTodas.mockResolvedValue([]);
   usuariosConciertosRepository.listarTodas.mockResolvedValue([]);
+  amistadRepository.listarDeUsuario.mockResolvedValue([]);
   generoService.vocabulario.mockResolvedValue(
     new Map([
       ["pop", "pop"],
@@ -170,9 +171,51 @@ describe("matchingService.descubrir", () => {
     expect(fans[0]).not.toHaveProperty("mail");
   });
 
+  it("solo muestra gente nueva con 60% o más, lista para conectar", async () => {
+    const { fans } = await matchingService.descubrir(YO);
+
+    expect(fans.every((f) => f.porcentaje >= 60)).toBe(true);
+    expect(fans[0]).toMatchObject({ id_usuario: GEMELO, estadoAmistad: "conectar", idAmistad: null });
+  });
+
+  it.each([
+    ["amigos", { id_solicitante: YO, id_receptor: GEMELO, estado: "aceptada" }],
+    ["solicitud enviada", { id_solicitante: YO, id_receptor: GEMELO, estado: "pendiente" }],
+    ["solicitud recibida", { id_solicitante: GEMELO, id_receptor: YO, estado: "pendiente" }],
+  ])("deja afuera a quien ya tiene relación (%s)", async (_caso, amistad) => {
+    amistadRepository.listarDeUsuario.mockResolvedValue([{ id_amistad: 5, ...amistad }]);
+
+    const { fans } = await matchingService.descubrir(YO);
+
+    expect(fans.map((f) => f.id_usuario)).not.toContain(GEMELO);
+  });
+
+  it("si nadie llega al 60%, devuelve los más parecidos igual", async () => {
+    artistaFavoritoRepository.listarTodos.mockResolvedValue([
+      { id_usuario: YO, nombre: "Duki" },
+      { id_usuario: YO, nombre: "Khea" },
+      { id_usuario: YO, nombre: "Bizarrap" },
+      { id_usuario: GEMELO, nombre: "Duki" },
+      { id_usuario: GEMELO, nombre: "Taylor Swift" },
+      { id_usuario: GEMELO, nombre: "Coldplay" },
+      { id_usuario: OPUESTO, nombre: "Taylor Swift" },
+    ]);
+    estiloMusicalRepository.listarTodasLasSelecciones.mockResolvedValue([
+      { id_usuario: YO, id_estilo: 3 },
+      { id_usuario: GEMELO, id_estilo: 1 },
+      { id_usuario: OPUESTO, id_estilo: 1 },
+    ]);
+
+    const { soloCercanos, fans } = await matchingService.descubrir(YO);
+
+    expect(soloCercanos).toBe(true);
+    expect(fans.map((f) => f.id_usuario)).toEqual([GEMELO]);
+    expect(fans[0].porcentaje).toBeLessThan(60);
+  });
+
   it("avisa si el propio perfil no tiene gustos para comparar", async () => {
     const resultado = await matchingService.descubrir(VACIO);
-    expect(resultado).toEqual({ perfilCompleto: false, fans: [] });
+    expect(resultado).toEqual({ perfilCompleto: false, soloCercanos: false, fans: [] });
   });
 
   it("deduce géneros de los tags de Last.fm y descarta los que no son géneros", async () => {

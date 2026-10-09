@@ -48,7 +48,12 @@
   border-radius: var(--fm-radius-sm);
 }
 
-.artistaCirculoLink:hover .artistaCirculoImagen {
+/* lo que no es link (Last.fm) no reacciona al mouse */
+.artistaCirculoLink--fijo {
+  cursor: default;
+}
+
+.artistaCirculoLink:not(.artistaCirculoLink--fijo):hover .artistaCirculoImagen {
   transform: scale(1.03);
 }
 
@@ -90,7 +95,7 @@
   border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   color: var(--fm-ink);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   cursor: pointer;
   display: flex;

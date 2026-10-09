@@ -53,7 +53,7 @@
 
 .home-row-header span {
   font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--fm-accent);
 }
@@ -135,7 +135,7 @@
 
   padding: 10px 32px;
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -187,7 +187,7 @@
   border: 1px solid var(--fm-accent-soft-border);
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -453,7 +453,7 @@
    confundirse de un vistazo en el listado. */
 .home-card-btn-unirme.home-card-btn-unirme--ver {
   padding: 11px 36px !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   background: var(--fm-surface) !important;
   border: 1.5px solid var(--fm-accent) !important;
   color: var(--fm-accent) !important;
@@ -489,18 +489,19 @@
     scroll-padding-left: 20px;
   }
 
+  /* cards anchas: se ve una entera y asoma la siguiente */
   .home-row-scroll .home-card {
-    flex: 0 0 208px;
-    min-width: 208px;
-    max-width: 208px;
+    flex: 0 0 min(78vw, 320px);
+    min-width: min(78vw, 320px);
+    max-width: min(78vw, 320px);
     overflow: visible;
   }
 
   .home-card-imagen {
     position: relative;
     width: 100%;
-    height: 232px;
-    aspect-ratio: auto;
+    height: auto;
+    aspect-ratio: 4 / 3;
     flex-shrink: 0;
   }
 
@@ -514,8 +515,8 @@
   }
 
   .home-card-info h3 {
-    font-size: var(--fm-fs-md);
-    line-height: 1.1;
+    font-size: 20px;
+    line-height: 1.15;
     font-weight: 700;
     color: var(--fm-ink);
   }
@@ -523,13 +524,13 @@
   .home-card-artista {
     margin: 2px 0 0;
     font-family: var(--fm-font-mono);
-    font-size: var(--fm-fs-xs);
+    font-size: var(--fm-fs-sm);
     font-weight: 600;
     color: var(--fm-accent);
   }
 
   .home-card-meta {
-    font-size: var(--fm-fs-2xs);
+    font-size: var(--fm-fs-sm);
     line-height: 1.25;
     color: var(--fm-muted);
     display: flex;
@@ -575,7 +576,7 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 14px;
   text-align: center;
@@ -618,4 +619,47 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* mensajes dentro de una fila (cargando, sin resultados) */
+.home-estado {
+  margin: 0;
+  padding: 0 20px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+/* "Conciertos recomendados" sin datos de gustos para calcularlos */
+.home-recomendados-vacio {
+  margin: 0 20px;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  background: var(--fm-bg-soft);
+  border: 1px dashed var(--fm-border);
+  border-radius: var(--fm-radius-md);
+}
+
+.home-recomendados-vacio p {
+  flex: 1 1 240px;
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.home-recomendados-vacio button {
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  padding: 10px 18px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  cursor: pointer;
 }

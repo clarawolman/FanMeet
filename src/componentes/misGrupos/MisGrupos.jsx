@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./MisGrupos.css";
+import "../generales/TarjetaLista.css";
 
 import { gruposService } from "../../services/gruposService";
 
@@ -87,39 +87,42 @@ function MisGrupos({
   }
 
   return (
-    <div className="pantallaMisGrupos">
+    <div className="pantallaLista">
       <HeaderMisGrupos onVolver={onVolver} />
 
-      <main className="misGruposLayout">
+      <main className="listaLayout">
         {cargando && <LoadingSpinner texto="Cargando grupos..." />}
 
         {!cargando && misGrupos.length === 0 && (
-          <p className="mensajeMisGrupos">No tenés grupos.</p>
+          <div className="listaMensaje">
+            <p>Todavía no estás en ningún grupo. Entrá a un concierto para sumarte a uno o crear el tuyo.</p>
+            <button type="button" className="tarjetaBoton" onClick={onVolver}>
+              Ver tus eventos
+            </button>
+          </div>
         )}
 
-        {!cargando && (
-          <div className="misGruposCatalogo">
-            {seccionesConciertos.map((seccion) => (
-              <section className="misGruposRow" key={seccion.id_concierto}>
-                <div className="misGruposRowHeader">
-                  <h2>{obtenerNombreConcierto(seccion)}</h2>
-                  <span>{seccion.grupos.length}</span>
-                </div>
+        {!cargando &&
+          seccionesConciertos.map((seccion) => (
+            <section className="listaSeccion" key={seccion.id_concierto}>
+              <div className="listaSeccionHeader">
+                <h2>{obtenerNombreConcierto(seccion)}</h2>
+                <span className="listaSeccionCantidad">{seccion.grupos.length}</span>
+              </div>
 
-                <div className="misGruposRowScroll">
-                  {seccion.grupos.map((grupo) => (
+              <ul className="listaTarjetas">
+                {seccion.grupos.map((grupo) => (
+                  <li key={grupo.id_grupo}>
                     <CardGrupo
-                      key={grupo.id_grupo}
                       grupo={grupo}
                       onAbrirGrupo={() => onAbrirGrupo(grupo)}
                       onSalir={setGrupoParaSalir}
                     />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
       </main>
 
       {grupoParaSalir && (

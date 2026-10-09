@@ -11,6 +11,9 @@
 .registroHeader {
   width: 100%;
   max-width: 430px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   height: 84px;
   padding: 0 24px;
   background: var(--fm-surface);

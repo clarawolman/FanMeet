@@ -9,7 +9,7 @@ function formatearNumero(numero) {
 
 // Tarjeta corta arriba del perfil con lo que escucha en Last.fm. Si no
 // tiene Last.fm vinculado (o falla), no se muestra nada.
-export default function ResumenLastfmPerfil({ idUsuario, isOwnProfile }) {
+export default function ResumenLastfmPerfil({ idUsuario }) {
   const [resumen, setResumen] = useState(null);
 
   useEffect(() => {
@@ -27,17 +27,11 @@ export default function ResumenLastfmPerfil({ idUsuario, isOwnProfile }) {
 
   if (!resumen?.conectado || !resumen.artistaTop) return null;
 
-  const { artistaTop, otrosArtistas, generos, total_reproducciones, periodo } = resumen;
-  const cuando = periodo === "mes" ? "este mes" : "de siempre";
+  const { artistaTop, otrosArtistas, generos, total_reproducciones } = resumen;
 
   return (
     <section className="resumenLastfm">
-      <a
-        className="resumenLastfmArtista"
-        href={artistaTop.url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <div className="resumenLastfmArtista">
         {artistaTop.imagen ? (
           <img src={artistaTop.imagen} alt="" />
         ) : (
@@ -45,11 +39,11 @@ export default function ResumenLastfmPerfil({ idUsuario, isOwnProfile }) {
             {artistaTop.nombre[0]?.toUpperCase()}
           </span>
         )}
-      </a>
+      </div>
 
       <div className="resumenLastfmTexto">
         <p className="resumenLastfmEtiqueta">
-          {isOwnProfile ? "Lo que más escuchás" : "Lo que más escucha"} {cuando}
+          Lo más escuchado del mes
         </p>
         <h3>{artistaTop.nombre}</h3>
         {otrosArtistas.length > 0 && (

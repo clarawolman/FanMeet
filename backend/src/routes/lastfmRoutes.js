@@ -3,7 +3,7 @@ import { lastfmController } from "../controllers/lastfmController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validate.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
-import { vincularLastfmSchema, escuchasQuerySchema } from "../validators/lastfmValidators.js";
+import { vincularLastfmSchema } from "../validators/lastfmValidators.js";
 
 const router = Router();
 
@@ -22,7 +22,6 @@ router.get(
   "/usuarios/:idUsuario/escuchas",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
-  validate(escuchasQuerySchema, "query"),
   lastfmController.obtenerEscuchas
 );
 

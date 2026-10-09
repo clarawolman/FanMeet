@@ -5,16 +5,6 @@ import IconoLastfm from "./iconoLastfm";
 import SugerenciasLastfm from "./sugerenciasLastfm";
 import "./escuchasPerfil.css";
 
-// Los mismos períodos que ofrece la web de Last.fm.
-const PERIODOS = [
-  { id: "semana", nombre: "7 días" },
-  { id: "mes", nombre: "1 mes" },
-  { id: "trimestre", nombre: "3 meses" },
-  { id: "semestre", nombre: "6 meses" },
-  { id: "anio", nombre: "1 año" },
-  { id: "siempre", nombre: "Siempre" },
-];
-
 const CANCIONES_VISIBLES = 5;
 
 function formatearNumero(numero) {
@@ -37,14 +27,10 @@ function haceCuanto(fechaIso) {
   return dias === 1 ? "ayer" : `hace ${dias} días`;
 }
 
+// Lo de Last.fm se muestra solo acá: nada lleva a la página de Last.fm.
 function FilaCancion({ cancion, posicion, detalle, destacado = false }) {
   return (
-    <a
-      className={`cancionEscucha ${destacado ? "destacado" : ""}`}
-      href={cancion.url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <div className={`cancionEscucha ${destacado ? "destacado" : ""}`}>
       {posicion && <span className="cancionEscuchaPosicion">{posicion}</span>}
 
       {cancion.imagen ? (
@@ -59,7 +45,7 @@ function FilaCancion({ cancion, posicion, detalle, destacado = false }) {
       </span>
 
       {detalle && <span className="cancionEscuchaDetalle">{detalle}</span>}
-    </a>
+    </div>
   );
 }
 
@@ -89,7 +75,7 @@ function VincularLastfm({ onVinculado }) {
       <IconoLastfm size={34} />
 
       <p>
-        Mostrá tus artistas, canciones y álbumes más escuchados. Escribí tu usuario de Last.fm
+        Mostrá los artistas, canciones y álbumes más escuchados. Escribí el usuario de Last.fm
         y listo.
       </p>
 
@@ -97,7 +83,7 @@ function VincularLastfm({ onVinculado }) {
         <input
           className="escuchasInput"
           type="text"
-          placeholder="Tu usuario de Last.fm"
+          placeholder="Usuario de Last.fm"
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
           autoComplete="off"
@@ -129,7 +115,6 @@ function VincularLastfm({ onVinculado }) {
 }
 
 export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusicalActualizado }) {
-  const [periodo, setPeriodo] = useState("mes");
   const [escuchas, setEscuchas] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -143,7 +128,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
     let cancelado = false;
 
     lastfmService
-      .obtenerEscuchas(idUsuario, periodo)
+      .obtenerEscuchas(idUsuario)
       .then((datos) => {
         if (cancelado) return;
         setEscuchas(datos);
@@ -160,7 +145,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
     return () => {
       cancelado = true;
     };
-  }, [idUsuario, periodo, recarga]);
+  }, [idUsuario, recarga]);
 
   function recargar() {
     setCargando(true);
@@ -176,12 +161,6 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
   function terminarSugerencias(agrego) {
     setMostrarSugerencias(false);
     if (agrego) onPerfilMusicalActualizado?.();
-  }
-
-  function cambiarPeriodo(nuevoPeriodo) {
-    if (nuevoPeriodo === periodo) return;
-    setCargando(true);
-    setPeriodo(nuevoPeriodo);
   }
 
   async function manejarDesvincular() {
@@ -213,7 +192,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
   return (
     <section className="escuchas">
       <div className="escuchasHeader">
-        <h3>{isOwnProfile ? "Lo que escuchás" : "Lo que escucha"}</h3>
+        <h3>Escuchas</h3>
 
         {conectado && isOwnProfile && (
           <button className="escuchasAccion" type="button" onClick={manejarDesvincular}>
@@ -222,7 +201,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
         )}
       </div>
 
-      {error && <p className="escuchasMensaje">No pudimos cargar lo que escucha ({error}).</p>}
+      {error && <p className="escuchasMensaje">No pudimos cargar las escuchas ({error}).</p>}
 
       {!error && !cargando && !conectado && isOwnProfile && (
         <VincularLastfm onVinculado={manejarVinculado} />
@@ -237,20 +216,8 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
             total
           </p>
 
-          <div className="escuchasRangos" role="tablist">
-            {PERIODOS.map((opcion) => (
-              <button
-                key={opcion.id}
-                type="button"
-                role="tab"
-                aria-selected={periodo === opcion.id}
-                className={`escuchasRango ${periodo === opcion.id ? "activo" : ""}`}
-                onClick={() => cambiarPeriodo(opcion.id)}
-              >
-                {opcion.nombre}
-              </button>
-            ))}
-          </div>
+          {/* Solo los últimos 30 días (ver backend/src/services/lastfmService.js) */}
+          <p className="escuchasPeriodo">Últimos 30 días</p>
 
           <div className={`escuchasCuerpo ${cargando ? "cargando" : ""}`}>
             {recientes[0]?.sonando_ahora && (
@@ -260,13 +227,14 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
             )}
 
             {sinDatos && (
-              <p className="escuchasMensaje">Todavía no hay escuchas registradas en este período.</p>
+              <p className="escuchasMensaje">No hay escuchas en los últimos 30 días.</p>
             )}
 
             {escuchas.topArtistas.length > 0 && (
               <div className="escuchasBloque">
                 <h4>Top artistas</h4>
                 <FilaArtistas
+                  sinLink
                   artistas={escuchas.topArtistas}
                   obtenerSubtitulo={(artista, indice) =>
                     `#${indice + 1} · ${reproducciones(artista.reproducciones)}`
@@ -302,6 +270,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
               <div className="escuchasBloque">
                 <h4>Top álbumes</h4>
                 <FilaArtistas
+                  sinLink
                   artistas={escuchas.topAlbumes}
                   cuadrado
                   obtenerSubtitulo={(album) =>
@@ -328,10 +297,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
           </div>
 
           <p className="escuchasFuente">
-            <IconoLastfm size={14} /> Datos de{" "}
-            <a href={escuchas.url_perfil} target="_blank" rel="noopener noreferrer">
-              Last.fm · {escuchas.usuario_lastfm}
-            </a>
+            <IconoLastfm size={14} /> Datos de <strong>Last.fm · {escuchas.usuario_lastfm}</strong>
           </p>
         </>
       )}

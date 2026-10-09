@@ -12,11 +12,13 @@ import {
   IconoNavConfiguracion,
 } from "./iconosNav";
 
+// En mobile la barra de abajo muestra solo Inicio, Eventos, Chat y Perfil;
+// lo marcado como soloEscritorio queda en el menú lateral (MenuLateral).
 const ITEMS = [
   { destino: "home", texto: "Inicio", Icono: IconoNavInicio },
-  { destino: "descubrir", texto: "Descubrir", Icono: IconoNavDescubrir },
+  { destino: "descubrir", texto: "Descubrir", Icono: IconoNavDescubrir, soloEscritorio: true },
   { destino: "misEventos", texto: "Eventos", Icono: IconoNavEventos },
-  { destino: "misGrupos", texto: "Grupos", Icono: IconoNavGrupos },
+  { destino: "misGrupos", texto: "Grupos", Icono: IconoNavGrupos, soloEscritorio: true },
   { destino: "chats", texto: "Chat", Icono: IconoNavChat },
   { destino: "perfil", texto: "Perfil", Icono: IconoNavPerfil },
 ];
@@ -45,14 +47,14 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
   return (
     <>
       <nav className="footer">
-        {ITEMS.map(({ destino, texto, Icono }) => {
+        {ITEMS.map(({ destino, texto, Icono, soloEscritorio }) => {
           const activo = pantallaActiva === destino;
           const badge = destino === "chats" && noLeidos > 0 ? noLeidos : null;
 
           return (
             <button
               key={destino}
-              className={`footerButton ${activo ? "activo" : ""}`}
+              className={`footerButton ${activo ? "activo" : ""} ${soloEscritorio ? "footerButton--escritorio" : ""}`}
               type="button"
               onClick={() => navegar(destino)}
               aria-current={activo ? "page" : undefined}
@@ -71,7 +73,7 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
         })}
 
         <button
-          className={`footerButton ${configAbierta ? "activo" : ""}`}
+          className={`footerButton footerButton--escritorio ${configAbierta ? "activo" : ""}`}
           type="button"
           onClick={() => setConfigAbierta(true)}
         >

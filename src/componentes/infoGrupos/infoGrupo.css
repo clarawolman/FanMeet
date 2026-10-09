@@ -38,7 +38,7 @@
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -58,7 +58,7 @@
   border: 1.5px solid var(--fm-accent);
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;

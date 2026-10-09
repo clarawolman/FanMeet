@@ -19,7 +19,7 @@ import { ApiError } from "../helpers/ApiError.js";
 // "perfil musical" (artistas y generos con un peso) y dos perfiles se
 // comparan con similitud coseno. Las fuentes son:
 //   - artistas favoritos del perfil (Spotify)
-//   - lo que escucha en Last.fm, si lo vinculo
+//   - lo que escucho en Last.fm en los ultimos 30 dias, si lo vinculo
 //   - generos elegidos en el perfil
 //   - generos deducidos de sus artistas (tags de Last.fm)
 //   - artistas parecidos a los suyos (artist.getSimilar de Last.fm)
@@ -35,6 +35,10 @@ const MIN_PESO_TAG = 20;
 const PESO_SIMILARES = 0.4;
 const PESO_FAMILIA = 0.5;
 const MAX_DESCUBRIR = 50;
+// En Descubrir solo aparece gente con la que hay buena afinidad.
+const MIN_PORCENTAJE_DESCUBRIR = 60;
+// Cuántos "más parecidos" se muestran cuando nadie llega a ese mínimo.
+const MAX_CERCANOS = 6;
 const MAX_RECOMENDACIONES = 10;
 
 const HORA = 60 * 60 * 1000;
@@ -94,14 +98,9 @@ function topArtistasLastfm(usuarioLastfm) {
     `top|${usuarioLastfm.toLowerCase()}`,
     TTL_TOP_USUARIO,
     async () => {
-      const datos = await lastfmApiRepository.obtenerTopArtistas(usuarioLastfm, "12month", TOP_LASTFM);
-      let artistas = comoLista(datos?.topartists?.artist);
-      // Si no escucho nada en el ultimo año, usamos lo de siempre.
-      if (artistas.length === 0) {
-        const historico = await lastfmApiRepository.obtenerTopArtistas(usuarioLastfm, "overall", TOP_LASTFM);
-        artistas = comoLista(historico?.topartists?.artist);
-      }
-      return artistas.map((a) => a.name).filter(Boolean);
+      // Solo los ultimos 30 dias (igual que el perfil, ver lastfmService).
+      const datos = await lastfmApiRepository.obtenerTopArtistas(usuarioLastfm, "1month", TOP_LASTFM);
+      return comoLista(datos?.topartists?.artist).map((a) => a.name).filter(Boolean);
     },
     []
   );
@@ -458,25 +457,43 @@ export const matchingService = {
     return compararPerfiles(yo, otro, base.vocabulario);
   },
 
-  // Fans ordenados por compatibilidad con el usuario autenticado.
+  // Gente nueva con 60% o más de compatibilidad, de mayor a menor. Quedan
+  // afuera los amigos y con quien ya hay una solicitud pendiente (enviada
+  // o recibida). Si nadie llega al 60%, se devuelven los más parecidos
+  // igual (soloCercanos: true) para que la sección no quede vacía.
   async descubrir(idYo) {
-    const base = await cargarDatosBase();
-    const ids = [...base.usuarios.keys()].filter((id) => id !== idYo);
+    const [base, amistades] = await Promise.all([
+      cargarDatosBase(),
+      amistadRepository.listarDeUsuario(idYo),
+    ]);
+    const conRelacion = new Set(
+      amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante))
+    );
+    const ids = [...base.usuarios.keys()].filter((id) => id !== idYo && !conRelacion.has(id));
     const [yo, ...otros] = await construirPerfiles([idYo, ...ids], base);
 
-    if (!tieneDatos(yo)) return { perfilCompleto: false, fans: [] };
+    if (!tieneDatos(yo)) return { perfilCompleto: false, soloCercanos: false, fans: [] };
 
-    const fans = otros
+    const ordenados = otros
       .map((otro) => ({ otro, resultado: compararPerfiles(yo, otro, base.vocabulario) }))
-      .filter(({ resultado }) => resultado.porcentaje)
-      .sort((a, b) => b.resultado.porcentaje - a.resultado.porcentaje)
+      .filter(({ resultado }) => resultado.porcentaje > 0)
+      .sort((a, b) => b.resultado.porcentaje - a.resultado.porcentaje);
+    const compatibles = ordenados.filter(
+      ({ resultado }) => resultado.porcentaje >= MIN_PORCENTAJE_DESCUBRIR
+    );
+    const soloCercanos = compatibles.length === 0;
+
+    const fans = (soloCercanos ? ordenados.slice(0, MAX_CERCANOS) : compatibles)
       .slice(0, MAX_DESCUBRIR)
       .map(({ otro, resultado }) => ({
         ...toUsuarioResumen(base.usuarios.get(otro.idUsuario)),
         ...resultado,
+        // sin relación previa: siempre se puede mandar solicitud
+        estadoAmistad: "conectar",
+        idAmistad: null,
       }));
 
-    return { perfilCompleto: true, fans };
+    return { perfilCompleto: true, soloCercanos, fans };
   },
 
   // Conciertos a los que todavia no se unio, ordenados por afinidad.

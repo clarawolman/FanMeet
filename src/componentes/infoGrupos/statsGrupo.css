@@ -1,6 +1,7 @@
 .statsGrupo {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* minmax(0, 1fr): sin esto una fecha larga ensancha la columna y se sale de la pantalla */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin: 10px 16px 0;
   font-family: var(--fm-font-body);
@@ -39,14 +40,24 @@
   word-break: break-word;
 }
 
+/* en el celular el lugar va en su propia fila, a todo el ancho */
+.statCard:last-child {
+  grid-column: 1 / -1;
+}
+
 @media (min-width: 768px) {
   .statsGrupo {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin: 12px 0 0;
     gap: 12px;
   }
 
   .statCard {
     padding: 16px 14px;
+  }
+
+  .statCard:last-child {
+    grid-column: auto;
   }
 
   .statCard .statValue {

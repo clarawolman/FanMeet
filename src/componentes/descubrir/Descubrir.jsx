@@ -5,18 +5,19 @@ import Footer from "../generales/Footer";
 import HeaderApp from "../generales/HeaderApp";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import AnilloCompatibilidad from "../generales/AnilloCompatibilidad";
+import BotonConectar from "../generales/BotonConectar";
 
-// Lo más fuerte que comparten, para la línea de abajo del nombre.
+// Línea de abajo del nombre: "Le gusta rock, indie". Si no comparten
+// géneros con nombre, se usa lo más fuerte que tengan en común.
 function resumen(fan) {
+  if (fan.generosEnComun.length > 0) {
+    return `Le gusta ${fan.generosEnComun.slice(0, 3).join(", ")}`;
+  }
   if (fan.artistasEnComun.length > 0) {
-    return `Escuchan ${fan.artistasEnComun.slice(0, 3).join(", ")}`;
+    return `Le gusta ${fan.artistasEnComun.slice(0, 3).join(", ")}`;
   }
   if (fan.parecidos.length > 0) {
-    const { suyo, tuyo } = fan.parecidos[0];
-    return `Escucha a ${suyo}, parecido a ${tuyo}`;
-  }
-  if (fan.generosEnComun.length > 0) {
-    return `Les gusta ${fan.generosEnComun.slice(0, 3).join(", ")}`;
+    return `Le gusta ${fan.parecidos[0].suyo}`;
   }
   return "Gustos parecidos";
 }
@@ -39,7 +40,7 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
 
   return (
     <div className="pantallaDescubrir">
-      <HeaderApp titulo="Descubrir" subtitulo="Fans con gustos parecidos a los tuyos" />
+      <HeaderApp titulo="Descubrir" subtitulo="Fans con 60% o más de compatibilidad con vos" />
 
       <main className="descubrirLayout">
         {cargando && <LoadingSpinner texto="Comparando gustos…" />}
@@ -59,7 +60,16 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
         )}
 
         {!cargando && !error && datos?.perfilCompleto && fans.length === 0 && (
-          <p className="descubrirMensaje">Todavía no hay fans con gustos parecidos a los tuyos.</p>
+          <p className="descubrirMensaje">
+            Todavía no hay otros fans con gustos cargados para comparar.
+          </p>
+        )}
+
+        {datos?.soloCercanos && fans.length > 0 && (
+          <p className="descubrirAviso">
+            Nadie llega al 60% de compatibilidad todavía, así que te mostramos a los más
+            parecidos a vos. Sumá más artistas y géneros en tu perfil para encontrar más gente.
+          </p>
         )}
 
         {fans.length > 0 && (
@@ -85,23 +95,9 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
                       {fan.edad != null && <small>, {fan.edad}</small>}
                     </h3>
                     <p className="descubrirCardResumen">{resumen(fan)}</p>
-
-                    {fan.generosEnComun.length > 0 && (
-                      <div className="descubrirCardGeneros">
-                        {fan.generosEnComun.slice(0, 3).map((genero) => (
-                          <span key={genero}>{genero}</span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
-                  <button
-                    type="button"
-                    className="descubrirCardBoton"
-                    onClick={() => onVerUsuario(fan.id_usuario)}
-                  >
-                    Ver perfil
-                  </button>
+                  <BotonConectar fan={fan} className="descubrirCardBoton" />
                 </article>
               </li>
             ))}

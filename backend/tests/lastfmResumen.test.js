@@ -54,9 +54,9 @@ describe("lastfmService.obtenerResumen", () => {
 
     const resumen = await lastfmService.obtenerResumen(YO);
 
+    expect(lastfmApiRepository.obtenerTopArtistas).toHaveBeenCalledWith("fan", "1month", expect.any(Number));
     expect(resumen).toMatchObject({
       conectado: true,
-      periodo: "mes",
       total_reproducciones: 5000,
       artistaTop: { nombre: "Duki", imagen: "img" },
       otrosArtistas: ["Khea", "Trueno", "Bizarrap"],
@@ -64,15 +64,14 @@ describe("lastfmService.obtenerResumen", () => {
     });
   });
 
-  it("si este mes no escuchó nada usa lo de siempre", async () => {
-    lastfmApiRepository.obtenerTopArtistas
-      .mockResolvedValueOnce(top())
-      .mockResolvedValueOnce(top("Soda Stereo"));
+  it("solo usa los últimos 30 días: si no escuchó nada, no busca el historial", async () => {
+    lastfmApiRepository.obtenerTopArtistas.mockResolvedValue(top());
 
     const resumen = await lastfmService.obtenerResumen(YO);
 
-    expect(resumen.periodo).toBe("siempre");
-    expect(resumen.artistaTop.nombre).toBe("Soda Stereo");
+    expect(lastfmApiRepository.obtenerTopArtistas).toHaveBeenCalledTimes(1);
+    expect(resumen.artistaTop).toBeNull();
+    expect(resumen.otrosArtistas).toEqual([]);
   });
 });
 

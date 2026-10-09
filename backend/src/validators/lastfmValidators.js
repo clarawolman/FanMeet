@@ -8,7 +8,3 @@ export const vincularLastfmSchema = z.object({
     .trim()
     .regex(/^[A-Za-z][A-Za-z0-9_-]{1,14}$/, "Ese no parece un usuario de Last.fm válido"),
 });
-
-export const escuchasQuerySchema = z.object({
-  periodo: z.enum(["semana", "mes", "trimestre", "semestre", "anio", "siempre"]).default("mes"),
-});

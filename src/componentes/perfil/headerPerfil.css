@@ -1,6 +1,7 @@
+/* "contents": el header de arriba queda como hijo directo de la pantalla
+   y puede quedarse fijo (sticky) mientras se scrollea todo el perfil. */
 .headerPerfil {
-  background: var(--fm-surface);
-  border-bottom: 1px solid var(--fm-border);
+  display: contents;
 }
 
 .headerPerfilAcciones {
@@ -73,6 +74,8 @@
   text-align: center;
   gap: 8px;
   padding: 4px 16px 20px;
+  background: var(--fm-surface);
+  border-bottom: 1px solid var(--fm-border);
 }
 
 .headerPerfilFotoWrap {

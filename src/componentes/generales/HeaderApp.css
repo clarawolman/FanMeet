@@ -69,7 +69,7 @@
 .headerAppSubtitulo {
   margin: 0;
   font-family: var(--fm-font-body);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--fm-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -82,6 +82,37 @@
   gap: 8px;
   margin-left: auto;
   flex-shrink: 0;
+}
+
+.headerAppMenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+  margin-right: -6px;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: none;
+  color: var(--fm-ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.headerAppMenu svg {
+  width: 24px;
+  height: 24px;
+}
+
+.headerAppMenu:hover {
+  background: var(--fm-bg-soft);
+}
+
+/* si hay acciones, ellas ya empujan todo a la derecha */
+.headerAppAcciones + .headerAppMenu {
+  margin-left: 0;
 }
 
 .headerAppFilaTitulo {
@@ -102,7 +133,7 @@
   background: var(--fm-surface);
   color: var(--fm-ink);
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -118,6 +149,10 @@
 }
 
 @media (min-width: 768px) {
+  .headerAppMenu {
+    display: none;
+  }
+
   .headerAppFila {
     padding: 18px 40px;
   }

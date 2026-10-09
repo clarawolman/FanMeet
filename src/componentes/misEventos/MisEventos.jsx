@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./MisEventos.css";
+import "../generales/TarjetaLista.css";
 
 import { conciertosService } from "../../services/conciertosService";
 
@@ -65,25 +65,34 @@ function MisEventos({
   }
 
   return (
-    <div className="pantallaMisEventos">
+    <div className="pantallaLista">
       <HeaderMisEventos onIrMisGrupos={onIrMisGrupos} />
 
-      <main className="misEventosLayout">
+      <main className="listaLayout">
         {cargando && <LoadingSpinner texto="Cargando eventos..." />}
 
         {!cargando && misEventos.length === 0 && (
-          <p className="mensajeMisEventos">No tenés eventos.</p>
+          <div className="listaMensaje">
+            <p>Todavía no te uniste a ningún concierto.</p>
+            <button type="button" className="tarjetaBoton" onClick={() => onNavegar("home")}>
+              Buscar conciertos
+            </button>
+          </div>
         )}
 
-        {!cargando &&
-          misEventos.map((evento) => (
-            <CardEvento
-              key={evento.id_concierto}
-              evento={evento}
-              onIngresar={() => onIngresar(evento)}
-              onSalir={setEventoParaSalir}
-            />
-          ))}
+        {!cargando && misEventos.length > 0 && (
+          <ul className="listaTarjetas">
+            {misEventos.map((evento) => (
+              <li key={evento.id_concierto}>
+                <CardEvento
+                  evento={evento}
+                  onIngresar={() => onIngresar(evento)}
+                  onSalir={setEventoParaSalir}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </main>
 
       {eventoParaSalir && (

@@ -6,7 +6,7 @@ export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
   return (
     <section className="generosPerfil">
       <div className="generosPerfilHeader">
-        <h3>Mi música</h3>
+        <h3>Géneros favoritos</h3>
 
         {isOwnProfile && (
           <button
@@ -30,8 +30,8 @@ export default function GenerosPerfil({ generos, isOwnProfile, onEditar }) {
       ) : (
         <p className="generosPerfilVacio">
           {isOwnProfile
-            ? "Todavía no elegiste tus géneros favoritos."
-            : "Todavía no eligió géneros favoritos."}
+            ? "Todavía no hay géneros elegidos."
+            : "Todavía no hay géneros elegidos."}
         </p>
       )}
     </section>
