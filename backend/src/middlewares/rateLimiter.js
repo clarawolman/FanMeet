@@ -10,6 +10,17 @@ export const authRateLimiter = rateLimit({
   message: { error: "Demasiados intentos. Intenta de nuevo mas tarde." },
 });
 
+// Cada mensaje al chatbot es una llamada paga a la API de IA: limite propio
+// por usuario (no por IP, para no castigar a todos los de una misma red).
+export const chatbotRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user.id,
+  message: { error: "Mandaste muchos mensajes seguidos a Fani. Esperá un minuto." },
+});
+
 // Limite general para el resto de la API.
 export const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000,

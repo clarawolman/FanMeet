@@ -16,6 +16,7 @@ import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
+import { ID_CHATBOT } from "./services/chatbotService";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
@@ -106,6 +107,11 @@ function App() {
 
   function manejarEnviarMensaje(idUsuario) {
     setChatInicial({ tipo: "privado", id: idUsuario });
+    setPantalla("chats");
+  }
+
+  function manejarAbrirChatbot() {
+    setChatInicial({ tipo: "bot", id: ID_CHATBOT });
     setPantalla("chats");
   }
 
@@ -389,6 +395,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <Home
           onEntrarConcierto={manejarEntrarConcierto}
           onNavegar={manejarNavegacion}
+          onAbrirChatbot={manejarAbrirChatbot}
         />
       )}
 
