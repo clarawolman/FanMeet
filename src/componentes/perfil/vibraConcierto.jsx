@@ -20,17 +20,17 @@ export default function VibraConcierto({
     if (!isOwnProfile) {
       return (
         <section className="vibraConcierto">
-          <h3>Mi vibe de concierto</h3>
-          <p className="vibraConciertoVacio">Todavía no eligió su vibe de concierto.</p>
+          <h3>Vibe de concierto</h3>
+          <p className="vibraConciertoVacio">Todavía no hay vibe de concierto elegida.</p>
         </section>
       );
     }
 
     return (
       <section className="vibraConcierto">
-        <h3>Mi vibe de concierto</h3>
+        <h3>Vibe de concierto</h3>
         <p className="vibraConciertoVacio">
-          Todavía no elegiste tu vibe de concierto.
+          Todavía no hay vibe de concierto elegida.
         </p>
 
         <div className="vibraConciertoOpciones">
@@ -57,7 +57,7 @@ export default function VibraConcierto({
   return (
     <section className="vibraConcierto">
       <div className="vibraConciertoHeader">
-        <h3>Mi vibe de concierto</h3>
+        <h3>Vibe de concierto</h3>
 
         {isOwnProfile && (
           <button

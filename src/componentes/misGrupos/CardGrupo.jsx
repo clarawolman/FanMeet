@@ -1,87 +1,88 @@
-import "./CardGrupo.css";
-import { formatearFechaDMA } from "../../utils/fechas";
+import "../generales/TarjetaLista.css";
+import { cuentaRegresiva, formatearFechaLarga } from "../../utils/fechas";
+import { IconoCalendario, IconoReloj, IconoUbicacion } from "../generales/iconosTarjeta";
+
+const FOTO_GRUPO_DEFAULT = "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=900&q=80";
+const MAX_AVATARES = 4;
+
+const CATEGORIAS = {
+  pre: "Pre-show",
+  after: "After",
+  mismo_dia: "Mismo día",
+};
 
 function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
   const usuarios = grupo.usuarios || [];
-
-  const mostrarUsuarios = usuarios.slice(0, 3);
-  const restantes = usuarios.length - 3;
-
-  const categoriaTexto =
-    grupo.categoria === "pre"
-      ? "Pre-show"
-      : grupo.categoria === "after"
-      ? "After"
-      : grupo.categoria === "mismo_dia"
-      ? "Mismo día"
-      : "Grupo";
-
-  const horaFormateada = grupo.hora ? String(grupo.hora).slice(0, 5) : "";
-
-  function obtenerEstado() {
-    const hoy = new Date();
-    const fechaGrupo = new Date(grupo.fecha);
-
-    const diferencia = Math.ceil(
-      (fechaGrupo - hoy) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diferencia <= 0) return "AHORA";
-    if (diferencia === 1) return "Mañana";
-    return `Empieza en ${diferencia} días`;
-  }
+  const hora = grupo.hora ? String(grupo.hora).slice(0, 5) : "";
+  const falta = cuentaRegresiva(grupo.fecha);
 
   return (
-    <article className="cardGrupo">
-      <div className="cardGrupoInfo">
-        <div className="cardGrupoEtiqueta">
-          <span className="estadoGrupo">{obtenerEstado()}</span>
-          <span className="categoriaTextoGrupo">{categoriaTexto}</span>
-        </div>
-
-        <h2>{grupo.nombre}</h2>
-
-        <div className="cardGrupoMeta">
-          <span>{grupo.ubicacion}</span>
-          <span>
-            {formatearFechaDMA(grupo.fecha)}
-            {horaFormateada && ` - ${horaFormateada}`}
-          </span>
-        </div>
-
-        <div className="usuariosGrupo">
-          {mostrarUsuarios.map((usuario) => (
-            <img
-              key={usuario.id_usuario}
-              src={usuario.foto_perfil}
-              alt={usuario.nombre}
-              className="avatarGrupo"
-            />
-          ))}
-
-          {restantes > 0 && (
-            <span className="masUsuarios">+{restantes}</span>
+    <article className="tarjeta">
+      <div className="tarjetaMedia">
+        <img className="tarjetaImagen" src={grupo.foto || FOTO_GRUPO_DEFAULT} alt="" />
+        <div className="tarjetaChips">
+          {falta && (
+            <span className={`tarjetaChip ${falta === "Hoy" ? "tarjetaChip--fuerte" : ""}`}>
+              {falta}
+            </span>
           )}
+          <span className="tarjetaChip">{CATEGORIAS[grupo.categoria] || "Grupo"}</span>
         </div>
       </div>
 
-      <div className="cardGrupoAcciones">
-        {onSalir && (
-          <button
-            className="btnSalirGrupo"
-            type="button"
-            onClick={() => onSalir(grupo)}
-          >
-            Salir
-          </button>
+      <div className="tarjetaCuerpo">
+        <div className="tarjetaTitulos">
+          <h2 className="tarjetaTitulo">{grupo.nombre}</h2>
+        </div>
+
+        <ul className="tarjetaMeta">
+          {grupo.ubicacion && (
+            <li>
+              <IconoUbicacion />
+              <span>{grupo.ubicacion}</span>
+            </li>
+          )}
+          {grupo.fecha && (
+            <li>
+              <IconoCalendario />
+              <span>{formatearFechaLarga(grupo.fecha)}</span>
+            </li>
+          )}
+          {hora && (
+            <li>
+              <IconoReloj />
+              <span>{hora} hs</span>
+            </li>
+          )}
+        </ul>
+
+        {usuarios.length > 0 && (
+          <div className="tarjetaPersonas">
+            <div className="tarjetaAvatares">
+              {usuarios.slice(0, MAX_AVATARES).map((usuario) => (
+                <img key={usuario.id_usuario} src={usuario.foto_perfil} alt={usuario.nombre} />
+              ))}
+            </div>
+            <span>
+              {usuarios.length} {usuarios.length === 1 ? "va" : "van"}
+            </span>
+          </div>
         )}
 
-        <button
-          className="btnVerMasGrupo"
-          onClick={() => onAbrirGrupo(grupo)}
-        >
-          Ver más
-        </button>
+        <div className="tarjetaAcciones">
+          {onSalir && (
+            <button
+              className="tarjetaBoton tarjetaBoton--secundario"
+              type="button"
+              onClick={() => onSalir(grupo)}
+            >
+              Salir
+            </button>
+          )}
+          <button className="tarjetaBoton" type="button" onClick={() => onAbrirGrupo(grupo)}>
+            Ver grupo
+          </button>
+        </div>
       </div>
     </article>
   );

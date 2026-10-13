@@ -11,6 +11,14 @@ export const generosSchema = z.object({
     .min(2, "Elegí al menos 2 géneros musicales"),
 });
 
+export const buscarGeneroSchema = z.object({
+  q: z.string().trim().min(1, "Escribí algo para buscar").max(60),
+});
+
+export const nombreGeneroSchema = z.object({
+  nombre: z.string().trim().min(1, "Escribí un género").max(60),
+});
+
 export const idUsuarioParamSchema = z.object({
   idUsuario: z.string().uuid("id de usuario inválido"),
 });

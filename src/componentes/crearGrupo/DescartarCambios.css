@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  z-index: 50;
+  z-index: 1500; /* arriba del header y la barra de abajo */
   padding: 20px;
 }
 

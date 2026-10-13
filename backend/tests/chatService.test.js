@@ -146,7 +146,7 @@ describe("chatService.enviar", () => {
 
     const [bucket, ruta] = storageRepository.subirArchivo.mock.calls[0];
     expect(bucket).toBe("chats");
-    expect(ruta).toMatch(new RegExp(`^${YO}/[0-9a-f-]{36}\.png$`));
+    expect(ruta).toMatch(new RegExp(`^${YO}/[0-9a-f-]{36}\\.png$`));
     expect(mensajePrivadoRepository.crear).toHaveBeenCalledWith(
       expect.objectContaining({ contenido: "", imagen: "https://cdn/foto.png" })
     );

@@ -47,6 +47,24 @@ Reglas de moderación:
 - Backoffice: Root Directory = `backoffice`. Mismas tres variables.
 - En el backend, poner `FRONTEND_URL` y `BACKOFFICE_URL` con las URLs de Vercel, y `CORS_ORIGIN` con la de la app de fans. El backend acepta las dos URLs por CORS.
 
+## Música en el perfil: Last.fm + Spotify (opcional)
+
+- **"Lo que escuchás"** (top artistas, canciones y álbumes por período y escuchas recientes) sale de **Last.fm**. Cada usuario escribe su nombre de usuario de Last.fm en el perfil; para que refleje lo que escucha en Spotify, tiene que vincular Spotify en last.fm -> Settings -> Applications.
+- **Artistas favoritos** (carrusel) se buscan en el catálogo de **Spotify** con el token de la app, sin login de usuarios (no aplica el límite de usuarios del Development mode). Spotify también completa las fotos que Last.fm ya no da.
+
+Setup:
+
+1. Correr `supabase/spotify.sql`, después `supabase/lastfm.sql` y después `supabase/generos.sql` en el SQL Editor de Supabase.
+2. API key de Last.fm: https://www.last.fm/api/account/create -> `LASTFM_API_KEY` en `backend/.env`.
+3. App de Spotify: https://developer.spotify.com/dashboard (marcar "Web API") -> Client ID y Client Secret en `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` de `backend/.env`.
+
+Sin estas variables el backend arranca igual; solo esos endpoints responden 503.
+
+## Géneros y matching
+
+- **Géneros**: Spotify ya no da géneros a apps nuevas, así que el buscador busca en los ~2200 géneros de **MusicBrainz** (sin API key) y, si lo escrito no está ahí, en los tags de **Last.fm** (ej. "rock nacional"). En `estilo_musical` se guardan solo los que alguien eligió. `supabase/generos.sql` le da al backend permiso de insertarlos.
+- **Compatibilidad** (perfil ajeno), **Descubrir** (fans ordenados por compatibilidad) y **Para vos** (conciertos recomendados en la home) salen de `backend/src/services/matchingService.js`. No usa IA: arma un perfil musical de cada usuario (artistas favoritos, lo que escucha en Last.fm, artistas parecidos según Last.fm, géneros elegidos y deducidos de sus artistas, conciertos y vibra) y los compara con similitud coseno.
+
 ## TP React Context
 
 ### Qué información se comparte

@@ -1,0 +1,31 @@
+.artistasFavoritosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 12px;
+}
+
+.artistasFavoritosHeader h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.artistasFavoritosVacio {
+  margin: 0;
+  padding: 0 16px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+@media (min-width: 768px) {
+  .artistasFavoritosHeader,
+  .artistasFavoritosVacio {
+    padding: 0 40px;
+  }
+}

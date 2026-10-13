@@ -39,7 +39,7 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
           videoRef.current.srcObject = stream;
         }
       }, 100);
-    } catch (error) {
+    } catch {
       setErrorCamara("Error, no se puede acceder a la camara");
     }
   }

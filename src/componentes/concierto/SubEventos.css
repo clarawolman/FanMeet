@@ -10,17 +10,12 @@
   scroll-snap-align: start;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: var(--fm-shadow-sm);
-  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
+  transition: box-shadow var(--fm-dur) var(--fm-ease);
 }
 
+/* sin moverse ni sombra al pasar el mouse: solo se marca el borde */
 .SubEventoCard:hover {
-  transform: translateY(-4px) scale(1.015);
-  box-shadow: 0 0 0 1px var(--fm-accent), 0 16px 34px var(--fm-glow);
-}
-
-.SubEventoCard:hover .SubEventoImagen {
-  transform: scale(1.06);
+  box-shadow: 0 0 0 2px var(--fm-accent-soft-border);
 }
 
 /* velo al pie para que el texto blanco se lea sobre cualquier foto,
@@ -43,7 +38,7 @@
   border: 1px solid var(--fm-accent);
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -58,7 +53,6 @@
   object-fit: cover;
   display: block;
   filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
-  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
 /* contenido flotando sobre la foto */
@@ -143,7 +137,7 @@
   padding: 8px 0;
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -157,10 +151,39 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 480px) {
+/* ===== MOBILE: cards más grandes y texto legible ===== */
+@media (max-width: 767px) {
   .SubEventoCard {
-    width: 180px;
-    height: 250px;
+    width: 250px;
+    height: 310px;
+  }
+
+  .SubEventoCategoria {
+    font-size: 14px;
+  }
+
+  .SubEventoContenido {
+    padding: 16px;
+    gap: 4px;
+  }
+
+  .SubEventoTitulo {
+    font-size: 19px;
+  }
+
+  .SubEventoInfo,
+  .SubEventoExtra,
+  .SubEventoAsistiran {
+    font-size: 15px;
+  }
+
+  .SubEventoAvatares .SubEventoAvatar {
+    width: 26px;
+    height: 26px;
+  }
+
+  .SubEventoBoton {
+    padding: 11px 0;
+    font-size: 14px;
   }
 }

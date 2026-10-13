@@ -13,8 +13,27 @@ html, body {
   color: var(--fm-ink, #16151a);
 }
 
+/* Nada puede ser más ancho que la pantalla: si algo se pasa, en el
+   celular la página se corre de costado y el header/footer parecen
+   "despegarse". "clip" (y no "hidden") en body para no romper el sticky. */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: clip;
+}
+
 #root {
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
 }
 
 /* ===== SCROLLBAR LIMPIO ===== */

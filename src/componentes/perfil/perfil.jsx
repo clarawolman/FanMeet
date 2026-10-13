@@ -13,6 +13,10 @@ import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
 import ModalReportar from "./ModalReportar";
+import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
+import EscuchasPerfil from "./escuchasPerfil";
+import CompatibilidadPerfil from "./compatibilidadPerfil";
+import ResumenLastfmPerfil from "./resumenLastfmPerfil";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
@@ -43,7 +47,7 @@ const AMBIENTES_CONCIERTO = [
 
 function Perfil({
   usuarioPerfil,
-  isOwnProfile = true,
+  isOwnProfile: esPerfilPropio = true,
   onNavegar,
   onVolver,
   onCerrarSesion,
@@ -53,6 +57,11 @@ function Perfil({
 }) {
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const usuarioBase = usuarioPerfil || usuarioActual;
+  // Si el perfil es el tuyo, se trata como propio aunque se haya abierto
+  // como "ajeno": nunca se puede conectar con uno mismo.
+  const isOwnProfile =
+    esPerfilPropio ||
+    (Boolean(usuarioPerfil?.id_usuario) && usuarioPerfil.id_usuario === usuarioActual?.id_usuario);
 
   // La foto se actualiza optimistamente acá y también se guarda en el
   // UsuarioContext para que el resto de la app la vea.
@@ -64,6 +73,9 @@ function Perfil({
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
   const [mostrarReportar, setMostrarReportar] = useState(false);
+  // Sube cuando cambia la música del perfil desde Last.fm (vincular o sumar
+  // sugerencias): remonta el resumen y los favoritos para que se recarguen.
+  const [versionMusica, setVersionMusica] = useState(0);
 
   const [cargando, setCargando] = useState(true);
   const [estadisticas, setEstadisticas] = useState({ conciertos: 0, grupos: 0, amigos: 0 });
@@ -185,6 +197,12 @@ function Perfil({
     }
   }
 
+  // Al editar géneros o sumar sugerencias de Last.fm se pueden haber creado
+  // géneros nuevos: sin recargar el catálogo se verían como "Género #id".
+  function recargarGeneros() {
+    return Promise.all([cargarGeneros(), cargarCatalogoGeneros()]);
+  }
+
   async function cargarGeneros() {
     try {
       const idsGeneros = await usuariosService.obtenerGenerosDe(usuario.id_usuario);
@@ -218,7 +236,7 @@ function Perfil({
     } catch (error) {
       console.error("Error actualizando vibra de concierto:", error);
       setVibraActual(anterior);
-      alert("No se pudo actualizar tu vibra: " + error.message);
+      alert("No se pudo actualizar la vibe: " + error.message);
     }
   }
 
@@ -290,6 +308,19 @@ function Perfil({
       )}
 
       <div className="perfilContenido">
+        <ResumenLastfmPerfil
+          key={`resumen-${usuario.id_usuario}-${versionMusica}`}
+          idUsuario={usuario.id_usuario}
+        />
+
+        {!isOwnProfile && (
+          <CompatibilidadPerfil
+            key={`compatibilidad-${usuario.id_usuario}`}
+            idUsuario={usuario.id_usuario}
+            nombre={usuario.nombre}
+          />
+        )}
+
         <StatsPerfil
           estadisticas={estadisticas}
           onVerConciertos={isOwnProfile ? () => onNavegar?.("misEventos") : undefined}
@@ -301,6 +332,24 @@ function Perfil({
           generos={generosConNombre}
           isOwnProfile={isOwnProfile}
           onEditar={() => setMostrarEditorGeneros(true)}
+        />
+
+        {/* Keys distintas entre hermanos: con la misma key React duplica u
+            omite secciones. Cambian con el usuario para reiniciar su estado. */}
+        <ArtistasFavoritosPerfil
+          key={`favoritos-${usuario.id_usuario}-${versionMusica}`}
+          idUsuario={usuario.id_usuario}
+          isOwnProfile={isOwnProfile}
+        />
+
+        <EscuchasPerfil
+          key={`escuchas-${usuario.id_usuario}`}
+          idUsuario={usuario.id_usuario}
+          isOwnProfile={isOwnProfile}
+          onPerfilMusicalActualizado={() => {
+            setVersionMusica((v) => v + 1);
+            recargarGeneros();
+          }}
         />
 
         <VibraConcierto
@@ -341,7 +390,7 @@ function Perfil({
           <EditarGeneros
             onVolver={() => {
               setMostrarEditorGeneros(false);
-              cargarGeneros();
+              recargarGeneros();
             }}
           />
         </div>

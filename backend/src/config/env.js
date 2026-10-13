@@ -31,4 +31,12 @@ export const env = {
   // Una novedad de un concierto solo se notifica si tiene al menos esta
   // cantidad de fans unidos.
   minimoUnidosParaNotificar: Number(process.env.MINIMO_UNIDOS_PARA_NOTIFICAR) || 10,
+
+  // Last.fm y Spotify son opcionales: si faltan, el backend arranca igual y
+  // solo sus endpoints responden 503.
+  lastfmApiKey: process.env.LASTFM_API_KEY || "",
+  // Spotify se usa solo con el token de la app (busqueda de artistas y
+  // fotos), nunca con login de usuarios.
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID || "",
+  spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET || "",
 };

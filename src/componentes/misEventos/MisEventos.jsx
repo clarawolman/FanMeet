@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./MisEventos.css";
+import "../generales/TarjetaLista.css";
 
 import { conciertosService } from "../../services/conciertosService";
 
@@ -18,7 +18,6 @@ function MisEventos({
   const { usuarioActual } = useContext(UsuarioContext);
   const [misEventos, setMisEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [errorTexto, setErrorTexto] = useState("");
   const [eventoParaSalir, setEventoParaSalir] = useState(null);
   const [saliendo, setSaliendo] = useState(false);
 
@@ -30,14 +29,14 @@ function MisEventos({
 
   async function cargarMisEventos() {
     setCargando(true);
-    setErrorTexto("");
 
     try {
       const eventos = await conciertosService.listarMisEventos();
       setMisEventos(eventos || []);
     } catch (error) {
+      // Si no se pudo cargar, se muestra como vacío: sin errores técnicos.
       console.error("Error cargando mis eventos:", error);
-      setErrorTexto("No se pudieron cargar tus eventos.");
+      setMisEventos([]);
     }
 
     setCargando(false);
@@ -66,32 +65,34 @@ function MisEventos({
   }
 
   return (
-    <div className="pantallaMisEventos">
+    <div className="pantallaLista">
       <HeaderMisEventos onIrMisGrupos={onIrMisGrupos} />
 
-      <main className="misEventosLayout">
+      <main className="listaLayout">
         {cargando && <LoadingSpinner texto="Cargando eventos..." />}
 
-        {!cargando && errorTexto && (
-          <p className="mensajeMisEventos">{errorTexto}</p>
+        {!cargando && misEventos.length === 0 && (
+          <div className="listaMensaje">
+            <p>Todavía no te uniste a ningún concierto.</p>
+            <button type="button" className="tarjetaBoton" onClick={() => onNavegar("home")}>
+              Buscar conciertos
+            </button>
+          </div>
         )}
 
-        {!cargando && !errorTexto && misEventos.length === 0 && (
-          <p className="mensajeMisEventos">
-            Todavía no estás asociado a ningún evento.
-          </p>
+        {!cargando && misEventos.length > 0 && (
+          <ul className="listaTarjetas">
+            {misEventos.map((evento) => (
+              <li key={evento.id_concierto}>
+                <CardEvento
+                  evento={evento}
+                  onIngresar={() => onIngresar(evento)}
+                  onSalir={setEventoParaSalir}
+                />
+              </li>
+            ))}
+          </ul>
         )}
-
-        {!cargando &&
-          !errorTexto &&
-          misEventos.map((evento) => (
-            <CardEvento
-              key={evento.id_concierto}
-              evento={evento}
-              onIngresar={() => onIngresar(evento)}
-              onSalir={setEventoParaSalir}
-            />
-          ))}
       </main>
 
       {eventoParaSalir && (

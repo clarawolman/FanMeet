@@ -1,6 +1,6 @@
 import "./FansUnidos.css";
 
-function FansUnidos({ fans = [], cantidadFans = 0, onConocerlos }) {
+function FansUnidos({ cantidadFans = 0, onConocerlos }) {
     return (
     <section className="FansUnidosCard">
       <p className="FansSubtitulo"> Fans unidos: </p>

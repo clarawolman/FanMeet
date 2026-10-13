@@ -41,7 +41,7 @@
   border-radius: var(--fm-radius-sm);
   padding: 9px 26px;
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -81,7 +81,7 @@
   display: flex;
   gap: 4px;
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--fm-muted);
 }
 
