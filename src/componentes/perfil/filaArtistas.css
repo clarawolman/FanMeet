@@ -63,7 +63,7 @@
   justify-content: center;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-2xl);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-muted);
 }
 
@@ -71,7 +71,7 @@
 .artistaAgregar strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -130,7 +130,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;

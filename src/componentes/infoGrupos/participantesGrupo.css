@@ -42,7 +42,7 @@
 .participantesGrupo span {
   font-family: var(--fm-font-mono);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-accent);
 }
 

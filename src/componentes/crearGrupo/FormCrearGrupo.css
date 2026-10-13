@@ -16,7 +16,7 @@
   font-family: var(--fm-font-display);
   font-size: clamp(34px, 4.5vw, 50px);
   line-height: 1.02;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
 }
@@ -48,7 +48,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   display: flex;
@@ -179,7 +179,7 @@
 .crearGrupoFotoTexto {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-accent);
   text-align: center;
 }
@@ -203,7 +203,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
 }
@@ -223,7 +223,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   cursor: pointer;
   padding: 0 20px;
@@ -254,7 +254,7 @@
   padding: 14px 18px;
   font-family: var(--fm-font-body);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
   margin: 2px 0 0;
 }
@@ -269,7 +269,7 @@
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   justify-self: center;

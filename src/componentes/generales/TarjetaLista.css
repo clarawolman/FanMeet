@@ -53,7 +53,7 @@
   min-width: 0;
   font-family: var(--fm-font-display);
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
   color: var(--fm-ink);
   overflow: hidden;
@@ -70,7 +70,7 @@
   background: var(--fm-accent-soft-bg);
   color: var(--fm-accent-soft-ink);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   display: grid;
   place-items: center;
 }
@@ -146,7 +146,7 @@
   color: #fff;
   font-family: var(--fm-font-display);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
   backdrop-filter: blur(6px);
@@ -176,7 +176,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 21px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--fm-ink);
   overflow-wrap: anywhere;
@@ -264,7 +264,7 @@
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: filter var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
 }

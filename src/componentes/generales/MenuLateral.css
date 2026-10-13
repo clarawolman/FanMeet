@@ -52,7 +52,7 @@
   font-family: var(--fm-font-display);
   color: var(--fm-accent);
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.3px;
 }
 
@@ -102,7 +102,7 @@
 
 .menuLateralItem.activo {
   color: var(--fm-nav-activo);
-  font-weight: 700;
+  font-weight: 600;
   background: var(--fm-nav-activo-bg);
 }
 
@@ -132,7 +132,7 @@
 .menuLateralTemaTexto strong {
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 

@@ -16,7 +16,7 @@
   color: var(--fm-muted);
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }

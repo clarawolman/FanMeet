@@ -133,7 +133,7 @@ function armarHistorial(filas) {
 async function preguntarALaIA(idUsuario, historial) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new ApiError(503, "El chatbot todavía no está configurado (falta GEMINI_API_KEY)");
+    throw new ApiError(503);
   }
 
   const datos = await armarDatosParaUsuario(idUsuario);

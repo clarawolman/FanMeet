@@ -44,7 +44,7 @@
 .cardNotificacionTiempo {
   font-family: var(--fm-font-mono);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-muted);
@@ -54,7 +54,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   letter-spacing: 0.005em;
   line-height: 1.25;
@@ -92,7 +92,7 @@
   font-family: var(--fm-font-mono);
   color: var(--fm-accent);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   white-space: nowrap;
 }
@@ -113,7 +113,7 @@
   padding: 6px 14px;
   font-family: var(--fm-font-display);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;

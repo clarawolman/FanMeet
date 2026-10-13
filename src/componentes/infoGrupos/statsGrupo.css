@@ -33,7 +33,7 @@
 .statCard .statValue {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--fm-ink);
   margin: 0;
   line-height: 1.2;

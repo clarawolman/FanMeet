@@ -12,7 +12,7 @@
   margin: 0 0 8px;
   font-family: var(--fm-font-mono);
   color: var(--fm-accent);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   font-size: 13px;
@@ -22,7 +22,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 34px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 0.95;
   text-transform: none;
   letter-spacing: 0.005em;

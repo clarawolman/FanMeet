@@ -32,7 +32,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 
@@ -106,7 +106,7 @@
   min-width: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -121,7 +121,7 @@
   padding: 7px 14px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
   transition: background var(--fm-dur) var(--fm-ease);

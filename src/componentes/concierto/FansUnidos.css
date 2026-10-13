@@ -24,7 +24,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   white-space: nowrap;
 }
@@ -38,7 +38,7 @@
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-2xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-accent-soft-ink);

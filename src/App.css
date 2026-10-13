@@ -45,10 +45,11 @@
 
   --fm-shadow: 0 10px 30px rgba(22, 21, 26, 0.1);
   --fm-shadow-sm: 0 4px 14px rgba(22, 21, 26, 0.08);
-  --fm-radius-lg: 22px;
-  --fm-radius-md: 16px;
-  --fm-radius-sm: 10px;
-  --fm-radius-pill: 999px;
+  --fm-radius-lg: 14px;
+  --fm-radius-md: 12px;
+  --fm-radius-sm: 8px;
+  --fm-radius-pill: 12px;
+  --fm-radius-round: 999px;
 
   --fm-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --fm-dur: 220ms;

@@ -42,7 +42,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   letter-spacing: 0.005em;
 }
@@ -111,7 +111,7 @@
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   border: 1px solid var(--fm-border);

@@ -82,7 +82,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-mono);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -97,7 +97,7 @@
   color: var(--fm-accent-ink) !important;
   font-family: var(--fm-font-display) !important;
   font-size: 15px !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0.005em !important;
   line-height: 36px !important;
@@ -141,7 +141,7 @@
   padding: 0;
   color: var(--fm-accent);
   font: inherit;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
 }

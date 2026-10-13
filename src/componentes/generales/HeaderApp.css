@@ -41,7 +41,7 @@
   font-family: var(--fm-font-display);
   color: var(--fm-accent);
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: none;
   letter-spacing: -0.3px;
   line-height: 1;
@@ -58,7 +58,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
   white-space: nowrap;
@@ -134,7 +134,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-mono);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;

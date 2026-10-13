@@ -13,7 +13,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -22,7 +22,7 @@
   margin: 6px 0 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-muted);
 }
@@ -63,7 +63,7 @@
   color: var(--fm-muted);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
 }
@@ -113,7 +113,7 @@
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 

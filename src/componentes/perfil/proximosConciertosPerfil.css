@@ -13,7 +13,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -25,7 +25,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -60,7 +60,7 @@
   padding: 9px 18px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: background var(--fm-dur) var(--fm-ease);
 }
@@ -116,7 +116,7 @@
 .proximoConciertoInfo strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;

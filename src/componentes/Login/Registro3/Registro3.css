@@ -38,7 +38,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-ink);
@@ -57,7 +57,7 @@
   font-family: var(--fm-font-display);
   color: var(--fm-ink);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -86,7 +86,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -138,7 +138,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xl);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -154,7 +154,7 @@
   margin: 28px 0 14px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xl);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -213,7 +213,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
 }
 
@@ -240,7 +240,7 @@
   color: var(--fm-ink);
   background: transparent;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   margin-left: 8px;
   flex-shrink: 0;
 }
@@ -257,7 +257,7 @@
   font-family: var(--fm-font-mono);
   text-align: center;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .registro3BotonFinalizar {
@@ -270,7 +270,7 @@
   color: var(--fm-accent-ink) !important;
   font-family: var(--fm-font-display) !important;
   font-size: 17px !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0.005em !important;
   line-height: 54px !important;

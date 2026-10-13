@@ -10,7 +10,7 @@
   gap: 10px;
   padding: 0;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--fm-radius-pill);
   background: none;
   cursor: pointer;
   filter: drop-shadow(0 8px 18px rgba(91, 18, 168, 0.35));
@@ -48,7 +48,7 @@
   .botonChatbotTexto {
     display: block;
     padding: 10px 14px;
-    border-radius: 999px;
+    border-radius: var(--fm-radius-pill);
     background: var(--fm-surface, #fff);
     color: var(--fm-ink, #16151a);
     font-size: 14px;

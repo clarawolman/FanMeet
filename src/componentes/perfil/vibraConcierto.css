@@ -7,7 +7,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -26,7 +26,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -87,7 +87,7 @@
 .vibraResultadoTexto strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 
@@ -160,7 +160,7 @@
 .vibraOpcionTexto strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }

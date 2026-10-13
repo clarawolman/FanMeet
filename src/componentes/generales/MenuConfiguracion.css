@@ -45,7 +45,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 
@@ -90,7 +90,7 @@
 .menuConfigItemTexto strong {
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 
@@ -103,7 +103,7 @@
   flex-shrink: 0;
   width: 46px;
   height: 26px;
-  border-radius: var(--fm-radius-pill);
+  border-radius: var(--fm-radius-round);
   border: 1px solid var(--fm-border);
   background: var(--fm-bg);
   padding: 2px;

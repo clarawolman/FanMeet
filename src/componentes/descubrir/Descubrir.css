@@ -44,7 +44,7 @@
   padding: 11px 20px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -123,7 +123,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
   white-space: nowrap;

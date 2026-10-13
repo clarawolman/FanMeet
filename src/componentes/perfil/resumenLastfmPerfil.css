@@ -30,7 +30,7 @@
 .resumenLastfmInicial {
   font-family: var(--fm-font-display);
   font-size: 30px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-muted);
 }
 
@@ -54,7 +54,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
   white-space: nowrap;
@@ -82,7 +82,7 @@
   border: 1px solid var(--fm-accent-soft-border);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-2xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: capitalize;
   color: var(--fm-ink);
 }

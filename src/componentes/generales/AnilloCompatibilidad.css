@@ -32,6 +32,6 @@
 .anilloCompatibilidad strong {
   position: relative;
   font-family: var(--fm-font-display);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }

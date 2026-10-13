@@ -50,7 +50,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xl);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .chatsBuscador {
@@ -179,7 +179,7 @@
 
 .chatsItemHora--nuevo {
   color: var(--fm-accent);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .chatsItemPreview {
@@ -200,7 +200,7 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 20px;
   text-align: center;
   box-sizing: border-box;
@@ -285,7 +285,7 @@
   white-space: nowrap;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .chatsMensajes {
@@ -359,7 +359,7 @@
   margin-bottom: 1px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-2xs);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-accent-2);
 }
 
@@ -749,11 +749,11 @@
   display: inline-block;
   margin-left: 6px;
   padding: 1px 6px;
-  border-radius: var(--fm-radius-pill, 999px);
+  border-radius: var(--fm-radius-pill);
   background: var(--fm-accent, #811cd9);
   color: #fff;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.04em;
   vertical-align: middle;
 }

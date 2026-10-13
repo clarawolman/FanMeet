@@ -32,7 +32,7 @@
   font-size: 22px;
   line-height: 1.18;
   letter-spacing: -0.01em;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -45,7 +45,7 @@
   color: var(--fm-ink);
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
@@ -68,7 +68,7 @@
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;

@@ -58,7 +58,7 @@
 .amigoPerfilNombre {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 

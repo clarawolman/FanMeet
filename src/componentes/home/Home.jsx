@@ -12,17 +12,14 @@ import IconoCampana from "../generales/IconoCampana";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import CarruselFila from "./CarruselFila";
 import FansCompatiblesHome from "./FansCompatiblesHome";
+import BotonChatbot from "../chatbot/BotonChatbot";
 import { UsuarioContext } from "../../context/UsuarioContext";
 
 function capitalizar(texto) {
   return texto ? texto[0].toUpperCase() + texto.slice(1) : texto;
 }
 
-function Home({ onEntrarConcierto, onNavegar, onVerUsuario }) {
-import BotonChatbot from "../chatbot/BotonChatbot";
-import { UsuarioContext } from "../../context/UsuarioContext";
-
-function Home({ onEntrarConcierto, onNavegar, onAbrirChatbot }) {
+function Home({ onEntrarConcierto, onNavegar, onVerUsuario, onAbrirChatbot }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [conciertos, setConciertos] = useState([]);
   const [conciertosUnidos, setConciertosUnidos] = useState([]);

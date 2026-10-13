@@ -21,7 +21,7 @@
   padding: 7px 12px 7px 14px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: capitalize;
   cursor: pointer;
 }
@@ -71,7 +71,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-muted);
 }
 

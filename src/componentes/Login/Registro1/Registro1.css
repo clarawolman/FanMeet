@@ -38,7 +38,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-ink);
@@ -59,7 +59,7 @@
   font-family: var(--fm-font-display);
   color: var(--fm-ink);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -90,7 +90,7 @@
   font-family: var(--fm-font-display);
   font-size: 28px;
   line-height: 1.15;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   color: var(--fm-ink);
@@ -121,7 +121,7 @@
 
 .registroObligatorio {
   color: var(--fm-accent);
-  font-weight: 900;
+  font-weight: 700;
   margin-left: 3px;
 }
 
@@ -215,7 +215,7 @@
   color: var(--fm-accent-ink) !important;
   font-family: var(--fm-font-display) !important;
   font-size: 17px !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0.005em !important;
   line-height: 50px !important;
@@ -243,7 +243,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -317,7 +317,7 @@
   display: grid;
   place-items: center;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
@@ -336,7 +336,7 @@
   color: var(--fm-accent);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 @media (max-width: 360px) {

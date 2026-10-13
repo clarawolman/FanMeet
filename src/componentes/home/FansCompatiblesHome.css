@@ -4,7 +4,7 @@
   padding: 0;
   font-family: var(--fm-font-display);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--fm-accent);
   cursor: pointer;
 }
@@ -63,7 +63,7 @@
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -78,7 +78,7 @@
 .fansHomePerfil strong {
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .fansHomePerfil small {

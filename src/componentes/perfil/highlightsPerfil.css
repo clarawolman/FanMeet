@@ -14,7 +14,7 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
@@ -48,7 +48,7 @@
   background: var(--fm-bg-soft);
   color: var(--fm-accent);
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   font-family: var(--fm-font-display);
 }
