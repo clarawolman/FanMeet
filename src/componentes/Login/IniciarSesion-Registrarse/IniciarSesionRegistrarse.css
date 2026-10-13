@@ -1,20 +1,20 @@
 .pantallaLogin {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--fm-bg);
-  position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .loginContenido {
   width: 100%;
   max-width: 430px;
-  min-height: 100vh;
-  padding: 92px 24px 0;
-  position: relative;
-  z-index: 2;
+  flex: 0 0 auto;
+  padding: clamp(32px, 11vh, 92px) 24px 0;
   box-sizing: border-box;
 }
 
@@ -29,15 +29,9 @@
   color: var(--fm-ink);
 }
 
-@media (max-width: 430px) {
-  .loginContenido {
-    padding: 92px 24px 0;
-  }
-}
-
 @media (max-width: 360px) {
   .loginContenido {
-    padding: 76px 22px 0;
+    padding: clamp(28px, 9vh, 76px) 22px 0;
   }
 
   .loginTitulo {

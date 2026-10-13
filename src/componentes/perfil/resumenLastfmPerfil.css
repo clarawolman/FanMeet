@@ -1,0 +1,100 @@
+.resumenLastfm {
+  margin: 0 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+}
+
+.resumenLastfmArtista {
+  flex-shrink: 0;
+  display: block;
+}
+
+.resumenLastfmArtista img,
+.resumenLastfmInicial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  border: 2px solid var(--fm-accent-soft-border);
+}
+
+.resumenLastfmInicial {
+  font-family: var(--fm-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--fm-muted);
+}
+
+.resumenLastfmTexto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resumenLastfmEtiqueta,
+.resumenLastfmOtros,
+.resumenLastfmTotal {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+}
+
+.resumenLastfmTexto h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resumenLastfmOtros {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resumenLastfmGeneros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0 2px;
+}
+
+.resumenLastfmGeneros span {
+  padding: 2px 9px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  border: 1px solid var(--fm-accent-soft-border);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--fm-ink);
+}
+
+.resumenLastfmTotal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 768px) {
+  .resumenLastfm {
+    margin: 0 40px;
+  }
+}

@@ -21,32 +21,32 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0;
+  gap: 3px;
   flex: 1;
   height: 100%;
   background: none;
   border: none;
-  color: #9a95a6;
+  color: var(--fm-nav-ink);
   cursor: pointer;
-  padding: 8px 0;
+  padding: 6px 0;
   transition: color 0.15s ease;
 }
 
 .footerButton:hover {
-  color: #811cd9;
+  color: var(--fm-nav-activo);
 }
 
 .footerButton.activo {
-  color: #811cd9;
+  color: var(--fm-nav-activo);
 }
 
 .footerButtonChip {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
+  width: 48px;
   height: 30px;
-  border-radius: 10px;
+  border-radius: var(--fm-radius-pill);
   transition: background-color 0.15s ease;
 }
 
@@ -65,7 +65,7 @@
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent);
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 17px;
   text-align: center;
@@ -73,30 +73,36 @@
 }
 
 .footerButton.activo .footerButtonChip {
-  background-color: #f4effc;
+  background-color: var(--fm-nav-activo-bg);
 }
 
 .footerButtonIcono {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .footerButton.activo .footerButtonIcono {
   stroke-width: 2.1;
 }
 
-/* texto disponible para lectores de pantalla, oculto visualmente en mobile:
-   la navegación es solo íconos en esta dirección */
+/* nombre debajo del ícono, para que se entienda de un vistazo */
 .footerButtonTexto {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  font-family: var(--fm-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.1;
   white-space: nowrap;
-  border: 0;
+}
+
+.footerButton.activo .footerButtonTexto {
+  font-weight: 700;
+}
+
+/* en mobile esos destinos están en el menú hamburguesa */
+@media (max-width: 767px) {
+  .footerButton--escritorio {
+    display: none;
+  }
 }
 
 /* ===== DESKTOP: sidebar fijo a la izquierda, siempre abierto ===== */
@@ -130,7 +136,7 @@
   }
 
   .footerButton:hover {
-    background-color: #f7f4ff;
+    background-color: var(--fm-nav-hover-bg);
   }
 
   .footerButtonChip {

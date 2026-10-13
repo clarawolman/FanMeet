@@ -1,0 +1,153 @@
+/* Menú hamburguesa: panel que entra desde la derecha. Solo existe en
+   mobile; en desktop la barra lateral (Footer) ya muestra todo.
+   El switch de modo oscuro reusa .themeSwitch de MenuConfiguracion.css. */
+
+.menuLateralOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fm-dur) var(--fm-ease);
+}
+
+.menuLateralOverlay.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menuLateralPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(300px, 84vw);
+  background: var(--fm-surface);
+  border-left: 1px solid var(--fm-border);
+  box-shadow: var(--fm-shadow);
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  transform: translateX(100%);
+  transition: transform var(--fm-dur) var(--fm-ease);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.menuLateralPanel.abierto {
+  transform: translateX(0);
+}
+
+.menuLateralHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.menuLateralLogo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  color: var(--fm-accent);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.menuLateralCerrar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuLateralItems {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuLateralItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 14px;
+  background: none;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.menuLateralItem:hover {
+  background: var(--fm-bg-soft);
+}
+
+.menuLateralItem.activo {
+  color: var(--fm-nav-activo);
+  font-weight: 700;
+  background: var(--fm-nav-activo-bg);
+}
+
+.menuLateralIcono {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.menuLateralTema {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--fm-radius-md);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-bg-soft);
+}
+
+.menuLateralTemaTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menuLateralTemaTexto strong {
+  font-family: var(--fm-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fm-ink);
+}
+
+.menuLateralTemaTexto span {
+  font-size: 13px;
+  color: var(--fm-muted);
+}
+
+.menuLateralSalir {
+  margin-top: auto;
+  color: var(--fm-accent);
+}
+
+@media (min-width: 768px) {
+  .menuLateralOverlay {
+    display: none;
+  }
+}

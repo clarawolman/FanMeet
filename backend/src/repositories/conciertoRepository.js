@@ -47,6 +47,14 @@ export const usuariosConciertosRepository = {
     return unwrap(resultado, "Error verificando inscripción al concierto");
   },
 
+  // Quien va a que concierto, de todos los usuarios (para el matching).
+  async listarTodas() {
+    const resultado = await supabaseAdmin
+      .from("usuarios_conciertos")
+      .select("id_usuario, id_concierto");
+    return unwrap(resultado, "Error cargando asistentes a conciertos");
+  },
+
   async crearRelacion(idUsuario, idConcierto) {
     const resultado = await supabaseAdmin
       .from("usuarios_conciertos")

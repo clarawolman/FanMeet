@@ -3,57 +3,38 @@ import "./EditarGeneros.css";
 import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import SelectorGeneros from "../generales/SelectorGeneros";
 
 function EditarGeneros({ onVolver }) {
   const { usuarioActual } = useContext(UsuarioContext);
-  const [catalogo, setCatalogo] = useState([]);
-  const [catalogoError, setCatalogoError] = useState("");
   const [seleccionados, setSeleccionados] = useState([]);
-  const [busqueda, setBusqueda] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
-    if (usuarioActual?.id_usuario) {
-      cargarDatos();
-    }
-  }, [usuarioActual]);
+    if (!usuarioActual?.id_usuario) return;
+    let cancelado = false;
 
-  async function cargarDatos() {
-    setCargando(true);
+    Promise.all([usuariosService.obtenerCatalogoGeneros(), usuariosService.obtenerMisGeneros()])
+      .then(([catalogo, idsSeleccionados]) => {
+        if (cancelado) return;
+        const elegidos = (idsSeleccionados || [])
+          .map((id) => (catalogo || []).find((g) => String(idDeGenero(g)) === String(id)))
+          .filter(Boolean)
+          .map((g) => ({ id: idDeGenero(g), nombre: nombreDeGenero(g) }));
+        setSeleccionados(elegidos);
+      })
+      .catch((error) => {
+        console.error("Error cargando géneros del usuario:", error);
+        if (!cancelado) setSeleccionados([]);
+      })
+      .finally(() => !cancelado && setCargando(false));
 
-    try {
-      const catalogoData = await usuariosService.obtenerCatalogoGeneros();
-      setCatalogoError("");
-      setCatalogo(catalogoData || []);
-    } catch (error) {
-      console.error("Error cargando catálogo de géneros:", error);
-      setCatalogoError(error.message);
-      setCatalogo([]);
-    }
-
-    try {
-      const idsSeleccionados = await usuariosService.obtenerMisGeneros();
-      setSeleccionados(idsSeleccionados || []);
-    } catch (error) {
-      console.error("Error cargando géneros del usuario:", error);
-      setSeleccionados([]);
-    }
-
-    setCargando(false);
-  }
-
-  function manejarGenero(idGenero) {
-    setError("");
-
-    if (seleccionados.includes(idGenero)) {
-      setSeleccionados(seleccionados.filter((id) => id !== idGenero));
-      return;
-    }
-
-    setSeleccionados([...seleccionados, idGenero]);
-  }
+    return () => {
+      cancelado = true;
+    };
+  }, [usuarioActual?.id_usuario]);
 
   async function manejarGuardar() {
     if (seleccionados.length < 2) {
@@ -64,7 +45,7 @@ function EditarGeneros({ onVolver }) {
     setGuardando(true);
 
     try {
-      await usuariosService.guardarMisGeneros(seleccionados);
+      await usuariosService.guardarMisGeneros(seleccionados.map((g) => g.id));
       setGuardando(false);
       onVolver();
     } catch (error) {
@@ -72,10 +53,6 @@ function EditarGeneros({ onVolver }) {
       setGuardando(false);
     }
   }
-
-  const catalogoFiltrado = catalogo.filter((genero) =>
-    nombreDeGenero(genero).toLowerCase().includes(busqueda.trim().toLowerCase())
-  );
 
   return (
     <main className="pantallaEditarGeneros">
@@ -92,53 +69,19 @@ function EditarGeneros({ onVolver }) {
 
         {cargando && <p className="editarGenerosVacio">Cargando géneros...</p>}
 
-        {!cargando && catalogoError && (
-          <p className="editarGenerosError">
-            No pudimos cargar el catálogo de géneros ({catalogoError}). Pedile a
-            un administrador que ejecute:
-            <br />
-            <code>GRANT SELECT ON public.estilo_musical TO anon;</code>
-          </p>
-        )}
-
-        {!cargando && !catalogoError && (
+        {!cargando && (
           <>
             <p className="editarGenerosSubtitulo">
               Elegí al menos 2 géneros favoritos para tu perfil
             </p>
 
-            <div className="editarGenerosBuscador">
-              <span className="editarGenerosBuscadorIcono">⌕</span>
-
-              <input
-                type="text"
-                placeholder="Buscar género..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-              />
-            </div>
-
-            <div className="editarGenerosGrid">
-              {catalogoFiltrado.map((genero) => {
-                const idGenero = idDeGenero(genero);
-                const activo = seleccionados.includes(idGenero);
-
-                return (
-                  <button
-                    key={idGenero}
-                    className={`fmChipGenero editarGenerosChip ${activo ? "activo" : ""}`}
-                    type="button"
-                    onClick={() => manejarGenero(idGenero)}
-                  >
-                    <strong>{nombreDeGenero(genero)}</strong>
-                  </button>
-                );
-              })}
-            </div>
-
-            {catalogoFiltrado.length === 0 && (
-              <p className="editarGenerosVacio">No encontramos ese género.</p>
-            )}
+            <SelectorGeneros
+              seleccionados={seleccionados}
+              onCambiar={(lista) => {
+                setError("");
+                setSeleccionados(lista);
+              }}
+            />
 
             {error && <p className="editarGenerosError">{error}</p>}
 

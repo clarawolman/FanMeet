@@ -7,7 +7,7 @@
 .fansUnidosListaMain {
   max-width: 960px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 16px 16px calc(100px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -16,7 +16,7 @@
 .fansUnidosListaVacio {
   margin: 0;
   font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--fm-muted);
   text-align: center;
   padding: 24px 0;
@@ -63,7 +63,7 @@
 
 .fanUnidoGrupos {
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--fm-muted);
 }
 
@@ -75,7 +75,7 @@
   border: 1px solid var(--fm-border);
   background: var(--fm-bg-soft);
   color: var(--fm-muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -102,7 +102,7 @@
   background: var(--fm-accent);
   color: #fff;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.15s;
@@ -137,7 +137,11 @@
 }
 
 @media (min-width: 768px) {
+  .fansUnidosLista {
+    padding-left: 240px;
+  }
+
   .fansUnidosListaMain {
-    padding: 20px 32px;
+    padding: 20px 32px 60px;
   }
 }

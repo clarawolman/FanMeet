@@ -46,6 +46,14 @@ export const usuarioRepository = {
     return unwrap(resultado, "Error cargando usuarios");
   },
 
+  // Todos los usuarios (para "Descubrir"): solo lo que se muestra en la lista.
+  async listarTodos() {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("id_usuario, nombre, fotoperfil, fechanac, estilo_asistencia");
+    return unwrap(resultado, "Error cargando usuarios");
+  },
+
   // Mismo texto de error que hoy usa App.jsx::manejarFinalizarRegistro.
   async crear(datosUsuario) {
     const resultado = await supabaseAdmin.from(TABLA).insert([datosUsuario]).select().single();

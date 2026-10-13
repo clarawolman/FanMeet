@@ -2,6 +2,12 @@ import { supabase } from "../supabase";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
+// Lo que ve el usuario cuando algo falla de nuestro lado: nunca "Error
+// interno del servidor" ni detalles técnicos. Los 503 sí traen un texto
+// pensado para mostrar ("Last.fm está limitando las consultas...").
+const MENSAJE_ERROR_GENERICO = "Algo salió mal. Probá de nuevo en un rato.";
+const MENSAJE_SIN_CONEXION = "No pudimos conectarnos. Revisá tu conexión y probá de nuevo.";
+
 // Mientras la migración es progresiva, la sesión "de verdad" sigue siendo
 // la que mantiene supabase-js (persistida en localStorage) porque las
 // pantallas que todavía no migraron siguen llamando a Supabase directo con
@@ -33,14 +39,21 @@ async function solicitar(path, { method = "GET", body, formData, autenticado = t
       body: formData || (body !== undefined ? JSON.stringify(body) : undefined),
     });
   } catch {
-    throw new Error("No se pudo conectar con el servidor");
+    throw new Error(MENSAJE_SIN_CONEXION);
   }
 
   const texto = await respuesta.text();
-  const datos = texto ? JSON.parse(texto) : null;
+  let datos = null;
+  try {
+    datos = texto ? JSON.parse(texto) : null;
+  } catch {
+    // Respuesta que no es JSON (proxy caído, página de error): se trata
+    // como error genérico más abajo.
+  }
 
   if (!respuesta.ok) {
-    const error = new Error(datos?.error || "Ocurrió un error");
+    const mostrarMensaje = respuesta.status < 500 || respuesta.status === 503;
+    const error = new Error((mostrarMensaje && datos?.error) || MENSAJE_ERROR_GENERICO);
     error.status = respuesta.status;
     error.details = datos?.details;
     throw error;

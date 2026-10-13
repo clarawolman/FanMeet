@@ -1,0 +1,99 @@
+.compatibilidadPerfil {
+  margin: 0 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--fm-surface);
+  border: 1.5px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+}
+
+.compatibilidadPerfil.cargando {
+  min-height: 72px;
+  justify-content: center;
+}
+
+.compatibilidadPerfilResumen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.compatibilidadPerfilResumen h3 {
+  margin: 0 0 4px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-ink);
+}
+
+.compatibilidadPerfilResumen p,
+.compatibilidadPerfilVacio {
+  margin: 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.compatibilidadPerfilGrupo h4 {
+  margin: 0 0 8px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  text-transform: none;
+  color: var(--fm-muted);
+}
+
+.compatibilidadPerfilChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.compatibilidadPerfilChips span {
+  padding: 6px 12px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  border: 1px solid var(--fm-accent-soft-border);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+}
+
+.compatibilidadPerfilChips span.genero {
+  background: var(--fm-bg-soft);
+  border-color: var(--fm-border);
+  text-transform: capitalize;
+}
+
+.compatibilidadPerfilDatos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+.compatibilidadPerfilDatos li::before {
+  content: "♪";
+  margin-right: 8px;
+  color: var(--fm-accent);
+}
+
+.compatibilidadPerfilDatos strong {
+  color: var(--fm-ink);
+}
+
+@media (min-width: 768px) {
+  .compatibilidadPerfil {
+    margin: 0 40px;
+  }
+}

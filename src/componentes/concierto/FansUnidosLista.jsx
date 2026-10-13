@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import "./FansUnidosLista.css";
 import HeaderApp from "../generales/HeaderApp";
+import Footer from "../generales/Footer";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { amistadService } from "../../services/amistadService";
 
@@ -25,6 +26,7 @@ function FansUnidosLista({
   onVerUsuario,
   onCambioAmistad,
   onEnviarMensaje,
+  onNavegar,
   titulo = "Fans unidos",
   subtitulo = `${cantidadFans} personas van a este concierto`,
 }) {
@@ -143,6 +145,8 @@ function FansUnidosLista({
           </div>
         ))}
       </main>
+
+      {onNavegar && <Footer onNavegar={onNavegar} />}
     </div>
   );
 }

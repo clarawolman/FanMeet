@@ -39,6 +39,13 @@
   border-bottom: 1px solid var(--fm-border);
 }
 
+.chatsListaTitulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .chatsListaHeader h1 {
   margin: 0;
   font-family: var(--fm-font-display);
@@ -192,7 +199,7 @@
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 20px;
   text-align: center;
@@ -389,7 +396,7 @@
   display: inline-flex;
   align-items: center;
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.65;
   white-space: nowrap;
 }

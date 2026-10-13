@@ -19,7 +19,7 @@
   border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--fm-ink);
   cursor: pointer;

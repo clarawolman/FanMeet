@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
 import Concierto from "./componentes/concierto/Concierto";
@@ -16,15 +16,24 @@ import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
 import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
+import Descubrir from "./componentes/descubrir/Descubrir";
+import MenuLateral from "./componentes/generales/MenuLateral";
 import { ID_CHATBOT } from "./services/chatbotService";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
+import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
+
+  // Cada pantalla nueva arranca desde arriba (si no, hereda el scroll de
+  // la anterior y se abre "a la mitad").
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pantalla]);
 
   // El usuario logueado vive en UsuarioContext (src/context/UsuarioContext.jsx).
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
@@ -135,6 +144,13 @@ function App() {
   }
 
   async function manejarVerUsuario(idUsuario) {
+    // Tocar tu propia foto (en amigos de otro, fans, chats...) abre tu
+    // perfil, nunca la vista "ajena" con el botón de conectar.
+    if (idUsuario === usuarioActual?.id_usuario) {
+      manejarNavegacion("perfil");
+      return;
+    }
+
     try {
       const usuario = await usuariosService.obtenerPerfil(idUsuario);
       setUsuarioVisitado(usuario);
@@ -239,9 +255,13 @@ async function manejarFinalizarRegistro(datosPaso3) {
   // que solo existe en esta pestaña: no se manda al backend. El archivo se
   // sube a Storage recién cuando la cuenta ya existe (necesita sesión).
   const archivoFoto = datosFinales.foto_perfil;
+  // Los artistas favoritos (Registro3) también necesitan sesión: se suman
+  // después de crear la cuenta, como la foto.
+  const artistasFavoritos = datosFinales.artistas_favoritos || [];
   const datosSinFoto = { ...datosFinales };
   delete datosSinFoto.foto_perfil;
   delete datosSinFoto.previewFoto;
+  delete datosSinFoto.artistas_favoritos;
 
   try {
     let usuarioCreado = await authService.registro(datosSinFoto);
@@ -253,6 +273,16 @@ async function manejarFinalizarRegistro(datosPaso3) {
         // La cuenta ya está creada: si falla la foto queda la de por
         // defecto y se puede cambiar después desde el perfil.
         console.error("No se pudo subir la foto de perfil:", errorFoto);
+      }
+    }
+
+    // En orden, para que el carrusel del perfil quede como los eligió.
+    // Si alguno falla se puede volver a agregar desde el perfil.
+    for (const spotifyId of artistasFavoritos) {
+      try {
+        await spotifyService.agregarFavorito(spotifyId);
+      } catch (errorArtista) {
+        console.error("No se pudo guardar el artista favorito:", errorArtista);
       }
     }
 
@@ -290,13 +320,22 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "fansConfirmadosGrupo" &&
     pantalla !== "perfilAjeno" &&
     pantalla !== "notificaciones" &&
-    pantalla !== "chats"
+    pantalla !== "chats" &&
+    pantalla !== "descubrir"
   ) {
     return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
   }
 
   return (
     <>
+      {!esPantallaLogin && usuarioActual && (
+        <MenuLateral
+          pantallaActiva={pantalla}
+          onNavegar={manejarNavegacion}
+          onCerrarSesion={manejarCerrarSesion}
+        />
+      )}
+
       {errorTexto && esPantallaLogin && (
         <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
       )}
@@ -395,8 +434,13 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <Home
           onEntrarConcierto={manejarEntrarConcierto}
           onNavegar={manejarNavegacion}
+          onVerUsuario={manejarVerUsuario}
           onAbrirChatbot={manejarAbrirChatbot}
         />
+      )}
+
+      {pantalla === "descubrir" && usuarioActual && (
+        <Descubrir onNavegar={manejarNavegacion} onVerUsuario={manejarVerUsuario} />
       )}
 
       {pantalla === "chats" && usuarioActual && (

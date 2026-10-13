@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./Registro3.css";
-import { usuariosService } from "../../../services/usuariosService";
-import { idDeGenero, nombreDeGenero } from "../../../utils/generos";
+import SelectorGeneros from "../../generales/SelectorGeneros";
+import FilaArtistas from "../../perfil/filaArtistas";
+import BuscarArtista from "../../perfil/buscarArtista";
+
+const MAX_ARTISTAS = 20;
 
 const ambientes = [
   {
@@ -25,54 +28,36 @@ const ambientes = [
 ];
 
 function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
-  const [catalogoGeneros, setCatalogoGeneros] = useState([]);
-  const [catalogoError, setCatalogoError] = useState("");
-  const [cargandoCatalogo, setCargandoCatalogo] = useState(true);
-
   const [generosSeleccionados, setGenerosSeleccionados] = useState(
     datosIniciales.generos || []
   );
   const [ambienteSeleccionado, setAmbienteSeleccionado] = useState(
     datosIniciales.estilo_asistencia || ""
   );
+  const [artistasSeleccionados, setArtistasSeleccionados] = useState(
+    datosIniciales.artistas || []
+  );
+  const [mostrarBuscadorArtistas, setMostrarBuscadorArtistas] = useState(false);
   const [errorRegistro3, setErrorRegistro3] = useState("");
 
-  useEffect(() => {
-    cargarCatalogoGeneros();
-  }, []);
-
-  async function cargarCatalogoGeneros() {
-    setCargandoCatalogo(true);
-
-    try {
-      const datos = await usuariosService.obtenerCatalogoGeneros();
-      setCatalogoError("");
-      setCatalogoGeneros(datos || []);
-    } catch (error) {
-      console.error("Error cargando catálogo de géneros:", error);
-      setCatalogoError(error.message);
-      setCatalogoGeneros([]);
-    }
-
-    setCargandoCatalogo(false);
+  // La cuenta todavía no existe: se guardan acá y App.jsx los suma como
+  // favoritos apenas termina el registro (igual que la foto de perfil).
+  async function agregarArtista(artista) {
+    setArtistasSeleccionados((actuales) =>
+      actuales.some((a) => a.spotify_id === artista.spotify_id) ? actuales : [...actuales, artista]
+    );
   }
 
-  function manejarGenero(idGenero) {
-    setErrorRegistro3("");
-
-    if (generosSeleccionados.includes(idGenero)) {
-      setGenerosSeleccionados(
-        generosSeleccionados.filter((genero) => genero !== idGenero)
-      );
-      return;
-    }
-
-    setGenerosSeleccionados([...generosSeleccionados, idGenero]);
+  function quitarArtista(artista) {
+    setArtistasSeleccionados((actuales) =>
+      actuales.filter((a) => a.spotify_id !== artista.spotify_id)
+    );
   }
 
   function manejarVolver() {
     onVolver({
       generos: generosSeleccionados,
+      artistas: artistasSeleccionados,
       estilo_asistencia: ambienteSeleccionado,
     });
   }
@@ -91,7 +76,8 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
     setErrorRegistro3("");
 
     onFinalizar({
-      estilos_musicales: generosSeleccionados,
+      estilos_musicales: generosSeleccionados.map((genero) => genero.id),
+      artistas_favoritos: artistasSeleccionados.map((artista) => artista.spotify_id),
       estilo_asistencia: ambienteSeleccionado,
     });
   }
@@ -122,36 +108,44 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
           Elegí al menos 2 géneros favoritos para encontrar a tu grupo
         </p>
 
-        {cargandoCatalogo && (
-          <p className="registro3Subtitulo">Cargando géneros...</p>
-        )}
+        <div className="registro3Selector">
+          <SelectorGeneros
+            seleccionados={generosSeleccionados}
+            onCambiar={(lista) => {
+              setErrorRegistro3("");
+              setGenerosSeleccionados(lista);
+            }}
+          />
+        </div>
 
-        {!cargandoCatalogo && catalogoError && (
-          <p className="registro3Error">
-            No pudimos cargar el catálogo de géneros ({catalogoError}).
+        <div className="registro3Artistas">
+          <h3 className="registro3ArtistasTitulo">Tus artistas favoritos</h3>
+          <p className="registro3ArtistasSubtitulo">
+            Opcional: con ellos te mostramos fans y conciertos parecidos a vos
           </p>
-        )}
 
-        {!cargandoCatalogo && !catalogoError && (
-          <div className="registro3Generos">
-            {catalogoGeneros.map((genero) => {
-              const idGenero = idDeGenero(genero);
-              const activo = generosSeleccionados.includes(idGenero);
-
-              return (
+          <FilaArtistas
+            artistas={artistasSeleccionados}
+            onQuitar={quitarArtista}
+            alInicio={
+              artistasSeleccionados.length < MAX_ARTISTAS && (
                 <button
-                  key={idGenero}
-                  className={`fmChipGenero registro3Genero ${activo ? "activo" : ""}`}
+                  className="artistaAgregar"
                   type="button"
-                  onClick={() => manejarGenero(idGenero)}
+                  onClick={() => setMostrarBuscadorArtistas(true)}
                 >
-                  <span>♪</span>
-                  <strong>{nombreDeGenero(genero)}</strong>
+                  <span className="artistaAgregarCirculo" aria-hidden="true">
+                    +
+                  </span>
+                  <strong>Agregar</strong>
+                  <small>
+                    {artistasSeleccionados.length > 0 ? "Sumá otro artista" : "Tu primer artista"}
+                  </small>
                 </button>
-              );
-            })}
-          </div>
-        )}
+              )
+            }
+          />
+        </div>
 
         <h3 className="registro3SeccionTitulo">♚ Ambiente de Concierto</h3>
 
@@ -192,6 +186,14 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
           Finalizar
         </button>
       </section>
+
+      {mostrarBuscadorArtistas && (
+        <BuscarArtista
+          favoritos={artistasSeleccionados}
+          onAgregar={agregarArtista}
+          onCerrar={() => setMostrarBuscadorArtistas(false)}
+        />
+      )}
     </main>
   );
 }
