@@ -6,16 +6,23 @@ import { IconoNavMenu } from "../generales/iconosNav";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { chatsService } from "../../services/chatsService";
 import { mensajesService } from "../../services/mensajesService";
+import { chatbotService, ID_CHATBOT } from "../../services/chatbotService";
 import { supabase } from "../../supabase";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import fotoDefault from "../../assets/fotoDefault.png";
+import LogoChatbot from "../chatbot/LogoChatbot";
+
+const NOMBRE_CHATBOT = "Fani";
 
 const TAMANIO_PAGINA = 50;
 const TIPOS_IMAGEN = ["image/jpeg", "image/png", "image/webp"];
 const MAX_IMAGEN_BYTES = 5 * 1024 * 1024; // mismo límite que backend/src/middlewares/upload.js
 const FOTO_GRUPO_DEFAULT = "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=200&q=80";
 
-// Hay dos tipos de chat en la lista:
+// Hay tres tipos de chat en la lista:
+//  - bot: Fani, la asistente de IA de FanMeet, siempre fijado arriba (tabla
+//    mensaje_chatbot, /api/chatbot/mensajes). Sin Realtime: la respuesta
+//    vuelve en el mismo POST.
 //  - privado: con un amigo (tabla mensaje_privado, /api/chats/:idUsuario)
 //  - grupo: el chat de cada grupo del que soy miembro (tabla mensaje_grupo,
 //    /api/grupos/:idGrupo/mensajes). Existe desde que se crea el grupo.
@@ -24,6 +31,7 @@ function claveChat(tipo, id) {
 }
 
 function claveDe(chat) {
+  if (chat.tipo === "bot") return claveChat("bot", ID_CHATBOT);
   return chat.tipo === "grupo"
     ? claveChat("grupo", chat.grupo.id_grupo)
     : claveChat("privado", chat.usuario.id_usuario);
@@ -31,6 +39,9 @@ function claveDe(chat) {
 
 // Datos comunes para pintar un chat (lista y encabezado).
 function datosDe(chat) {
+  if (chat.tipo === "bot") {
+    return { tipo: "bot", id: ID_CHATBOT, nombre: NOMBRE_CHATBOT, foto: null };
+  }
   if (chat.tipo === "grupo") {
     return {
       tipo: "grupo",
@@ -138,6 +149,17 @@ function IconoChatVacio() {
   );
 }
 
+// Foto del chat; el bot usa su logo en vez de una imagen.
+function AvatarChat({ datos, chico = false }) {
+  const clases = `chatsAvatar ${chico ? "chatsAvatar--chico" : ""} ${
+    datos.tipo === "grupo" ? "chatsAvatar--grupo" : ""
+  }`;
+  if (datos.tipo === "bot") {
+    return <LogoChatbot className={`${clases} chatsAvatar--bot`} titulo={datos.nombre} />;
+  }
+  return <img className={clases} src={datos.foto} alt={datos.nombre} />;
+}
+
 // ✓ enviado / ✓✓ leído (como WhatsApp). Solo en chats privados.
 function Tildes({ leido }) {
   return (
@@ -181,6 +203,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
   const [imagenAmpliada, setImagenAmpliada] = useState(null);
+  // Mientras la IA arma la respuesta se muestra "escribiendo..."
+  const [botEscribiendo, setBotEscribiendo] = useState(false);
 
   // Los handlers de Realtime se registran una sola vez: leen el chat
   // abierto y la lista desde refs para no quedar con valores viejos.
@@ -193,6 +217,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   // "abajo" (mensaje nuevo / chat recién abierto) o mantener la posición
   // al agregar mensajes viejos arriba.
   const scrollPendienteRef = useRef(null);
+  // ids de los mensajes al bot que todavía no volvieron del servidor
+  const idTemporalRef = useRef(0);
 
   useEffect(() => {
     chatAbiertoRef.current = chatAbierto;
@@ -269,7 +295,13 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
   async function cargarChats(paraAbrir) {
     try {
-      const data = (await chatsService.listar()) || [];
+      // Si el chat con el bot falla (ej. falta la tabla), igual se muestra.
+      const [lista, ultimosBot] = await Promise.all([
+        chatsService.listar(),
+        chatbotService.listarMensajes({ limite: 1 }).catch(() => []),
+      ]);
+      const chatBot = { tipo: "bot", ultimoMensaje: ultimosBot?.[0] || null, noLeidos: 0 };
+      const data = [chatBot, ...(lista || [])];
       setChats(data);
       chatsRef.current = data;
 
@@ -375,6 +407,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   }
 
   function pedirMensajes(abierto, opciones) {
+    if (abierto.tipo === "bot") return chatbotService.listarMensajes(opciones);
     return abierto.tipo === "grupo"
       ? mensajesService.listar(abierto.id, opciones)
       : chatsService.listarMensajes(abierto.id, opciones);
@@ -391,6 +424,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
     setTexto("");
     quitarImagenAdjunta();
     setErrorEnvio("");
+    setBotEscribiendo(false);
     setCargandoMensajes(true);
     setChats((actuales) => actuales.map((c) => (claveDe(c) === clave ? { ...c, noLeidos: 0 } : c)));
 
@@ -484,6 +518,41 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
     inputRef.current?.focus();
   }
 
+  // El mensaje propio aparece al instante (como en WhatsApp) y la respuesta
+  // de la IA llega en el mismo POST, después de unos segundos.
+  async function enviarAlBot(contenido) {
+    const abiertoAlEnviar = chatAbiertoRef.current;
+    const temporal = {
+      id_mensaje: `temporal-${++idTemporalRef.current}`,
+      id_emisor: idYo,
+      contenido,
+      created_at: new Date().toISOString(),
+    };
+    agregarMensaje(temporal);
+    setTexto("");
+    setBotEscribiendo(true);
+
+    try {
+      const { mensajeUsuario, respuesta } = await chatbotService.enviar(contenido);
+      if (chatAbiertoRef.current === abiertoAlEnviar) {
+        scrollPendienteRef.current = "abajo";
+        setMensajes((actuales) => [
+          ...actuales.map((m) => (m.id_mensaje === temporal.id_mensaje ? mensajeUsuario : m)),
+          respuesta,
+        ]);
+      }
+      setChats((actuales) =>
+        actuales.map((c) => (c.tipo === "bot" ? { ...c, ultimoMensaje: respuesta } : c))
+      );
+    } catch (error) {
+      console.error("Error hablando con Fani:", error);
+      setMensajes((actuales) => actuales.filter((m) => m.id_mensaje !== temporal.id_mensaje));
+      setTexto(contenido);
+      setErrorEnvio(error.message || "Fani no pudo responder");
+    }
+    setBotEscribiendo(false);
+  }
+
   async function manejarEnviar(evento) {
     evento.preventDefault();
     const contenido = texto.trim();
@@ -491,6 +560,13 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
     setEnviando(true);
     setErrorEnvio("");
+
+    if (chatAbierto.tipo === "bot") {
+      await enviarAlBot(contenido);
+      setEnviando(false);
+      inputRef.current?.focus();
+      return;
+    }
 
     try {
       if (chatAbierto.tipo === "grupo") {
@@ -519,6 +595,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
   const totalNoLeidos = chats.reduce((total, c) => total + c.noLeidos, 0);
   const esGrupoAbierto = chatAbierto?.tipo === "grupo";
+  const esBotAbierto = chatAbierto?.tipo === "bot";
 
   function renderMensajes() {
     let diaAnterior = null;
@@ -576,7 +653,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
               {mensaje.contenido && <p className="chatsBurbujaTexto">{mensaje.contenido}</p>}
               <span className="chatsBurbujaHora">
                 {formatearHora(mensaje.created_at)}
-                {esPropio && !esGrupoAbierto && <Tildes leido={mensaje.leido} />}
+                {esPropio && chatAbierto.tipo === "privado" && <Tildes leido={mensaje.leido} />}
               </span>
             </div>
           </div>
@@ -588,10 +665,12 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   function renderPreview(chat) {
     const { ultimoMensaje } = chat;
     if (!ultimoMensaje) {
+      if (chat.tipo === "bot") return "Preguntame lo que necesites sobre FanMeet";
       return chat.tipo === "grupo" ? "Grupo creado. ¡Saludá al grupo!" : "Empezá a chatear";
     }
 
     const esPropio = autorDe(ultimoMensaje) === idYo;
+    if (chat.tipo === "bot") return `${esPropio ? "Vos: " : ""}${ultimoMensaje.contenido}`;
     if (chat.tipo === "grupo") {
       const quien = esPropio ? "Vos" : ultimoMensaje.usuario?.nombre || "Alguien";
       return `${quien}: ${textoPreview(ultimoMensaje)}`;
@@ -605,7 +684,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   }
 
   function manejarClickEncabezado() {
-    if (!chatAbierto) return;
+    if (!chatAbierto || chatAbierto.tipo === "bot") return;
     if (chatAbierto.tipo === "grupo") onVerGrupo?.(chatAbierto.grupo);
     else onVerUsuario?.(chatAbierto.id);
   }
@@ -657,14 +736,13 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                   className={`chatsItem ${activo ? "chatsItem--activo" : ""}`}
                   onClick={() => abrirChat(chat)}
                 >
-                  <img
-                    className={`chatsAvatar ${datos.tipo === "grupo" ? "chatsAvatar--grupo" : ""}`}
-                    src={datos.foto}
-                    alt={datos.nombre}
-                  />
+                  <AvatarChat datos={datos} />
                   <span className="chatsItemTexto">
                     <span className="chatsItemFila">
-                      <span className="chatsItemNombre">{datos.nombre}</span>
+                      <span className="chatsItemNombre">
+                        {datos.nombre}
+                        {datos.tipo === "bot" && <span className="chatsEtiquetaBot">IA</span>}
+                      </span>
                       {ultimoMensaje && (
                         <span className={`chatsItemHora ${noLeidos > 0 ? "chatsItemHora--nuevo" : ""}`}>
                           {formatearFechaLista(ultimoMensaje.created_at)}
@@ -697,13 +775,14 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                   <IconoVolver />
                 </button>
                 <button type="button" className="chatsConversacionPerfil" onClick={manejarClickEncabezado}>
-                  <img
-                    className={`chatsAvatar chatsAvatar--chico ${esGrupoAbierto ? "chatsAvatar--grupo" : ""}`}
-                    src={chatAbierto.foto}
-                    alt={chatAbierto.nombre}
-                  />
+                  <AvatarChat datos={chatAbierto} chico />
                   <span className="chatsConversacionTexto">
                     <span className="chatsConversacionNombre">{chatAbierto.nombre}</span>
+                    {esBotAbierto && (
+                      <span className="chatsConversacionSubtitulo">
+                        {botEscribiendo ? "escribiendo..." : "Asistente de FanMeet"}
+                      </span>
+                    )}
                     {esGrupoAbierto && (
                       <span className="chatsConversacionSubtitulo">
                         {chatAbierto.usuarios
@@ -722,13 +801,25 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
                 {!cargandoMensajes && mensajes.length === 0 && (
                   <p className="chatsMensajesEstado">
-                    {esGrupoAbierto
-                      ? `Este es el chat del grupo ${chatAbierto.nombre}. ¡Mandá el primer mensaje!`
-                      : `Todavía no hay mensajes. ¡Mandale el primero a ${chatAbierto.nombre}!`}
+                    {esBotAbierto
+                      ? "¡Hola! Soy Fani 👋 Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app."
+                      : esGrupoAbierto
+                        ? `Este es el chat del grupo ${chatAbierto.nombre}. ¡Mandá el primer mensaje!`
+                        : `Todavía no hay mensajes. ¡Mandale el primero a ${chatAbierto.nombre}!`}
                   </p>
                 )}
 
                 {!cargandoMensajes && renderMensajes()}
+
+                {esBotAbierto && botEscribiendo && (
+                  <div className="chatsMensajeLinea">
+                    <div className="chatsBurbuja chatsEscribiendo" aria-label="Fani está escribiendo">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {errorEnvio && <p className="chatsError">{errorEnvio}</p>}
@@ -744,8 +835,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
               )}
 
               <form className="chatsForm" onSubmit={manejarEnviar}>
-                {/* El chat de grupo (mensaje_grupo) es solo texto */}
-                {!esGrupoAbierto && (
+                {/* El chat de grupo (mensaje_grupo) y el del bot son solo texto */}
+                {chatAbierto.tipo === "privado" && (
                   <>
                     <input
                       ref={inputArchivoRef}

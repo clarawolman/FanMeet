@@ -18,6 +18,7 @@ import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
 import Descubrir from "./componentes/descubrir/Descubrir";
 import MenuLateral from "./componentes/generales/MenuLateral";
+import { ID_CHATBOT } from "./services/chatbotService";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
@@ -115,6 +116,11 @@ function App() {
 
   function manejarEnviarMensaje(idUsuario) {
     setChatInicial({ tipo: "privado", id: idUsuario });
+    setPantalla("chats");
+  }
+
+  function manejarAbrirChatbot() {
+    setChatInicial({ tipo: "bot", id: ID_CHATBOT });
     setPantalla("chats");
   }
 
@@ -429,6 +435,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
           onEntrarConcierto={manejarEntrarConcierto}
           onNavegar={manejarNavegacion}
           onVerUsuario={manejarVerUsuario}
+          onAbrirChatbot={manejarAbrirChatbot}
         />
       )}
 

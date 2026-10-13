@@ -19,6 +19,10 @@ function capitalizar(texto) {
 }
 
 function Home({ onEntrarConcierto, onNavegar, onVerUsuario }) {
+import BotonChatbot from "../chatbot/BotonChatbot";
+import { UsuarioContext } from "../../context/UsuarioContext";
+
+function Home({ onEntrarConcierto, onNavegar, onAbrirChatbot }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [conciertos, setConciertos] = useState([]);
   const [conciertosUnidos, setConciertosUnidos] = useState([]);
@@ -477,6 +481,8 @@ const generosOrdenados = [...generos].sort((a, b) => {
           onValidar={validarCodigo}
         />
       )}
+
+      <BotonChatbot onAbrir={onAbrirChatbot} />
 
       <Footer onNavegar={onNavegar} pantallaActiva="home" />
     </div>
