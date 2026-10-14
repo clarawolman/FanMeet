@@ -31,10 +31,26 @@ export const authService = {
     return api.post("/auth/verificar-registro", { nombre, mail }, { autenticado: false });
   },
 
+  // Si Supabase exige confirmar el mail no hay sesión todavía:
+  // requiereConfirmacion avisa que hay que pedir el código.
   async registro(datosRegistro) {
     const resultado = await api.post("/auth/registro", datosRegistro, { autenticado: false });
     await aplicarSesion(resultado.session);
+    return { usuario: resultado.usuario, requiereConfirmacion: !!resultado.requiereConfirmacion };
+  },
+
+  async verificarCodigo(mail, codigo) {
+    const resultado = await api.post(
+      "/auth/verificar-codigo",
+      { mail, codigo },
+      { autenticado: false }
+    );
+    await aplicarSesion(resultado.session);
     return resultado.usuario;
+  },
+
+  async reenviarCodigo(mail) {
+    return api.post("/auth/reenviar-codigo", { mail }, { autenticado: false });
   },
 
   async logout() {

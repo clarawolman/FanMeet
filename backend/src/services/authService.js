@@ -29,6 +29,15 @@ export const authService = {
     }
 
     const { data, error } = await authRepository.signInWithPassword(mail, contrasena);
+    if (error?.code === "email_not_confirmed") {
+      // Solo llega acá con la contraseña correcta: Supabase valida las
+      // credenciales antes de chequear la confirmación. El frontend usa
+      // details.codigo para llevarlo a la pantalla de verificación.
+      throw ApiError.forbidden("Tenés que confirmar tu mail antes de ingresar", {
+        codigo: "mail_no_confirmado",
+        mail,
+      });
+    }
     if (error) {
       throw ApiError.unauthorized("Usuario/mail o contraseña incorrectos");
     }
@@ -79,7 +88,40 @@ export const authService = {
       );
     }
 
-    return { usuario: toUsuarioCompleto(usuarioCreado), session: formatearSesion(data.session) };
+    // Sin sesión = Supabase exige confirmar el mail: el perfil ya quedó
+    // creado y el frontend pide el código antes de seguir.
+    return {
+      usuario: toUsuarioCompleto(usuarioCreado),
+      session: formatearSesion(data.session),
+      requiereConfirmacion: !data.session,
+    };
+  },
+
+  async verificarCodigo({ mail, codigo }) {
+    const { data, error } = await authRepository.verificarCodigoRegistro(
+      mail.trim().toLowerCase(),
+      codigo.trim()
+    );
+    if (error || !data?.session) {
+      throw ApiError.badRequest("El código es incorrecto o ya venció. Pedí uno nuevo.");
+    }
+
+    const usuario = await usuarioRepository.obtenerPorId(data.user.id);
+    if (!usuario) {
+      throw ApiError.unauthorized("Este usuario no existe");
+    }
+
+    return { usuario: toUsuarioCompleto(usuario), session: formatearSesion(data.session) };
+  },
+
+  async reenviarCodigo({ mail }) {
+    const { error } = await authRepository.reenviarCodigoRegistro(mail.trim().toLowerCase());
+    if (error) {
+      const esperar = error.status === 429 || error.code === "over_email_send_rate_limit";
+      throw esperar
+        ? new ApiError(429, "Esperá un minuto antes de pedir otro código")
+        : ApiError.internal(`No se pudo reenviar el código: ${error.message}`);
+    }
   },
 
   // Replica exactamente los 3 chequeos que hace Registro1.jsx antes de

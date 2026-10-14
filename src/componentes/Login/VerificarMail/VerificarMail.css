@@ -1,0 +1,55 @@
+.verificarTexto {
+  margin: 0 0 24px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
+  color: var(--fm-ink);
+}
+
+.verificarTexto strong {
+  color: var(--fm-accent);
+  word-break: break-all;
+}
+
+.verificarCodigoInput {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-display);
+  font-size: 22px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  outline: none;
+}
+
+.verificarAviso {
+  margin: 8px 0 -12px;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  text-align: center;
+}
+
+.verificarReenviar {
+  margin: 20px 0 0;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-ink);
+  text-align: center;
+}
+
+.verificarLink {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--fm-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verificarLink:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

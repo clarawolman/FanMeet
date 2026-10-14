@@ -6,6 +6,8 @@ import { validate } from "../middlewares/validate.js";
 import {
   loginSchema,
   registroSchema,
+  reenviarCodigoSchema,
+  verificarCodigoSchema,
   verificarDisponibilidadSchema,
 } from "../validators/authValidators.js";
 
@@ -19,6 +21,18 @@ router.post(
   authController.verificarDisponibilidad
 );
 router.post("/registro", authRateLimiter, validate(registroSchema), authController.registro);
+router.post(
+  "/verificar-codigo",
+  authRateLimiter,
+  validate(verificarCodigoSchema),
+  authController.verificarCodigo
+);
+router.post(
+  "/reenviar-codigo",
+  authRateLimiter,
+  validate(reenviarCodigoSchema),
+  authController.reenviarCodigo
+);
 router.post("/logout", authMiddleware, authController.logout);
 
 export default router;
