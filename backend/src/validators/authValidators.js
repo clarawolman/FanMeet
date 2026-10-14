@@ -33,3 +33,13 @@ export const registroSchema = z.object({
     .min(2, "Elegí al menos 2 géneros musicales"),
   previewFoto: z.string().optional(),
 });
+
+// Supabase manda códigos de 6 dígitos por defecto (configurable hasta 10).
+export const verificarCodigoSchema = z.object({
+  mail: z.string().trim().email("Mail inválido"),
+  codigo: z.string().trim().regex(/^[0-9]{6,10}$/, "El código son solo números"),
+});
+
+export const reenviarCodigoSchema = z.object({
+  mail: z.string().trim().email("Mail inválido"),
+});

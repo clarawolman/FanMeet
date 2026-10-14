@@ -5,6 +5,8 @@ vi.mock("../src/repositories/authRepository.js", () => ({
     signInWithPassword: vi.fn(),
     signUp: vi.fn(),
     mailExisteEnAuth: vi.fn(),
+    verificarCodigoRegistro: vi.fn(),
+    reenviarCodigoRegistro: vi.fn(),
   },
 }));
 
@@ -72,6 +74,20 @@ describe("authService.login", () => {
     await expect(
       authService.login({ usuarioOMail: "ana@mail.com", contrasena: "mala" })
     ).rejects.toMatchObject({ status: 401, message: "Usuario/mail o contraseña incorrectos" });
+  });
+
+  it("avisa con 403 y details.codigo cuando el mail no está confirmado", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: null,
+      error: { code: "email_not_confirmed", message: "Email not confirmed" },
+    });
+
+    await expect(
+      authService.login({ usuarioOMail: "ana@mail.com", contrasena: "Abcdef1!" })
+    ).rejects.toMatchObject({
+      status: 403,
+      details: { codigo: "mail_no_confirmado", mail: "ana@mail.com" },
+    });
   });
 
   it("rechaza si el auth existe pero no hay fila en la tabla usuario", async () => {
@@ -192,5 +208,67 @@ describe("authService.registro", () => {
       message: expect.stringContaining("ya tiene una cuenta"),
     });
     expect(usuarioRepository.crear).not.toHaveBeenCalled();
+  });
+});
+
+describe("authService.registro con confirmación de mail", () => {
+  it("devuelve requiereConfirmacion:true y session null cuando signUp no da sesión", async () => {
+    authRepository.signUp.mockResolvedValue({
+      data: { user: { id: "u1" }, session: null },
+      error: null,
+    });
+    usuarioRepository.crear.mockResolvedValue({ ...USUARIO_ROW, id_usuario: "u1" });
+
+    const resultado = await authService.registro({
+      nombre: "Ana",
+      mail: "ana@mail.com",
+      contrasena: "Abcdef1!",
+      fechanac: "2000-01-01",
+      genero: "F",
+      estilo_asistencia: "pogo",
+      estilos_musicales: [],
+    });
+
+    expect(resultado.requiereConfirmacion).toBe(true);
+    expect(resultado.session).toBeNull();
+  });
+});
+
+describe("authService.verificarCodigo", () => {
+  it("devuelve usuario y sesión cuando el código es válido", async () => {
+    authRepository.verificarCodigoRegistro.mockResolvedValue({
+      data: { user: { id: "u1" }, session: SESSION },
+      error: null,
+    });
+    usuarioRepository.obtenerPorId.mockResolvedValue(USUARIO_ROW);
+
+    const resultado = await authService.verificarCodigo({ mail: " Ana@Mail.com ", codigo: "123456" });
+
+    expect(authRepository.verificarCodigoRegistro).toHaveBeenCalledWith("ana@mail.com", "123456");
+    expect(resultado.session).toEqual(SESSION);
+    expect(resultado.usuario.id_usuario).toBe("u1");
+  });
+
+  it("rechaza con 400 si el código es incorrecto o venció", async () => {
+    authRepository.verificarCodigoRegistro.mockResolvedValue({
+      data: { user: null, session: null },
+      error: { code: "otp_expired", message: "Token has expired or is invalid" },
+    });
+
+    await expect(
+      authService.verificarCodigo({ mail: "ana@mail.com", codigo: "000000" })
+    ).rejects.toMatchObject({ status: 400 });
+  });
+});
+
+describe("authService.reenviarCodigo", () => {
+  it("responde 429 si Supabase limita el envío", async () => {
+    authRepository.reenviarCodigoRegistro.mockResolvedValue({
+      error: { status: 429, code: "over_email_send_rate_limit", message: "rate limit" },
+    });
+
+    await expect(authService.reenviarCodigo({ mail: "ana@mail.com" })).rejects.toMatchObject({
+      status: 429,
+    });
   });
 });

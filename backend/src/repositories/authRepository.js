@@ -11,6 +11,16 @@ export const authRepository = {
     return supabaseAuth.auth.signUp({ email, password });
   },
 
+  // Con "Confirm email" activado en Supabase, signUp no devuelve sesión:
+  // la cuenta queda pendiente hasta que se verifica el código del mail.
+  async verificarCodigoRegistro(email, token) {
+    return supabaseAuth.auth.verifyOtp({ email, token, type: "signup" });
+  },
+
+  async reenviarCodigoRegistro(email) {
+    return supabaseAuth.auth.resend({ type: "signup", email });
+  },
+
   // RPC existente en el proyecto (Registro1.jsx la usa hoy desde el cliente).
   // Su implementacion vive en Postgres, fuera de este repo.
   async mailExisteEnAuth(mail) {

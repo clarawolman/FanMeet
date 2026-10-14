@@ -3,7 +3,7 @@ import "./IniciarSesionRegistrarse.css";
 import LoginForm from "./loginForm";
 import FondoLogin from "./fondoLogin";
 
-function IniciarSesionRegistrarse({ onIngresar, onRegistrarse }) {
+function IniciarSesionRegistrarse({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
   return (
     <main className="pantallaLogin">
       <section className="loginContenido">
@@ -12,6 +12,7 @@ function IniciarSesionRegistrarse({ onIngresar, onRegistrarse }) {
         <LoginForm
           onIngresar={onIngresar}
           onRegistrarse={onRegistrarse}
+          onMailSinConfirmar={onMailSinConfirmar}
         />
       </section>
 

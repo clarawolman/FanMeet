@@ -9,6 +9,7 @@ import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registra
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
+import VerificarMail from "./componentes/Login/VerificarMail/VerificarMail";
 import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
 import Perfil from "./componentes/perfil/perfil";
@@ -39,6 +40,10 @@ function App() {
   // El usuario logueado vive en UsuarioContext (src/context/UsuarioContext.jsx).
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const [datosRegistro, setDatosRegistro] = useState({});
+  // Pantalla "verificarMail": a qué mail se mandó el código, si hay que
+  // mandar uno nuevo al entrar (viene del login) y lo que quedó pendiente
+  // del registro (foto y artistas necesitan sesión).
+  const [verificacion, setVerificacion] = useState(null);
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
   const [usuarioVisitado, setUsuarioVisitado] = useState(null);
@@ -293,7 +298,29 @@ async function manejarFinalizarRegistro(datosPaso3) {
   delete datosSinFoto.artistas_favoritos;
 
   try {
-    let usuarioCreado = await authService.registro(datosSinFoto);
+    const { usuario, requiereConfirmacion } = await authService.registro(datosSinFoto);
+
+    if (requiereConfirmacion) {
+      // Sin sesión hasta confirmar el mail: la foto y los artistas se
+      // guardan cuando se verifica el código.
+      setVerificacion({ mail: usuario.mail, enviarAlEntrar: false, archivoFoto, artistasFavoritos });
+      setDatosRegistro({});
+      setCargando(false);
+      setPantalla("verificarMail");
+      return;
+    }
+
+    await completarRegistro(usuario, archivoFoto, artistasFavoritos);
+  } catch (error) {
+    setErrorTexto(error.message || "Error al registrar usuario");
+    setCargando(false);
+  }
+}
+
+// Lo que necesita sesión: se corre apenas se crea la cuenta o, si hubo que
+// confirmar el mail, después de verificar el código.
+async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
+    let usuarioCreado = usuario;
 
     if (archivoFoto instanceof File) {
       try {
@@ -317,19 +344,31 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
     setUsuarioActual(usuarioCreado);
     setDatosRegistro({});
+    setVerificacion(null);
     setCargando(false);
     setPantalla("home");
-  } catch (error) {
-    setErrorTexto(error.message || "Error al registrar usuario");
-    setCargando(false);
-  }
 }
+
+  async function manejarMailVerificado(usuario) {
+    await completarRegistro(usuario, verificacion?.archivoFoto, verificacion?.artistasFavoritos);
+  }
+
+  function manejarMailSinConfirmar(mail) {
+    setVerificacion({ mail, enviarAlEntrar: true });
+    setPantalla("verificarMail");
+  }
+
+  function salirDeVerificacion() {
+    setVerificacion(null);
+    setPantalla("login");
+  }
 
   const esPantallaLogin =
     pantalla === "login" ||
     pantalla === "registro1" ||
     pantalla === "registro2" ||
-    pantalla === "registro3";
+    pantalla === "registro3" ||
+    pantalla === "verificarMail";
 
   if (restaurandoSesion) {
     return <CargandoPantalla texto="Cargando..." />;
@@ -377,6 +416,16 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <IniciarSesionRegistrarse
           onIngresar={manejarIngreso}
           onRegistrarse={() => setPantalla("registro1")}
+          onMailSinConfirmar={manejarMailSinConfirmar}
+        />
+      )}
+
+      {pantalla === "verificarMail" && verificacion && (
+        <VerificarMail
+          mail={verificacion.mail}
+          enviarAlEntrar={verificacion.enviarAlEntrar}
+          onVerificado={manejarMailVerificado}
+          onVolver={salirDeVerificacion}
         />
       )}
 

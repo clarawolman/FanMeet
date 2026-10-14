@@ -17,6 +17,16 @@ export const authController = {
     res.status(201).json(resultado);
   }),
 
+  verificarCodigo: asyncHandler(async (req, res) => {
+    const resultado = await authService.verificarCodigo(req.body);
+    res.json(resultado);
+  }),
+
+  reenviarCodigo: asyncHandler(async (req, res) => {
+    await authService.reenviarCodigo(req.body);
+    res.status(204).send();
+  }),
+
   logout: asyncHandler(async (_req, res) => {
     await authService.logout();
     res.status(204).send();
