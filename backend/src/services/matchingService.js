@@ -217,6 +217,7 @@ async function cargarDatosBase() {
     catalogo.map((g) => [String(g.id), { nombre: g.nombre, clave: normalizarGenero(g.nombre) }])
   );
 
+  const activos = new Set(usuarios.map((u) => u.id_usuario));
   return {
     usuarios: new Map(usuarios.map((u) => [u.id_usuario, u])),
     generosPorId,
@@ -226,7 +227,12 @@ async function cargarDatosBase() {
     favoritosPorUsuario: agruparPor(favoritos, "id_usuario", (f) => f.nombre),
     lastfmPorUsuario: new Map(cuentasLastfm.map((c) => [c.id_usuario, c.usuario_lastfm])),
     conciertosPorUsuario: agruparPor(asistencias, "id_usuario", (f) => String(f.id_concierto)),
-    asistentesPorConcierto: agruparPor(asistencias, "id_concierto", (f) => f.id_usuario),
+    // `usuarios` ya viene sin suspendidos: así no suman en "Van N amigos tuyos".
+    asistentesPorConcierto: agruparPor(
+      asistencias.filter((f) => activos.has(f.id_usuario)),
+      "id_concierto",
+      (f) => f.id_usuario
+    ),
   };
 }
 

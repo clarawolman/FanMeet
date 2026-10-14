@@ -50,7 +50,7 @@ async function armarChatsPrivados(idUsuarioAutenticado) {
   if (idsAmigos.length === 0) return [];
 
   const [usuarios, recientes, noLeidos] = await Promise.all([
-    usuarioRepository.listarPorIds(idsAmigos),
+    usuarioRepository.listarActivosPorIds(idsAmigos),
     mensajePrivadoRepository.listarRecientesDeUsuario(idUsuarioAutenticado),
     mensajePrivadoRepository.listarNoLeidosDeUsuario(idUsuarioAutenticado),
   ]);

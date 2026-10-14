@@ -23,9 +23,10 @@ export const usuarioService = {
   },
 
   // Uso para ver el perfil de OTRO usuario: nunca mail/fechanac/genero.
+  // Un suspendido se ve como inexistente para el resto.
   async obtenerPerfilPublico(idUsuario) {
     const usuario = await usuarioRepository.obtenerPorId(idUsuario);
-    if (!usuario) throw ApiError.notFound("El usuario no existe");
+    if (!usuario || usuario.estado === "suspendido") throw ApiError.notFound("El usuario no existe");
     return toUsuarioPublico(usuario);
   },
 
@@ -52,12 +53,17 @@ export const usuarioService = {
   },
 
   // Mismos 3 contadores que hoy calcula perfil.jsx::cargarEstadisticas.
+  // Los amigos suspendidos no cuentan (tampoco aparecen en la lista).
   async obtenerEstadisticas(idUsuario) {
-    const [conciertos, grupos, amigos] = await Promise.all([
+    const [conciertos, grupos, amistades] = await Promise.all([
       usuariosConciertosRepository.contarPorUsuario(idUsuario),
       grupoUsuarioRepository.contarPorUsuario(idUsuario),
-      amistadRepository.contarAceptadasDeUsuario(idUsuario),
+      amistadRepository.listarAceptadasDeUsuario(idUsuario),
     ]);
+    const idsAmigos = amistades.map((r) =>
+      r.id_solicitante === idUsuario ? r.id_receptor : r.id_solicitante
+    );
+    const amigos = (await usuarioRepository.listarActivosPorIds(idsAmigos)).length;
     return { conciertos, grupos, amigos };
   },
 

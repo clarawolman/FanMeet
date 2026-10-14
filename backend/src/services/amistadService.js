@@ -65,7 +65,7 @@ export const amistadService = {
     );
 
     if (idsAmigos.length === 0) return [];
-    const filas = await usuarioRepository.listarPorIds(idsAmigos);
+    const filas = await usuarioRepository.listarActivosPorIds(idsAmigos);
     return filas.map(toUsuarioPublico);
   },
 };

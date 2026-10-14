@@ -18,7 +18,7 @@ vi.mock("../src/repositories/amistadRepository.js", () => ({
 }));
 
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
-  usuarioRepository: { listarPorIds: vi.fn() },
+  usuarioRepository: { listarPorIds: vi.fn(), listarActivosPorIds: vi.fn() },
 }));
 
 vi.mock("../src/repositories/notificacionRepository.js", () => ({
@@ -187,9 +187,11 @@ describe("chatService.listarMensajes", () => {
 describe("chatService.listarChats", () => {
   it("incluye un chat por cada grupo del que es miembro, mezclado por fecha con los privados", async () => {
     amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([{ id_solicitante: YO, id_receptor: AMIGO }]);
-    usuarioRepository.listarPorIds.mockImplementation(async (ids) =>
-      ids.map((id) => ({ id_usuario: id, nombre: id === AMIGO ? "Ana" : "Yo" }))
-    );
+    // Amigos (solo activos) y miembros de grupo salen de la misma tabla.
+    const filasPorIds = async (ids) =>
+      ids.map((id) => ({ id_usuario: id, nombre: id === AMIGO ? "Ana" : "Yo" }));
+    usuarioRepository.listarActivosPorIds.mockImplementation(filasPorIds);
+    usuarioRepository.listarPorIds.mockImplementation(filasPorIds);
     mensajePrivadoRepository.listarRecientesDeUsuario.mockResolvedValue([
       mensajeConFecha(1, AMIGO, YO, "2026-10-05T10:00:00Z"),
     ]);
@@ -235,7 +237,7 @@ describe("chatService.listarChats", () => {
       { id_solicitante: YO, id_receptor: AMIGO },
       { id_solicitante: OTRO_AMIGO, id_receptor: YO },
     ]);
-    usuarioRepository.listarPorIds.mockResolvedValue([
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
       { id_usuario: AMIGO, nombre: "Ana" },
       { id_usuario: OTRO_AMIGO, nombre: "Beto" },
     ]);
@@ -262,7 +264,7 @@ describe("chatService.listarChats", () => {
       { id_solicitante: YO, id_receptor: AMIGO },
       { id_solicitante: YO, id_receptor: OTRO_AMIGO },
     ]);
-    usuarioRepository.listarPorIds.mockResolvedValue([
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
       { id_usuario: OTRO_AMIGO, nombre: "Zoe" },
       { id_usuario: AMIGO, nombre: "Ana" },
     ]);

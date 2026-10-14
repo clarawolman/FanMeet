@@ -15,7 +15,7 @@ async function armarUsuariosDeGrupo(idGrupo) {
   const relaciones = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
   const idsUnicos = [...new Set(relaciones.map((r) => r.id_usuario))];
   if (idsUnicos.length === 0) return [];
-  const filas = await usuarioRepository.listarPorIds(idsUnicos);
+  const filas = await usuarioRepository.listarActivosPorIds(idsUnicos);
   return filas.map(toUsuarioResumen);
 }
 
