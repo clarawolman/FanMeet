@@ -1,6 +1,10 @@
 import { api } from "./api";
 
 export const usuariosService = {
+  async obtenerMiPerfil() {
+    return api.get("/usuarios/me");
+  },
+
   async obtenerPerfil(idUsuario) {
     return api.get(`/usuarios/${idUsuario}`);
   },

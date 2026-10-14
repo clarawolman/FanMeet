@@ -5,15 +5,35 @@ import {
 } from "../repositories/conciertoRepository.js";
 import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRepository.js";
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
+import { usuarioRepository } from "../repositories/usuarioRepository.js";
+import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
+import { amistadRepository } from "../repositories/amistadRepository.js";
+import { calcularEdad } from "../entities/Usuario.js";
 import { toMensajeChatbot } from "../entities/MensajeChatbot.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 // Google Gemini, capa gratuita (key en https://aistudio.google.com/apikey).
 const MODELO = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+// Si el modelo principal está saturado (o sin cuota), se prueban estos en
+// orden. Los "lite" son los que menos se saturan. Se pueden cambiar con
+// GEMINI_MODELOS_RESPALDO separados por coma.
+const MODELOS_RESPALDO = (
+  process.env.GEMINI_MODELOS_RESPALDO || "gemini-3.6-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite"
+)
+  .split(",")
+  .map((m) => m.trim())
+  .filter(Boolean);
 const URL_GEMINI = "https://generativelanguage.googleapis.com/v1beta/models";
 // Cuántos mensajes anteriores del chat se le pasan a la IA como memoria.
 const MENSAJES_DE_HISTORIAL = 30;
 const MAIL_QUEJAS = "fanmeet100@gmail.com";
+
+// Los mismos textos que muestra el perfil (src/componentes/perfil/perfil.jsx).
+const NOMBRES_VIBRA = {
+  pogo: "Pogos, campos: mucha energía, sudor y movimiento",
+  tranquilo: "Platea: sentado y relajado con una bebida",
+  campo: "Primera Fila: ojos en el escenario, cantando cada palabra",
+};
 
 const NOMBRES_CATEGORIA_GRUPO = {
   pre: "Previa (antes del concierto)",
@@ -24,6 +44,8 @@ const NOMBRES_CATEGORIA_GRUPO = {
 const INSTRUCCIONES = `Sos Fani, la asistente virtual de la app FanMeet (tu logo es un robotito violeta que saluda). FanMeet conecta fans que van al mismo concierto: cada usuario se une a un concierto con un código de acceso y, una vez adentro, puede ver a los otros fans unidos, armar o sumarse a grupos (previa, after o mismo día), y chatear con sus amigos y con sus grupos.
 
 Tu trabajo:
+- Responder sobre el perfil del usuario con el que hablás (está en mi_perfil): su nombre, edad, su vibra en los conciertos, sus géneros y artistas favoritos y cuántos amigos tiene. Podés usarlo para personalizar: llamarlo por su nombre o recomendarle conciertos de la app que coincidan con sus gustos. Para cambiar algo del perfil, explicale que lo hace desde la sección Perfil de la app (vos no podés modificar nada).
+- Contar cosas básicas sobre artistas y bandas (de dónde son, género, años de carrera, discos o canciones más conocidas), sobre todo de los que tocan en los conciertos de la app o están entre sus favoritos. Esto lo sabés por tu conocimiento general: quedate en lo conocido y, si no estás seguro de un dato o puede estar desactualizado (giras, lanzamientos recientes), decilo.
 - Responder sobre los conciertos de la app de cada categoría (género musical): nombre del show, artista, fecha, hora, estadio, ciudad, cuántos fans y grupos tiene. Si un concierto tiene ya_paso en true, aclaralo ("fue el ...").
 - Si el usuario está unido a un concierto, también podés contarle sobre los grupos de ese concierto.
 - Ayudar con cómo usar la app: unirse a un concierto con el código, crear o sumarse a un grupo, agregar amigos, chatear, editar el perfil y los géneros favoritos.
@@ -31,9 +53,10 @@ Tu trabajo:
 Privacidad (muy importante):
 - Solo tenés datos de grupos de los conciertos a los que el usuario está unido. Si pregunta por los grupos de un concierto al que no se unió, explicale que esa información es privada para quienes se unieron y que puede unirse desde el Inicio con el código de acceso del concierto. No inventes ni adivines grupos.
 - Nunca reveles el código de acceso de un concierto (no lo tenés).
+- No tenés datos de otros usuarios (ni de los amigos del usuario ni de otros fans) ni de sus chats.
 
 Reglas:
-- Usá solo la información de <datos_fanmeet>. Si algo no está ahí, decí que no lo sabés en vez de inventarlo.
+- Todo lo que sea sobre FanMeet (conciertos, grupos, el perfil del usuario) sacalo solo de <datos_fanmeet>. Si algo no está ahí, decí que no lo sabés en vez de inventarlo. Tu conocimiento general usalo solo para hablar de los artistas y de música.
 - Si el usuario tiene un problema que no podés resolver, quiere hacer un reclamo, reportar a alguien o un error de la app, ofrecele mandar un mail de queja a ${MAIL_QUEJAS} contando qué pasó.
 - Hablá en español rioplatense, con voseo, en tono amigable y cercano. Respuestas cortas, como en un chat de WhatsApp: texto plano, sin títulos ni tablas ni markdown; podés usar algún emoji.
 - Si te preguntan algo que no tiene nada que ver con FanMeet o la música en vivo, respondé brevemente y volvé a ofrecer ayuda con la app.`;
@@ -73,12 +96,17 @@ function resumirConcierto(fila, nombresEstilo) {
 // los que el usuario está unido, así que la IA no puede contar lo que
 // nunca recibió.
 async function armarDatosParaUsuario(idUsuario) {
-  const [conciertos, catalogo, relaciones, misGrupos] = await Promise.all([
-    conciertoRepository.listarTodos(),
-    estiloMusicalRepository.listarCatalogo(),
-    usuariosConciertosRepository.listarConciertosPorUsuario(idUsuario),
-    grupoUsuarioRepository.listarGruposPorUsuario(idUsuario),
-  ]);
+  const [conciertos, catalogo, relaciones, misGrupos, usuario, misEstilos, misArtistas, cantidadAmigos] =
+    await Promise.all([
+      conciertoRepository.listarTodos(),
+      estiloMusicalRepository.listarCatalogo(),
+      usuariosConciertosRepository.listarConciertosPorUsuario(idUsuario),
+      grupoUsuarioRepository.listarGruposPorUsuario(idUsuario),
+      usuarioRepository.obtenerPorId(idUsuario),
+      estiloMusicalRepository.listarIdsPorUsuario(idUsuario),
+      artistaFavoritoRepository.listarPorUsuario(idUsuario),
+      amistadRepository.contarAceptadasDeUsuario(idUsuario),
+    ]);
 
   const nombresEstilo = new Map(catalogo.map((e) => [String(idDeEstilo(e)), nombreDeEstilo(e)]));
   const idsUnidos = new Set(relaciones.map((r) => r.id_concierto));
@@ -100,6 +128,16 @@ async function armarDatosParaUsuario(idUsuario) {
 
   return {
     fecha_de_hoy: hoy,
+    // Solo datos del propio usuario. El mail y la fecha de nacimiento no
+    // hacen falta para conversar, así que no se mandan a la IA.
+    mi_perfil: {
+      nombre: usuario?.nombre,
+      edad: calcularEdad(usuario?.fechanac),
+      vibra_en_conciertos: NOMBRES_VIBRA[usuario?.estilo_asistencia] || "sin elegir",
+      generos_favoritos: misEstilos.map((e) => nombresEstilo.get(String(e.id_estilo))).filter(Boolean),
+      artistas_favoritos: misArtistas.map((a) => a.nombre),
+      cantidad_de_amigos: cantidadAmigos,
+    },
     conciertos: ordenados.map((c) => ({
       ...resumirConcierto(c, nombresEstilo),
       el_usuario_esta_unido: idsUnidos.has(c.id_concierto),
@@ -137,34 +175,41 @@ async function preguntarALaIA(idUsuario, historial) {
   }
 
   const datos = await armarDatosParaUsuario(idUsuario);
+  const cuerpoPedido = JSON.stringify({
+    systemInstruction: {
+      parts: [
+        { text: INSTRUCCIONES },
+        { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
+      ],
+    },
+    contents: historial,
+    generationConfig: {
+      // El límite incluye lo que el modelo "piensa" antes de responder.
+      maxOutputTokens: 2048,
+      // Pensar poco: más rápido y gasta menos cuota gratis.
+      thinkingConfig: { thinkingLevel: "low" },
+    },
+  });
 
+  // 429: se acabó la cuota gratis de ese modelo. 503: Gemini está saturado.
+  // En los dos casos se prueba con el modelo siguiente.
+  const modelos = [...new Set([MODELO, ...MODELOS_RESPALDO])];
   let respuesta;
-  try {
-    respuesta = await fetch(`${URL_GEMINI}/${MODELO}:generateContent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [
-            { text: INSTRUCCIONES },
-            { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
-          ],
-        },
-        contents: historial,
-        generationConfig: {
-          // El límite incluye lo que el modelo "piensa" antes de responder.
-          maxOutputTokens: 2048,
-          // Pensar poco: más rápido y gasta menos cuota gratis.
-          thinkingConfig: { thinkingLevel: "low" },
-        },
-      }),
-    });
-  } catch {
-    throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+  for (const modelo of modelos) {
+    try {
+      respuesta = await fetch(`${URL_GEMINI}/${modelo}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body: cuerpoPedido,
+      });
+    } catch {
+      throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+    }
+    if (respuesta.status !== 429 && respuesta.status !== 503) break;
+    console.warn(`Gemini (${modelo}) respondió ${respuesta.status}: ${await respuesta.text().catch(() => "")}`);
   }
 
   if (!respuesta.ok) {
-    // 429: se acabó la cuota gratis por ahora. 503: Gemini está saturado.
     if (respuesta.status === 429 || respuesta.status === 503) {
       throw new ApiError(429, "Fani está con muchas consultas, probá de nuevo en un ratito");
     }

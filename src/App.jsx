@@ -25,6 +25,7 @@ import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
 import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
+import { supabase } from "./supabase";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -51,6 +52,34 @@ function App() {
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
+  // Al recargar la página, supabase-js todavía tiene la sesión guardada en
+  // localStorage: mientras se recupera el usuario no se muestra el login.
+  const [restaurandoSesion, setRestaurandoSesion] = useState(true);
+
+  useEffect(() => {
+    let activo = true;
+
+    async function restaurarSesion() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) return;
+        const usuario = await usuariosService.obtenerMiPerfil();
+        if (activo) manejarIngreso(usuario);
+      } catch (error) {
+        // Sesión vencida o usuario borrado: se limpia y queda el login.
+        console.error("No se pudo restaurar la sesión:", error);
+        if (error.status === 401 || error.status === 404) await supabase.auth.signOut();
+      } finally {
+        if (activo) setRestaurandoSesion(false);
+      }
+    }
+
+    restaurarSesion();
+    return () => {
+      activo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -301,6 +330,10 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla === "registro1" ||
     pantalla === "registro2" ||
     pantalla === "registro3";
+
+  if (restaurandoSesion) {
+    return <CargandoPantalla texto="Cargando..." />;
+  }
 
   if (!esPantallaLogin && pantalla !== "home" && cargando) {
     return <CargandoPantalla texto="Cargando concierto..." />;
