@@ -13,6 +13,7 @@ import {
   toEscuchaReciente,
 } from "../entities/Lastfm.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { esOrigenPermitido } from "../helpers/origenes.js";
 
 const TOP_LIMITE = 10;
 const SUGERENCIAS_ARTISTAS = 8;
@@ -38,6 +39,18 @@ function asegurarConfigurado() {
   }
 }
 
+// Vincular necesita ademas el shared secret para firmar auth.getSession.
+function asegurarVinculable() {
+  asegurarConfigurado();
+  if (!env.lastfmSharedSecret) {
+    throw new ApiError(503, "Por ahora no se puede vincular Last.fm.");
+  }
+}
+
+// Pagina estatica del frontend (public/lastfm-callback.html) que recibe el
+// token y se lo pasa a la ventana de FanMeet que abrio el popup.
+const PAGINA_CALLBACK = "/lastfm-callback.html";
+
 // Completa con fotos de Spotify lo que Last.fm devuelve sin imagen.
 async function completarImagenes(items, tipo) {
   return Promise.all(
@@ -50,12 +63,29 @@ async function completarImagenes(items, tipo) {
 }
 
 export const lastfmService = {
-  // Verifica que el usuario exista en Last.fm antes de guardarlo, y guarda
-  // el nombre tal cual lo tiene Last.fm (con sus mayusculas).
-  async vincular(idUsuarioAutenticado, usuarioLastfm) {
-    asegurarConfigurado();
-    const info = await lastfmApiRepository.obtenerInfoUsuario(usuarioLastfm);
-    const nombre = info?.user?.name || usuarioLastfm;
+  // A donde mandar el popup para que la persona inicie sesion en Last.fm y
+  // apruebe FanMeet. `origen` es el del frontend que lo pide: solo se aceptan
+  // los mismos que CORS, para no redirigir a cualquier sitio.
+  urlAutorizacion(origen) {
+    if (!esOrigenPermitido(origen)) {
+      throw ApiError.badRequest("Origen no permitido");
+    }
+    if (!env.lastfmApiKey || !env.lastfmSharedSecret) {
+      return `${origen}${PAGINA_CALLBACK}?error=no-disponible`;
+    }
+    return lastfmApiRepository.urlAutorizacion(`${origen}${PAGINA_CALLBACK}`);
+  },
+
+  // Vincula la cuenta que Last.fm confirma para ese token: no se escribe un
+  // nombre a mano, asi nadie puede vincular la cuenta de otra persona. No
+  // importa que el mail de Last.fm sea distinto al de FanMeet.
+  async vincular(idUsuarioAutenticado, token) {
+    asegurarVinculable();
+    const datos = await lastfmApiRepository.obtenerSesion(token);
+    const nombre = datos?.session?.name;
+    if (!nombre) {
+      throw ApiError.badRequest("No pudimos confirmar tu cuenta de Last.fm. Volvé a intentarlo.");
+    }
     await lastfmCuentaRepository.guardar(idUsuarioAutenticado, nombre);
     this.limpiarCache(idUsuarioAutenticado);
     return { usuario_lastfm: nombre };

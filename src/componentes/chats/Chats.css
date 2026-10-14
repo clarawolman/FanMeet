@@ -67,7 +67,7 @@
 }
 
 .chatsBuscador:focus-within {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .chatsBuscador svg {
@@ -436,7 +436,7 @@
 }
 
 .chatsForm input:focus {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .chatsBotonEnviar {
@@ -527,8 +527,8 @@
 }
 
 .chatsAdjunto button:hover {
-  border-color: var(--fm-accent);
-  color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
+  color: var(--fm-ink);
 }
 
 /* ===== TILDES ✓ / ✓✓ ===== */
@@ -690,7 +690,7 @@
 /* ===== DESKTOP: dos paneles ===== */
 @media (min-width: 768px) {
   .pantallaChats {
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
     padding-bottom: 0;
   }
 

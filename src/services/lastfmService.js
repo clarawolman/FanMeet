@@ -1,4 +1,7 @@
-import { api } from "./api";
+import { api, API_URL } from "./api";
+
+// Mensaje que manda public/lastfm-callback.html a esta ventana.
+export const MENSAJE_LASTFM = "fanmeet-lastfm";
 
 export const lastfmService = {
   // Lo que escuchó en los últimos 30 días.
@@ -16,8 +19,16 @@ export const lastfmService = {
     return api.get("/lastfm/me/sugerencias");
   },
 
-  async vincular(usuarioLastfm) {
-    return api.put("/lastfm/me", { usuario_lastfm: usuarioLastfm });
+  // Página que se abre en el popup: redirige a Last.fm para iniciar sesión
+  // y aprobar FanMeet, y vuelve a /lastfm-callback.html con el token.
+  urlAutorizacion() {
+    return `${API_URL}/lastfm/autorizar?origen=${encodeURIComponent(window.location.origin)}`;
+  },
+
+  // El backend le pregunta a Last.fm de quién es la cuenta que aprobó ese
+  // token y vincula esa (no se escribe el usuario a mano).
+  async vincular(token) {
+    return api.put("/lastfm/me", { token });
   },
 
   async desvincular() {

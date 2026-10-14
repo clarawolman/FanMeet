@@ -2,7 +2,9 @@
   position: sticky;
   top: 0;
   z-index: var(--fm-z-header);
-  background: var(--fm-surface);
+  background: color-mix(in srgb, var(--fm-bg) 86%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
   border-bottom: 1px solid var(--fm-border);
 }
 
@@ -10,8 +12,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
-  min-height: 64px;
+  padding: 10px 20px;
+  min-height: 60px;
   box-sizing: border-box;
 }
 
@@ -36,13 +38,7 @@
 }
 
 .headerAppLogo {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  color: var(--fm-ink);
-  font-size: var(--fm-fs-lg);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  font-size: 18px;
 }
 
 .headerAppTitulos {
@@ -56,7 +52,8 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   text-transform: none;
   color: var(--fm-ink);
   white-space: nowrap;
@@ -122,13 +119,15 @@
 }
 
 .headerAppFilaTitulo .headerAppTitulo {
-  font-size: var(--fm-fs-lg);
+  font-size: var(--fm-fs-xl);
+  font-weight: 700;
+  letter-spacing: -0.04em;
   white-space: normal;
 }
 
 .headerAppBotonAccion {
-  border: 1px solid var(--fm-border);
-  background: var(--fm-surface);
+  border: 1px solid var(--fm-border-strong);
+  background: transparent;
   color: var(--fm-ink);
   font-family: var(--fm-font-mono);
   font-size: var(--fm-fs-xs);
@@ -136,8 +135,8 @@
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
-  padding: 7px 12px;
-  border-radius: var(--fm-radius-sm);
+  padding: 8px 14px;
+  border-radius: var(--fm-radius-pill);
   white-space: nowrap;
   transition: background var(--fm-dur) var(--fm-ease);
 }
@@ -151,12 +150,23 @@
     display: none;
   }
 
+  /* en escritorio la marca vive en el sidebar */
+  .headerApp .headerAppLogo {
+    display: none;
+  }
+
   .headerAppFila {
-    padding: 18px 40px;
+    padding: 12px 40px;
+    min-height: 64px;
+  }
+
+  .headerAppFila--soloMovil {
+    display: none;
   }
 
   .headerAppFilaTitulo {
-    padding: 0 40px 16px;
+    min-height: 88px;
+    padding: 24px 40px 20px;
   }
 
   .headerAppTitulo {
@@ -164,6 +174,8 @@
   }
 
   .headerAppFilaTitulo .headerAppTitulo {
-    font-size: var(--fm-fs-xl);
+    font-size: var(--fm-fs-2xl);
+    font-weight: 700;
+    letter-spacing: -0.04em;
   }
 }

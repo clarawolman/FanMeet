@@ -68,8 +68,8 @@
   height: 46px;
   border-radius: var(--fm-radius-sm);
   border: none;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
@@ -92,5 +92,5 @@
 }
 
 .modalConfirmacionBotonSecundario:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

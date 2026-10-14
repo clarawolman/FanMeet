@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Footer.css";
 import MenuConfiguracion from "./MenuConfiguracion";
+import Marca from "./Marca";
 import { chatsService } from "../../services/chatsService";
 import {
   IconoNavInicio,
@@ -46,7 +47,8 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
 
   return (
     <>
-      <nav className="footer">
+      <nav className="footer" aria-label="Principal">
+        <Marca className="footerMarca" />
         {ITEMS.map(({ destino, texto, Icono, soloEscritorio }) => {
           const activo = pantallaActiva === destino;
           const badge = destino === "chats" && noLeidos > 0 ? noLeidos : null;

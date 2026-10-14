@@ -25,7 +25,7 @@
   gap: 16px;
   text-align: center;
   background: var(--fm-bg-soft);
-  border: 1px dashed var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
   font-size: var(--fm-fs-sm);
   line-height: 1.4;
@@ -39,8 +39,8 @@
 .descubrirBoton {
   border: none;
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   padding: 11px 20px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
@@ -49,14 +49,13 @@
 }
 
 .descubrirAviso {
-  margin: 0 0 14px;
-  padding: 12px 14px;
-  border-radius: var(--fm-radius-md);
-  background: var(--fm-accent-soft-bg);
-  border: 1px solid var(--fm-accent-soft-border);
-  color: var(--fm-accent-soft-ink);
-  font-size: var(--fm-fs-xs);
-  line-height: 1.4;
+  max-width: 68ch;
+  margin: 0 0 20px;
+  padding: 0 0 0 14px;
+  border-left: 2px solid var(--fm-accent);
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
 }
 
 .descubrirGrilla {
@@ -73,14 +72,15 @@
   display: flex;
   flex-direction: column;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: none;
   border-radius: var(--fm-radius-lg);
+  box-shadow: var(--fm-shadow-sm);
   overflow: hidden;
-  transition: border-color var(--fm-dur) var(--fm-ease);
+  transition: box-shadow var(--fm-dur) var(--fm-ease);
 }
 
 .descubrirCard:hover {
-  border-color: var(--fm-accent-soft-border);
+  box-shadow: var(--fm-shadow);
 }
 
 .descubrirCardFotoBoton {
@@ -154,7 +154,7 @@
 
 @media (min-width: 768px) {
   .pantallaDescubrir {
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .descubrirLayout {

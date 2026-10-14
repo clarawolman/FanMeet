@@ -2,6 +2,7 @@ import { useContext } from "react";
 import "./HeaderApp.css";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { IconoNavMenu, IconoVolver } from "./iconosNav";
+import Marca from "./Marca";
 
 export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
   const { abrirMenu } = useContext(MenuLateralContext);
@@ -10,7 +11,9 @@ export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
 
   return (
     <header className="headerApp">
-      <div className="headerAppFila">
+      {/* Con título propio, esta fila solo tiene la marca y el menú: en
+          escritorio las dos viven en el sidebar y la fila se oculta. */}
+      <div className={`headerAppFila ${filaTituloSola ? "headerAppFila--soloMovil" : ""}`}>
         {onVolver ? (
           <button
             className="headerAppVolver"
@@ -21,7 +24,7 @@ export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
             <IconoVolver />
           </button>
         ) : (
-          <p className="headerAppLogo">FanMeet</p>
+          <Marca className="headerAppLogo" />
         )}
 
         {filaTitulo && (

@@ -3,7 +3,7 @@ import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
 import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
-import signOutIcono from "../../assets/signOut.png";
+import { IconoNavSalir } from "../generales/iconosNav";
 
 export default function HeaderPerfil({
   usuario,
@@ -62,7 +62,7 @@ export default function HeaderPerfil({
                   aria-label="Cerrar sesión"
                   title="Cerrar sesión"
                 >
-                  <img src={signOutIcono} alt="" />
+                  <IconoNavSalir />
                 </button>
               )}
             </div>

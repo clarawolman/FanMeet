@@ -15,24 +15,18 @@
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 16px 16px 96px;
+  padding: 16px 16px 104px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
 }
 
 .conciertoHero { width: 100%; }
 
-/* ===== BLOQUES: paneles delimitados, mismo lenguaje visual en toda
-   la pantalla (surface + borde + radius-lg) ===== */
+/* ===== BLOQUES: secciones abiertas sobre el fondo, sin caja alrededor;
+   las tarjetas de adentro son las que tienen superficie ===== */
 .conciertoBloque {
   width: 100%;
-  background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
-  border-radius: var(--fm-radius-lg);
-  padding: 18px;
-  box-shadow: var(--fm-shadow-sm);
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -42,9 +36,9 @@
   margin: 0;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-lg);
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.03em;
   color: var(--fm-ink);
-  letter-spacing: 0.005em;
 }
 
 .conciertoBloqueHeader {
@@ -80,9 +74,9 @@
   margin: 4px 0;
   padding: 28px 16px;
   text-align: center;
-  background: var(--fm-bg-soft);
-  border: 1px dashed var(--fm-border);
-  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  border: none;
+  border-radius: var(--fm-radius-lg);
   color: var(--fm-muted);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
@@ -103,38 +97,19 @@
 
 /* ===== BOTÓN CREAR GRUPO — CTA principal de la pantalla ===== */
 .btn-crear-grupo {
-  display: block;
   width: 100%;
-  margin: 0;
-  padding: 15px 0;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-md);
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  border: none;
-  border-radius: var(--fm-radius-pill);
-  cursor: pointer;
-  box-shadow: none;
-  transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
-}
-
-.btn-crear-grupo:active:not(:disabled) {
-  transform: scale(0.98);
+  min-height: 52px;
 }
 
 /* ===== DESKTOP ===== */
 @media (min-width: 768px) {
-  .pantalla-concierto { padding-left: 240px; }
-  .conciertoLayout { padding: 20px 32px 96px; gap: 24px; }
-  .conciertoBloque { padding: 24px; gap: 16px; }
+  .pantalla-concierto { padding-left: var(--fm-sidebar); }
+  .conciertoLayout { padding: 24px 32px 96px; gap: 40px; }
+  .conciertoBloqueHeader { flex-direction: row; align-items: center; justify-content: space-between; }
+  .btn-crear-grupo { width: auto; align-self: flex-start; padding: 0 28px; }
 }
 @media (min-width: 1024px) {
   .conciertoLayout { padding: 24px 48px 96px; }
 }
 
-.btn-crear-grupo:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
-}
+

@@ -3,7 +3,7 @@
   max-width: 1040px;
   margin: 0 auto;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: none;
   border-radius: var(--fm-radius-lg);
   padding: 44px;
   box-sizing: border-box;
@@ -16,9 +16,9 @@
   font-family: var(--fm-font-display);
   font-size: clamp(34px, 4.5vw, 50px);
   line-height: 1.02;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: none;
-  letter-spacing: 0.005em;
+  letter-spacing: -0.04em;
 }
 
 .crearGrupoTitulo::after {
@@ -80,7 +80,7 @@
   width: 100%;
   height: 54px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   padding: 0 18px;
   box-sizing: border-box;
@@ -94,8 +94,8 @@
 }
 
 .crearGrupoInput:focus {
-  border-color: var(--fm-accent);
-  box-shadow: 0 0 0 2px var(--fm-glow);
+  border-color: var(--fm-ink);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
 }
 
 .crearGrupoInput::placeholder {
@@ -106,7 +106,7 @@
   width: 100%;
   min-height: 130px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   padding: 16px 18px;
   box-sizing: border-box;
@@ -122,8 +122,8 @@
 }
 
 .crearGrupoTextarea:focus {
-  border-color: var(--fm-accent);
-  box-shadow: 0 0 0 2px var(--fm-glow);
+  border-color: var(--fm-ink);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
 }
 
 .crearGrupoTextarea::placeholder {
@@ -139,16 +139,16 @@
   margin-top: 10px;
   padding: 20px 16px;
   border-radius: var(--fm-radius-md);
-  border: 1.5px dashed var(--fm-border);
-  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-bg);
   cursor: pointer;
   transition: border-color var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
 }
 
 .crearGrupoFotoPicker:hover,
 .crearGrupoFotoPicker:focus-within {
-  border-color: var(--fm-accent-soft-border);
-  background: var(--fm-accent-soft-bg);
+  border-color: var(--fm-ink);
+  background: var(--fm-bg);
 }
 
 .crearGrupoFotoCirculo {
@@ -160,7 +160,8 @@
   align-items: center;
   justify-content: center;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: none;
+  box-shadow: var(--fm-shadow-sm);
   flex-shrink: 0;
 }
 
@@ -177,10 +178,10 @@
 }
 
 .crearGrupoFotoTexto {
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-xs);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
-  color: var(--fm-accent);
+  color: var(--fm-ink);
   text-align: center;
 }
 
@@ -217,7 +218,7 @@
 .crearGrupoCategoria {
   min-width: 92px;
   height: 44px;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
   background: var(--fm-surface);
   color: var(--fm-ink);
@@ -232,8 +233,8 @@
 }
 
 .crearGrupoCategoria:hover {
-  border-color: var(--fm-accent);
-  color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
+  color: var(--fm-ink);
 }
 
 .crearGrupoCategoria.activa {
@@ -246,9 +247,9 @@
 .crearGrupoError {
   width: 100%;
   box-sizing: border-box;
-  color: var(--fm-accent);
+  color: var(--fm-danger);
   background: var(--fm-bg-soft);
-  border: 1.5px solid var(--fm-accent);
+  border: 1px solid var(--fm-danger);
   border-radius: var(--fm-radius-sm);
   padding: 14px 18px;
   font-family: var(--fm-font-body);
@@ -264,8 +265,8 @@
   height: 56px;
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
   font-weight: 600;
@@ -370,5 +371,5 @@
 }
 
 .crearGrupoBoton:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

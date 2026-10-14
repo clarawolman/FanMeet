@@ -29,8 +29,8 @@
   margin-top: 8px;
   width: 100%;
   padding: 14px;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   border: none;
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
@@ -55,5 +55,5 @@
 }
 
 .confirmacionGrupo button:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

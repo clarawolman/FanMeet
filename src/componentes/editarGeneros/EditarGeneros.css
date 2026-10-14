@@ -29,7 +29,7 @@
   height: 72px;
   padding: 0 24px;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-bottom: none;
   border-radius: var(--fm-radius-lg) var(--fm-radius-lg) 0 0;
   box-shadow: var(--fm-shadow);
@@ -65,7 +65,7 @@
   max-width: 430px;
   padding: 20px 24px calc(28px + env(safe-area-inset-bottom));
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-top: none;
   border-radius: 0 0 var(--fm-radius-lg) var(--fm-radius-lg);
   box-shadow: var(--fm-shadow);
@@ -94,7 +94,7 @@
   align-items: center;
   gap: 10px;
   background: var(--fm-bg-soft);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
   padding: 0 16px;
   margin-bottom: 20px;
@@ -103,7 +103,7 @@
 }
 
 .editarGenerosBuscador:focus-within {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .editarGenerosBuscadorIcono {
@@ -155,10 +155,10 @@
   display: inline-block;
   margin-top: 6px;
   background: var(--fm-bg-soft);
-  color: var(--fm-accent);
+  color: var(--fm-danger);
   padding: 4px 8px;
   border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-accent);
+  border: 1px solid var(--fm-danger);
   font-size: var(--fm-fs-2xs);
   font-weight: 600;
 }
@@ -173,7 +173,7 @@
 .editarGenerosBotonGuardar {
   flex: 1;
   height: 52px;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-body);
@@ -195,10 +195,10 @@
 }
 
 .editarGenerosBotonGuardar {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   box-shadow: none;
-  border-color: var(--fm-accent);
+  border-color: var(--fm-cta);
 }
 
 .editarGenerosBotonCancelar:active,
@@ -272,5 +272,5 @@
 }
 
 .editarGenerosBotonGuardar:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

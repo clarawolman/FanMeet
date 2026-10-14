@@ -62,8 +62,8 @@
 }
 
 .CarruselBtn:hover {
-  border-color: var(--fm-accent);
-  color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
+  color: var(--fm-ink);
 }
 
 .CarruselBtn.left { left: 8px; }

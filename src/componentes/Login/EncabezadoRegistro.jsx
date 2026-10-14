@@ -1,3 +1,4 @@
+import Marca from "../generales/Marca";
 import "./RegistroComun.css";
 
 const TOTAL_PASOS = 3;
@@ -14,7 +15,7 @@ function EncabezadoRegistro({ paso, onVolver }) {
           </svg>
         </button>
 
-        <span className="regMarca">FanMeet</span>
+        <Marca className="regMarca" />
 
         <span className="regPaso">
           Paso {paso} de {TOTAL_PASOS}

@@ -4,6 +4,7 @@ import "./MenuLateral.css";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { TemaContext } from "../../context/TemaContext";
 import { IconoCerrar, IconoNavDescubrir, IconoNavGrupos, IconoNavNotificaciones, IconoNavSalir } from "./iconosNav";
+import Marca from "./Marca";
 
 // En mobile la barra de abajo solo tiene Inicio, Eventos, Chats y Perfil;
 // el resto de la navegación vive en este menú lateral.
@@ -46,7 +47,7 @@ export default function MenuLateral({ pantallaActiva, onNavegar, onCerrarSesion 
         aria-label="Menú"
       >
         <div className="menuLateralHeader">
-          <p className="menuLateralLogo">FanMeet</p>
+          <Marca className="menuLateralLogo" />
           <button
             type="button"
             className="menuLateralCerrar"

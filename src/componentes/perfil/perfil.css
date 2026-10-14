@@ -7,11 +7,12 @@
 }
 
 .perfilContenido {
+  --perfil-gutter: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding-top: 20px;
+  gap: 36px;
+  padding-top: 24px;
   padding-bottom: calc(110px + env(safe-area-inset-bottom));
 }
 
@@ -25,14 +26,23 @@
 @media (min-width: 768px) {
   .pantallaPerfil {
     background: var(--fm-bg);
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .perfilContenido {
+    --perfil-gutter: 0px;
     max-width: 680px;
     width: 100%;
     margin: 0 auto;
-    padding-top: 26px;
-    padding-bottom: 90px;
+    padding-top: 28px;
+    padding-bottom: 96px;
   }
+}
+
+/* títulos de sección: todos iguales */
+.perfilContenido h3 {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 650;
+  letter-spacing: -0.03em;
 }

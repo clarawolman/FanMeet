@@ -96,7 +96,7 @@
 }
 
 .home-modal input:focus {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .home-error {
@@ -109,8 +109,8 @@
 .home-btn-principal {
   width: 100%;
   padding: 14px;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   border: none;
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
@@ -142,5 +142,5 @@
 }
 
 .home-btn-principal:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

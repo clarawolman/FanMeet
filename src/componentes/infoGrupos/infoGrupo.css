@@ -14,30 +14,32 @@
 }
 
 .botonChatGrupo {
-  margin: 10px 16px 0;
-  padding: 14px;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  min-height: 50px;
+  margin: 20px 16px 0;
+  padding: 0 24px;
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   border: none;
-  border-radius: var(--fm-radius-sm);
-  font-size: var(--fm-fs-sm);
+  border-radius: var(--fm-radius-pill);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
   font-weight: 600;
   cursor: pointer;
   transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .botonChatGrupo:hover {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }
 
 .botonSalirGrupo {
   margin: 10px 16px 0;
   padding: 13px;
-  background: var(--fm-surface);
+  background: transparent;
   color: var(--fm-ink);
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  font-family: var(--fm-font-display);
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
@@ -53,11 +55,11 @@
 .botonEliminarGrupo {
   margin: 10px 16px 0;
   padding: 13px;
-  background: var(--fm-surface);
-  color: var(--fm-accent);
-  border: 1.5px solid var(--fm-accent);
-  border-radius: var(--fm-radius-sm);
-  font-family: var(--fm-font-display);
+  background: transparent;
+  color: var(--fm-danger);
+  border: 1px solid transparent;
+  border-radius: var(--fm-radius-pill);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
@@ -67,13 +69,13 @@
 }
 
 .botonEliminarGrupo:hover {
-  background: var(--fm-bg-soft);
+  background: var(--fm-danger-bg);
 }
 
 @media (min-width: 768px) {
   .infoGrupo {
     background: var(--fm-bg);
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .infoGrupoContenido {
@@ -83,8 +85,12 @@
     padding: 24px 0 80px;
   }
 
+  .botonChatGrupo {
+    margin: 24px 0 0;
+  }
+
   .botonSalirGrupo {
-    margin: 12px 0 0;
+    margin: 10px 0 0;
   }
 
   .botonEliminarGrupo {

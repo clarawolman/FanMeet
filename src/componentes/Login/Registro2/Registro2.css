@@ -18,7 +18,7 @@
   height: 100%;
   overflow: hidden;
   border-radius: 50%;
-  border: 1.5px dashed var(--fm-border-strong);
+  border: 1px solid var(--fm-border-strong);
   background: var(--fm-surface);
 }
 
@@ -49,14 +49,14 @@
   place-items: center;
   border: 3px solid var(--fm-bg);
   border-radius: 50%;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   cursor: pointer;
   transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .registro2BotonMas:hover {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }
 
 .registro2Error {

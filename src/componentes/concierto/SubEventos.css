@@ -14,8 +14,8 @@
 }
 
 /* sin moverse ni sombra al pasar el mouse: solo se marca el borde */
-.SubEventoCard:hover {
-  box-shadow: 0 0 0 2px var(--fm-accent-soft-border);
+.SubEventoCard:hover .SubEventoImagen {
+  transform: scale(1.04);
 }
 
 /* velo al pie para que el texto blanco se lea sobre cualquier foto,
@@ -34,10 +34,10 @@
   z-index: 2;
   padding: 4px 11px;
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
-  border: 1px solid var(--fm-accent);
-  color: var(--fm-accent);
-  font-family: var(--fm-font-display);
+  background: rgba(255, 255, 255, 0.94);
+  border: none;
+  color: #0f0f13;
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-2xs);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -53,6 +53,7 @@
   object-fit: cover;
   display: block;
   filter: brightness(0.9) saturate(0.92);
+  transition: transform 600ms var(--fm-ease);
 }
 
 /* contenido flotando sobre la foto */
@@ -135,18 +136,20 @@
   margin-top: 10px;
   width: 100%;
   padding: 8px 0;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   color: var(--fm-on-photo);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: var(--fm-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--fm-radius-pill);
   cursor: pointer;
   transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
 }
 .SubEventoBoton:hover {
-  border-color: var(--fm-accent);
-  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.26);
 }
 
 /* ===== MOBILE: cards más grandes y texto legible ===== */
@@ -157,7 +160,7 @@
   }
 
   .SubEventoCategoria {
-    font-size: var(--fm-fs-sm);
+    font-size: var(--fm-fs-xs);
   }
 
   .SubEventoContenido {

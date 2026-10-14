@@ -115,7 +115,7 @@
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border: 1.5px solid var(--fm-border-strong);
+  border: 1px solid var(--fm-border-strong);
   border-radius: 50%;
   color: var(--fm-accent-ink);
   transition: background-color var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);

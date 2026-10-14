@@ -6,8 +6,9 @@
   gap: 4px;
   min-height: 76px;
   padding: 14px 16px;
-  border-radius: var(--fm-radius-md);
-  background: var(--fm-surface-warm);
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
 }
 
 .FansCantidad {
@@ -33,7 +34,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--fm-accent-soft-ink);
+  color: var(--fm-ink);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   font-weight: 600;

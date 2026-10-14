@@ -48,12 +48,7 @@
 }
 
 .menuLateralLogo {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  color: var(--fm-accent);
-  font-size: var(--fm-fs-lg);
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-size: 18px;
 }
 
 .menuLateralCerrar {
@@ -120,7 +115,7 @@
   padding: 14px 16px;
   border-radius: var(--fm-radius-md);
   border: 1px solid var(--fm-border);
-  background: var(--fm-bg-soft);
+  background: var(--fm-surface);
 }
 
 .menuLateralTemaTexto {

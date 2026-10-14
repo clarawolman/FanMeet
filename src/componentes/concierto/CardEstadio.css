@@ -2,9 +2,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--fm-bg-soft);
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  border: none;
+  border-radius: var(--fm-radius-lg);
+  box-shadow: var(--fm-shadow-sm);
   padding: 14px;
   min-height: 76px;
   box-sizing: border-box;
@@ -14,7 +15,6 @@
   width: 48px;
   height: 48px;
   border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-border);
   object-fit: cover;
   flex-shrink: 0;
 }

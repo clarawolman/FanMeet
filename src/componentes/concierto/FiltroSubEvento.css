@@ -2,38 +2,33 @@
 .filtro-sub-evento {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .filtro-sub-evento__boton {
-  padding: 10px 20px;
+  min-height: 36px;
+  padding: 0 16px;
   border-radius: var(--fm-radius-pill);
-  font-family: var(--fm-font-display);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease),
     border-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
-  border: 1.5px solid var(--fm-border);
-  background-color: var(--fm-surface);
+  border: 1px solid var(--fm-border-strong);
+  background-color: transparent;
   color: var(--fm-ink);
 }
 
 .filtro-sub-evento__boton:hover {
-  border-color: var(--fm-accent);
-  color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
+  color: var(--fm-ink);
 }
 
-.filtro-sub-evento__boton--activo {
-  background-color: var(--fm-accent-soft-bg);
-  color: var(--fm-accent-soft-ink);
-  border-color: var(--fm-accent-soft-border);
-  box-shadow: none;
-}
-
+.filtro-sub-evento__boton--activo,
 .filtro-sub-evento__boton--activo:hover {
-  background-color: var(--fm-accent-soft-bg);
-  border-color: var(--fm-accent-soft-border);
-  color: var(--fm-accent-soft-ink);
+  background-color: var(--fm-cta);
+  border-color: var(--fm-cta);
+  color: var(--fm-cta-ink);
 }

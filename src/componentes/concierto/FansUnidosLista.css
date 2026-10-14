@@ -80,8 +80,8 @@
 }
 
 .fanUnidoEstado--amigos {
-  color: var(--fm-accent);
-  border-color: var(--fm-accent);
+  color: var(--fm-success);
+  border-color: transparent;
   background: var(--fm-surface);
 }
 
@@ -99,8 +99,8 @@
   padding: 6px 14px;
   border-radius: var(--fm-radius-pill);
   border: none;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   font-family: inherit;
   font-size: var(--fm-fs-xs);
   font-weight: 600;
@@ -134,7 +134,7 @@
 
 @media (min-width: 768px) {
   .fansUnidosLista {
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .fansUnidosListaMain {
@@ -143,5 +143,5 @@
 }
 
 .fanUnidoAccion:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

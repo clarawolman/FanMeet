@@ -46,7 +46,7 @@
 
 .registroInput:focus {
   outline: none;
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
   box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
 }
 

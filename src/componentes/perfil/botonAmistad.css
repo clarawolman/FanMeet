@@ -18,8 +18,8 @@
 }
 
 .botonAmistad.conectar {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   box-shadow: none;
 }
 
@@ -30,8 +30,8 @@
 }
 
 .botonAmistad.aceptar {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   box-shadow: none;
 }
 
@@ -53,9 +53,9 @@
 }
 
 .botonAmistad.conectar:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }
 
 .botonAmistad.aceptar:hover:not(:disabled) {
-  background: var(--fm-accent-hover);
+  background: var(--fm-cta-hover);
 }

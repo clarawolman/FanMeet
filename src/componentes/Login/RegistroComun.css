@@ -46,10 +46,7 @@
 }
 
 .regMarca {
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-md);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 17px;
 }
 
 .regPaso {

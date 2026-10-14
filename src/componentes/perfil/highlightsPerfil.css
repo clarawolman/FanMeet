@@ -1,6 +1,6 @@
 .highlightsPerfil {
   margin: 0 0 8px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .highlightsPerfilHeader {
@@ -28,8 +28,8 @@
 
 .highlightsPerfilGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
 .highlightAddCard:disabled {
@@ -43,19 +43,19 @@
   justify-content: center;
   aspect-ratio: 1 / 1;
   width: 100%;
-  border-radius: var(--fm-radius-sm);
-  border: 1.5px dashed var(--fm-ink);
-  background: var(--fm-bg-soft);
-  color: var(--fm-accent);
+  border-radius: var(--fm-radius-md);
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
   font-size: var(--fm-fs-xl);
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   font-family: var(--fm-font-display);
 }
 
 .highlightCard {
   aspect-ratio: 1 / 1;
-  border-radius: var(--fm-radius-sm);
+  border-radius: var(--fm-radius-md);
   border: 1px solid var(--fm-border);
   overflow: hidden;
   background: var(--fm-bg-soft);
@@ -116,7 +116,7 @@
   width: 34px;
   height: 34px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   background: rgba(246, 241, 231, 0.1);
   color: var(--fm-bg);
   font-size: var(--fm-fs-body);
@@ -129,7 +129,7 @@
 .highlightOverlayImagen {
   max-width: min(92vw, 480px);
   max-height: 80vh;
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   border-radius: var(--fm-radius-sm);
   object-fit: contain;
   box-shadow: none;
@@ -142,7 +142,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   background: rgba(246, 241, 231, 0.1);
   color: var(--fm-bg);
   font-size: var(--fm-fs-lg);
@@ -163,7 +163,7 @@
 
 @media (min-width: 768px) {
   .highlightsPerfil {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 
   .highlightOverlayNav {

@@ -1,6 +1,6 @@
 import { supabase } from "../supabase";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 // Lo que ve el usuario cuando algo falla de nuestro lado: nunca "Error
 // interno del servidor" ni detalles técnicos. Los 503 sí traen un texto

@@ -11,8 +11,8 @@
 .notificacionesLista {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 4px 20px 20px;
+  gap: 0;
+  padding: 8px 8px 20px;
 }
 
 .mensajeNotificaciones {
@@ -25,12 +25,12 @@
 
 @media (min-width: 768px) {
   .pantallaNotificaciones {
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .notificacionesLista {
-    padding-left: calc((100% - 850px) / 2 + 24px);
-    padding-right: calc((100% - 850px) / 2 + 24px);
-    gap: 16px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 24px 40px;
   }
 }

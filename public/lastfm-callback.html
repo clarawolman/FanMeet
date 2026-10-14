@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FanMeet · Last.fm</title>
+  <style>
+    :root {
+      --bg: #f4f4f6;
+      --ink: #0f0f13;
+      --muted: #686874;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b0b0e;
+      --ink: #f4f4f6;
+      --muted: #8e8e9a;
+      color-scheme: dark;
+    }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 0;
+      max-width: 32ch;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="titulo">Conectando con FanMeet…</h1>
+    <p id="texto">Esta ventana se cierra sola.</p>
+  </main>
+
+  <script>
+    // Last.fm vuelve acá con "?token=..." cuando la persona aprueba FanMeet.
+    // El token se le pasa a la pestaña de FanMeet que abrió este popup:
+    // por postMessage si todavía tenemos window.opener, y por localStorage
+    // (evento "storage") por si Last.fm cortó ese vínculo entre ventanas.
+    (function () {
+      try {
+        if (localStorage.getItem("fm-theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {}
+
+      var params = new URLSearchParams(window.location.search);
+      var mensaje = {
+        tipo: "fanmeet-lastfm",
+        token: params.get("token") || null,
+        error: params.get("error") || (params.get("token") ? null : "cancelado"),
+        momento: Date.now()
+      };
+
+      try {
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage(mensaje, window.location.origin);
+        }
+      } catch (e) {}
+
+      try {
+        localStorage.setItem("fm-lastfm-respuesta", JSON.stringify(mensaje));
+      } catch (e) {}
+
+      if (mensaje.error === "no-disponible") {
+        document.getElementById("titulo").textContent = "Last.fm no está disponible";
+        document.getElementById("texto").textContent = "Probá de nuevo más tarde.";
+      } else if (!mensaje.token) {
+        document.getElementById("titulo").textContent = "No se conectó Last.fm";
+        document.getElementById("texto").textContent = "Podés cerrar esta ventana y volver a intentarlo.";
+      } else {
+        document.getElementById("titulo").textContent = "Listo";
+        document.getElementById("texto").textContent = "Volvé a FanMeet: tu cuenta se está conectando.";
+      }
+
+      setTimeout(function () { window.close(); }, 600);
+    })();
+  </script>
+</body>
+</html>
