@@ -5,7 +5,7 @@
 ============================ */
 
 .pantallaLista {
-  min-height: 100vh;
+  min-height: 100dvh;
   min-height: 100dvh;
   background: var(--fm-bg);
   display: flex;
@@ -52,7 +52,7 @@
   margin: 0;
   min-width: 0;
   font-family: var(--fm-font-display);
-  font-size: 19px;
+  font-size: var(--fm-fs-lg);
   font-weight: 600;
   line-height: 1.25;
   color: var(--fm-ink);
@@ -69,7 +69,7 @@
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent-soft-bg);
   color: var(--fm-accent-soft-ink);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   display: grid;
   place-items: center;
@@ -87,7 +87,7 @@
   border: 1px dashed var(--fm-border);
   border-radius: var(--fm-radius-md);
   color: var(--fm-muted);
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   line-height: 1.45;
 }
 
@@ -143,9 +143,9 @@
   padding: 5px 11px;
   border-radius: var(--fm-radius-pill);
   background: rgba(15, 13, 18, 0.72);
-  color: #fff;
+  color: var(--fm-on-photo);
   font-family: var(--fm-font-display);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -175,7 +175,7 @@
 .tarjetaTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 21px;
+  font-size: var(--fm-fs-lg);
   font-weight: 600;
   line-height: 1.2;
   color: var(--fm-ink);
@@ -184,7 +184,7 @@
 
 .tarjetaSubtitulo {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   font-weight: 600;
   color: var(--fm-accent);
 }
@@ -202,7 +202,7 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   line-height: 1.35;
   color: var(--fm-muted);
   min-width: 0;
@@ -225,7 +225,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
@@ -258,31 +258,26 @@
   flex: 1;
   min-height: 46px;
   padding: 0 16px;
-  border: 1.5px solid var(--fm-accent);
+  border: none;
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   font-weight: 600;
   cursor: pointer;
-  transition: filter var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
-}
-
-.tarjetaBoton:hover {
-  filter: brightness(1.06);
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .tarjetaBoton--secundario {
   flex: 0 0 auto;
-  border-color: var(--fm-border);
+  box-shadow: inset 0 0 0 1px var(--fm-border-strong);
   background: var(--fm-surface);
   color: var(--fm-ink);
 }
 
 .tarjetaBoton--secundario:hover {
-  filter: none;
-  background: var(--fm-bg-soft);
+  background: var(--fm-surface-warm);
 }
 
 /* ===== DESKTOP: grilla, alineada con el título del header ===== */
@@ -305,6 +300,10 @@
   }
 
   .listaSeccionHeader h2 {
-    font-size: 21px;
+    font-size: var(--fm-fs-lg);
   }
+}
+
+.tarjetaBoton:not(.tarjetaBoton--secundario):hover {
+  background: var(--fm-accent-hover);
 }

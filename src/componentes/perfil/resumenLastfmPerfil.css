@@ -29,7 +29,7 @@
 
 .resumenLastfmInicial {
   font-family: var(--fm-font-display);
-  font-size: 30px;
+  font-size: var(--fm-fs-2xl);
   font-weight: 600;
   color: var(--fm-muted);
 }

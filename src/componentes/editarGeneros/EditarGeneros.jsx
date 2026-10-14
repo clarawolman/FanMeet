@@ -4,6 +4,7 @@ import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import SelectorGeneros from "../generales/SelectorGeneros";
+import { IconoVolver } from "../generales/iconosNav";
 
 function EditarGeneros({ onVolver }) {
   const { usuarioActual } = useContext(UsuarioContext);
@@ -58,14 +59,14 @@ function EditarGeneros({ onVolver }) {
     <main className="pantallaEditarGeneros">
       <header className="editarGenerosHeader">
         <button className="editarGenerosVolver" type="button" onClick={onVolver}>
-          ←
+          <IconoVolver />
         </button>
 
         <h1 className="editarGenerosLogo">FanMeet</h1>
       </header>
 
       <section className="editarGenerosContenido">
-        <h2 className="editarGenerosTitulo">Tu Estilo Musical</h2>
+        <h2 className="editarGenerosTitulo">Tu estilo musical</h2>
 
         {cargando && <p className="editarGenerosVacio">Cargando géneros...</p>}
 
@@ -100,7 +101,7 @@ function EditarGeneros({ onVolver }) {
                 onClick={manejarGuardar}
                 disabled={guardando}
               >
-                {guardando ? "Guardando..." : "Guardar"}
+                {guardando ? "Guardando…" : "Guardar"}
               </button>
             </div>
           </>

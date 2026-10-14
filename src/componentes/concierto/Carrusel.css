@@ -48,7 +48,7 @@
 
   color: var(--fm-ink);
 
-  font-size: 18px;
+  font-size: var(--fm-fs-lg);
 
   cursor: pointer;
 
@@ -56,9 +56,9 @@
   align-items: center;
   justify-content: center;
 
-  z-index: 10;
+  z-index: var(--fm-z-raised);
 
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
 .CarruselBtn:hover {
@@ -68,3 +68,10 @@
 
 .CarruselBtn.left { left: 8px; }
 .CarruselBtn.right { right: 8px; }
+
+.CarruselBtn {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--fm-on-photo);
+}

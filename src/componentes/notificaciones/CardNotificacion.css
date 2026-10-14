@@ -28,7 +28,7 @@
   cursor: pointer;
   padding: 0;
   color: var(--fm-muted);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   line-height: 1;
   display: flex;
   align-items: center;
@@ -43,7 +43,7 @@
 
 .cardNotificacionTiempo {
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -53,7 +53,7 @@
 .cardNotificacionTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   font-weight: 600;
   color: var(--fm-ink);
   letter-spacing: 0.005em;
@@ -78,7 +78,7 @@
 
 .cardNotificacionDescripcion {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
@@ -91,7 +91,7 @@
   padding: 0;
   font-family: var(--fm-font-mono);
   color: var(--fm-accent);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
   text-transform: none;
   white-space: nowrap;
@@ -112,12 +112,12 @@
   border-radius: var(--fm-radius-sm);
   padding: 6px 14px;
   font-family: var(--fm-font-display);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
+  transition: background var(--fm-dur) var(--fm-ease), opacity var(--fm-dur) var(--fm-ease);
 }
 
 .cardNotificacionAcciones button:disabled {
@@ -136,17 +136,21 @@
   box-shadow: none;
 }
 
-.cardNotificacionAceptar:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--fm-glow);
-}
-
 @media (min-width: 768px) {
   .cardNotificacionTitulo {
-    font-size: 16px;
+    font-size: var(--fm-fs-md);
   }
 
   .cardNotificacionImagen {
     height: 170px;
   }
+}
+
+.cardNotificacionAceptar:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
+}
+
+.cardNotificacionEliminar svg {
+  width: 14px;
+  height: 14px;
 }

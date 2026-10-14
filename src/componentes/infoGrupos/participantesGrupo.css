@@ -27,7 +27,7 @@
   border: 2px solid var(--fm-surface);
   outline: 1.5px solid var(--fm-ink);
   margin-left: -10px;
-  transition: transform 0.15s;
+  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
 .fotoParticipante:first-child {
@@ -35,13 +35,12 @@
 }
 
 .fotoParticipante:hover {
-  transform: scale(1.1);
   z-index: 1;
 }
 
 .participantesGrupo span {
   font-family: var(--fm-font-mono);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   color: var(--fm-accent);
 }

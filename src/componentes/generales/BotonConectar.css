@@ -12,10 +12,6 @@
   transition: filter var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
 }
 
-.botonConectar:hover:not(:disabled) {
-  filter: brightness(1.08);
-}
-
 /* ya no hay nada que hacer: se ve como etiqueta, no como acción */
 .botonConectar:disabled {
   cursor: default;
@@ -32,4 +28,8 @@
   color: var(--fm-accent);
   border-color: var(--fm-accent-soft-border);
   background: var(--fm-accent-soft-bg);
+}
+
+.botonConectar:not(.botonConectar--solicitudEnviada):not(.botonConectar--amigos):hover:not(:disabled) {
+  background: var(--fm-accent-hover);
 }

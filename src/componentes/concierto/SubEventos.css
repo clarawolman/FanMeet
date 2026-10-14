@@ -23,7 +23,7 @@
 .SubEventoOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.15) 60%, transparent 100%);
+  background: var(--fm-scrim);
 }
 
 /* Pre / After / Hoy, arriba a la izquierda de la foto */
@@ -38,7 +38,7 @@
   border: 1px solid var(--fm-accent);
   color: var(--fm-accent);
   font-family: var(--fm-font-display);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -52,7 +52,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
+  filter: brightness(0.9) saturate(0.92);
 }
 
 /* contenido flotando sobre la foto */
@@ -65,16 +65,16 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  color: #ffffff;
+  color: var(--fm-on-photo);
 }
 
 .SubEventoTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #ffffff;
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fm-on-photo);
   line-height: 1.15;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
   white-space: nowrap;
@@ -136,13 +136,11 @@
   width: 100%;
   padding: 8px 0;
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  font-size: 12px;
+  color: var(--fm-on-photo);
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: var(--fm-radius-pill);
+  border-radius: var(--fm-radius-sm);
   cursor: pointer;
   transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
 }
@@ -159,7 +157,7 @@
   }
 
   .SubEventoCategoria {
-    font-size: 14px;
+    font-size: var(--fm-fs-sm);
   }
 
   .SubEventoContenido {
@@ -168,13 +166,13 @@
   }
 
   .SubEventoTitulo {
-    font-size: 19px;
+    font-size: var(--fm-fs-lg);
   }
 
   .SubEventoInfo,
   .SubEventoExtra,
   .SubEventoAsistiran {
-    font-size: 15px;
+    font-size: var(--fm-fs-body);
   }
 
   .SubEventoAvatares .SubEventoAvatar {
@@ -184,6 +182,6 @@
 
   .SubEventoBoton {
     padding: 11px 0;
-    font-size: 14px;
+    font-size: var(--fm-fs-sm);
   }
 }

@@ -3,12 +3,7 @@ import "./MenuConfiguracion.css";
 import "./MenuLateral.css";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { TemaContext } from "../../context/TemaContext";
-import {
-  IconoNavDescubrir,
-  IconoNavGrupos,
-  IconoNavNotificaciones,
-  IconoNavSalir,
-} from "./iconosNav";
+import { IconoCerrar, IconoNavDescubrir, IconoNavGrupos, IconoNavNotificaciones, IconoNavSalir } from "./iconosNav";
 
 // En mobile la barra de abajo solo tiene Inicio, Eventos, Chats y Perfil;
 // el resto de la navegación vive en este menú lateral.
@@ -59,7 +54,7 @@ export default function MenuLateral({ pantallaActiva, onNavegar, onCerrarSesion 
             aria-label="Cerrar menú"
             tabIndex={foco}
           >
-            ×
+            <IconoCerrar />
           </button>
         </div>
 

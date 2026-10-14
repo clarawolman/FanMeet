@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./BotonConectar.css";
 import { amistadService } from "../../services/amistadService";
+import { mostrarAviso } from "../../utils/avisos";
 
 const TEXTOS = {
   conectar: "Conectar",
@@ -30,7 +31,7 @@ export default function BotonConectar({ fan, className = "" }) {
         setEstado("amigos");
       }
     } catch (error) {
-      alert("No se pudo completar la acción: " + error.message);
+      mostrarAviso("No se pudo completar la acción: " + error.message);
     }
     setProcesando(false);
   }

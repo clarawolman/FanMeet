@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import "./SelectorGeneros.css";
+import { IconoBuscar, IconoCerrar } from "./iconosNav";
 
 const ESPERA_MS = 300;
 
@@ -108,7 +109,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
               aria-label={`Quitar ${genero.nombre}`}
             >
               {genero.nombre}
-              <span aria-hidden="true">✕</span>
+              <span aria-hidden="true"><IconoCerrar width="14" height="14" /></span>
             </button>
           ))}
         </div>
@@ -116,7 +117,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
 
       <div className="selectorGenerosBuscador">
         <span className="selectorGenerosBuscadorIcono" aria-hidden="true">
-          ⌕
+          <IconoBuscar />
         </span>
         <input
           type="search"

@@ -1,7 +1,7 @@
 .listaAmigosPerfil {
   position: fixed;
   inset: 0;
-  z-index: 550;
+  z-index: var(--fm-z-sheet);
   min-height: 100dvh;
   background-color: var(--fm-bg);
   font-family: var(--fm-font-body);
@@ -38,7 +38,7 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: background 0.15s;
+  transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .amigoPerfilCard:hover {

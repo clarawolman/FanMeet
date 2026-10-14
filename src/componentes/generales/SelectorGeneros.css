@@ -27,7 +27,7 @@
 }
 
 .selectorGenerosElegido span {
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   color: var(--fm-muted);
 }
 
@@ -51,8 +51,8 @@
 }
 
 .selectorGenerosBuscadorIcono {
-  font-size: 16px;
-  color: var(--fm-accent);
+  display: grid;
+  color: var(--fm-muted);
 }
 
 .selectorGenerosBuscador input {
@@ -99,7 +99,7 @@
 }
 
 .selectorGenerosOpcion span {
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
 }
 
 .selectorGenerosOpcion:disabled {

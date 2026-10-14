@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Registro1.css";
+import EncabezadoRegistro from "../EncabezadoRegistro";
 import { authService } from "../../../services/authService";
 
 function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
@@ -55,24 +56,24 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
       !fechaNacimiento ||
       !genero
     ) {
-      setErrorRegistro("Completá todos los campos para continuar");
+      setErrorRegistro("Completá todos los campos para seguir.");
       return;
     }
 
     if (!mailLimpio.includes("@")) {
-      setErrorRegistro("Ingresá un mail válido");
+      setErrorRegistro("Revisá el e-mail: le falta la @.");
       return;
     }
 
     const edad = calcularEdad(fechaNacimiento);
 
     if (edad < 15) {
-      setErrorRegistro("Debés tener al menos 15 años para registrarte");
+      setErrorRegistro("Tenés que tener al menos 15 años para registrarte.");
       return;
     }
 
     if (!contrasenaValida) {
-      setErrorContrasena("La contraseña debe cumplir todos los requisitos");
+      setErrorContrasena("A la contraseña le falta cumplir algún requisito.");
       return;
     }
 
@@ -94,7 +95,7 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
         return;
       }
     } catch (error) {
-      setErrorRegistro(error.message || "Hubo un error al verificar los datos");
+      setErrorRegistro(error.message || "No pudimos verificar tus datos. Probá de nuevo.");
       setCargando(false);
       return;
     }
@@ -112,84 +113,60 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
     });
   }
 
-  return (
-    <main className="pantallaRegistro1">
-      <header className="registroHeader">
-        <button className="registroVolver" type="button" onClick={onVolver}>
-          ←
-        </button>
+  const condiciones = [
+    ["mayuscula", "Una mayúscula"],
+    ["minuscula", "Una minúscula"],
+    ["numero", "Un número"],
+    ["especial", "Un carácter especial"],
+    ["longitud", "Mínimo 8 caracteres"],
+  ];
 
-        <h1 className="registroLogo">FanMeet</h1>
-      </header>
+  return (
+    <main className="regPantalla">
+      <EncabezadoRegistro paso={1} onVolver={onVolver} />
 
       <section className="registroContenido">
-        <div className="registroProgresoInfo">
-          <span>PASO 1 DE 3</span>
-          <span>33%</span>
-        </div>
+        <h1 className="regTitulo">Creá tu cuenta</h1>
+        <p className="regBajada">Con esto te encuentran los fans que van a los mismos shows que vos.</p>
 
-        <div className="registroBarra">
-          <div className="registroBarraActiva"></div>
-        </div>
+        <form className="registroFormulario" onSubmit={manejarSiguiente} autoComplete="off" noValidate>
+          <div className="registroCampo">
+            <label htmlFor="reg-nombre">Nombre de usuario</label>
+            <input
+              id="reg-nombre"
+              className="registroInput"
+              type="text"
+              name="fanmeet-registro-nombre"
+              autoComplete="off"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+          </div>
 
-        <h2 className="registroTitulo">Bienvenido a FanMeet</h2>
+          <div className="registroCampo">
+            <label htmlFor="reg-mail">E-mail</label>
+            <input
+              id="reg-mail"
+              className="registroInput"
+              type="email"
+              name="fanmeet-registro-mail"
+              autoComplete="off"
+              placeholder="nombre@mail.com"
+              value={mail}
+              onChange={(e) => setMail(e.target.value)}
+            />
+          </div>
 
-        <form
-          className="registroFormulario"
-          onSubmit={manejarSiguiente}
-          autoComplete="off"
-        >
-          <label className="registroCampo">
-            <span>
-              Nombre de usuario <span className="registroObligatorio">*</span>
-            </span>
-
-            <div className="registroInputWrapper">
-              <span className="registroIcono">♙</span>
-
+          <div className="registroCampo registroCampoPassword">
+            <label htmlFor="reg-password">Contraseña</label>
+            <div className="registroPasswordWrapper">
               <input
-                type="text"
-                name="fanmeet-registro-nombre"
-                autoComplete="off"
-                placeholder="Nombre de usuario"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-              />
-            </div>
-          </label>
-
-          <label className="registroCampo">
-            <span>
-              Mail <span className="registroObligatorio">*</span>
-            </span>
-
-            <div className="registroInputWrapper">
-              <span className="registroIcono">@</span>
-
-              <input
-                type="email"
-                name="fanmeet-registro-mail"
-                autoComplete="off"
-                placeholder="ejemplo@mail.com"
-                value={mail}
-                onChange={(e) => setMail(e.target.value)}
-              />
-            </div>
-          </label>
-
-          <label className="registroCampo">
-            <span>
-              Contraseña <span className="registroObligatorio">*</span>
-            </span>
-
-            <div className="registroInputWrapper registroPasswordWrapper">
-              <span className="registroIcono">◉</span>
-
-              <input
+                id="reg-password"
+                className="registroInput"
                 type={mostrarContrasena ? "text" : "password"}
                 name="fanmeet-registro-password"
                 autoComplete="new-password"
-                placeholder="Ingrese su contraseña"
+                aria-describedby="reg-password-condiciones"
                 value={contrasena}
                 onChange={(e) => {
                   setContrasena(e.target.value);
@@ -200,92 +177,78 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
               <button
                 className="registroBotonOjo"
                 type="button"
-                aria-label="Mostrar contraseña"
+                aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
+                aria-pressed={mostrarContrasena}
                 onClick={() => setMostrarContrasena(!mostrarContrasena)}
               >
-                <span className="registroOjoIcono"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="3" />
+                  {mostrarContrasena && <path d="M4 4l16 16" />}
+                </svg>
               </button>
             </div>
 
-            <ul className="registroCondicionesPassword">
-              <li className={condicionesContrasena.mayuscula ? "cumplida" : ""}>
-                Una mayúscula
-              </li>
-
-              <li className={condicionesContrasena.minuscula ? "cumplida" : ""}>
-                Una minúscula
-              </li>
-
-              <li className={condicionesContrasena.numero ? "cumplida" : ""}>
-                Un número
-              </li>
-
-              <li className={condicionesContrasena.especial ? "cumplida" : ""}>
-                Un carácter especial
-              </li>
-
-              <li className={condicionesContrasena.longitud ? "cumplida" : ""}>
-                Mínimo 8 caracteres
-              </li>
+            <ul className="registroCondicionesPassword" id="reg-password-condiciones">
+              {condiciones.map(([clave, texto]) => (
+                <li key={clave} className={condicionesContrasena[clave] ? "cumplida" : ""}>
+                  {texto}
+                </li>
+              ))}
             </ul>
 
             {errorContrasena && (
-              <p className="registroPasswordError">{errorContrasena}</p>
+              <p className="fmAvisoError registroPasswordError" role="alert">
+                {errorContrasena}
+              </p>
             )}
-          </label>
+          </div>
 
-          <label className="registroCampo">
-            <span>
-              Fecha de nacimiento <span className="registroObligatorio">*</span>
-            </span>
+          <div className="registroCampo">
+            <label htmlFor="reg-fecha">Fecha de nacimiento</label>
+            <input
+              id="reg-fecha"
+              className="registroInput"
+              type="date"
+              name="fanmeet-registro-fecha"
+              autoComplete="off"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+            />
+          </div>
 
-            <div className="registroInputWrapper">
-              <span className="registroIcono">▣</span>
-
-              <input
-                type="date"
-                name="fanmeet-registro-fecha"
-                autoComplete="off"
-                value={fechaNacimiento}
-                onChange={(e) => setFechaNacimiento(e.target.value)}
-              />
-            </div>
-          </label>
-
-          <label className="registroCampo">
-            <span>
-              Género <span className="registroObligatorio">*</span>
-            </span>
-
-            <div className="registroInputWrapper registroSelectWrapper">
-              <span className="registroIcono">♁</span>
-
+          <div className="registroCampo">
+            <label htmlFor="reg-genero">Género</label>
+            <div className="registroSelectWrapper">
               <select
+                id="reg-genero"
+                className="registroInput"
                 name="fanmeet-registro-genero"
                 autoComplete="off"
                 value={genero}
                 onChange={(e) => setGenero(e.target.value)}
               >
                 <option value="" disabled>
-                  Seleccione su género
+                  Elegí una opción
                 </option>
                 <option value="masculino">Masculino</option>
                 <option value="femenino">Femenino</option>
                 <option value="otro">Otro</option>
               </select>
-
-              <span className="registroSelectFlecha"></span>
+              <svg className="registroSelectFlecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
             </div>
-          </label>
+          </div>
 
-          {errorRegistro && <p className="registroError">{errorRegistro}</p>}
+          {errorRegistro && (
+            <p className="fmAvisoError regError registroErrorFila" role="alert">
+              {errorRegistro}
+            </p>
+          )}
 
-          <button
-            className="registroBotonSiguiente"
-            type="submit"
-            disabled={cargando}
-          >
-            {cargando ? "Verificando..." : "Siguiente"}
+          <button className="fmBotonPrimario regBotonSiguiente registroBotonFila" type="submit" disabled={cargando}>
+            {cargando ? "Verificando…" : "Siguiente"}
           </button>
         </form>
       </section>

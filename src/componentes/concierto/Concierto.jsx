@@ -68,7 +68,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
             />
           ) : (
             <p className="conciertoSinGrupos">
-              No hay grupos en esta categoría todavía. ¡Creá el primero!
+              Todavía no hay grupos en esta categoría. Podés crear el primero.
             </p>
           )}
 

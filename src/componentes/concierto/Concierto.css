@@ -1,7 +1,7 @@
 * { box-sizing: border-box; }
 
 .pantalla-concierto {
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--fm-bg);
   display: flex;
   flex-direction: column;
@@ -114,20 +114,15 @@
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
-  border: 1px solid var(--fm-border);
+  border: none;
   border-radius: var(--fm-radius-pill);
   cursor: pointer;
   box-shadow: none;
   transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
-.btn-crear-grupo:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 10px 24px var(--fm-glow);
-}
 
 .btn-crear-grupo:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 4px 12px var(--fm-glow);
+  transform: scale(0.98);
 }
 
 /* ===== DESKTOP ===== */
@@ -138,4 +133,8 @@
 }
 @media (min-width: 1024px) {
   .conciertoLayout { padding: 24px 48px 96px; }
+}
+
+.btn-crear-grupo:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
 }

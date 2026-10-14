@@ -24,7 +24,7 @@
   padding: 0;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.12s;
+  transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .headerPerfilCampana svg {
@@ -50,7 +50,7 @@
   flex-shrink: 0;
   overflow: hidden;
   opacity: 0.9;
-  transition: transform 0.12s, opacity 0.12s;
+  transition: transform var(--fm-dur) var(--fm-ease), opacity var(--fm-dur) var(--fm-ease);
 }
 
 .headerPerfilCerrarSesion:hover {

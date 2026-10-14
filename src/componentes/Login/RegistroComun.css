@@ -1,0 +1,128 @@
+/* ===== Compartido por los 3 pasos del registro ===== */
+
+.regPantalla {
+  min-height: 100dvh;
+  background: var(--fm-bg);
+  color: var(--fm-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.regHeader {
+  position: sticky;
+  top: 0;
+  z-index: var(--fm-z-header);
+  width: 100%;
+  padding: 10px 24px 0;
+  background: var(--fm-bg);
+}
+
+.regHeaderFila {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+}
+
+.regVolver {
+  width: 44px;
+  height: 44px;
+  margin-left: -12px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
+  color: var(--fm-ink);
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.regVolver:hover {
+  background: var(--fm-nav-hover-bg);
+}
+
+.regMarca {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.regPaso {
+  margin-left: auto;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* tres tramos en vez de una barra con porcentaje */
+.regBarra {
+  max-width: 640px;
+  margin: 8px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding-bottom: 12px;
+}
+
+.regBarra span {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--fm-border);
+  transition: background-color 400ms var(--fm-ease);
+}
+
+.regBarra span.activo {
+  background: var(--fm-accent);
+}
+
+.regTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: clamp(28px, 7.5vw, 38px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--fm-ink);
+}
+
+.regBajada {
+  max-width: 46ch;
+  margin: 10px 0 28px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-body);
+  line-height: 1.5;
+}
+
+.regBotonSiguiente {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 36px;
+  font-size: var(--fm-fs-md);
+}
+
+.regError {
+  margin-top: 20px;
+}
+
+@media (min-width: 900px) {
+  .regHeader {
+    padding-top: 28px;
+  }
+
+  .regBotonSiguiente {
+    width: 280px;
+  }
+}
+
+@media (min-width: 900px) {
+  .regPantallaAncha .regHeaderFila,
+  .regPantallaAncha .regBarra {
+    max-width: 920px;
+  }
+}

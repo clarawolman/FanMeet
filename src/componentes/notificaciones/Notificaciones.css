@@ -1,5 +1,5 @@
 .pantallaNotificaciones {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--fm-bg);
   padding-bottom: 96px;
 }
@@ -18,7 +18,7 @@
 .mensajeNotificaciones {
   font-family: var(--fm-font-mono);
   color: var(--fm-muted);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   text-align: center;
   padding: 40px 0;
 }

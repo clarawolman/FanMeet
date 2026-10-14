@@ -4,7 +4,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: var(--fm-z-nav);
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -29,11 +29,11 @@
   color: var(--fm-nav-ink);
   cursor: pointer;
   padding: 6px 0;
-  transition: color 0.15s ease;
+  transition: color var(--fm-dur) var(--fm-ease);
 }
 
 .footerButton:hover {
-  color: var(--fm-nav-activo);
+  color: var(--fm-ink);
 }
 
 .footerButton.activo {
@@ -47,7 +47,7 @@
   width: 48px;
   height: 30px;
   border-radius: var(--fm-radius-pill);
-  transition: background-color 0.15s ease;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .footerButtonChip {
@@ -64,8 +64,8 @@
   padding: 0 4px;
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent);
-  color: #fff;
-  font-size: 11px;
+  color: var(--fm-accent-ink);
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   line-height: 17px;
   text-align: center;
@@ -88,7 +88,7 @@
 /* nombre debajo del ícono, para que se entienda de un vistazo */
 .footerButtonTexto {
   font-family: var(--fm-font-body);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   line-height: 1.1;
   white-space: nowrap;
@@ -158,7 +158,7 @@
     overflow: visible;
     clip: auto;
     white-space: nowrap;
-    font-size: 16px;
+    font-size: var(--fm-fs-md);
     font-weight: 500;
   }
 

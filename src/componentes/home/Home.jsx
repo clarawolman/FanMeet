@@ -9,11 +9,22 @@ import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import Footer from "../generales/Footer";
 import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
-import LoadingSpinner from "../generales/LoadingSpinner";
+import { IconoBuscar } from "../generales/iconosNav";
 import CarruselFila from "./CarruselFila";
 import FansCompatiblesHome from "./FansCompatiblesHome";
 import BotonChatbot from "../chatbot/BotonChatbot";
 import { UsuarioContext } from "../../context/UsuarioContext";
+
+function EsqueletoFila() {
+  return (
+    <div className="home-esqueleto" aria-hidden="true">
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+    </div>
+  );
+}
 
 function capitalizar(texto) {
   return texto ? texto[0].toUpperCase() + texto.slice(1) : texto;
@@ -264,7 +275,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
           />
 
           {yaUnido && (
-            <span className="home-card-badge-unido">✓ Unido</span>
+            <span className="home-card-badge-unido">Te uniste</span>
           )}
 
           <button
@@ -289,7 +300,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
             <p className="home-card-artista">{concierto.artista.nombre}</p>
           )}
 
-          {motivo && <p className="home-card-motivo">♪ {motivo}</p>}
+          {motivo && <p className="home-card-motivo">{motivo}</p>}
 
           <div className="home-card-meta">
             <span>
@@ -350,20 +361,23 @@ const generosOrdenados = [...generos].sort((a, b) => {
       />
 
       <main className="home-main">
-        <div className="home-search">
-          <div className="home-search-campo">
-            <span className="home-search-icono" aria-hidden="true">⌕</span>
+        <div className="home-intro">
+          <h1>¿A qué recital vas?</h1>
+
+          <label className="home-search-campo">
+            <IconoBuscar className="home-search-icono" />
 
             <input
-              type="text"
-              placeholder="Buscá tu concierto o artista"
+              type="search"
+              aria-label="Buscar conciertos"
+              placeholder="Artista, show, estadio o ciudad"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
-          </div>
+          </label>
         </div>
 
-        {cargando && <LoadingSpinner texto="Cargando conciertos..." />}
+        {cargando && <EsqueletoFila />}
 
         {!cargando && conciertos.length === 0 && (
           <p className="home-estado">No hay conciertos disponibles.</p>
@@ -394,9 +408,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
                 <span>Según tus gustos</span>
               </div>
 
-              {cargandoRecomendados && conciertosRecomendados.length === 0 && (
-                <p className="home-estado">Buscando conciertos para vos...</p>
-              )}
+              {cargandoRecomendados && conciertosRecomendados.length === 0 && <EsqueletoFila />}
 
               {!cargandoRecomendados && conciertosRecomendados.length === 0 && (
                 <div className="home-recomendados-vacio">
@@ -404,7 +416,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
                     Sumá tus artistas favoritos y géneros (o vinculá Last.fm) para
                     recibir conciertos recomendados.
                   </p>
-                  <button type="button" onClick={() => onNavegar("perfil")}>
+                  <button className="fmBotonPrimario" type="button" onClick={() => onNavegar("perfil")}>
                     Completar mi perfil
                   </button>
                 </div>
@@ -431,7 +443,6 @@ const generosOrdenados = [...generos].sort((a, b) => {
             <section className="home-row">
               <div className="home-row-header">
                 <h2>Destacados</h2>
-                <span>Todos</span>
               </div>
 
               <CarruselFila>
@@ -450,7 +461,10 @@ const generosOrdenados = [...generos].sort((a, b) => {
                 <section className="home-row" key={genero.id}>
                   <div className="home-row-header">
                     <h2>{genero.nombre}</h2>
-                    <span>{conciertosDelGenero.length}</span>
+                    <span>
+                      {conciertosDelGenero.length}{" "}
+                      {conciertosDelGenero.length === 1 ? "concierto" : "conciertos"}
+                    </span>
                   </div>
 
                   <CarruselFila>

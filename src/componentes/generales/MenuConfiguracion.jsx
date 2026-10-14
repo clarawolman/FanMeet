@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import "./MenuConfiguracion.css";
 import { TemaContext } from "../../context/TemaContext";
+import { IconoCerrar } from "./iconosNav";
 
 // Panel de Configuración. Se abre desde el ítem "Configuración" del menú
 // lateral (Footer), que controla si está abierto.
@@ -21,7 +22,7 @@ function MenuConfiguracion({ abierto, onCerrar }) {
             onClick={onCerrar}
             aria-label="Cerrar"
           >
-            ×
+            <IconoCerrar />
           </button>
         </div>
 

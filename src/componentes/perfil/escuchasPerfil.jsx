@@ -4,6 +4,7 @@ import FilaArtistas from "./filaArtistas";
 import IconoLastfm from "./iconoLastfm";
 import SugerenciasLastfm from "./sugerenciasLastfm";
 import "./escuchasPerfil.css";
+import { mostrarAviso } from "../../utils/avisos";
 
 const CANCIONES_VISIBLES = 5;
 
@@ -170,7 +171,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
       setMostrarSugerencias(false);
       onPerfilMusicalActualizado?.();
     } catch (err) {
-      alert("No se pudo desvincular Last.fm: " + err.message);
+      mostrarAviso("No se pudo desvincular Last.fm: " + err.message);
     }
   }
 

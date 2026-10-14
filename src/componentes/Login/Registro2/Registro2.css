@@ -1,301 +1,139 @@
-.pantallaRegistro2 {
-  width: 100%;
-  min-height: 100vh;
-  background: var(--fm-bg);
-  color: var(--fm-ink);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.registro2Header {
-  width: 100%;
-  max-width: 430px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 84px;
-  padding: 0 24px;
-  background: var(--fm-surface);
-  border-bottom: 1px solid var(--fm-border);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.registro2Volver {
-  border: none;
-  background: transparent;
-  color: var(--fm-accent);
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-}
-
-.registro2Logo {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  font-size: 18px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  color: var(--fm-ink);
-}
-
 .registro2Contenido {
   width: 100%;
-  max-width: 430px;
-  padding: 20px 24px 28px;
-  box-sizing: border-box;
-}
-
-.registro2ProgresoInfo {
-  width: 100%;
+  max-width: calc(640px + 48px);
+  padding: 28px 24px 48px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--fm-font-display);
-  color: var(--fm-ink);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.registro2ProgresoInfo span:last-child {
-  color: var(--fm-accent);
-}
-
-.registro2Barra {
-  width: 100%;
-  height: 4px;
-  background: var(--fm-border);
-  border-radius: 0;
-  overflow: hidden;
-  margin-bottom: 44px;
-}
-
-.registro2BarraActiva {
-  width: 66%;
-  height: 100%;
-  background: var(--fm-accent);
-  border-radius: 0;
-}
-
-.registro2Titulo {
-  margin: 0 0 18px;
-  text-align: center;
-  font-family: var(--fm-font-display);
-  font-size: 26px;
-  line-height: 1.1;
-  font-weight: 600;
-  text-transform: none;
-  color: var(--fm-ink);
+  flex-direction: column;
 }
 
 .registro2FotoWrapper {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 28px;
   position: relative;
+  width: 148px;
+  height: 148px;
+  margin: 4px auto 28px;
 }
 
 .registro2Foto {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: var(--fm-surface);
-  border: 1.5px dashed var(--fm-ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+  border-radius: 50%;
+  border: 1.5px dashed var(--fm-border-strong);
+  background: var(--fm-surface);
+}
+
+.registro2Foto.conFoto {
+  border: none;
 }
 
 .registro2FotoPreview {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+  object-fit: cover;
 }
 
-/* Si la imagen PNG tiene transparencia, este fondo se ve detrás */
+/* Si la imagen por defecto es PNG con transparencia, se ve entera */
 .registro2FotoPreview[src$=".png"] {
   object-fit: contain;
   padding: 18px;
 }
 
 .registro2BotonMas {
-  width: 44px !important;
-  height: 44px !important;
-  border: 1px solid var(--fm-border) !important;
-  border-radius: var(--fm-radius-sm) !important;
-  background: var(--fm-accent) !important;
-  color: var(--fm-accent-ink) !important;
-  font-size: 30px !important;
-  font-weight: 400 !important;
-  line-height: 42px !important;
-  text-align: center !important;
   position: absolute;
-  right: -2px;
-  bottom: 8px;
+  right: -6px;
+  bottom: -6px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--fm-bg);
+  border-radius: 50%;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
   cursor: pointer;
-  box-shadow: none !important;
-  display: grid !important;
-  place-items: center !important;
-  padding: 0 !important;
-  opacity: 1 !important;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2TextoOpcional {
-  margin: -14px 0 22px;
-  text-align: center;
-  font-family: var(--fm-font-body);
-  color: var(--fm-muted);
-  font-size: var(--fm-fs-sm);
-  font-weight: 500;
+.registro2BotonMas:hover {
+  background: var(--fm-accent-hover);
 }
 
-.registro2Opciones {
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
+.registro2Error {
+  margin-bottom: 16px;
+}
+
+.registro2Opciones,
+.registro2Camara {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .registro2Opcion {
   width: 100%;
-  height: 60px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  background: var(--fm-surface);
-  padding: 0 14px;
+  min-height: 64px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
+  gap: 14px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  text-align: left;
   cursor: pointer;
-  box-sizing: border-box;
+  transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
+}
+
+.registro2Opcion:hover {
+  border-color: var(--fm-border-strong);
+  background: var(--fm-surface-warm);
 }
 
 .registro2OpcionIcono {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  color: var(--fm-ink);
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  margin-right: 14px;
-  flex-shrink: 0;
-  border: 1px solid var(--fm-border);
-}
-
-.registro2OpcionIcono.camara,
-.registro2OpcionIcono.libreria {
+  border-radius: var(--fm-radius-sm);
   background: var(--fm-bg-soft);
+  color: var(--fm-ink);
 }
 
 .registro2OpcionTexto {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-  color: var(--fm-ink);
-  text-align: left;
+  gap: 2px;
 }
 
 .registro2OpcionTexto strong {
-  font-family: var(--fm-font-display);
   font-size: var(--fm-fs-md);
   font-weight: 600;
-  line-height: 1.1;
-  text-transform: none;
 }
 
 .registro2OpcionTexto small {
-  margin-top: 3px;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 500;
   color: var(--fm-muted);
+  font-size: var(--fm-fs-xs);
 }
 
 .registro2Flecha {
-  color: var(--fm-accent);
-  font-size: 28px;
-  line-height: 1;
-  margin-left: 10px;
+  color: var(--fm-muted);
+  transition: transform var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2BotonSiguiente {
-  width: 100% !important;
-  height: 52px !important;
-  margin-top: 64px !important;
-  border: 1px solid var(--fm-border) !important;
-  border-radius: var(--fm-radius-sm) !important;
-  background: var(--fm-accent) !important;
-  color: var(--fm-accent-ink) !important;
-  font-family: var(--fm-font-display) !important;
-  font-size: 17px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  letter-spacing: 0.005em !important;
-  line-height: 50px !important;
-  text-align: center !important;
-  cursor: pointer !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  display: block !important;
-  opacity: 1 !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-
-.registro2BotonSiguiente:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-}
-
-.registro2BotonSiguiente:active,
-.registro2BotonMas:active,
-.registro2Opcion:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 10px 24px var(--fm-glow) !important;
-}
-
-.registro2Opcion:active:not(:disabled) {
-  transform: translateY(0) scale(0.98) !important;
-  box-shadow: 0 4px 12px var(--fm-glow) !important;
-}
-
-.registro2Error {
-  margin: -10px 0 16px;
-  text-align: center;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-mono);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.registro2Camara {
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.registro2Opcion:hover .registro2Flecha {
+  color: var(--fm-ink);
+  transform: translateX(2px);
 }
 
 .registro2Video {
   width: 100%;
-  height: 230px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--fm-radius-md);
   background: var(--fm-ink);
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
   object-fit: cover;
 }
 
@@ -304,157 +142,55 @@
   gap: 10px;
 }
 
-.registro2BotonCamaraSecundario,
-.registro2BotonCamaraPrincipal {
+.registro2CamaraBotones > button {
   flex: 1;
-  height: 44px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  font-family: var(--fm-font-display);
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  cursor: pointer;
 }
 
 .registro2BotonCamaraSecundario {
-  background: var(--fm-surface);
+  min-height: 44px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
   color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2BotonCamaraPrincipal {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  box-shadow: none;
+.registro2BotonCamaraSecundario:hover {
+  background: var(--fm-nav-hover-bg);
 }
-
-@media (max-width: 360px) {
-  .registro2Header {
-    height: 78px;
-    padding: 0 22px;
-  }
-
-  .registro2Contenido {
-    padding: 18px 22px 24px;
-  }
-
-  .registro2Titulo {
-    font-size: 24px;
-  }
-
-  .registro2FotoWrapper {
-    width: 140px;
-    height: 140px;
-    margin-bottom: 24px;
-  }
-
-  .registro2Foto {
-    width: 140px;
-    height: 140px;
-  }
-
-  .registro2BotonSiguiente {
-    margin-top: 52px !important;
-  }
-}
-/* ============================
-   DESKTOP REGISTRO 2
-============================ */
 
 @media (min-width: 900px) {
-  .pantallaRegistro2 {
-    min-height: 100vh;
-    padding: 48px 24px;
-    justify-content: flex-start;
-    background: var(--fm-bg);
-  }
-
-  .registro2Header {
-    max-width: 720px;
-    height: auto;
-    padding: 0;
-    background: transparent;
-    border-bottom: none;
-    box-shadow: none;
-    margin-bottom: 28px;
-  }
-
-  .registro2Logo {
-    font-size: 22px;
-  }
-
   .registro2Contenido {
-    max-width: 720px;
-    background: transparent;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-
+    padding-top: 40px;
     display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
     column-gap: 48px;
-    align-items: center;
+    align-items: start;
   }
 
-  .registro2ProgresoInfo,
-  .registro2Barra,
-  .registro2Titulo {
+  .registro2Intro,
+  .registro2Error {
     grid-column: 1 / -1;
   }
 
-  .registro2Barra {
-    margin-bottom: 32px;
-  }
-
-  .registro2Titulo {
-    margin-bottom: 26px;
-    font-size: 34px;
-    text-align: left;
-  }
-
   .registro2FotoWrapper {
     grid-column: 1;
     width: 190px;
     height: 190px;
-    margin: 0 auto 18px;
-  }
-
-  .registro2Foto {
-    width: 190px;
-    height: 190px;
-  }
-
-  .registro2TextoOpcional {
-    grid-column: 1;
     margin: 0;
-    font-size: 13px;
-    line-height: 1.4;
   }
 
   .registro2Opciones,
   .registro2Camara {
     grid-column: 2;
-    grid-row: 4 / span 2;
-    max-width: 360px;
-    width: 100%;
-    justify-self: center;
   }
 
-  .registro2Opcion {
-    height: 68px;
-    border-radius: var(--fm-radius-sm);
-  }
-
-  .registro2Error {
-    grid-column: 1 / -1;
-    margin: 18px 0 0;
-  }
-
-  .registro2BotonSiguiente {
+  .registro2Siguiente {
     grid-column: 2;
-    width: 320px !important;
-    justify-self: center;
-    margin-top: 26px !important;
+    justify-self: end;
   }
 }

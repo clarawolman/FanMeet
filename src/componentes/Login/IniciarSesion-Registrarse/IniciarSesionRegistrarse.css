@@ -1,40 +1,49 @@
 .pantallaLogin {
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100dvh;
   background: var(--fm-bg);
-  overflow-x: hidden;
-  overflow-y: auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
 }
 
 .loginContenido {
   width: 100%;
-  max-width: 430px;
-  flex: 0 0 auto;
-  padding: clamp(32px, 11vh, 92px) 24px 0;
-  box-sizing: border-box;
+  max-width: 400px;
+  padding: clamp(40px, 12dvh, 120px) 0 48px;
 }
 
-.loginTitulo {
-  margin: 0 0 18px;
-  text-align: center;
+.loginMarca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(40px, 9dvh, 72px);
   font-family: var(--fm-font-display);
-  font-size: 44px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.01em;
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--fm-ink);
 }
 
-@media (max-width: 360px) {
-  .loginContenido {
-    padding: clamp(28px, 9vh, 76px) 22px 0;
-  }
+.loginMarcaLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
 
-  .loginTitulo {
-    font-size: 38px;
-  }
+.loginTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: clamp(32px, 8.5vw, 42px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--fm-ink);
+}
+
+.loginBajada {
+  max-width: 34ch;
+  margin: 14px 0 32px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-body);
+  line-height: 1.5;
 }

@@ -1,7 +1,7 @@
 .headerApp {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--fm-z-header);
   background: var(--fm-surface);
   border-bottom: 1px solid var(--fm-border);
 }
@@ -16,34 +16,32 @@
 }
 
 .headerAppVolver {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--fm-border);
-  background: var(--fm-surface);
-  border-radius: var(--fm-radius-sm);
-  color: var(--fm-ink);
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  margin-left: -8px;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
-  transition: background 0.15s;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
+  color: var(--fm-ink);
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .headerAppVolver:hover {
-  background: var(--fm-bg-soft);
+  background: var(--fm-nav-hover-bg);
 }
 
 .headerAppLogo {
   margin: 0;
   font-family: var(--fm-font-display);
-  color: var(--fm-accent);
-  font-size: 20px;
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: -0.3px;
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-lg);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
@@ -57,7 +55,7 @@
 .headerAppTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
@@ -69,7 +67,7 @@
 .headerAppSubtitulo {
   margin: 0;
   font-family: var(--fm-font-body);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -107,7 +105,7 @@
 }
 
 .headerAppMenu:hover {
-  background: var(--fm-bg-soft);
+  background: var(--fm-nav-hover-bg);
 }
 
 /* si hay acciones, ellas ya empujan todo a la derecha */
@@ -124,7 +122,7 @@
 }
 
 .headerAppFilaTitulo .headerAppTitulo {
-  font-size: 20px;
+  font-size: var(--fm-fs-lg);
   white-space: normal;
 }
 
@@ -133,7 +131,7 @@
   background: var(--fm-surface);
   color: var(--fm-ink);
   font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -141,7 +139,7 @@
   padding: 7px 12px;
   border-radius: var(--fm-radius-sm);
   white-space: nowrap;
-  transition: background 0.15s;
+  transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .headerAppBotonAccion:hover {
@@ -162,10 +160,10 @@
   }
 
   .headerAppTitulo {
-    font-size: 17px;
+    font-size: var(--fm-fs-md);
   }
 
   .headerAppFilaTitulo .headerAppTitulo {
-    font-size: 22px;
+    font-size: var(--fm-fs-xl);
   }
 }

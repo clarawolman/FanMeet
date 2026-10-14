@@ -1,665 +1,448 @@
-/* ─────────────────────────────────────────────
-   HOME NUEVO: secciones por género
-   Mantiene dimensiones originales
-───────────────────────────────────────────── */
+/* ===== HOME =====
+   Un solo margen lateral (--home-gutter) para buscador, títulos y filas,
+   así todo arranca en la misma línea en cualquier ancho. */
 
-/* Ocultamos los filtros viejos */
-.home-filtros,
-.home-section-header,
-.home-grid {
-  display: none;
+.pantalla-home {
+  --home-gutter: 20px;
+  background: var(--fm-bg);
 }
 
-/* Buscador centrado sin achicar toda la pantalla */
-.home-search {
+.home-main {
+  padding: 8px 0 104px;
+}
+
+/* ===== INTRO + BUSCADOR ===== */
+.home-intro {
+  padding: 20px var(--home-gutter, 20px) 28px;
+}
+
+.home-intro h1 {
+  margin: 0 0 18px;
+  font-family: var(--fm-font-display);
+  font-size: clamp(30px, 7vw, 46px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--fm-ink);
+}
+
+.home-search-campo {
+  max-width: 520px;
+  height: 50px;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-surface);
+  color: var(--fm-muted);
+  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
-.home-search input {
-  max-width: 600px;
+.home-search-campo:hover {
+  border-color: var(--fm-muted);
 }
 
-/* Catálogo */
+.home-search-campo:focus-within {
+  border-color: var(--fm-accent);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
+  color: var(--fm-ink);
+}
+
+.home-search-icono {
+  flex-shrink: 0;
+}
+
+.home-search-campo input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-md);
+}
+
+.home-search-campo input:focus {
+  outline: none;
+}
+
+.home-search-campo input:focus-visible {
+  outline: none !important;
+}
+
+.home-search-campo input::placeholder {
+  color: var(--fm-muted);
+}
+
+/* ===== FILAS ===== */
 .home-catalogo {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  padding-bottom: 18px;
+  gap: 40px;
 }
 
 .home-row {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .home-row-header {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  padding: 4px 16px 0;
+  gap: 10px;
+  padding: 0 var(--home-gutter, 20px);
 }
 
 .home-row-header h2 {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 18px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.01em;
+  font-size: var(--fm-fs-xl);
+  font-weight: 700;
+  letter-spacing: -0.025em;
   color: var(--fm-ink);
 }
 
 .home-row-header span {
-  font-family: var(--fm-font-mono);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--fm-accent);
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-sm);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Filas horizontales, pero respetando tamaño de card original */
 .home-row-scroll {
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  padding: 0 16px 8px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding: 0 var(--home-gutter, 20px) 8px;
+  scroll-padding-inline: var(--home-gutter, 20px);
   scroll-snap-type: x mandatory;
+  scrollbar-width: none;
 }
 
 .home-row-scroll::-webkit-scrollbar {
   display: none;
 }
 
-/* En mobile: card grande como antes */
+/* se ve una card entera y asoma la siguiente */
 .home-row-scroll .home-card {
-  flex: 0 0 calc(100vw - 32px);
-  max-width: calc(100vw - 32px);
+  flex: 0 0 min(78vw, 320px);
   scroll-snap-align: start;
-  margin-bottom: 0;
 }
 
-/* Resultados del buscador */
 .home-resultados-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 0 16px;
+  display: grid;
+  gap: 28px 20px;
+  padding: 0 var(--home-gutter, 20px);
 }
 
-/* Card: mantenemos el estilo original */
+/* ===== CARD DE CONCIERTO ===== */
 .home-card {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0;
-  text-align: left;
 }
 
-/* Imagen igual que antes, pero deja salir el botón */
 .home-card-imagen {
   position: relative;
-  width: 100%;
-  border-radius: var(--fm-radius-md);
-  border: 1.5px solid var(--fm-border);
-  overflow: visible;
   aspect-ratio: 4 / 3;
+  border-radius: var(--fm-radius-md);
   background: var(--fm-bg-soft);
-  box-shadow: var(--fm-shadow-sm);
 }
 
 .home-card-imagen img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
-  border-radius: calc(var(--fm-radius-md) - 1.5px);
+  object-fit: cover;
+  border-radius: var(--fm-radius-md);
+  transition: filter 300ms var(--fm-ease);
 }
 
-/* Botón mitad adentro y mitad afuera */
+.home-card:hover .home-card-imagen img {
+  filter: brightness(0.92);
+}
+
+/* el botón queda montado sobre el borde de la foto, alineado con el texto */
 .home-card-btn-unirme {
   position: absolute;
-  bottom: -17px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-
+  left: 12px;
+  bottom: -18px;
+  z-index: var(--fm-z-raised);
+  min-height: 38px;
+  padding: 0 20px;
+  border: 3px solid var(--fm-bg);
+  border-radius: var(--fm-radius-sm);
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-
-  padding: 10px 32px;
-  font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  cursor: pointer;
   white-space: nowrap;
-
-  box-shadow: none;
-  transition: filter var(--fm-dur) var(--fm-ease);
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .home-card-btn-unirme:hover {
-  filter: brightness(0.88);
+  background: var(--fm-accent-hover);
 }
 
-.home-card-info {
-  padding: 28px 4px 0;
-}
-
-.home-card-info h3 {
-  margin: 0 0 3px;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-md);
-  font-weight: 600;
+/* "Ver concierto" (ya unido): mismo lugar, sin relleno, para no
+   confundirse con "Unirme" de un vistazo */
+.home-card-btn-unirme--ver {
+  background: var(--fm-surface);
   color: var(--fm-ink);
-  line-height: 1.2;
+  box-shadow: inset 0 0 0 1px var(--fm-border-strong);
 }
 
-.home-card-meta {
-  display: flex;
-  gap: 4px;
-  font-family: var(--fm-font-mono);
-  font-size: var(--fm-fs-xs);
-  color: var(--fm-muted);
+.home-card-btn-unirme--ver:hover {
+  background: var(--fm-surface-warm);
 }
 
-/* Badge "Unido": el concierto sigue teniendo presencia visual, no se ve
-   apagado ni deshabilitado, solo se distingue del resto. */
 .home-card-badge-unido {
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 2;
-  display: flex;
+  z-index: var(--fm-z-raised);
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
-  border: 1px solid var(--fm-accent-soft-border);
-  color: var(--fm-accent);
-  font-family: var(--fm-font-display);
-  font-size: 12px;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--fm-ink);
+  color: var(--fm-bg);
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
 }
 
-.home-card-meta span:first-child::after {
-  content: " •";
-  margin-right: 2px;
+.home-card-info {
+  padding: 30px 2px 0;
 }
 
-/* Grupos creados y fans unidos de cada concierto */
+.home-card-info h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--fm-ink);
+}
+
+.home-card-artista {
+  margin: 2px 0 0;
+  color: var(--fm-accent-soft-ink);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+}
+
+.home-card-motivo {
+  margin: 6px 0 0;
+  overflow: hidden;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-xs);
+  font-style: italic;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.home-card-meta,
 .home-card-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.35;
 }
 
-.home-card-stats span {
-  padding: 3px 9px;
-  border-radius: var(--fm-radius-pill);
+.home-card-stats {
+  margin-top: 2px;
+  font-size: var(--fm-fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-card-meta span + span::before,
+.home-card-stats span + span::before {
+  content: "·";
+  margin: 0 6px;
+}
+
+/* ===== ESTADOS ===== */
+.home-estado {
+  margin: 0;
+  padding: 0 var(--home-gutter, 20px);
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-sm);
+}
+
+.home-esqueleto {
+  display: flex;
+  gap: 16px;
+  padding: 0 var(--home-gutter, 20px);
+  overflow: hidden;
+}
+
+.home-esqueleto .fmSkeleton {
+  flex: 0 0 min(78vw, 320px);
+  aspect-ratio: 4 / 3;
+}
+
+.home-recomendados-vacio {
+  margin: 0 var(--home-gutter, 20px);
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-surface-warm);
+}
+
+.home-recomendados-vacio p {
+  flex: 1 1 240px;
+  max-width: 52ch;
+  margin: 0;
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
+}
+
+/* ===== HEADER: campanita y avatar ===== */
+.home-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.home-header-bell {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
+  color: var(--fm-ink);
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.home-header-bell:hover {
+  background: var(--fm-nav-hover-bg);
+}
+
+.home-header-bell svg {
+  width: 20px;
+  height: 20px;
+}
+
+.home-header-bell-badge {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--fm-surface);
+  border-radius: var(--fm-radius-round);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-header-avatar {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: 50%;
   background: var(--fm-bg-soft);
-  border: 1px solid var(--fm-border);
-  color: var(--fm-accent);
-  font-family: var(--fm-font-mono);
-  font-size: var(--fm-fs-2xs);
-  font-weight: 600;
-  white-space: nowrap;
+  cursor: pointer;
 }
 
-/* Tablet: respeta la lógica original de 2 columnas */
+.home-header-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* ===== TABLET ===== */
 @media (min-width: 768px) {
-  .home-row-header {
-    padding: 8px 40px 0;
+  .pantalla-home {
+    --home-gutter: 40px;
+    padding-left: 240px;
   }
 
-  .home-row-header h2 {
-    font-size: 22px;
+  .home-intro {
+    padding-top: 36px;
+    padding-bottom: 36px;
   }
 
   .home-row-scroll {
     gap: 24px;
-    padding: 0 40px 10px;
   }
 
-  .home-row-scroll .home-card {
-    flex: 0 0 calc((100vw - 104px) / 2);
-    max-width: calc((100vw - 104px) / 2);
+  .home-row-scroll .home-card,
+  .home-esqueleto .fmSkeleton {
+    flex-basis: calc((100% - 24px) / 2);
   }
 
   .home-resultados-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-    padding: 0 40px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+  }
+
+  .home-catalogo {
+    gap: 48px;
   }
 }
 
-/* Desktop: respeta la lógica original de 3 columnas */
+/* ===== DESKTOP ===== */
 @media (min-width: 1024px) {
-  .home-search {
-    margin-left: auto;
-    margin-right: auto;
+  .pantalla-home {
+    --home-gutter: 56px;
   }
 
-  .home-row-header {
-    padding: 8px 64px 0;
-  }
-
-  .home-row-header h2 {
-    font-size: 26px;
-    letter-spacing: -0.005em;
-  }
-
-  .home-row-scroll {
-    gap: 28px;
-    padding: 0 64px 12px;
-  }
-
-  .home-row-scroll .home-card {
-    flex: 0 0 calc((100vw - 184px) / 3);
-    max-width: calc((100vw - 184px) / 3);
+  .home-row-scroll .home-card,
+  .home-esqueleto .fmSkeleton {
+    flex-basis: calc((100% - 48px) / 3);
   }
 
   .home-card-imagen {
     aspect-ratio: 3 / 2;
   }
 
-  .home-card-info {
-    padding: 30px 4px 0;
-  }
-
   .home-resultados-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    padding: 0 64px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-/* Wide: respeta la lógica original de 4 columnas */
 @media (min-width: 1440px) {
-  .home-row-header {
-    padding: 8px 80px 0;
+  .pantalla-home {
+    --home-gutter: 72px;
   }
 
-  .home-row-scroll {
-    gap: 32px;
-    padding: 0 80px 14px;
-  }
-
-  .home-row-scroll .home-card {
-    flex: 0 0 calc((100vw - 256px) / 4);
-    max-width: calc((100vw - 256px) / 4);
+  .home-row-scroll .home-card,
+  .home-esqueleto .fmSkeleton {
+    flex-basis: calc((100% - 72px) / 4);
   }
 
   .home-resultados-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    padding: 0 80px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-}
-/* ─────────────────────────────
-   HEADER + BUSCADOR
-───────────────────────────── */
-
-.pantalla-home {
-  background: var(--fm-bg) !important;
-}
-
-@media (min-width: 768px) {
-  .pantalla-home {
-    padding-left: 240px !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* CTAs FANMEET */
-.home-card-btn-unirme,
-.home-btn-principal,
-.home-filtro--activo {
-  background: var(--fm-accent) !important;
-  border: 1px solid var(--fm-border) !important;
-  color: var(--fm-accent-ink) !important;
-}
-
-.home-card-btn-unirme {
-  box-shadow: none !important;
-}
-
-.home-card-btn-unirme:hover,
-.home-btn-principal:hover {
-  filter: brightness(0.88);
-}
-
-/* sacar número del costado de Pop / Rock / etc */
-.home-row-header span {
-  display: none !important;
-}
-
-/* BODY */
-.home-main {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  background: var(--fm-bg) !important;
-  padding-top: 16px !important;
-  padding-bottom: 96px !important;
-  box-sizing: border-box !important;
-}
-
-/* BUSCADOR */
-.home-search {
-  width: 100%;
-  padding: 10px 16px 20px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: static;
-  margin: 0;
-}
-
-.home-search::before {
-  content: none;
-}
-
-.home-search-campo {
-  width: 100%;
-  max-width: 420px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 18px;
-  box-sizing: border-box;
-  border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-border);
-  background: var(--fm-surface);
-  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
-}
-
-.home-search-campo:focus-within {
-  border-color: var(--fm-accent);
-  box-shadow: 0 0 0 2px var(--fm-glow);
-}
-
-.home-search-icono {
-  flex-shrink: 0;
-  font-size: 19px;
-  line-height: 1;
-  color: var(--fm-muted);
-}
-
-.home-search-campo:focus-within .home-search-icono {
-  color: var(--fm-accent);
-}
-
-.home-search input {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--fm-ink);
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-body);
-  font-weight: 500;
-  outline: none;
-  box-shadow: none;
-}
-
-.home-search input::placeholder {
-  color: var(--fm-muted);
-  font-size: var(--fm-fs-body);
-  font-weight: 400;
-}
-
-/* títulos de secciones */
-.home-row-header {
-  padding: 0 20px !important;
-}
-
-.home-row-header h2 {
-  color: var(--fm-ink) !important;
-  font-size: 19px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.005em !important;
-}
-
-/* filas */
-.home-row-scroll {
-  padding: 0 20px 8px !important;
-  gap: 16px !important;
-  /* el snap respeta el mismo margen izquierdo en filas con scroll */
-  scroll-padding-inline: 20px;
-}
-.home-card-btn-unirme--ver {
-  min-width: 140px;
-}
-
-/* "Ver concierto" (ya unido) se diferencia de "Unirme": botón ghost
-   con el violeta de marca, en vez del relleno sólido, para no
-   confundirse de un vistazo en el listado. */
-.home-card-btn-unirme.home-card-btn-unirme--ver {
-  padding: 11px 36px !important;
-  font-size: 14px !important;
-  background: var(--fm-surface) !important;
-  border: 1.5px solid var(--fm-accent) !important;
-  color: var(--fm-accent) !important;
-  box-shadow: none !important;
-}
-
-.home-card-btn-unirme.home-card-btn-unirme--ver:hover {
-  background: var(--fm-bg-soft) !important;
-  filter: none;
-}
-
-/* CELULAR: cards verticales sin cortar botón y con margen correcto */
-@media (max-width: 767px) {
-  .home-catalogo {
-    gap: 34px;
-  }
-
-  .home-row {
-    overflow: visible;
-  }
-
-  .home-row-header {
-    padding: 0 20px;
-  }
-
-  .home-row-scroll {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0 20px 38px;
-    gap: 16px;
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-padding-left: 20px;
-  }
-
-  /* cards anchas: se ve una entera y asoma la siguiente */
-  .home-row-scroll .home-card {
-    flex: 0 0 min(78vw, 320px);
-    min-width: min(78vw, 320px);
-    max-width: min(78vw, 320px);
-    overflow: visible;
-  }
-
-  .home-card-imagen {
-    position: relative;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    flex-shrink: 0;
-  }
-
-  .home-card-btn-unirme {
-    bottom: -17px;
-    z-index: 20;
-  }
-
-  .home-card-info {
-    padding: 34px 2px 0;
-  }
-
-  .home-card-info h3 {
-    font-size: 20px;
-    line-height: 1.15;
-    font-weight: 600;
-    color: var(--fm-ink);
-  }
-
-  .home-card-artista {
-    margin: 2px 0 0;
-    font-family: var(--fm-font-mono);
-    font-size: var(--fm-fs-sm);
-    font-weight: 600;
-    color: var(--fm-accent);
-  }
-
-  .home-card-meta {
-    font-size: var(--fm-fs-sm);
-    line-height: 1.25;
-    color: var(--fm-muted);
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-
-/* CAMPANITA DE NOTIFICACIONES */
-.home-header-bell {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  background: var(--fm-surface);
-  color: var(--fm-ink);
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.home-header-bell svg {
-  width: 16px;
-  height: 16px;
-}
-
-.home-header-bell:hover {
-  background: var(--fm-bg-soft);
-}
-
-.home-header-bell-badge {
-  position: absolute;
-  top: -7px;
-  right: -8px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-border);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  font-family: var(--fm-font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 14px;
-  text-align: center;
-  box-shadow: none;
-}
-
-.home-header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.home-header-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--fm-border);
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.home-header-avatar img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Motivo de la recomendación en las cards de "Para vos" */
-.home-card-motivo {
-  margin: 6px 0 0;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-2xs);
-  font-weight: 600;
-  color: var(--fm-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* mensajes dentro de una fila (cargando, sin resultados) */
-.home-estado {
-  margin: 0;
-  padding: 0 20px;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-sm);
-  color: var(--fm-muted);
-}
-
-/* "Conciertos recomendados" sin datos de gustos para calcularlos */
-.home-recomendados-vacio {
-  margin: 0 20px;
-  padding: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 20px;
-  background: var(--fm-bg-soft);
-  border: 1px dashed var(--fm-border);
-  border-radius: var(--fm-radius-md);
-}
-
-.home-recomendados-vacio p {
-  flex: 1 1 240px;
-  margin: 0;
-  font-size: var(--fm-fs-sm);
-  line-height: 1.4;
-  color: var(--fm-muted);
-}
-
-.home-recomendados-vacio button {
-  border: none;
-  border-radius: var(--fm-radius-pill);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  padding: 10px 18px;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  cursor: pointer;
 }

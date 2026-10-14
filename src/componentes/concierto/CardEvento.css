@@ -9,22 +9,21 @@
   box-shadow: var(--fm-shadow-sm);
 }
 
-/* esta foto se ve igual en claro y en oscuro: siempre con el
-   tratamiento "stage light" subexpuesto, para que el texto blanco de
-   encima se lea siempre igual de bien */
+/* la foto se ve igual de día y de noche; el velo de abajo asegura
+   que el texto blanco se lea */
 .EventoImagen {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.72) contrast(1.1) saturate(0.85) !important;
+  filter: brightness(0.9) saturate(0.92);
 }
 
-/* velo al pie: refuerza la lectura del texto sobre la foto ya oscurecida */
+/* velo al pie para leer el texto sobre la foto */
 .EventoOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 100%);
+  background: var(--fm-scrim);
 }
 
 .EventoContenido {
@@ -32,7 +31,7 @@
   left: 20px;
   right: 20px;
   bottom: 20px;
-  color: #ffffff;
+  color: var(--fm-on-photo);
 }
 
 .EventoArtista {
@@ -42,31 +41,29 @@
   border: none;
   border-radius: 0;
   font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-2xs);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fm-accent);
+  color: var(--fm-on-photo);
 }
 
 .EventoTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 40px;
-  line-height: 0.98;
-  font-weight: 600;
+  font-size: var(--fm-fs-3xl);
+  line-height: 0.95;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  color: #ffffff;
+  letter-spacing: -0.03em;
+  color: var(--fm-on-photo);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .EventoFecha {
   margin: 10px 0 0;
   font-family: var(--fm-font-body);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 500;
-  color: #ffffff;
+  color: var(--fm-on-photo);
   opacity: 0.85;
 }
 
@@ -77,9 +74,9 @@
   border-radius: 0;
   background-color: transparent;
   font-family: var(--fm-font-body);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 500;
-  color: #ffffff;
+  color: var(--fm-on-photo);
   opacity: 0.75;
 }
 

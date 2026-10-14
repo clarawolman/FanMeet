@@ -1,4 +1,5 @@
 import "./CardNotificacion.css";
+import { IconoCerrar } from "../generales/iconosNav";
 
 function formatearTiempo(fecha) {
   if (!fecha) return "";
@@ -35,7 +36,7 @@ function CardNotificacion({
         onClick={() => onEliminar?.(notificacion)}
         aria-label="Eliminar notificación"
       >
-        ✕
+        <IconoCerrar />
       </button>
 
       <span className="cardNotificacionTiempo">

@@ -6,11 +6,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: var(--fm-bg, #faf9f7);
+  background-color: var(--fm-bg);
   font-family: "Archivo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--fm-ink, #16151a);
+  color: var(--fm-ink);
 }
 
 /* Nada puede ser más ancho que la pantalla: si algo se pasa, en el
@@ -25,7 +25,7 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 100%;
   overflow-x: clip;
 }
@@ -44,7 +44,7 @@ iframe {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: var(--fm-border, rgba(0, 0, 0, 0.12));
+  background-color: var(--fm-border-strong);
   border-radius: 4px;
 }
 
@@ -83,20 +83,20 @@ iframe {
 }
 
 .fmChipGenero.activo {
-  background: var(--fm-accent-soft-bg) !important;
-  border-color: var(--fm-accent-soft-border) !important;
-  color: var(--fm-ink) !important;
+  background: var(--fm-accent-soft-bg);
+  border-color: var(--fm-accent-soft-border);
+  color: var(--fm-ink);
 }
 
 .fmChipGenero.activo strong,
 .fmChipGenero.activo span {
-  color: var(--fm-ink) !important;
+  color: var(--fm-ink);
 }
 
 /* ===== SPINNER DE CARGA — usado por <LoadingSpinner /> en toda la app ===== */
 .fmSpinner {
   border-radius: 50%;
-  border: 3px solid var(--fm-border);
+  border: 2.5px solid var(--fm-border);
   border-top-color: var(--fm-accent);
   animation: fmSpin 0.8s linear infinite;
 }
@@ -105,4 +105,142 @@ iframe {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===== BOTÓN PRINCIPAL — una sola acción fuerte por pantalla ===== */
+.fmBotonPrimario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 22px;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
+}
+
+.fmBotonPrimario:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
+}
+
+.fmBotonPrimario:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ===== ERROR EN LÍNEA ===== */
+.fmAvisoError {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--fm-danger);
+  border-radius: 0 var(--fm-radius-sm) var(--fm-radius-sm) 0;
+  background: var(--fm-danger-bg);
+  color: var(--fm-danger);
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.fmAvisoErrorLogin {
+  max-width: 430px;
+  margin: 16px auto 0;
+  width: calc(100% - 40px);
+}
+
+/* ===== AVISOS (reemplazan a alert) ===== */
+.fmAvisos {
+  position: fixed;
+  left: 50%;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--fm-z-modal);
+  width: min(440px, calc(100% - 32px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .fmAvisos {
+    bottom: 28px;
+  }
+}
+
+.fmAviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 18px;
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-ink);
+  color: var(--fm-bg);
+  box-shadow: var(--fm-shadow);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.45;
+  pointer-events: auto;
+  animation: fmAvisoEntrar 260ms var(--fm-ease);
+}
+
+.fmAviso-error {
+  border-left: 3px solid var(--fm-accent);
+}
+
+.fmAviso span {
+  flex: 1;
+}
+
+.fmAviso button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: -4px -4px 0 0;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.fmAviso button:hover {
+  opacity: 1;
+}
+
+@keyframes fmAvisoEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ===== ESQUELETO DE CARGA ===== */
+.fmSkeleton {
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-bg-soft);
+  animation: fmSkeletonLatido 1.4s ease-in-out infinite;
+}
+
+@keyframes fmSkeletonLatido {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.fmSoloLectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }

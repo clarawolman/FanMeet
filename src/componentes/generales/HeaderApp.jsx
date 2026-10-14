@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import "./HeaderApp.css";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
-import { IconoNavMenu } from "./iconosNav";
+import { IconoNavMenu, IconoVolver } from "./iconosNav";
 
 export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
   const { abrirMenu } = useContext(MenuLateralContext);
@@ -18,7 +18,7 @@ export default function HeaderApp({ onVolver, titulo, subtitulo, acciones }) {
             onClick={onVolver}
             aria-label="Volver"
           >
-            ←
+            <IconoVolver />
           </button>
         ) : (
           <p className="headerAppLogo">FanMeet</p>

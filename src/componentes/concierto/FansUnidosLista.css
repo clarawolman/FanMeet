@@ -1,5 +1,5 @@
 .fansUnidosLista {
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--fm-bg);
   font-family: var(--fm-font-body);
 }
@@ -16,7 +16,7 @@
 .fansUnidosListaVacio {
   margin: 0;
   font-family: var(--fm-font-mono);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
   text-align: center;
   padding: 24px 0;
@@ -32,7 +32,7 @@
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-sm);
   box-sizing: border-box;
-  transition: background 0.15s;
+  transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .fanUnidoCard:hover {
@@ -63,7 +63,7 @@
 
 .fanUnidoGrupos {
   font-family: var(--fm-font-mono);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
 }
 
@@ -75,7 +75,7 @@
   border: 1px solid var(--fm-border);
   background: var(--fm-bg-soft);
   color: var(--fm-muted);
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
 }
 
@@ -100,16 +100,12 @@
   border-radius: var(--fm-radius-pill);
   border: none;
   background: var(--fm-accent);
-  color: #fff;
+  color: var(--fm-accent-ink);
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
-  transition: filter 0.15s;
-}
-
-.fanUnidoAccion:hover:not(:disabled) {
-  filter: brightness(1.08);
+  transition: filter var(--fm-dur) var(--fm-ease);
 }
 
 .fanUnidoAccion:disabled {
@@ -131,7 +127,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   color: var(--fm-ink);
 }
@@ -144,4 +140,8 @@
   .fansUnidosListaMain {
     padding: 20px 32px 60px;
   }
+}
+
+.fanUnidoAccion:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
 }

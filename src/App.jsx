@@ -18,6 +18,7 @@ import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
 import Descubrir from "./componentes/descubrir/Descubrir";
 import MenuLateral from "./componentes/generales/MenuLateral";
+import Avisos from "./componentes/generales/Avisos";
 import { ID_CHATBOT } from "./services/chatbotService";
 
 import { authService } from "./services/authService";
@@ -323,11 +324,22 @@ async function manejarFinalizarRegistro(datosPaso3) {
     pantalla !== "chats" &&
     pantalla !== "descubrir"
   ) {
-    return <pre style={{ padding: 20 }}>{errorTexto}</pre>;
+    return (
+      <main className="fmErrorPantalla">
+        <div>
+          <h1>No pudimos abrir esta pantalla</h1>
+          <p>{errorTexto}</p>
+          <button className="fmBotonPrimario" onClick={() => manejarNavegacion("home")}>
+            Volver al inicio
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (
     <>
+      <Avisos />
       {!esPantallaLogin && usuarioActual && (
         <MenuLateral
           pantallaActiva={pantalla}
@@ -337,7 +349,7 @@ async function manejarFinalizarRegistro(datosPaso3) {
       )}
 
       {errorTexto && esPantallaLogin && (
-        <pre style={{ padding: 20, color: "crimson" }}>{errorTexto}</pre>
+        <p className="fmAvisoError fmAvisoErrorLogin" role="alert">{errorTexto}</p>
       )}
 
       {pantalla === "login" && (

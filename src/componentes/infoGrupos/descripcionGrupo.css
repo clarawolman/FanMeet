@@ -9,7 +9,7 @@
 .descripcionGrupo h3 {
   margin: 0 0 8px;
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
@@ -17,7 +17,7 @@
 
 .descripcionGrupo p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
   line-height: 1.6;
 }

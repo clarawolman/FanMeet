@@ -1,8 +1,8 @@
 .buscarArtistaOverlay {
   position: fixed;
   inset: 0;
-  z-index: 560;
-  background: rgba(22, 21, 26, 0.55);
+  z-index: var(--fm-z-sheet-top);
+  background: var(--fm-backdrop);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -43,7 +43,7 @@
   border: 1.5px solid var(--fm-border);
   background: var(--fm-bg-soft);
   color: var(--fm-ink);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   cursor: pointer;
   display: flex;
   align-items: center;

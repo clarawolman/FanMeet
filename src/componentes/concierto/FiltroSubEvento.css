@@ -10,7 +10,7 @@
   padding: 10px 20px;
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease),
@@ -23,7 +23,6 @@
 .filtro-sub-evento__boton:hover {
   border-color: var(--fm-accent);
   color: var(--fm-accent);
-  transform: translateY(-1px);
 }
 
 .filtro-sub-evento__boton--activo {
@@ -37,5 +36,4 @@
   background-color: var(--fm-accent-soft-bg);
   border-color: var(--fm-accent-soft-border);
   color: var(--fm-accent-soft-ink);
-  transform: translateY(-1px);
 }

@@ -20,6 +20,7 @@ import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import { mostrarAviso } from "../../utils/avisos";
 
 // Mismos valores que usa Registro3 para usuario.estilo_asistencia:
 // no son datos inventados, son el vocabulario real ya persistido en esa columna.
@@ -38,7 +39,7 @@ const AMBIENTES_CONCIERTO = [
   },
   {
     id: "campo",
-    nombre: "Primera Fila",
+    nombre: "Primera fila",
     descripcion: "Ojos en el escenario, cantando cada palabra.",
     icono: <IconoPrimeraFila />,
   },
@@ -154,7 +155,7 @@ function Perfil({
         setIdAmistad(amistadCreada.id_amistad);
         setEstadoAmistad("solicitudEnviada");
       } catch (error) {
-        alert("No se pudo enviar la solicitud: " + error.message);
+        mostrarAviso("No se pudo enviar la solicitud: " + error.message);
       }
 
       setCargandoAmistad(false);
@@ -166,7 +167,7 @@ function Perfil({
         await amistadService.aceptar(idAmistad);
         setEstadoAmistad("amigos");
       } catch (error) {
-        alert("No se pudo aceptar la solicitud: " + error.message);
+        mostrarAviso("No se pudo aceptar la solicitud: " + error.message);
       }
 
       setCargandoAmistad(false);
@@ -234,7 +235,7 @@ function Perfil({
     } catch (error) {
       console.error("Error actualizando vibra de concierto:", error);
       setVibraActual(anterior);
-      alert("No se pudo actualizar la vibe: " + error.message);
+      mostrarAviso("No se pudo actualizar tu ambiente de concierto: " + error.message);
     }
   }
 
@@ -247,7 +248,7 @@ function Perfil({
       await usuariosService.subirHighlight(archivo);
       await cargarHighlights();
     } catch (error) {
-      alert("No se pudo subir la imagen: " + error.message);
+      mostrarAviso("No se pudo subir la imagen: " + error.message);
     }
 
     setSubiendoHighlight(false);
@@ -263,7 +264,7 @@ function Perfil({
       setFotoLocal(usuarioActualizado.fotoperfil);
       setUsuarioActual({ ...usuarioBase, fotoperfil: usuarioActualizado.fotoperfil });
     } catch (error) {
-      alert("No se pudo subir la foto: " + error.message);
+      mostrarAviso("No se pudo subir la foto: " + error.message);
     }
 
     setSubiendoFoto(false);

@@ -18,7 +18,7 @@
 .perfilOverlayPantalla {
   position: fixed;
   inset: 0;
-  z-index: 550;
+  z-index: var(--fm-z-sheet);
   overflow-y: auto;
 }
 

@@ -92,7 +92,6 @@
 
 .proximoConciertoItem:hover {
   border-color: var(--fm-accent);
-  transform: translateY(-1px);
 }
 
 .proximoConciertoImagen {
@@ -134,7 +133,7 @@
 
 .proximoConciertoFlecha {
   color: var(--fm-muted);
-  font-size: 20px;
+  font-size: var(--fm-fs-lg);
   line-height: 1;
   flex-shrink: 0;
 }

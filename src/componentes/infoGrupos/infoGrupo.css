@@ -16,18 +16,18 @@
 .botonChatGrupo {
   margin: 10px 16px 0;
   padding: 14px;
-  background: #811cd9;
-  color: #ffffff;
-  border: 1px solid #811cd9;
-  border-radius: var(--fm-radius-pill);
-  font-size: 14px;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .botonChatGrupo:hover {
-  background: #7018bf;
+  background: var(--fm-accent-hover);
 }
 
 .botonSalirGrupo {
@@ -38,12 +38,12 @@
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .botonSalirGrupo:hover {
@@ -58,12 +58,12 @@
   border: 1.5px solid var(--fm-accent);
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .botonEliminarGrupo:hover {

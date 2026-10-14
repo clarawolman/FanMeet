@@ -23,11 +23,6 @@
   box-shadow: none;
 }
 
-.botonAmistad.conectar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--fm-glow);
-}
-
 .botonAmistad.enviada {
   background: var(--fm-surface);
   color: var(--fm-ink);
@@ -38,11 +33,6 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   box-shadow: none;
-}
-
-.botonAmistad.aceptar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--fm-glow);
 }
 
 .botonAmistad.amigos {
@@ -60,4 +50,12 @@
 .botonAmistad.deshabilitado:hover {
   background: inherit;
   transform: none;
+}
+
+.botonAmistad.conectar:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
+}
+
+.botonAmistad.aceptar:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
 }

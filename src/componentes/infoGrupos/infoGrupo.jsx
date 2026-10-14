@@ -12,6 +12,7 @@ import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import { mostrarAviso } from "../../utils/avisos";
 
 function InfoGrupo({
   grupo,
@@ -63,7 +64,7 @@ function InfoGrupo({
       await gruposService.unirse(grupo.id_grupo);
     } catch (error) {
       console.error("Error al sumarse al grupo:", error);
-      alert("No se pudo confirmar la asistencia: " + error.message);
+      mostrarAviso("No se pudo confirmar la asistencia: " + error.message);
       setCargandoConfirmacion(false);
       return;
     }
@@ -80,7 +81,7 @@ function InfoGrupo({
     } catch (error) {
       setSaliendo(false);
       console.error("Error al salir del grupo:", error);
-      alert("No se pudo salir del grupo: " + error.message);
+      mostrarAviso("No se pudo salir del grupo: " + error.message);
       return;
     }
 
@@ -97,7 +98,7 @@ function InfoGrupo({
     } catch (error) {
       setEliminando(false);
       console.error("Error al eliminar el grupo:", error);
-      alert("No se pudo eliminar el grupo: " + error.message);
+      mostrarAviso("No se pudo eliminar el grupo: " + error.message);
       return;
     }
 

@@ -122,7 +122,6 @@
 
 .vibraOpcion:hover:not(:disabled) {
   border-color: var(--fm-accent);
-  transform: translateY(-1px);
 }
 
 .vibraOpcion:disabled {

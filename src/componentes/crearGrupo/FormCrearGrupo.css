@@ -28,7 +28,7 @@
   margin-top: 12px;
   color: var(--fm-muted);
   font-family: var(--fm-font-body);
-  font-size: 17px;
+  font-size: var(--fm-fs-md);
   line-height: 1.45;
   font-weight: 500;
   letter-spacing: 0;
@@ -47,7 +47,7 @@
   margin: 0;
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -88,7 +88,7 @@
   margin-top: 8px;
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   box-shadow: none;
   transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
@@ -114,7 +114,7 @@
   margin-top: 8px;
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   line-height: 1.5;
   resize: vertical;
   box-shadow: none;
@@ -165,7 +165,7 @@
 }
 
 .crearGrupoFotoIcono {
-  font-size: 30px;
+  font-size: var(--fm-fs-2xl);
   opacity: 0.55;
 }
 
@@ -202,7 +202,7 @@
   margin: 0 0 10px;
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -222,7 +222,7 @@
   background: var(--fm-surface);
   color: var(--fm-ink);
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   cursor: pointer;
@@ -234,7 +234,6 @@
 .crearGrupoCategoria:hover {
   border-color: var(--fm-accent);
   color: var(--fm-accent);
-  transform: translateY(-1px);
 }
 
 .crearGrupoCategoria.activa {
@@ -253,7 +252,7 @@
   border-radius: var(--fm-radius-sm);
   padding: 14px 18px;
   font-family: var(--fm-font-body);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-align: center;
   margin: 2px 0 0;
@@ -268,7 +267,7 @@
   background: var(--fm-accent);
   color: var(--fm-accent-ink);
   font-family: var(--fm-font-display);
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -279,11 +278,6 @@
   box-shadow: none;
   transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease),
     opacity var(--fm-dur) var(--fm-ease);
-}
-
-.crearGrupoBoton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--fm-glow);
 }
 
 .crearGrupoBoton:disabled {
@@ -325,11 +319,11 @@
   }
 
   .crearGrupoTitulo {
-    font-size: 30px;
+    font-size: var(--fm-fs-2xl);
   }
 
   .crearGrupoTitulo::after {
-    font-size: 14px;
+    font-size: var(--fm-fs-sm);
     margin-top: 10px;
   }
 
@@ -340,12 +334,12 @@
 
   .crearGrupoInput {
     height: 46px;
-    font-size: 14px;
+    font-size: var(--fm-fs-sm);
   }
 
   .crearGrupoTextarea {
     min-height: 100px;
-    font-size: 14px;
+    font-size: var(--fm-fs-sm);
   }
 
   .crearGrupoFotoPicker {
@@ -365,7 +359,7 @@
     min-width: auto;
     height: 36px;
     padding: 0 14px;
-    font-size: 13px;
+    font-size: var(--fm-fs-xs);
   }
 
   .crearGrupoBoton {
@@ -373,4 +367,8 @@
     min-width: 0;
     height: 50px;
   }
+}
+
+.crearGrupoBoton:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
 }
