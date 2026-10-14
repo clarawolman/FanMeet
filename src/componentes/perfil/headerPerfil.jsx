@@ -123,7 +123,15 @@ export default function HeaderPerfil({
               </button>
             )}
             {onReportar && (
-              <button className="headerPerfilReportar" type="button" onClick={onReportar}>
+              <button
+                className="headerPerfilReportar"
+                type="button"
+                onClick={onReportar}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 22V4" />
+                  <path d="M4 4h12l-2 4 2 4H4" />
+                </svg>
                 Reportar
               </button>
             )}
