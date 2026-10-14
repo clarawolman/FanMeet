@@ -63,6 +63,19 @@ export const actualizarConciertoSchema = z
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
 
+// Mismos campos que crea un fan (grupoValidators.crearGrupoSchema), con la
+// foto como URL opcional porque el backoffice no sube archivos.
+export const crearGrupoSchema = z.object({
+  nombre: z.string().trim().min(1, "Poné el nombre del grupo").max(100),
+  ubicacion: z.string().trim().min(6, "La ubicación debe tener al menos 6 caracteres").max(150),
+  fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
+  hora: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "Hora inválida"),
+  descripcion: z.string().trim().max(500).optional().default(""),
+  categoria: z.enum(["pre", "after", "mismo_dia"], { message: "Elegí un tipo de grupo" }),
+  id_concierto: z.coerce.number().int().positive("Elegí un concierto"),
+  foto: z.union([urlImagen, z.literal("")]).optional(),
+});
+
 export const novedadSchema = z.object({
   titulo: z.string().trim().min(1, "Poné un título").max(100),
   descripcion: z.string().trim().min(1, "Escribí la novedad").max(500),

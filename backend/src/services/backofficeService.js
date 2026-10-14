@@ -306,6 +306,20 @@ export const backofficeService = {
     }));
   },
 
+  // A diferencia de un fan, el moderador no necesita estar unido al
+  // concierto ni queda como integrante: el grupo arranca vacío y los fans se
+  // suman. Queda como id_creador, así que solo él podría eliminarlo.
+  async crearGrupo(idModerador, { foto, ...datos }) {
+    const concierto = await conciertoRepository.obtenerPorId(datos.id_concierto);
+    if (!concierto) throw ApiError.notFound("El concierto no existe");
+
+    return grupoRepository.crear({
+      ...datos,
+      ...(foto ? { foto } : {}),
+      id_creador: idModerador,
+    });
+  },
+
   async mensajesDeGrupo(idGrupo) {
     const grupo = await grupoRepository.obtenerPorId(idGrupo);
     if (!grupo) throw ApiError.notFound("El grupo no existe");

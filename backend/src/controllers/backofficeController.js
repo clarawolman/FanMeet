@@ -56,6 +56,10 @@ export const backofficeController = {
     res.json(await backofficeService.listarGrupos());
   }),
 
+  crearGrupo: asyncHandler(async (req, res) => {
+    res.status(201).json(await backofficeService.crearGrupo(req.user.id, req.body));
+  }),
+
   mensajesDeGrupo: asyncHandler(async (req, res) => {
     res.json(await backofficeService.mensajesDeGrupo(req.params.idGrupo));
   }),

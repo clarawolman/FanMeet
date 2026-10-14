@@ -91,5 +91,6 @@ export const api = {
     }),
 
   grupos: () => solicitar("/backoffice/grupos"),
+  crearGrupo: (datos) => solicitar("/backoffice/grupos", { method: "POST", body: datos }),
   mensajesDeGrupo: (id) => solicitar(`/backoffice/grupos/${id}/mensajes`),
 };
