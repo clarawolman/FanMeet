@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./highlightsPerfil.css";
+import { IconoAnterior, IconoCerrar, IconoSiguiente } from "../generales/iconosNav";
 
 const MAX_HIGHLIGHTS = 4;
 
@@ -61,12 +62,12 @@ export default function HighlightsPerfil({
   return (
     <section className="highlightsPerfil">
       <div className="highlightsPerfilHeader">
-        <h3>Highlights</h3>
+        <h3>Momentos</h3>
       </div>
 
       {error && (
         <p className="highlightsPerfilVacio">
-          No pudimos cargar los Highlights ({error}).
+          No pudimos cargar los momentos ({error}).
         </p>
       )}
 
@@ -138,7 +139,7 @@ export default function HighlightsPerfil({
             onClick={() => setIndiceAbierto(null)}
             aria-label="Cerrar"
           >
-            ✕
+            <IconoCerrar />
           </button>
 
           <img
@@ -159,7 +160,7 @@ export default function HighlightsPerfil({
                 }}
                 aria-label="Anterior"
               >
-                ‹
+                <IconoAnterior />
               </button>
 
               <button
@@ -171,7 +172,7 @@ export default function HighlightsPerfil({
                 }}
                 aria-label="Siguiente"
               >
-                ›
+                <IconoSiguiente />
               </button>
             </>
           )}

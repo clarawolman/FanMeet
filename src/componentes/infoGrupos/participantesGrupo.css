@@ -3,10 +3,12 @@
   align-items: center;
   gap: 10px;
   background: var(--fm-surface);
-  border-radius: var(--fm-radius-md);
+  border-radius: var(--fm-radius-lg);
   padding: 14px 16px;
   margin: 12px 16px 0;
-  border: 1px solid var(--fm-border);
+  border: none;
+  box-shadow: var(--fm-shadow-sm);
+  color: var(--fm-ink);
   /* sin width: 100%: con los márgenes se salía 16px de la pantalla */
   align-self: stretch;
   text-align: left;
@@ -25,9 +27,8 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--fm-surface);
-  outline: 1.5px solid var(--fm-ink);
   margin-left: -10px;
-  transition: transform 0.15s;
+  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
 .fotoParticipante:first-child {
@@ -35,15 +36,14 @@
 }
 
 .fotoParticipante:hover {
-  transform: scale(1.1);
   z-index: 1;
 }
 
 .participantesGrupo span {
-  font-family: var(--fm-font-mono);
-  font-size: 14px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
-  color: var(--fm-accent);
+  color: var(--fm-ink);
 }
 
 @media (min-width: 768px) {

@@ -1,11 +1,11 @@
 .resumenLastfm {
-  margin: 0 16px;
+  margin: 0 var(--perfil-gutter, 16px);
   padding: 16px;
   display: flex;
   align-items: center;
   gap: 16px;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-lg);
 }
 
@@ -29,7 +29,7 @@
 
 .resumenLastfmInicial {
   font-family: var(--fm-font-display);
-  font-size: 30px;
+  font-size: var(--fm-fs-2xl);
   font-weight: 600;
   color: var(--fm-muted);
 }
@@ -95,6 +95,6 @@
 
 @media (min-width: 768px) {
   .resumenLastfm {
-    margin: 0 40px;
+    margin: 0 var(--perfil-gutter, 40px);
   }
 }

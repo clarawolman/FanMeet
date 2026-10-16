@@ -6,6 +6,7 @@ import HeaderApp from "../generales/HeaderApp";
 import { notificacionesService } from "../../services/notificacionesService";
 import { amistadService } from "../../services/amistadService";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import { mostrarAviso } from "../../utils/avisos";
 
 function Notificaciones({ onVolver, onNavegar, onVerMas }) {
   const { usuarioActual } = useContext(UsuarioContext);
@@ -50,7 +51,7 @@ function Notificaciones({ onVolver, onNavegar, onVerMas }) {
     } catch (error) {
       console.error("Error eliminando notificación:", error);
       setNotificaciones(notificacionesAnteriores);
-      alert("No se pudo eliminar la notificación. Probá de nuevo.");
+      mostrarAviso("No se pudo eliminar la notificación. Probá de nuevo.");
     }
   }
 
@@ -64,7 +65,7 @@ function Notificaciones({ onVolver, onNavegar, onVerMas }) {
     } catch (error) {
       setProcesandoId(null);
       console.error("Error aceptando solicitud de amistad:", error);
-      alert("No se pudo aceptar la solicitud: " + error.message);
+      mostrarAviso("No se pudo aceptar la solicitud: " + error.message);
       return;
     }
 
@@ -86,7 +87,7 @@ function Notificaciones({ onVolver, onNavegar, onVerMas }) {
     } catch (error) {
       setProcesandoId(null);
       console.error("Error rechazando solicitud de amistad:", error);
-      alert("No se pudo rechazar la solicitud: " + error.message);
+      mostrarAviso("No se pudo rechazar la solicitud: " + error.message);
       return;
     }
 

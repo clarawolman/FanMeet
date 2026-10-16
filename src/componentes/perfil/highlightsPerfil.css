@@ -1,6 +1,6 @@
 .highlightsPerfil {
   margin: 0 0 8px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .highlightsPerfilHeader {
@@ -28,8 +28,8 @@
 
 .highlightsPerfilGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
 .highlightAddCard:disabled {
@@ -43,19 +43,19 @@
   justify-content: center;
   aspect-ratio: 1 / 1;
   width: 100%;
-  border-radius: var(--fm-radius-sm);
-  border: 1.5px dashed var(--fm-ink);
-  background: var(--fm-bg-soft);
-  color: var(--fm-accent);
-  font-size: 26px;
-  font-weight: 600;
+  border-radius: var(--fm-radius-md);
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-xl);
+  font-weight: 400;
   cursor: pointer;
   font-family: var(--fm-font-display);
 }
 
 .highlightCard {
   aspect-ratio: 1 / 1;
-  border-radius: var(--fm-radius-sm);
+  border-radius: var(--fm-radius-md);
   border: 1px solid var(--fm-border);
   overflow: hidden;
   background: var(--fm-bg-soft);
@@ -69,7 +69,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.15s;
+  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
 .highlightCard:hover img {
@@ -80,7 +80,7 @@
 .highlightOverlay {
   position: fixed;
   inset: 0;
-  z-index: 500;
+  z-index: var(--fm-z-panel);
   background: rgba(26, 23, 18, 0.96);
   display: flex;
   align-items: center;
@@ -116,10 +116,10 @@
   width: 34px;
   height: 34px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   background: rgba(246, 241, 231, 0.1);
   color: var(--fm-bg);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@
 .highlightOverlayImagen {
   max-width: min(92vw, 480px);
   max-height: 80vh;
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   border-radius: var(--fm-radius-sm);
   object-fit: contain;
   box-shadow: none;
@@ -142,10 +142,10 @@
   width: 40px;
   height: 40px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-bg);
+  border: 1px solid var(--fm-bg);
   background: rgba(246, 241, 231, 0.1);
   color: var(--fm-bg);
-  font-size: 20px;
+  font-size: var(--fm-fs-lg);
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -163,7 +163,7 @@
 
 @media (min-width: 768px) {
   .highlightsPerfil {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 
   .highlightOverlayNav {

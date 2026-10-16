@@ -1,5 +1,5 @@
 .pantallaNotificaciones {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--fm-bg);
   padding-bottom: 96px;
 }
@@ -11,26 +11,26 @@
 .notificacionesLista {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 4px 20px 20px;
+  gap: 0;
+  padding: 8px 8px 20px;
 }
 
 .mensajeNotificaciones {
   font-family: var(--fm-font-mono);
   color: var(--fm-muted);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   text-align: center;
   padding: 40px 0;
 }
 
 @media (min-width: 768px) {
   .pantallaNotificaciones {
-    padding-left: 240px;
+    padding-left: var(--fm-sidebar);
   }
 
   .notificacionesLista {
-    padding-left: calc((100% - 850px) / 2 + 24px);
-    padding-right: calc((100% - 850px) / 2 + 24px);
-    gap: 16px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 24px 40px;
   }
 }

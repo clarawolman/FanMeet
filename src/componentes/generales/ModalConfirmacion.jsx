@@ -18,7 +18,7 @@ function ModalConfirmacion({
           onClick={onConfirmar}
           disabled={confirmando}
         >
-          {confirmando ? "Un momento..." : textoConfirmar}
+          {confirmando ? "Un momento…" : textoConfirmar}
         </button>
 
         <button className="modalConfirmacionBotonSecundario" onClick={onCancelar} disabled={confirmando}>

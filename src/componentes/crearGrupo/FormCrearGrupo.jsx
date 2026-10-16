@@ -79,7 +79,7 @@ function FormCrearGrupo({
         </label>
 
         <label className="crearGrupoLabel">
-          Calendarizar
+          Fecha
           <input
             className="crearGrupoInput"
             type="date"
@@ -101,7 +101,7 @@ function FormCrearGrupo({
           Descripción
           <textarea
             className="crearGrupoTextarea"
-            placeholder="Escriba algo aquí..."
+            placeholder="Dónde se juntan, a qué hora, cómo llegan…"
             rows={4}
             value={formulario.descripcion}
             onChange={(e) => actualizarCampo("descripcion", e.target.value)}
@@ -153,7 +153,7 @@ function FormCrearGrupo({
         {errorTexto && <p className="crearGrupoError">{errorTexto}</p>}
 
         <button className="crearGrupoBoton" type="submit" disabled={guardando}>
-          {guardando ? "Creando..." : "Crear grupo"}
+          {guardando ? "Creando…" : "Crear grupo"}
         </button>
       </form>
     </main>

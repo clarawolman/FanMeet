@@ -6,7 +6,7 @@ function BotonChatbot({ onAbrir }) {
   return (
     <button type="button" className="botonChatbot" onClick={onAbrir} aria-label="Chatear con Fani">
       <LogoChatbot className="botonChatbotLogo" />
-      <span className="botonChatbotTexto">¿Necesitás ayuda?</span>
+      <span className="botonChatbotTexto">Preguntale a Fani</span>
     </button>
   );
 }

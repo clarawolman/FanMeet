@@ -32,3 +32,12 @@ export function formatearFechaLarga(fecha) {
     month: "long",
   });
 }
+
+// "2027-09-23" -> { dia: "23", mes: "sep", anio: "2027" } (para chips de fecha)
+const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+export function partesFecha(fecha) {
+  if (!fecha) return null;
+  const [anio, mes, dia] = String(fecha).slice(0, 10).split("-").map(Number);
+  if (!anio || !mes || !dia) return null;
+  return { dia: String(dia), mes: MESES_CORTOS[mes - 1], anio: String(anio) };
+}

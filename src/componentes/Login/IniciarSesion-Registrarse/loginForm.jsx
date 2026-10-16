@@ -15,7 +15,7 @@ function LoginForm({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
     setErrorLogin("");
 
     if (!usuarioOMail || !contrasena) {
-      setErrorLogin("Ingrese usuario/mail y contraseña");
+      setErrorLogin("Completá tu e-mail o usuario y la contraseña.");
       return;
     }
 
@@ -48,44 +48,61 @@ function LoginForm({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
   }
 
   return (
-    <form className="loginForm" onSubmit={manejarLogin}>
-      <input
-        className="loginInput"
-        type="text"
-        placeholder="Ingrese su e-mail o usuario"
-        value={usuarioOMail}
-        onChange={(e) => setUsuarioOMail(e.target.value)}
-      />
-
-      <div className="passwordWrapper">
+    <form className="loginForm" onSubmit={manejarLogin} noValidate>
+      <div className="loginCampo">
+        <label htmlFor="login-usuario">E-mail o usuario</label>
         <input
-          className="loginInput passwordInput"
-          type={mostrarContrasena ? "text" : "password"}
-          placeholder="Ingrese su contraseña"
-          value={contrasena}
-          onChange={(e) => setContrasena(e.target.value)}
+          id="login-usuario"
+          className="loginInput"
+          type="text"
+          autoComplete="username"
+          value={usuarioOMail}
+          onChange={(e) => setUsuarioOMail(e.target.value)}
         />
-
-        <button
-          className="botonOjo"
-          type="button"
-          aria-label="Mostrar contraseña"
-          onClick={() => setMostrarContrasena(!mostrarContrasena)}
-        >
-          <span className="ojoIcono"></span>
-        </button>
       </div>
 
-      {errorLogin && <p className="errorLogin">{errorLogin}</p>}
+      <div className="loginCampo">
+        <label htmlFor="login-contrasena">Contraseña</label>
+        <div className="passwordWrapper">
+          <input
+            id="login-contrasena"
+            className="loginInput passwordInput"
+            type={mostrarContrasena ? "text" : "password"}
+            autoComplete="current-password"
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
+          />
 
-      <button className="botonIngresar" type="submit" disabled={cargandoLogin}>
-        {cargandoLogin ? "Ingresando..." : "Ingresar"}
+          <button
+            className="botonOjo"
+            type="button"
+            aria-label={mostrarContrasena ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-pressed={mostrarContrasena}
+            onClick={() => setMostrarContrasena(!mostrarContrasena)}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+              {mostrarContrasena && <path d="M4 4l16 16" />}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {errorLogin && (
+        <p className="fmAvisoError" role="alert">
+          {errorLogin}
+        </p>
+      )}
+
+      <button className="fmBotonPrimario botonIngresar" type="submit" disabled={cargandoLogin}>
+        {cargandoLogin ? "Ingresando…" : "Ingresar"}
       </button>
 
       <p className="textoRegistro">
-        ¿No tiene una cuenta?{" "}
+        ¿No tenés cuenta?{" "}
         <button className="linkRegistro" type="button" onClick={onRegistrarse}>
-          Regístrese
+          Registrate
         </button>
       </p>
     </form>

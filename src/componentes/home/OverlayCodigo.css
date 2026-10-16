@@ -1,11 +1,11 @@
 .home-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26, 23, 18, 0.55);
+  background: var(--fm-backdrop);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 1500; /* arriba del header y la barra de abajo */
+  z-index: var(--fm-z-modal); /* arriba del header y la barra de abajo */
 }
 
 @media (min-width: 600px) {
@@ -47,7 +47,7 @@
   width: 30px;
   height: 30px;
   border-radius: var(--fm-radius-sm);
-  font-size: 18px;
+  font-size: var(--fm-fs-lg);
   line-height: 1;
   cursor: pointer;
   color: var(--fm-ink);
@@ -59,7 +59,7 @@
 .home-modal-eyebrow {
   margin: 0;
   font-family: var(--fm-font-mono);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.01em;
@@ -69,14 +69,14 @@
 .home-modal h2 {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 20px;
+  font-size: var(--fm-fs-lg);
   font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
 }
 
 .home-modal span {
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
   line-height: 1.5;
 }
@@ -88,33 +88,33 @@
   border-radius: var(--fm-radius-sm);
   border: 1px solid var(--fm-border);
   font-family: var(--fm-font-mono);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   color: var(--fm-ink);
   outline: none;
   margin-top: 4px;
-  transition: border-color 0.15s;
+  transition: border-color var(--fm-dur) var(--fm-ease);
 }
 
 .home-modal input:focus {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .home-error {
   margin: 0;
   font-family: var(--fm-font-mono);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-accent);
 }
 
 .home-btn-principal {
   width: 100%;
   padding: 14px;
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  border: 1px solid var(--fm-border);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
+  border: none;
   border-radius: var(--fm-radius-sm);
   font-family: var(--fm-font-display);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -122,11 +122,6 @@
   margin-top: 4px;
   box-shadow: none;
   transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
-}
-
-.home-btn-principal:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--fm-glow);
 }
 /* CELULAR / TABLET CHICA: modal centrado y más angosto */
 @media (max-width: 767px) {
@@ -144,4 +139,8 @@
     padding: 30px 22px 26px;
     box-sizing: border-box;
   }
+}
+
+.home-btn-principal:hover:not(:disabled) {
+  background: var(--fm-cta-hover);
 }

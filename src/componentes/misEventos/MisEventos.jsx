@@ -9,6 +9,7 @@ import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { UsuarioContext } from "../../context/UsuarioContext";
+import { mostrarAviso } from "../../utils/avisos";
 
 function MisEventos({
   onIngresar,
@@ -55,7 +56,7 @@ function MisEventos({
       await conciertosService.salir(eventoParaSalir.id_concierto);
     } catch (error) {
       setSaliendo(false);
-      alert("No se pudo salir del concierto: " + error.message);
+      mostrarAviso("No se pudo salir del concierto: " + error.message);
       return;
     }
 

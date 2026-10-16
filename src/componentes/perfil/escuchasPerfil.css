@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   margin-bottom: 12px;
 }
 
@@ -33,7 +33,7 @@
 
 .escuchasMensaje {
   margin: 0;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
@@ -45,10 +45,10 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  margin: 0 16px;
-  border: 1.5px dashed var(--fm-border);
+  margin: 0 var(--perfil-gutter, 16px);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
-  background: var(--fm-bg-soft);
+  background: var(--fm-surface);
   padding: 18px;
 }
 
@@ -59,21 +59,23 @@
   color: var(--fm-muted);
 }
 
+/* acción principal de la tarjeta: abre el popup de Last.fm */
 .escuchasBotonConectar {
-  border: 1.5px solid var(--fm-accent);
+  min-height: 40px;
+  padding: 0 20px;
+  border: none;
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
-  color: var(--fm-accent);
-  padding: 9px 18px;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-xs);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .escuchasBotonConectar:hover:not(:disabled) {
-  background: var(--fm-accent-soft-bg);
+  background: var(--fm-cta-hover);
 }
 
 .escuchasBotonConectar:disabled {
@@ -84,32 +86,34 @@
 .escuchasAviso {
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
-  color: var(--fm-accent);
+  color: var(--fm-danger);
 }
 
-.escuchasForm {
+/* popup abierto: esperando que apruebe en Last.fm */
+.escuchasEsperando {
   display: flex;
-  gap: 8px;
-  width: 100%;
-}
-
-.escuchasInput {
-  flex: 1;
-  min-width: 0;
-  box-sizing: border-box;
-  border: 1.5px solid var(--fm-border);
-  border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0;
   color: var(--fm-ink);
-  padding: 9px 16px;
-  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
-  outline: none;
-  transition: border-color var(--fm-dur) var(--fm-ease);
+  font-weight: 500;
 }
 
-.escuchasInput:focus {
-  border-color: var(--fm-accent);
+.escuchasEsperando::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border: 2px solid var(--fm-border-strong);
+  border-top-color: var(--fm-accent);
+  border-radius: 50%;
+  animation: fmSpin 0.8s linear infinite;
+}
+
+.escuchasEsperando span {
+  flex: 1 1 200px;
 }
 
 .escuchasAyuda {
@@ -136,7 +140,7 @@
 
 .escuchasResumen {
   margin: -4px 0 12px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
@@ -162,7 +166,7 @@
 /* etiqueta del período (solo últimos 30 días) */
 .escuchasPeriodo {
   margin: 0 0 16px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
@@ -183,7 +187,7 @@
 
 .escuchasBloque h4 {
   margin: 0 0 10px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
@@ -194,7 +198,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .escuchasLista h4 {
@@ -211,7 +215,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
   background: var(--fm-surface);
   padding: 8px 12px;
@@ -278,7 +282,7 @@
   align-items: center;
   gap: 6px;
   margin: 14px 0 0;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-2xs);
   color: var(--fm-muted);
@@ -292,8 +296,8 @@
   .escuchasBloque h4,
   .escuchasLista,
   .escuchasFuente {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: var(--perfil-gutter, 40px);
+    padding-right: var(--perfil-gutter, 40px);
   }
 
   .escuchasLista h4 {
@@ -301,6 +305,6 @@
   }
 
   .escuchasConectar {
-    margin: 0 40px;
+    margin: 0 var(--perfil-gutter, 40px);
   }
 }

@@ -1,7 +1,7 @@
 .descripcionGrupo {
   background: var(--fm-surface);
-  border-radius: var(--fm-radius-md);
-  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  box-shadow: var(--fm-shadow-sm);
   padding: 16px;
   margin: 10px 16px 0;
 }
@@ -9,15 +9,15 @@
 .descripcionGrupo h3 {
   margin: 0 0 8px;
   font-family: var(--fm-font-display);
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: none;
+  font-size: var(--fm-fs-md);
+  font-weight: 650;
+  letter-spacing: -0.02em;
   color: var(--fm-ink);
 }
 
 .descripcionGrupo p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
   line-height: 1.6;
 }

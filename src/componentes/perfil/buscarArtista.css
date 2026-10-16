@@ -1,8 +1,8 @@
 .buscarArtistaOverlay {
   position: fixed;
   inset: 0;
-  z-index: 560;
-  background: rgba(22, 21, 26, 0.55);
+  z-index: var(--fm-z-sheet-top);
+  background: var(--fm-backdrop);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -15,7 +15,7 @@
   flex-direction: column;
   gap: 12px;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-lg) var(--fm-radius-lg) 0 0;
   padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
   box-sizing: border-box;
@@ -40,10 +40,10 @@
   width: 34px;
   height: 34px;
   border-radius: var(--fm-radius-sm);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   background: var(--fm-bg-soft);
   color: var(--fm-ink);
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -53,9 +53,9 @@
 .buscarArtistaInput {
   width: 100%;
   box-sizing: border-box;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-bg-soft);
+  background: var(--fm-surface);
   color: var(--fm-ink);
   padding: 12px 18px;
   font-family: var(--fm-font-body);
@@ -65,7 +65,7 @@
 }
 
 .buscarArtistaInput:focus {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .buscarArtistaResultados {
@@ -114,10 +114,10 @@
 }
 
 .buscarArtistaBoton {
-  border: 1.5px solid var(--fm-accent);
+  border: 1px solid var(--fm-border-strong);
   border-radius: var(--fm-radius-pill);
   background: var(--fm-surface);
-  color: var(--fm-accent);
+  color: var(--fm-ink);
   padding: 7px 14px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);

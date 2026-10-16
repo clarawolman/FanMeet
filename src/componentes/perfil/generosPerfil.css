@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   margin-bottom: 12px;
 }
 
@@ -23,43 +23,46 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: var(--fm-border-strong);
+  text-underline-offset: 4px;
 }
 
 .generosPerfilEditar:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--fm-accent);
 }
 
 .generosPerfilTags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .generoTagPerfil {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 7px 14px;
   border-radius: var(--fm-radius-pill);
-  border: 1px solid var(--fm-border);
-  background: var(--fm-bg-soft);
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
   color: var(--fm-ink);
-  font-family: var(--fm-font-display);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
-  font-weight: 600;
+  font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
 }
 
 .generosPerfilVacio {
   margin: 0;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
@@ -67,10 +70,10 @@
 
 @media (min-width: 768px) {
   .generosPerfilHeader {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 
   .generosPerfilTags {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 }

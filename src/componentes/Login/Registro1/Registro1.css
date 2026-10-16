@@ -1,438 +1,181 @@
-.pantallaRegistro1 {
-  width: 100%;
-  min-height: 100vh;
-  background: var(--fm-bg);
-  color: var(--fm-ink);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.registroHeader {
-  width: 100%;
-  max-width: 430px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 84px;
-  padding: 0 24px;
-  background: var(--fm-surface);
-  border-bottom: 1px solid var(--fm-border);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.registroVolver {
-  border: none;
-  background: transparent;
-  color: var(--fm-accent);
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-}
-
-.registroLogo {
-  margin: 0;
-  font-family: var(--fm-font-display);
-  font-size: 18px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  color: var(--fm-ink);
-}
-
 .registroContenido {
   width: 100%;
-  max-width: 430px;
-  padding: 20px 24px 28px;
-  box-sizing: border-box;
-}
-
-.registroProgresoInfo {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--fm-font-display);
-  color: var(--fm-ink);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.registroProgresoInfo span:last-child {
-  color: var(--fm-accent);
-}
-
-.registroBarra {
-  width: 100%;
-  height: 4px;
-  background: var(--fm-border);
-  border-radius: 0;
-  overflow: hidden;
-  margin-bottom: 40px;
-}
-
-.registroBarraActiva {
-  width: 33%;
-  height: 100%;
-  background: var(--fm-accent);
-  border-radius: 0;
-}
-
-.registroTitulo {
-  margin: 0 0 18px;
-  font-family: var(--fm-font-display);
-  font-size: 28px;
-  line-height: 1.15;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  color: var(--fm-ink);
+  max-width: calc(640px + 48px);
+  padding: 28px 24px 48px;
 }
 
 .registroFormulario {
-  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 18px;
 }
 
 .registroCampo {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 7px;
-  margin-bottom: 9px;
 }
 
-.registroCampo > span {
-  font-family: var(--fm-font-body);
+.registroCampo label {
   font-size: var(--fm-fs-sm);
   font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
   color: var(--fm-ink);
 }
 
-.registroObligatorio {
-  color: var(--fm-accent);
-  font-weight: 700;
-  margin-left: 3px;
+.registroOpcional {
+  font-weight: 400;
+  color: var(--fm-muted);
 }
 
-.registroInputWrapper {
+.registroInput {
   width: 100%;
-  height: 50px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--fm-border-strong);
   border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-border);
   background: var(--fm-surface);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  box-sizing: border-box;
-}
-
-.registroIcono {
-  width: 24px;
-  color: var(--fm-ink);
-  font-size: 18px;
-  opacity: 0.85;
-  margin-right: 12px;
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.registroInputWrapper input,
-.registroInputWrapper select {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
   color: var(--fm-ink);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-md);
+  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 
-.registroInputWrapper input::placeholder {
+.registroInput::placeholder {
   color: var(--fm-muted);
   opacity: 1;
 }
 
-.registroInputWrapper select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+.registroInput:hover {
+  border-color: var(--fm-muted);
+}
+
+.registroInput:focus {
+  outline: none;
+  border-color: var(--fm-ink);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
+}
+
+.registroInput[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
-.registroInputWrapper select option {
-  color: var(--fm-ink);
-  background: var(--fm-surface);
+:root[data-theme="dark"] .registroInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
-.registroInputWrapper input[type="date"] {
-  color-scheme: light;
-}
-
-.registroInputWrapper input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: none;
-  cursor: pointer;
-}
-
-.registroSelectWrapper {
-  position: relative;
-}
-
-.registroSelectWrapper select {
-  padding-right: 46px;
-}
-
-.registroSelectFlecha {
-  position: absolute;
-  right: 24px;
-  top: 50%;
-  width: 9px;
-  height: 9px;
-  border-right: 2px solid var(--fm-ink);
-  border-bottom: 2px solid var(--fm-ink);
-  transform: translateY(-65%) rotate(45deg);
-  pointer-events: none;
-}
-
-.registroBotonSiguiente {
-  width: 100% !important;
-  height: 52px !important;
-  margin-top: 36px !important;
-  border: 1px solid var(--fm-border) !important;
-  border-radius: var(--fm-radius-sm) !important;
-  background: var(--fm-accent) !important;
-  color: var(--fm-accent-ink) !important;
-  font-family: var(--fm-font-display) !important;
-  font-size: 17px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  letter-spacing: 0.005em !important;
-  line-height: 50px !important;
-  text-align: center !important;
-  cursor: pointer !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  display: block !important;
-  opacity: 1 !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-
-.registroBotonSiguiente:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 10px 24px var(--fm-glow) !important;
-}
-
-.registroBotonSiguiente:active:not(:disabled) {
-  transform: translateY(0) scale(0.98) !important;
-  box-shadow: 0 4px 12px var(--fm-glow) !important;
-}
-
-.registroError {
-  margin: 8px 0 -12px;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  text-align: center;
-}
-
+.registroSelectWrapper,
 .registroPasswordWrapper {
   position: relative;
 }
 
-.registroPasswordWrapper input {
-  padding-right: 40px;
+.registroSelectWrapper select {
+  appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.registroSelectWrapper select option {
+  color: var(--fm-ink);
+  background: var(--fm-surface);
+}
+
+.registroSelectFlecha {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--fm-muted);
+  pointer-events: none;
+}
+
+.registroPasswordWrapper .registroInput {
+  padding-right: 52px;
 }
 
 .registroBotonOjo {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
+  border: none;
+  border-radius: var(--fm-radius-sm);
+  background: transparent;
+  color: var(--fm-muted);
   cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
 }
 
-.registroOjoIcono {
-  width: 19px;
-  height: 13px;
-  border: 2px solid var(--fm-ink);
-  border-radius: 50%;
-  display: inline-block;
-  position: relative;
-}
-
-.registroOjoIcono::after {
-  content: "";
-  width: 6px;
-  height: 6px;
-  background: var(--fm-ink);
-  border-radius: 50%;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.registroBotonOjo:hover,
+.registroBotonOjo[aria-pressed="true"] {
+  color: var(--fm-ink);
 }
 
 .registroCondicionesPassword {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.registroCondicionesPassword li {
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 600;
-  color: var(--fm-muted);
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
-.registroCondicionesPassword li::before {
-  content: "×";
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+.registroCondicionesPassword li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 7px;
+  border-radius: var(--fm-radius-sm);
   background: var(--fm-bg-soft);
   color: var(--fm-muted);
-  display: grid;
-  place-items: center;
-  font-size: 10px;
-  font-weight: 700;
-  flex-shrink: 0;
+  font-size: var(--fm-fs-xs);
+  font-weight: 500;
+  transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+}
+
+.registroCondicionesPassword li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
 }
 
 .registroCondicionesPassword li.cumplida {
-  color: #1a6b3d;
+  background: var(--fm-success-bg);
+  color: var(--fm-success);
 }
 
 .registroCondicionesPassword li.cumplida::before {
-  content: "✓";
-  background: #dff7ea;
-  color: #1a6b3d;
+  opacity: 1;
 }
 
 .registroPasswordError {
-  margin: 4px 0 0;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 600;
-}
-
-@media (max-width: 360px) {
-  .registroHeader {
-    height: 78px;
-    padding: 0 22px;
-  }
-
-  .registroContenido {
-    padding: 18px 22px 24px;
-  }
-
-  .registroTitulo {
-    font-size: 23px;
-  }
-
-  .registroInputWrapper {
-    height: 48px;
-  }
-
-  .registroBotonSiguiente {
-    margin-top: 30px;
-  }
+  margin-top: 4px;
 }
 
 @media (min-width: 900px) {
-  .pantallaRegistro1 {
-    min-height: 100vh;
-    padding: 48px 24px;
-    justify-content: flex-start;
-    background: var(--fm-bg);
-  }
-
-  .registroHeader {
-    max-width: 640px;
-    height: auto;
-    padding: 0;
-    background: transparent;
-    border-bottom: none;
-    box-shadow: none;
-    margin-bottom: 28px;
-  }
-
-  .registroLogo {
-    font-size: 22px;
-  }
-
   .registroContenido {
-    max-width: 640px;
-    background: transparent;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-  }
-
-  .registroBarra {
-    margin-bottom: 32px;
-  }
-
-  .registroTitulo {
-    margin-bottom: 30px;
-    font-size: 36px;
-    text-align: left;
+    padding-top: 40px;
   }
 
   .registroFormulario {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 22px;
-    row-gap: 16px;
+    gap: 20px 22px;
   }
 
-  .registroCampo {
-    margin-bottom: 0;
-  }
-
-  .registroCampo:nth-of-type(3) {
+  .registroCampoAncho,
+  .registroCampoPassword,
+  .registroErrorFila {
     grid-column: 1 / -1;
   }
 
-  .registroCondicionesPassword {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 14px;
-    row-gap: 6px;
-  }
-
-  .registroError {
+  .registroBotonFila {
     grid-column: 1 / -1;
-    margin: 4px 0 0;
-  }
-
-  .registroBotonSiguiente {
-    grid-column: 1 / -1;
-    width: 320px !important;
     justify-self: end;
-    margin-top: 18px !important;
+    margin-top: 16px;
   }
 }

@@ -27,8 +27,6 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
       ? grupos
       : grupos.filter((grupo) => grupo.categoria === filtroActivo);
 
-  console.log("FILTRO ACTIVO:", filtroActivo);
-
   return (
     <div className="pantalla-concierto">
       <HeaderConcierto concierto={concierto} onVolver={onVolver} />
@@ -68,12 +66,15 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
             />
           ) : (
             <p className="conciertoSinGrupos">
-              No hay grupos en esta categoría todavía. ¡Creá el primero!
+              Todavía no hay grupos en esta categoría. Podés crear el primero.
             </p>
           )}
 
-          <button className="btn-crear-grupo" onClick={onCrearGrupo}>
-            Crear grupo para este concierto ＋
+          <button className="btn-crear-grupo fmBotonPrimario" type="button" onClick={onCrearGrupo}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Crear grupo para este concierto
           </button>
         </section>
       </main>

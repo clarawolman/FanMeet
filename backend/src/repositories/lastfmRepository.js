@@ -1,13 +1,18 @@
+import { createHash } from "node:crypto";
 import { supabaseAdmin } from "../config/supabaseClient.js";
 import { env } from "../config/env.js";
 import { unwrap } from "../helpers/supabaseResult.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 const API_URL = "https://ws.audioscrobbler.com/2.0/";
+// Pantalla de Last.fm donde la persona inicia sesion y aprueba FanMeet.
+const AUTH_URL = "https://www.last.fm/api/auth/";
 
 // Codigos de error de la API de Last.fm que nos interesan.
 const ERROR_USUARIO_INEXISTENTE = 6;
 const ERROR_LIMITE = 29;
+// Token invalido, no autorizado todavia o vencido (dura 60 minutos).
+const ERRORES_TOKEN = [4, 14, 15];
 
 // Tabla creada por supabase/lastfm.sql.
 export const lastfmCuentaRepository = {
@@ -45,12 +50,22 @@ export const lastfmCuentaRepository = {
   },
 };
 
-async function llamar(metodo, parametros) {
+// Firma de Last.fm: md5 de todos los parametros (menos format) ordenados
+// por nombre y pegados como "clavevalor", seguido del shared secret.
+function firmar(parametros) {
+  const base = Object.keys(parametros)
+    .sort()
+    .map((clave) => `${clave}${parametros[clave]}`)
+    .join("");
+  return createHash("md5").update(base + env.lastfmSharedSecret, "utf8").digest("hex");
+}
+
+async function llamar(metodo, parametros, { firmado = false } = {}) {
+  const base = { method: metodo, api_key: env.lastfmApiKey, ...parametros };
   const query = new URLSearchParams({
-    method: metodo,
-    api_key: env.lastfmApiKey,
+    ...base,
+    ...(firmado ? { api_sig: firmar(base) } : {}),
     format: "json",
-    ...parametros,
   });
 
   let respuesta;
@@ -65,6 +80,11 @@ async function llamar(metodo, parametros) {
   if (datos?.error === ERROR_USUARIO_INEXISTENTE) {
     throw ApiError.notFound("No existe ese usuario en Last.fm");
   }
+  if (ERRORES_TOKEN.includes(datos?.error)) {
+    throw ApiError.badRequest(
+      "No pudimos confirmar tu cuenta de Last.fm. Volvé a intentarlo y aprobá el acceso."
+    );
+  }
   if (datos?.error === ERROR_LIMITE) {
     throw new ApiError(503, "Last.fm está limitando las consultas, probá en un rato.");
   }
@@ -76,8 +96,22 @@ async function llamar(metodo, parametros) {
 }
 
 // Lectura de datos publicos de Last.fm: alcanza con el nombre de usuario,
-// no hace falta que la persona inicie sesion.
+// no hace falta que la persona inicie sesion. La unica excepcion es la
+// vinculacion (urlAutorizacion + obtenerSesion), que prueba que la cuenta
+// es de quien la vincula.
 export const lastfmApiRepository = {
+  // Last.fm vuelve a `callback` con "?token=..." cuando la persona aprueba.
+  urlAutorizacion(callback) {
+    const query = new URLSearchParams({ api_key: env.lastfmApiKey, cb: callback });
+    return `${AUTH_URL}?${query}`;
+  },
+
+  // Canjea el token aprobado: Last.fm responde con el usuario que lo aprobo
+  // ({ session: { name, key } }). Cada token sirve una sola vez.
+  obtenerSesion(token) {
+    return llamar("auth.getSession", { token }, { firmado: true });
+  },
+
   obtenerInfoUsuario(usuario) {
     return llamar("user.getInfo", { user: usuario });
   },

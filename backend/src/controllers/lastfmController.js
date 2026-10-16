@@ -2,8 +2,14 @@ import { lastfmService } from "../services/lastfmService.js";
 import { asyncHandler } from "../helpers/asyncHandler.js";
 
 export const lastfmController = {
+  // Se abre en un popup (navegacion comun, sin token de FanMeet): solo
+  // redirige a la pantalla de Last.fm para iniciar sesion y aprobar.
+  autorizar: asyncHandler(async (req, res) => {
+    res.redirect(lastfmService.urlAutorizacion(req.query.origen));
+  }),
+
   vincular: asyncHandler(async (req, res) => {
-    const cuenta = await lastfmService.vincular(req.user.id, req.body.usuario_lastfm);
+    const cuenta = await lastfmService.vincular(req.user.id, req.body.token);
     res.json(cuenta);
   }),
 

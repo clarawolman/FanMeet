@@ -1,4 +1,5 @@
 import "./OverlayCodigo.css";
+import { IconoCerrar } from "../generales/iconosNav";
 
 function OverlayCodigo({
   conciertoSeleccionado,
@@ -12,7 +13,7 @@ function OverlayCodigo({
     <div className="home-overlay">
       <div className="home-modal">
         <button className="home-modal-cerrar" onClick={onCerrar}>
-          ×
+          <IconoCerrar />
         </button>
 
         <p className="home-modal-eyebrow">Acceso al evento</p>

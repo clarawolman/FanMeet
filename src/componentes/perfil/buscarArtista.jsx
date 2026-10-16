@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { spotifyService } from "../../services/spotifyService";
 import IconoSpotify from "./iconoSpotify";
 import "./buscarArtista.css";
+import { mostrarAviso } from "../../utils/avisos";
+import { IconoCerrar } from "../generales/iconosNav";
 
 const ESPERA_MS = 300;
 
@@ -53,7 +55,7 @@ export default function BuscarArtista({ favoritos, onAgregar, onCerrar }) {
     try {
       await onAgregar(artista);
     } catch (err) {
-      alert("No se pudo agregar el artista: " + err.message);
+      mostrarAviso("No se pudo agregar el artista: " + err.message);
     }
     setAgregando(null);
   }
@@ -74,7 +76,7 @@ export default function BuscarArtista({ favoritos, onAgregar, onCerrar }) {
             onClick={onCerrar}
             aria-label="Cerrar"
           >
-            ✕
+            <IconoCerrar />
           </button>
         </div>
 

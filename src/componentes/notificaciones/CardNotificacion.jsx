@@ -1,4 +1,5 @@
 import "./CardNotificacion.css";
+import { IconoCerrar } from "../generales/iconosNav";
 
 function formatearTiempo(fecha) {
   if (!fecha) return "";
@@ -29,25 +30,19 @@ function CardNotificacion({
 
   return (
     <article className="cardNotificacion">
-      <button
-        type="button"
-        className="cardNotificacionEliminar"
-        onClick={() => onEliminar?.(notificacion)}
-        aria-label="Eliminar notificación"
-      >
-        ✕
-      </button>
-
-      <span className="cardNotificacionTiempo">
-        {formatearTiempo(created_at)}
-      </span>
-
-      <h3 className="cardNotificacionTitulo">{titulo}</h3>
+      {imagen ? (
+        <img src={imagen} alt="" className="cardNotificacionImagen" />
+      ) : (
+        <span className="cardNotificacionImagen cardNotificacionImagen--vacia" aria-hidden="true" />
+      )}
 
       <div className="cardNotificacionContenido">
-        {imagen && (
-          <img src={imagen} alt="" className="cardNotificacionImagen" />
-        )}
+        <div className="cardNotificacionCabecera">
+          <h3 className="cardNotificacionTitulo">{titulo}</h3>
+          <time className="cardNotificacionTiempo" dateTime={created_at}>
+            {formatearTiempo(created_at)}
+          </time>
+        </div>
 
         {descripcion && (
           <p className="cardNotificacionDescripcion">{descripcion}</p>
@@ -73,15 +68,25 @@ function CardNotificacion({
             </button>
           </div>
         ) : (
+          // Ocupa toda la fila (::after), así se toca en cualquier parte.
           <button
             type="button"
             className="cardNotificacionVerMas"
             onClick={() => onVerMas?.(notificacion)}
           >
-            Ver más →
+            <span className="fmSoloLectores">Ver más: {titulo}</span>
           </button>
         )}
       </div>
+
+      <button
+        type="button"
+        className="cardNotificacionEliminar"
+        onClick={() => onEliminar?.(notificacion)}
+        aria-label="Eliminar notificación"
+      >
+        <IconoCerrar />
+      </button>
     </article>
   );
 }

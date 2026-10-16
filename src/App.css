@@ -1,105 +1,164 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap");
 
+/* ===== TOKENS =====
+   Base neutra (sin tinte crema) para que las fotos de los artistas sean
+   las que ponen el color. El rosa FanMeet es un acento de marca: estado
+   activo, compatibilidad, badges y links. La acción principal va en tinta
+   (negro de día, blanco de noche), como en las apps de tickets/música.
+   Día y noche comparten el mismo diseño: solo cambian los valores. */
 :root {
-  /* Night Stage, modo claro (predeterminado) — papel cálido / rosa FanMeet,
-     con el violeta como acento secundario para dar variedad puntual */
-  --fm-bg: #f7f3ec;
-  --fm-bg-soft: #efe9df;
-  --fm-surface: #fdfbf7;
-  --fm-surface-warm: #f2ede2;
-  --fm-ink: #16151a;
-  --fm-muted: #78746e;
-  --fm-border: rgba(22, 21, 26, 0.14);
-  --fm-accent: #e0356f;
+  /* superficies */
+  --fm-bg: #f4f4f6;
+  --fm-bg-soft: #eaeaee;
+  --fm-surface: #ffffff;
+  --fm-surface-warm: #f0eff3;
+  --fm-ink: #0f0f13;
+  --fm-muted: #686874;
+  --fm-border: rgba(15, 15, 19, 0.08);
+  --fm-border-strong: rgba(15, 15, 19, 0.16);
+
+  /* acento de marca */
+  --fm-accent: #e62e6b;
+  --fm-accent-hover: #cf2159;
   --fm-accent-ink: #ffffff;
-  --fm-accent-2: #7c3aed;
-  --fm-glow: rgba(224, 53, 111, 0.22);
 
-  /* rosa suave: para estados "seleccionado", nunca para la acción principal */
-  --fm-accent-soft-bg: rgba(224, 53, 111, 0.1);
-  --fm-accent-soft-border: rgba(224, 53, 111, 0.38);
-  --fm-accent-soft-ink: #9c2354;
+  /* acción principal (botones fuertes) */
+  --fm-cta: #0f0f13;
+  --fm-cta-hover: #2a2a31;
+  --fm-cta-ink: #ffffff;
 
-  /* escala tipográfica compartida — evita textos diminutos en toda la app */
-  --fm-fs-2xs: 12px;
-  --fm-fs-xs: 13px;
-  --fm-fs-sm: 14px;
+  /* rosa suave: estados "seleccionado" */
+  --fm-accent-soft-bg: rgba(230, 46, 107, 0.08);
+  --fm-accent-soft-border: rgba(230, 46, 107, 0.32);
+  --fm-accent-soft-ink: #b8164d;
+
+  /* estados */
+  --fm-success: #15803d;
+  --fm-success-bg: rgba(21, 128, 61, 0.1);
+  --fm-danger: #c42b2b;
+  --fm-danger-bg: rgba(196, 43, 43, 0.08);
+
+  /* texto e imágenes sobre fotos (igual en los dos modos) */
+  --fm-on-photo: #ffffff;
+  --fm-scrim: linear-gradient(to top, rgba(8, 8, 12, 0.88) 0%, rgba(8, 8, 12, 0.35) 50%, rgba(8, 8, 12, 0) 100%);
+  --fm-backdrop: rgba(10, 10, 14, 0.48);
+
+  /* escala tipográfica compartida — usar siempre estos tokens */
+  --fm-fs-2xs: 11px;
+  --fm-fs-xs: 12.5px;
+  --fm-fs-sm: 13.5px;
   --fm-fs-body: 15px;
   --fm-fs-md: 16px;
   --fm-fs-lg: 19px;
-  --fm-fs-xl: 24px;
-  --fm-fs-2xl: 30px;
+  --fm-fs-xl: 26px;
+  --fm-fs-2xl: 34px;
+  --fm-fs-3xl: 44px;
 
-  /* aliases kept so existing component CSS referencing purple/pink resolves to la identidad */
-  --fm-purple: var(--fm-accent-2);
+  /* alias viejos: todos resuelven al rosa, no hay segundo acento */
+  --fm-accent-2: var(--fm-accent-soft-ink);
+  --fm-purple: var(--fm-accent);
   --fm-purple-dark: var(--fm-ink);
   --fm-pink: var(--fm-accent);
   --fm-coral: var(--fm-accent);
-  --fm-yellow: var(--fm-accent-2);
+  --fm-yellow: var(--fm-accent);
+  --fm-glow: rgba(230, 46, 107, 0.22);
 
   /* navegación (barra de abajo, sidebar y menú lateral) */
-  --fm-nav-ink: #8a8596;
-  --fm-nav-activo: #811cd9;
-  --fm-nav-activo-bg: #f1e9fc;
-  --fm-nav-hover-bg: #f5f0fd;
+  --fm-nav-ink: var(--fm-muted);
+  --fm-nav-activo: var(--fm-ink);
+  --fm-nav-activo-bg: var(--fm-bg-soft);
+  --fm-nav-hover-bg: rgba(15, 15, 19, 0.045);
 
-  --fm-shadow: 0 10px 30px rgba(22, 21, 26, 0.1);
-  --fm-shadow-sm: 0 4px 14px rgba(22, 21, 26, 0.08);
-  --fm-radius-lg: 14px;
-  --fm-radius-md: 12px;
-  --fm-radius-sm: 8px;
-  --fm-radius-pill: 12px;
+  /* sombras suaves y difusas, una sola luz desde arriba */
+  --fm-shadow: 0 1px 2px rgba(15, 15, 19, 0.04), 0 12px 32px -8px rgba(15, 15, 19, 0.12);
+  --fm-shadow-sm: 0 1px 2px rgba(15, 15, 19, 0.04), 0 4px 12px -4px rgba(15, 15, 19, 0.08);
+
+  --fm-radius-lg: 20px;
+  --fm-radius-md: 14px;
+  --fm-radius-sm: 10px;
+  --fm-radius-pill: 999px;
   --fm-radius-round: 999px;
 
   --fm-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --fm-dur: 220ms;
+  --fm-dur: 180ms;
 
-  --fm-font-display: "Sora", "Archivo", system-ui, sans-serif;
-  --fm-font-mono: "Archivo", system-ui, sans-serif;
-  --fm-font-body: "Archivo", system-ui, sans-serif;
+  /* layout */
+  --fm-sidebar: 248px;
+  --fm-contenido: 1120px;
+
+  /* capas */
+  --fm-z-raised: 10;
+  --fm-z-header: 100;
+  --fm-z-fab: 190;
+  --fm-z-nav: 200;
+  --fm-z-panel: 500;
+  --fm-z-sheet: 550;
+  --fm-z-sheet-top: 560;
+  --fm-z-modal: 1500;
+  --fm-z-drawer: 2000;
+  --fm-z-viewer: 3000;
+
+  --fm-font-display: "Geist", system-ui, -apple-system, sans-serif;
+  --fm-font-body: "Geist", system-ui, -apple-system, sans-serif;
+  /* histórico: lo usan botones y labels, queda en la sans */
+  --fm-font-mono: var(--fm-font-body);
+  /* datos tipo ticket: fechas, contadores, porcentajes */
+  --fm-font-data: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
 
   font-family: var(--fm-font-body);
+  font-feature-settings: "ss01", "cv11";
+  color-scheme: light;
 }
 
-/* Modo oscuro: se activa con data-theme="dark" en <html>, controlado
-   desde el menú de configuración (App.jsx guarda la preferencia). */
+/* Noche: mismos tokens, otros valores. Nada más cambia. */
 :root[data-theme="dark"] {
-  --fm-bg: #12100f;
-  --fm-bg-soft: #1a1613;
-  --fm-surface: #171313;
-  --fm-surface-warm: #1f1a17;
-  --fm-ink: #f2ede4;
-  --fm-muted: #8c8479;
-  --fm-border: rgba(242, 237, 228, 0.18);
-  --fm-accent: #ff2f7d;
-  --fm-accent-ink: #ffffff;
-  --fm-accent-2: #9159ff;
-  --fm-glow: rgba(255, 47, 125, 0.35);
+  --fm-bg: #0b0b0e;
+  --fm-bg-soft: #18181d;
+  --fm-surface: #131317;
+  --fm-surface-warm: #1b1b21;
+  --fm-ink: #f4f4f6;
+  --fm-muted: #8e8e9a;
+  --fm-border: rgba(244, 244, 246, 0.08);
+  --fm-border-strong: rgba(244, 244, 246, 0.16);
 
-  --fm-accent-soft-bg: rgba(255, 47, 125, 0.16);
-  --fm-accent-soft-border: rgba(255, 47, 125, 0.5);
-  --fm-accent-soft-ink: #ffb8d3;
+  --fm-accent: #ff3d7f;
+  --fm-accent-hover: #ff5a93;
 
-  /* en oscuro el resaltado es un violeta translúcido, no un parche claro */
-  --fm-nav-ink: #9a9288;
-  --fm-nav-activo: #c4a3ff;
-  --fm-nav-activo-bg: rgba(145, 89, 255, 0.18);
-  --fm-nav-hover-bg: rgba(242, 237, 228, 0.06);
+  --fm-cta: #f4f4f6;
+  --fm-cta-hover: #ffffff;
+  --fm-cta-ink: #0b0b0e;
 
-  --fm-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
-  --fm-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --fm-accent-soft-bg: rgba(255, 61, 127, 0.12);
+  --fm-accent-soft-border: rgba(255, 61, 127, 0.4);
+  --fm-accent-soft-ink: #ff8fb5;
+
+  --fm-success: #4ade80;
+  --fm-success-bg: rgba(74, 222, 128, 0.12);
+  --fm-danger: #ff7b72;
+  --fm-danger-bg: rgba(255, 123, 114, 0.12);
+
+  --fm-backdrop: rgba(0, 0, 0, 0.66);
+
+  --fm-glow: rgba(255, 61, 127, 0.28);
+  --fm-nav-hover-bg: rgba(244, 244, 246, 0.05);
+
+  --fm-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+  --fm-shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 4px 14px -4px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
 }
 
 /* En el celular todo un punto más grande: se lee a distancia de brazo. */
 @media (max-width: 767px) {
   :root {
-    --fm-fs-2xs: 13px;
-    --fm-fs-xs: 14px;
-    --fm-fs-sm: 15px;
-    --fm-fs-body: 16px;
-    --fm-fs-md: 17px;
-    --fm-fs-lg: 20px;
+    --fm-fs-2xs: 11.5px;
+    --fm-fs-xs: 13px;
+    --fm-fs-sm: 14px;
+    --fm-fs-body: 15.5px;
+    --fm-fs-md: 16.5px;
+    --fm-fs-lg: 19px;
     --fm-fs-xl: 25px;
+    --fm-fs-2xl: 30px;
   }
 }
 
@@ -115,198 +174,80 @@ button {
   font-family: inherit;
 }
 
-/* Mata gradientes genéricos: esta dirección no usa gradientes */
-button,
-.btn,
-.boton,
-.crearGrupoBoton,
-.btn-crear-grupo,
-* {
-  background-image: none !important;
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  letter-spacing: -0.025em;
 }
 
-/* En modo oscuro, la foto se subexpone levemente: tratamiento
-   fotográfico "stage light" en vez de duotone papel/sepia. En modo
-   claro las fotos se muestran naturales. */
-:root[data-theme="dark"] img {
-  filter: brightness(0.82) contrast(1.06) saturate(0.86) !important;
+/* números alineados en contadores, fechas y porcentajes */
+time,
+.fmDato {
+  font-variant-numeric: tabular-nums;
 }
 
-/* Grano sutil, solo en modo oscuro — el aire de una sala en penumbra */
-:root[data-theme="dark"] body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+::selection {
+  background: var(--fm-accent);
+  color: #fff;
 }
 
-.hero {
-  position: relative;
+p {
+  text-wrap: pretty;
+}
 
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
+/* Foco visible y consistente para todo lo que se maneja con teclado */
+:where(button, a, select, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--fm-accent) !important;
+  outline-offset: 2px;
+}
 
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
+/* los campos de texto marcan el foco con su propio borde + halo (sin doble anillo) */
+:where(input, textarea):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
+}
 
-  .framework,
-  .vite {
-    position: absolute;
-  }
+:where(button):active:not(:disabled) {
+  transform: scale(0.98);
+}
 
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
+/* ===== ERROR GLOBAL (cuando no carga una pantalla) ===== */
+.fmErrorPantalla {
+  min-height: 100dvh;
+  display: grid;
   place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  padding: 24px;
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+.fmErrorPantalla > div {
+  max-width: 420px;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.fmErrorPantalla h1 {
+  margin: 0 0 8px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl);
+  letter-spacing: -0.02em;
 }
 
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
-}
-
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.fmErrorPantalla p {
+  margin: 0 0 20px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-body);
+  line-height: 1.5;
 }
 
 .app {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
 }

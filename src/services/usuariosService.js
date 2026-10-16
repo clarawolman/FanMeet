@@ -21,6 +21,11 @@ export const usuariosService = {
     return api.patch("/usuarios/me/vibra", { estilo_asistencia: estiloAsistencia });
   },
 
+  // "" borra el apodo.
+  async actualizarApodo(apodo) {
+    return api.patch("/usuarios/me/apodo", { apodo });
+  },
+
   async subirFoto(archivo) {
     const formData = new FormData();
     formData.append("foto", archivo);

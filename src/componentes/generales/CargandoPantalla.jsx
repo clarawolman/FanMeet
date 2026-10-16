@@ -1,7 +1,7 @@
 import LoadingSpinner from "./LoadingSpinner";
 
 function CargandoPantalla({ texto = "Cargando..." }) {
-  return <LoadingSpinner texto={texto} pantallaCompleta tamano={44} />;
+  return <LoadingSpinner texto={texto} pantallaCompleta />;
 }
 
 export default CargandoPantalla;

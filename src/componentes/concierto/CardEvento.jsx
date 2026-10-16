@@ -1,8 +1,8 @@
 import "./CardEvento.css";
 
 const MESES = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
 ];
 
 function formatearFecha(fecha) {
@@ -12,7 +12,7 @@ function formatearFecha(fecha) {
 
   if (isNaN(dia.getTime())) return fecha;
 
-  return `${[dia.getDate()]} de ${MESES[dia.getMonth()]} de ${dia.getFullYear()}`;
+  return `${dia.getDate()} de ${MESES[dia.getMonth()]} de ${dia.getFullYear()}`;
 }
 
 function CardEvento({concierto}) {
@@ -26,10 +26,12 @@ function CardEvento({concierto}) {
       <div className="EventoOverlay"></div>
 
       <div className="EventoContenido">
-        <p className="EventoArtista"> {concierto.artista.nombre} </p>
-        <h2 className="EventoTitulo">{concierto.nombre} </h2>
-        <p className="EventoFecha"> {formatearFecha(concierto.fecha)} </p>
-        <p className="EventoUbicacion"> {concierto.estadio.nombre}, {concierto.estadio.ciudad} </p>
+        <p className="EventoArtista">{concierto.artista.nombre}</p>
+        <h2 className="EventoTitulo">{concierto.nombre}</h2>
+        <p className="EventoFecha">{formatearFecha(concierto.fecha)}</p>
+        <p className="EventoUbicacion">
+          {concierto.estadio.nombre}, {concierto.estadio.ciudad}
+        </p>
       </div>
     </section>
   );

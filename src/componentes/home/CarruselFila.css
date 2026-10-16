@@ -39,13 +39,13 @@
     border: 1px solid var(--fm-border);
     background: var(--fm-surface);
     color: var(--fm-ink);
-    font-size: 18px;
+    font-size: var(--fm-fs-lg);
     line-height: 1;
     cursor: pointer;
     z-index: 5;
     box-shadow: var(--fm-shadow-sm);
     opacity: 0;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    transition: opacity var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease);
   }
 
   .carruselFila:hover .carruselFilaFlecha {

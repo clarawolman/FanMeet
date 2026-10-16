@@ -1,35 +1,42 @@
+/* franja de tres datos con divisores, sin cajas */
 .statsPerfil {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 16px 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 20px;
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
 }
 
 .statItemPerfil {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 16px 8px;
-  max-width: 130px;
-  background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
-  border-radius: var(--fm-radius-md);
-  box-shadow: var(--fm-shadow-sm);
-  cursor: pointer;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: inherit;
   font-family: inherit;
-  transition: background var(--fm-dur) var(--fm-ease), transform var(--fm-dur) var(--fm-ease),
-    border-color var(--fm-dur) var(--fm-ease);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+.statItemPerfil + .statItemPerfil {
+  box-shadow: inset 1px 0 0 var(--fm-border);
+}
+
+.statItemPerfil:first-child {
+  border-radius: var(--fm-radius-lg) 0 0 var(--fm-radius-lg);
+}
+
+.statItemPerfil:last-child {
+  border-radius: 0 var(--fm-radius-lg) var(--fm-radius-lg) 0;
 }
 
 .statItemPerfil:hover {
-  border-color: var(--fm-accent);
-  transform: translateY(-2px);
-}
-
-.statItemPerfil:active {
-  transform: translateY(0) scale(0.97);
+  background: var(--fm-nav-hover-bg);
 }
 
 .statItemPerfil .statValuePerfil {
@@ -37,32 +44,25 @@
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xl);
   font-weight: 700;
-  color: var(--fm-accent);
-  line-height: 1.15;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fm-ink);
+  line-height: 1.1;
 }
 
 .statItemPerfil .statLabelPerfil {
   margin: 0;
-  font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--fm-muted);
-  text-transform: none;
-  letter-spacing: 0.005em;
 }
 
 @media (min-width: 768px) {
   .statsPerfil {
-    padding: 0 40px 4px;
-    gap: 16px;
+    margin: 0;
   }
 
   .statItemPerfil {
-    max-width: 160px;
-    padding: 18px 10px;
-  }
-
-  .statItemPerfil .statValuePerfil {
-    font-size: var(--fm-fs-2xl);
+    padding: 18px 22px;
   }
 }

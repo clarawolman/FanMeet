@@ -1,4 +1,5 @@
 import "./proximosConciertosPerfil.css";
+import { IconoSiguiente } from "../generales/iconosNav";
 
 const MAX_VISIBLES = 3;
 
@@ -91,7 +92,7 @@ export default function ProximosConciertosPerfil({
                   </small>
                 </span>
 
-                <span className="proximoConciertoFlecha">›</span>
+                <span className="proximoConciertoFlecha"><IconoSiguiente width="14" height="14" /></span>
               </button>
             );
           })}

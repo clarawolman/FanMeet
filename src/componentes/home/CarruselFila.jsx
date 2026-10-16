@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import "./CarruselFila.css";
+import { IconoAnterior, IconoSiguiente } from "../generales/iconosNav";
 
 export default function CarruselFila({ children }) {
   const scrollRef = useRef(null);
@@ -47,7 +48,7 @@ export default function CarruselFila({ children }) {
         aria-label="Anterior"
         tabIndex={-1}
       >
-        ‹
+        <IconoAnterior />
       </button>
 
       <div
@@ -69,7 +70,7 @@ export default function CarruselFila({ children }) {
         aria-label="Siguiente"
         tabIndex={-1}
       >
-        ›
+        <IconoSiguiente />
       </button>
     </div>
   );

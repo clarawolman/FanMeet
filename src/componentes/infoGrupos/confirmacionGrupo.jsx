@@ -6,7 +6,7 @@ export default function ConfirmacionGrupo({
 }) {
   return (
     <div className="confirmacionGrupo">
-      <h3>¡Sumate al grupo!</h3>
+      <h3>¿Vas con este grupo?</h3>
 
       <p>
         Confirmá tu asistencia para recibir notificaciones y enterarte de todas
@@ -14,7 +14,7 @@ export default function ConfirmacionGrupo({
       </p>
 
       <button onClick={onConfirmar} disabled={cargandoConfirmacion}>
-        {cargandoConfirmacion ? "Confirmando..." : "Confirmar asistencia"}
+        {cargandoConfirmacion ? "Confirmando…" : "Confirmar asistencia"}
       </button>
     </div>
   );

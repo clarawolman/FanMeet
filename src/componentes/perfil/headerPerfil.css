@@ -7,127 +7,102 @@
 .headerPerfilAcciones {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-left: auto;
 }
 
-.headerPerfilCampana {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  background: var(--fm-surface);
-  color: var(--fm-ink);
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.12s;
-}
-
-.headerPerfilCampana svg {
-  width: 16px;
-  height: 16px;
-}
-
-.headerPerfilCampana:hover {
-  background: var(--fm-bg-soft);
-}
-
+.headerPerfilCampana,
 .headerPerfilCerrarSesion {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--fm-border);
-  border-radius: var(--fm-radius-sm);
-  background: var(--fm-surface);
-  padding: 0;
-  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  overflow: hidden;
-  opacity: 0.9;
-  transition: transform 0.12s, opacity 0.12s;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: transparent;
+  color: var(--fm-ink);
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+}
+
+.headerPerfilCampana svg,
+.headerPerfilCerrarSesion svg {
+  width: 20px;
+  height: 20px;
+}
+
+.headerPerfilCampana:hover,
+.headerPerfilCerrarSesion:hover {
+  background: var(--fm-nav-hover-bg);
 }
 
 .headerPerfilCerrarSesion:hover {
-  opacity: 1;
+  color: var(--fm-danger);
 }
 
-.headerPerfilCerrarSesion:active {
-  transform: translate(1px, 1px);
-}
-
-.headerPerfilCerrarSesion img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+/* identidad: foto a la izquierda, nombre al lado, acción abajo */
 .headerPerfilInfo {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 4px 16px 20px;
-  background: var(--fm-surface);
-  border-bottom: 1px solid var(--fm-border);
+  gap: 16px 18px;
+  padding: 24px 20px 4px;
 }
 
 .headerPerfilFotoWrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 84px;
+  height: 84px;
 }
 
 .headerPerfilFoto {
-  width: 72px;
-  height: 72px;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 2.5px solid var(--fm-surface);
-  box-shadow: var(--fm-shadow-sm);
-  display: block;
   background: var(--fm-bg-soft);
+  box-shadow: 0 0 0 4px var(--fm-bg), 0 0 0 5px var(--fm-border-strong);
 }
 
 .headerPerfilIdentidad {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .headerPerfilNombre {
-  margin: 2px 0 0;
+  margin: 0;
+  overflow: hidden;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xl);
   font-weight: 700;
-  text-transform: none;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
   color: var(--fm-ink);
-  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .headerPerfilHandle {
   margin: 0;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-sm);
-  font-weight: 500;
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
 }
 
 .headerPerfilBotonEditar {
-  margin-top: 6px;
-  padding: 9px 22px;
-  border: 1.5px solid var(--fm-border);
+  grid-column: 1 / -1;
+  min-height: 40px;
+  padding: 0 20px;
+  border: 1px solid var(--fm-border-strong);
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
+  background: transparent;
   color: var(--fm-ink);
-  font-family: var(--fm-font-display);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
   cursor: pointer;
@@ -135,8 +110,8 @@
 }
 
 .headerPerfilBotonEditar:hover:not(:disabled) {
-  border-color: var(--fm-accent);
-  background: var(--fm-accent-soft-bg);
+  border-color: var(--fm-ink);
+  background: var(--fm-nav-hover-bg);
 }
 
 .headerPerfilBotonEditar:disabled {
@@ -144,30 +119,91 @@
   cursor: default;
 }
 
+/* edición: nombre/apodo + cambiar foto */
+.headerPerfilApodoLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.headerPerfilApodoLabel span {
+  font-weight: 400;
+  color: var(--fm-muted);
+}
+
+.headerPerfilApodoInput {
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+}
+
+.headerPerfilApodoInput:focus {
+  outline: none;
+  border-color: var(--fm-ink);
+}
+
+.headerPerfilAccionesEdicion {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.headerPerfilAccionesEdicion > * {
+  flex: 1;
+}
+
+.headerPerfilBotonGuardar {
+  min-height: 40px;
+}
+
+/* "Amigos" + "Mensaje" en el perfil de otro usuario */
+.headerPerfilAccionesAmistad {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+}
+
+.headerPerfilAccionesAmistad > * {
+  flex: 1;
+}
+
 @media (min-width: 768px) {
   .headerPerfilInfo {
-    padding: 6px 40px 24px;
+    grid-template-columns: auto 1fr auto;
+    max-width: 680px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 40px 0 8px;
+    gap: 24px;
   }
 
   .headerPerfilFotoWrap {
-    width: 88px;
-    height: 88px;
-  }
-
-  .headerPerfilFoto {
-    width: 88px;
-    height: 88px;
+    width: 104px;
+    height: 104px;
   }
 
   .headerPerfilNombre {
     font-size: var(--fm-fs-2xl);
   }
-}
 
-/* "Amigos" + "Mensaje" en el perfil de otro usuario */
-.headerPerfilAccionesAmistad {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
+  .headerPerfilBotonEditar,
+  .headerPerfilAccionesAmistad {
+    grid-column: auto;
+  }
+
+  .headerPerfilAccionesAmistad > *,
+  .headerPerfilAccionesEdicion > * {
+    flex: 0 0 auto;
+  }
 }

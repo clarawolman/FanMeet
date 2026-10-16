@@ -3,6 +3,7 @@ import { spotifyService } from "../../services/spotifyService";
 import FilaArtistas from "./filaArtistas";
 import BuscarArtista from "./buscarArtista";
 import "./artistasFavoritosPerfil.css";
+import { mostrarAviso } from "../../utils/avisos";
 
 const MAX_FAVORITOS = 20;
 
@@ -53,7 +54,7 @@ export default function ArtistasFavoritosPerfil({ idUsuario, isOwnProfile }) {
       await spotifyService.quitarFavorito(artista.spotify_id);
     } catch (err) {
       setFavoritos(anteriores);
-      alert("No se pudo quitar el artista: " + err.message);
+      mostrarAviso("No se pudo quitar el artista: " + err.message);
     }
   }
 

@@ -5,6 +5,11 @@ export const vibraSchema = z.object({
 });
 
 // Misma regla que EditarGeneros.jsx: minimo 2 generos seleccionados.
+// Nombre / apodo opcional del perfil. Vacío = sin apodo (se muestra el @).
+export const apodoSchema = z.object({
+  apodo: z.string().trim().max(30, "El nombre puede tener hasta 30 caracteres"),
+});
+
 export const generosSchema = z.object({
   ids_estilos: z
     .array(z.union([z.string(), z.number()]))

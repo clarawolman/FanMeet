@@ -4,6 +4,7 @@ import HeaderApp from "../generales/HeaderApp";
 import Footer from "../generales/Footer";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { amistadService } from "../../services/amistadService";
+import { mostrarAviso } from "../../utils/avisos";
 
 // "21 años · En 1 grupo" (cada parte solo si el dato viene)
 function detalleFan(fan) {
@@ -48,7 +49,7 @@ function FansUnidosLista({
         idAmistad: amistad?.id_amistad ?? null,
       });
     } catch (error) {
-      alert("No se pudo enviar la solicitud: " + error.message);
+      mostrarAviso("No se pudo enviar la solicitud: " + error.message);
     }
     setProcesando(null);
   }
@@ -59,7 +60,7 @@ function FansUnidosLista({
       await amistadService.aceptar(fan.idAmistad);
       onCambioAmistad?.(fan.id_usuario, { estadoAmistad: "amigos" });
     } catch (error) {
-      alert("No se pudo aceptar la solicitud: " + error.message);
+      mostrarAviso("No se pudo aceptar la solicitud: " + error.message);
     }
     setProcesando(null);
   }

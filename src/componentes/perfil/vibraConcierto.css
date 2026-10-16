@@ -1,6 +1,6 @@
 .vibraConcierto {
   margin-top: 0;
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .vibraConcierto h3 {
@@ -23,15 +23,18 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--fm-border-strong);
+  text-underline-offset: 4px;
 }
 
 .vibraConciertoCambiar:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--fm-accent);
 }
 
 .vibraConciertoSubtitulo {
@@ -53,9 +56,10 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1.5px solid var(--fm-accent-soft-border);
-  background: var(--fm-accent-soft-bg);
-  border-radius: var(--fm-radius-md);
+  border: none;
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+  border-radius: var(--fm-radius-lg);
   padding: 16px;
 }
 
@@ -63,8 +67,8 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--fm-surface);
-  border: 1px solid var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+  border: none;
   color: var(--fm-accent);
   display: flex;
   align-items: center;
@@ -108,7 +112,7 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   border-radius: var(--fm-radius-md);
   padding: 14px 16px;
@@ -121,8 +125,7 @@
 }
 
 .vibraOpcion:hover:not(:disabled) {
-  border-color: var(--fm-accent);
-  transform: translateY(-1px);
+  border-color: var(--fm-border-strong);
 }
 
 .vibraOpcion:disabled {
@@ -197,6 +200,6 @@
 
 @media (min-width: 768px) {
   .vibraConcierto {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 }

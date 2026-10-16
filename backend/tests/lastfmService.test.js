@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 process.env.LASTFM_API_KEY = "lastfm-key-test";
+process.env.LASTFM_SHARED_SECRET = "lastfm-secret-test";
 
 vi.mock("../src/repositories/lastfmRepository.js", () => ({
   lastfmCuentaRepository: {
@@ -9,6 +10,8 @@ vi.mock("../src/repositories/lastfmRepository.js", () => ({
     eliminar: vi.fn(),
   },
   lastfmApiRepository: {
+    urlAutorizacion: vi.fn(),
+    obtenerSesion: vi.fn(),
     obtenerInfoUsuario: vi.fn(),
     obtenerTopArtistas: vi.fn(),
     obtenerTopCanciones: vi.fn(),
@@ -78,18 +81,43 @@ beforeEach(() => {
 });
 
 describe("lastfmService.vincular", () => {
-  it("guarda el nombre tal cual lo devuelve Last.fm", async () => {
-    lastfmApiRepository.obtenerInfoUsuario.mockResolvedValue({ user: { name: "RJ" } });
+  it("guarda la cuenta que Last.fm confirma para ese token", async () => {
+    lastfmApiRepository.obtenerSesion.mockResolvedValue({ session: { name: "RJ", key: "k" } });
 
-    await expect(lastfmService.vincular(YO, "rj")).resolves.toEqual({ usuario_lastfm: "RJ" });
+    await expect(lastfmService.vincular(YO, "tok123")).resolves.toEqual({ usuario_lastfm: "RJ" });
+    expect(lastfmApiRepository.obtenerSesion).toHaveBeenCalledWith("tok123");
     expect(lastfmCuentaRepository.guardar).toHaveBeenCalledWith(YO, "RJ");
   });
 
-  it("no guarda nada si el usuario no existe en Last.fm", async () => {
-    lastfmApiRepository.obtenerInfoUsuario.mockRejectedValue(ApiError.notFound("No existe"));
+  it("no guarda nada si Last.fm no aprueba el token", async () => {
+    lastfmApiRepository.obtenerSesion.mockRejectedValue(ApiError.badRequest("Token inválido"));
 
-    await expect(lastfmService.vincular(YO, "fantasma")).rejects.toMatchObject({ status: 404 });
+    await expect(lastfmService.vincular(YO, "vencido")).rejects.toMatchObject({ status: 400 });
     expect(lastfmCuentaRepository.guardar).not.toHaveBeenCalled();
+  });
+
+  it("no guarda nada si la sesión no trae usuario", async () => {
+    lastfmApiRepository.obtenerSesion.mockResolvedValue({});
+
+    await expect(lastfmService.vincular(YO, "tok123")).rejects.toMatchObject({ status: 400 });
+    expect(lastfmCuentaRepository.guardar).not.toHaveBeenCalled();
+  });
+});
+
+describe("lastfmService.urlAutorizacion", () => {
+  it("manda a Last.fm con el callback del frontend que lo pidió", () => {
+    lastfmApiRepository.urlAutorizacion.mockImplementation((cb) => `LASTFM?cb=${cb}`);
+
+    expect(lastfmService.urlAutorizacion("http://localhost:5173")).toBe(
+      "LASTFM?cb=http://localhost:5173/lastfm-callback.html"
+    );
+  });
+
+  it("rechaza orígenes que no son el frontend (no es un redireccionador abierto)", () => {
+    expect(() => lastfmService.urlAutorizacion("https://sitio-malo.com")).toThrow(
+      expect.objectContaining({ status: 400 })
+    );
+    expect(lastfmApiRepository.urlAutorizacion).not.toHaveBeenCalled();
   });
 });
 

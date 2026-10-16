@@ -3,8 +3,8 @@
 .pantallaEditarGeneros {
   position: fixed;
   inset: 0;
-  z-index: 500;
-  background: rgba(0, 0, 0, 0.55);
+  z-index: var(--fm-z-panel);
+  background: var(--fm-backdrop);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,7 +29,7 @@
   height: 72px;
   padding: 0 24px;
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-bottom: none;
   border-radius: var(--fm-radius-lg) var(--fm-radius-lg) 0 0;
   box-shadow: var(--fm-shadow);
@@ -44,7 +44,7 @@
   border: none;
   background: transparent;
   color: var(--fm-accent);
-  font-size: 26px;
+  font-size: var(--fm-fs-xl);
   line-height: 1;
   cursor: pointer;
   padding: 0;
@@ -53,7 +53,7 @@
 .editarGenerosLogo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -65,7 +65,7 @@
   max-width: 430px;
   padding: 20px 24px calc(28px + env(safe-area-inset-bottom));
   background: var(--fm-surface);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-top: none;
   border-radius: 0 0 var(--fm-radius-lg) var(--fm-radius-lg);
   box-shadow: var(--fm-shadow);
@@ -76,7 +76,7 @@
 .editarGenerosTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 26px;
+  font-size: var(--fm-fs-xl);
   font-weight: 600;
   text-transform: none;
   color: var(--fm-ink);
@@ -84,7 +84,7 @@
 
 .editarGenerosSubtitulo {
   margin: 6px 0 20px;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   line-height: 1.3;
   color: var(--fm-muted);
 }
@@ -94,7 +94,7 @@
   align-items: center;
   gap: 10px;
   background: var(--fm-bg-soft);
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
   padding: 0 16px;
   margin-bottom: 20px;
@@ -103,11 +103,11 @@
 }
 
 .editarGenerosBuscador:focus-within {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-ink);
 }
 
 .editarGenerosBuscadorIcono {
-  font-size: 16px;
+  font-size: var(--fm-fs-md);
   color: var(--fm-accent);
 }
 
@@ -118,7 +118,7 @@
   background: transparent;
   height: 46px;
   font-family: var(--fm-font-body);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   color: var(--fm-ink);
 }
 
@@ -132,10 +132,6 @@
   height: 78px;
 }
 
-.editarGenerosChip:hover {
-  transform: translateY(-1px);
-}
-
 .editarGenerosChip strong {
   text-transform: capitalize;
 }
@@ -143,7 +139,7 @@
 .editarGenerosVacio {
   margin: 8px 0 0;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
@@ -151,7 +147,7 @@
   margin: 16px 0 -4px;
   color: var(--fm-accent);
   text-align: center;
-  font-size: 14px;
+  font-size: var(--fm-fs-sm);
   font-weight: 600;
 }
 
@@ -159,11 +155,11 @@
   display: inline-block;
   margin-top: 6px;
   background: var(--fm-bg-soft);
-  color: var(--fm-accent);
+  color: var(--fm-danger);
   padding: 4px 8px;
   border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-accent);
-  font-size: 12px;
+  border: 1px solid var(--fm-danger);
+  font-size: var(--fm-fs-2xs);
   font-weight: 600;
 }
 
@@ -177,10 +173,10 @@
 .editarGenerosBotonGuardar {
   flex: 1;
   height: 52px;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-display);
-  font-size: 15px;
+  font-size: var(--fm-fs-body);
   font-weight: 600;
   text-transform: none;
   letter-spacing: 0.005em;
@@ -199,15 +195,10 @@
 }
 
 .editarGenerosBotonGuardar {
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
   box-shadow: none;
-  border-color: var(--fm-accent);
-}
-
-.editarGenerosBotonGuardar:hover:not(:disabled) {
-  filter: brightness(0.92);
-  box-shadow: 0 8px 20px var(--fm-glow);
+  border-color: var(--fm-cta);
 }
 
 .editarGenerosBotonCancelar:active,
@@ -227,7 +218,7 @@
   }
 
   .editarGenerosTitulo {
-    font-size: 23px;
+    font-size: var(--fm-fs-xl);
   }
 
   .editarGenerosChip {
@@ -252,7 +243,7 @@
   }
 
   .editarGenerosLogo {
-    font-size: 17px;
+    font-size: var(--fm-fs-md);
   }
 
   .editarGenerosContenido {
@@ -262,7 +253,7 @@
   }
 
   .editarGenerosTitulo {
-    font-size: 32px;
+    font-size: var(--fm-fs-2xl);
   }
 
   .editarGenerosGrid {
@@ -278,4 +269,8 @@
     max-width: 380px;
     margin: 32px auto 0;
   }
+}
+
+.editarGenerosBotonGuardar:hover:not(:disabled) {
+  background: var(--fm-cta-hover);
 }

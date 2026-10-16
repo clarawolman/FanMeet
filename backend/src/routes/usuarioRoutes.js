@@ -5,6 +5,7 @@ import { validate } from "../middlewares/validate.js";
 import { upload } from "../middlewares/upload.js";
 import {
   vibraSchema,
+  apodoSchema,
   generosSchema,
   buscarGeneroSchema,
   nombreGeneroSchema,
@@ -32,6 +33,12 @@ router.patch(
   authMiddleware,
   validate(vibraSchema),
   usuarioController.actualizarVibra
+);
+router.patch(
+  "/me/apodo",
+  authMiddleware,
+  validate(apodoSchema),
+  usuarioController.actualizarApodo
 );
 router.post(
   "/me/foto",

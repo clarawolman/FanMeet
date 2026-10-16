@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import "./Registro2.css";
+import EncabezadoRegistro from "../EncabezadoRegistro";
 import fotoDefault from "../../../assets/fotoDefault.png";
 
 function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
@@ -22,7 +23,7 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
 
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setErrorCamara("Error, no se puede acceder a la camara");
+        setErrorCamara("No pudimos abrir la cámara. Revisá los permisos del navegador o elegí una foto.");
         return;
       }
 
@@ -40,7 +41,7 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
         }
       }, 100);
     } catch (error) {
-      setErrorCamara("Error, no se puede acceder a la camara");
+      setErrorCamara("No pudimos abrir la cámara. Revisá los permisos del navegador o elegí una foto.");
     }
   }
 
@@ -58,7 +59,7 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
     const canvas = canvasRef.current;
 
     if (!video || !canvas) {
-      setErrorCamara("Error, no se puede acceder a la camara");
+      setErrorCamara("No pudimos abrir la cámara. Revisá los permisos del navegador o elegí una foto.");
       return;
     }
 
@@ -70,7 +71,7 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
 
     canvas.toBlob((blob) => {
       if (!blob) {
-        setErrorCamara("Error, no se puede acceder a la camara");
+        setErrorCamara("No pudimos abrir la cámara. Revisá los permisos del navegador o elegí una foto.");
         return;
       }
 
@@ -126,34 +127,20 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
   }
 
   return (
-    <main className="pantallaRegistro2">
-      <header className="registro2Header">
-        <button className="registro2Volver" type="button" onClick={manejarVolver}>
-          ←
-        </button>
-
-        <h1 className="registro2Logo">FanMeet</h1>
-      </header>
+    <main className="regPantalla">
+      <EncabezadoRegistro paso={2} onVolver={manejarVolver} />
 
       <section className="registro2Contenido">
-        <div className="registro2ProgresoInfo">
-          <span>PASO 2 DE 3</span>
-          <span>66%</span>
+        <div className="registro2Intro">
+          <h1 className="regTitulo">Sumá una foto</h1>
+          <p className="regBajada">
+            Así te reconocen en los grupos y en la fila. Si preferís, seguí con la imagen por defecto.
+          </p>
         </div>
-
-        <div className="registro2Barra">
-          <div className="registro2BarraActiva"></div>
-        </div>
-
-        <h2 className="registro2Titulo">Foto de perfil</h2>
 
         <div className="registro2FotoWrapper">
-          <div className="registro2Foto">
-            <img
-              className="registro2FotoPreview"
-              src={previewFoto}
-              alt="Foto de perfil"
-            />
+          <div className={`registro2Foto ${fotoPerfil ? "conFoto" : ""}`}>
+            <img className="registro2FotoPreview" src={previewFoto} alt="Vista previa de tu foto de perfil" />
           </div>
 
           {!fotoPerfil && (
@@ -161,41 +148,31 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
               className="registro2BotonMas"
               type="button"
               onClick={abrirLibreria}
+              aria-label="Elegir una foto"
             >
-              +
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
             </button>
           )}
         </div>
 
-        <p className="registro2TextoOpcional">
-          Podés agregar una foto o continuar con la imagen por defecto.
-        </p>
-
-        {errorCamara && <p className="registro2Error">{errorCamara}</p>}
+        {errorCamara && (
+          <p className="fmAvisoError registro2Error" role="alert">
+            {errorCamara}
+          </p>
+        )}
 
         {camaraAbierta && (
           <div className="registro2Camara">
-            <video
-              ref={videoRef}
-              className="registro2Video"
-              autoPlay
-              playsInline
-            />
+            <video ref={videoRef} className="registro2Video" autoPlay playsInline />
 
             <div className="registro2CamaraBotones">
-              <button
-                className="registro2BotonCamaraSecundario"
-                type="button"
-                onClick={cerrarCamara}
-              >
+              <button className="registro2BotonCamaraSecundario" type="button" onClick={cerrarCamara}>
                 Cancelar
               </button>
 
-              <button
-                className="registro2BotonCamaraPrincipal"
-                type="button"
-                onClick={sacarFoto}
-              >
+              <button className="fmBotonPrimario registro2BotonCamaraPrincipal" type="button" onClick={sacarFoto}>
                 Sacar foto
               </button>
             </div>
@@ -206,52 +183,49 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
 
         {!camaraAbierta && (
           <div className="registro2Opciones">
-            <button
-              className="registro2Opcion"
-              type="button"
-              onClick={abrirCamara}
-            >
-              <span className="registro2OpcionIcono camara">▣</span>
-
-              <span className="registro2OpcionTexto">
-                <strong>Tomar foto</strong>
-                <small>Usá tu cámara</small>
+            <button className="registro2Opcion" type="button" onClick={abrirCamara}>
+              <span className="registro2OpcionIcono" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+                  <circle cx="12" cy="13" r="3.5" />
+                </svg>
               </span>
 
-              <span className="registro2Flecha">›</span>
+              <span className="registro2OpcionTexto">
+                <strong>Sacar una foto</strong>
+                <small>Con la cámara</small>
+              </span>
+
+              <svg className="registro2Flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
             </button>
 
-            <button
-              className="registro2Opcion"
-              type="button"
-              onClick={abrirLibreria}
-            >
-              <span className="registro2OpcionIcono libreria">▧</span>
-
-              <span className="registro2OpcionTexto">
-                <strong>Elegir de librería</strong>
-                <small>Seleccioná de tu dispositivo</small>
+            <button className="registro2Opcion" type="button" onClick={abrirLibreria}>
+              <span className="registro2OpcionIcono" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+                  <circle cx="9" cy="10" r="1.6" />
+                  <path d="M20.5 16l-5-5-8 8.5" />
+                </svg>
               </span>
 
-              <span className="registro2Flecha">›</span>
+              <span className="registro2OpcionTexto">
+                <strong>Elegir de tus fotos</strong>
+                <small>Desde este dispositivo</small>
+              </span>
+
+              <svg className="registro2Flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
             </button>
           </div>
         )}
 
-        <input
-          ref={inputLibreriaRef}
-          type="file"
-          accept="image/*"
-          onChange={manejarArchivo}
-          hidden
-        />
+        <input ref={inputLibreriaRef} type="file" accept="image/*" onChange={manejarArchivo} hidden />
 
-        <button
-          className="registro2BotonSiguiente"
-          type="button"
-          onClick={manejarSiguiente}
-        >
-          Siguiente
+        <button className="fmBotonPrimario regBotonSiguiente registro2Siguiente" type="button" onClick={manejarSiguiente}>
+          {fotoPerfil ? "Siguiente" : "Seguir sin foto"}
         </button>
       </section>
     </main>

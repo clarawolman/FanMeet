@@ -23,6 +23,7 @@ export const verificarDisponibilidadSchema = z.object({
 
 export const registroSchema = z.object({
   nombre: z.string().trim().min(1, "El nombre es obligatorio"),
+  apodo: z.string().trim().max(30, "El nombre puede tener hasta 30 caracteres").optional(),
   mail: z.string().trim().email("Mail inválido"),
   contrasena: contrasenaSchema,
   fechanac: z.string().min(1, "La fecha de nacimiento es obligatoria"),

@@ -40,6 +40,11 @@ export const usuarioController = {
     res.json(usuario);
   }),
 
+  actualizarApodo: asyncHandler(async (req, res) => {
+    const usuario = await usuarioService.actualizarApodo(req.user.id, req.body.apodo);
+    res.json(usuario);
+  }),
+
   obtenerEstadisticas: asyncHandler(async (req, res) => {
     const estadisticas = await usuarioService.obtenerEstadisticas(req.params.idUsuario);
     res.json(estadisticas);

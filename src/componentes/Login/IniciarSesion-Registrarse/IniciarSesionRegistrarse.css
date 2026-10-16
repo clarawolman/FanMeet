@@ -1,40 +1,148 @@
 .pantallaLogin {
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100dvh;
   background: var(--fm-bg);
-  overflow-x: hidden;
-  overflow-y: auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
 }
 
 .loginContenido {
   width: 100%;
-  max-width: 430px;
-  flex: 0 0 auto;
-  padding: clamp(32px, 11vh, 92px) 24px 0;
-  box-sizing: border-box;
+  max-width: 400px;
+  padding: clamp(40px, 12dvh, 120px) 0 48px;
+}
+
+.loginMarca {
+  margin-bottom: clamp(40px, 9dvh, 72px);
+  font-size: 21px;
 }
 
 .loginTitulo {
-  margin: 0 0 18px;
-  text-align: center;
+  margin: 0;
   font-family: var(--fm-font-display);
-  font-size: 44px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.01em;
+  font-size: clamp(32px, 8.5vw, 42px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
   color: var(--fm-ink);
 }
 
-@media (max-width: 360px) {
-  .loginContenido {
-    padding: clamp(28px, 9vh, 76px) 22px 0;
+.loginBajada {
+  max-width: 34ch;
+  margin: 14px 0 32px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-body);
+  line-height: 1.5;
+}
+
+/* ===== PANEL DE MARCA (solo escritorio) =====
+   Sigue el tema de la app: superficie clara de día, oscura de noche. */
+.loginPanel {
+  display: none;
+  --login-glow: rgba(230, 46, 107, 0.16);
+  --login-glow-2: rgba(230, 46, 107, 0.07);
+}
+
+:root[data-theme="dark"] .loginPanel {
+  --login-glow: rgba(255, 61, 127, 0.42);
+  --login-glow-2: rgba(255, 61, 127, 0.14);
+}
+
+@media (min-width: 960px) {
+  .pantallaLogin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    padding: 0;
   }
 
-  .loginTitulo {
-    font-size: 38px;
+  .loginContenido {
+    justify-self: center;
+    align-self: center;
+    padding: 48px 32px;
+  }
+
+  .loginPanel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 24px);
+    margin: 12px 12px 12px 0;
+    padding: 48px;
+    overflow: hidden;
+    border-radius: 28px;
+    box-shadow: inset 0 0 0 1px var(--fm-border);
+    background:
+      radial-gradient(60% 50% at 85% 10%, var(--login-glow), transparent 70%),
+      radial-gradient(50% 45% at 10% 95%, var(--login-glow-2), transparent 70%),
+      var(--fm-surface);
+    color: var(--fm-ink);
+  }
+
+  /* grano sutil para que la superficie no se vea plana */
+  .loginPanel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .loginPanelMarca {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* el texto queda un poco arriba del centro, no pegado al pie */
+  .loginPanelTexto {
+    margin-block: auto;
+    padding-bottom: 8vh;
+  }
+
+  .loginPanelEtiqueta {
+    margin: 0 0 18px;
+    font-family: var(--fm-font-data);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fm-muted);
+  }
+
+  .loginPanelFrase {
+    margin: 0;
+    font-family: var(--fm-font-display);
+    font-size: clamp(48px, 5.4vw, 80px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    color: var(--fm-ink);
+  }
+
+  .loginPanelLista {
+    display: grid;
+    gap: 10px;
+    max-width: 36ch;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--fm-muted);
+    font-size: var(--fm-fs-body);
+    line-height: 1.4;
+  }
+
+  .loginPanelLista li {
+    display: flex;
+    gap: 10px;
+  }
+
+  .loginPanelLista li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-top: 8px;
+    border-radius: 50%;
+    background: var(--fm-accent);
   }
 }

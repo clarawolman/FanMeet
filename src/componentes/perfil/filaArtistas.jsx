@@ -1,5 +1,6 @@
 import CarruselFila from "../home/CarruselFila";
 import "./filaArtistas.css";
+import { IconoCerrar } from "../generales/iconosNav";
 
 // Fila horizontal de artistas en círculo, como la sección "Fans también
 // escuchan" del perfil de un artista en Spotify. Con `cuadrado` sirve
@@ -48,7 +49,7 @@ export default function FilaArtistas({
                 onClick={() => onQuitar(artista)}
                 aria-label={`Quitar a ${artista.nombre} de favoritos`}
               >
-                ✕
+                <IconoCerrar />
               </button>
             )}
           </div>

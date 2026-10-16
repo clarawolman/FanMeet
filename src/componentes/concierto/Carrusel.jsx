@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import SubEventos from "./SubEventos";
 import "./Carrusel.css";
+import { IconoAnterior, IconoSiguiente } from "../generales/iconosNav";
 
 function Carrusel({ subEventos, onAbrirGrupo }) {
   const ref = useRef(null);
@@ -53,7 +54,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
 
       {!hideArrowsIfFew && showLeft && (
         <button className="CarruselBtn left" onClick={() => scroll("left")}>
-          ‹
+          <IconoAnterior />
         </button>
       )}
 
@@ -69,7 +70,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
 
       {!hideArrowsIfFew && showRight && (
         <button className="CarruselBtn right" onClick={() => scroll("right")}>
-          ›
+          <IconoSiguiente />
         </button>
       )}
 

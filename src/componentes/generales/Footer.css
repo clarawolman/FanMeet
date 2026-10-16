@@ -4,92 +4,104 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: var(--fm-z-nav);
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: stretch;
-  height: 68px;
-  background-color: var(--fm-bg);
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 0 6px env(safe-area-inset-bottom, 0px);
+  background-color: color-mix(in srgb, var(--fm-surface) 88%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
   border-top: 1px solid var(--fm-border);
-  padding: 0 4px;
-  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.footerMarca {
+  display: none;
 }
 
 .footerButton {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   flex: 1;
   height: 100%;
-  background: none;
+  padding: 6px 0;
   border: none;
+  background: none;
   color: var(--fm-nav-ink);
   cursor: pointer;
-  padding: 6px 0;
-  transition: color 0.15s ease;
+  transition: color var(--fm-dur) var(--fm-ease);
 }
 
 .footerButton:hover {
-  color: var(--fm-nav-activo);
+  color: var(--fm-ink);
 }
 
 .footerButton.activo {
   color: var(--fm-nav-activo);
 }
 
-.footerButtonChip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 30px;
-  border-radius: var(--fm-radius-pill);
-  transition: background-color 0.15s ease;
+/* rayita rosa arriba del ítem activo */
+.footerButton.activo::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 22px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--fm-accent);
+  transform: translateX(-50%);
 }
 
 .footerButtonChip {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
 }
 
 /* mensajes de chat sin leer */
 .footerButtonBadge {
   position: absolute;
-  top: -4px;
-  right: 2px;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 4px;
+  top: -5px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--fm-surface);
   border-radius: var(--fm-radius-pill);
   background: var(--fm-accent);
-  color: #fff;
-  font-size: 11px;
+  color: var(--fm-accent-ink);
+  font-family: var(--fm-font-data);
+  font-size: 10px;
   font-weight: 600;
-  line-height: 17px;
+  line-height: 14px;
   text-align: center;
   box-sizing: border-box;
 }
 
-.footerButton.activo .footerButtonChip {
-  background-color: var(--fm-nav-activo-bg);
-}
-
 .footerButtonIcono {
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
 }
 
 .footerButton.activo .footerButtonIcono {
-  stroke-width: 2.1;
+  stroke-width: 2.2;
 }
 
-/* nombre debajo del ícono, para que se entienda de un vistazo */
 .footerButtonTexto {
   font-family: var(--fm-font-body);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -112,15 +124,24 @@
     right: auto;
     bottom: 0;
     left: 0;
-    width: 240px;
+    width: var(--fm-sidebar);
     height: 100dvh;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: 0;
-    padding: 40px 12px;
+    gap: 2px;
+    padding: 22px 14px 24px;
+    background: var(--fm-bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     border-top: none;
     border-right: 1px solid var(--fm-border);
+  }
+
+  .footerMarca {
+    display: inline-flex;
+    margin: 0 0 30px 10px;
+    font-size: 20px;
   }
 
   .footerButton {
@@ -128,37 +149,54 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    gap: 16px;
-    height: auto;
+    gap: 12px;
     width: 100%;
-    padding: 6px 12px;
-    border-radius: 14px;
+    height: 42px;
+    padding: 0 10px;
+    border-radius: var(--fm-radius-sm);
   }
 
   .footerButton:hover {
     background-color: var(--fm-nav-hover-bg);
   }
 
+  .footerButton.activo {
+    background-color: var(--fm-surface);
+    box-shadow: var(--fm-shadow-sm);
+  }
+
+  .footerButton.activo::before {
+    top: 50%;
+    left: -14px;
+    width: 3px;
+    height: 18px;
+    border-radius: 0 3px 3px 0;
+    transform: translateY(-50%);
+  }
+
+  /* Configuración va abajo de todo, separada del resto */
+  .footerButton:last-of-type {
+    margin-top: auto;
+  }
+
   .footerButtonChip {
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
   }
 
   .footerButtonIcono {
-    width: 26px;
-    height: 26px;
+    width: 21px;
+    height: 21px;
+  }
+
+  .footerButtonBadge {
+    top: -6px;
+    right: -9px;
+    border-color: var(--fm-bg);
   }
 
   .footerButtonTexto {
-    position: static;
-    width: auto;
-    height: auto;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-    clip: auto;
-    white-space: nowrap;
-    font-size: 16px;
+    font-size: var(--fm-fs-sm);
     font-weight: 500;
   }
 

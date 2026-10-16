@@ -2,7 +2,7 @@ import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } fro
 import "./Chats.css";
 import Footer from "../generales/Footer";
 import "../generales/HeaderApp.css";
-import { IconoNavMenu } from "../generales/iconosNav";
+import { IconoCerrar, IconoNavMenu } from "../generales/iconosNav";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { chatsService } from "../../services/chatsService";
 import { mensajesService } from "../../services/mensajesService";
@@ -203,7 +203,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
   const [imagenAmpliada, setImagenAmpliada] = useState(null);
-  // Mientras la IA arma la respuesta se muestra "escribiendo..."
+  // Mientras la IA arma la respuesta se muestra "escribiendo…"
   const [botEscribiendo, setBotEscribiendo] = useState(false);
 
   // Los handlers de Realtime se registran una sola vez: leen el chat
@@ -666,7 +666,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
     const { ultimoMensaje } = chat;
     if (!ultimoMensaje) {
       if (chat.tipo === "bot") return "Preguntame lo que necesites sobre FanMeet";
-      return chat.tipo === "grupo" ? "Grupo creado. ¡Saludá al grupo!" : "Empezá a chatear";
+      return chat.tipo === "grupo" ? "Grupo creado. Saludá a los demás." : "Empezá a chatear";
     }
 
     const esPropio = autorDe(ultimoMensaje) === idYo;
@@ -780,7 +780,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                     <span className="chatsConversacionNombre">{chatAbierto.nombre}</span>
                     {esBotAbierto && (
                       <span className="chatsConversacionSubtitulo">
-                        {botEscribiendo ? "escribiendo..." : "Asistente de FanMeet"}
+                        {botEscribiendo ? "escribiendo…" : "Asistente de FanMeet"}
                       </span>
                     )}
                     {esGrupoAbierto && (
@@ -802,10 +802,10 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                 {!cargandoMensajes && mensajes.length === 0 && (
                   <p className="chatsMensajesEstado">
                     {esBotAbierto
-                      ? "¡Hola! Soy Fani 👋 Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app."
+                      ? "Hola, soy Fani. Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app."
                       : esGrupoAbierto
-                        ? `Este es el chat del grupo ${chatAbierto.nombre}. ¡Mandá el primer mensaje!`
-                        : `Todavía no hay mensajes. ¡Mandale el primero a ${chatAbierto.nombre}!`}
+                        ? `Este es el chat del grupo ${chatAbierto.nombre}. Mandá el primer mensaje.`
+                        : `Todavía no hay mensajes. Escribile a ${chatAbierto.nombre}.`}
                   </p>
                 )}
 
@@ -829,7 +829,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                   <img src={imagenAdjunta.preview} alt="Foto a enviar" />
                   <span>Agregá un mensaje si querés y tocá enviar</span>
                   <button type="button" onClick={quitarImagenAdjunta} aria-label="Quitar foto">
-                    ✕
+                    <IconoCerrar />
                   </button>
                 </div>
               )}
@@ -882,7 +882,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
       {imagenAmpliada && (
         <div className="chatsVisor" onClick={() => setImagenAmpliada(null)}>
           <button type="button" className="chatsVisorCerrar" aria-label="Cerrar">
-            ✕
+            <IconoCerrar />
           </button>
           <img src={imagenAmpliada} alt="Foto" onClick={(e) => e.stopPropagation()} />
         </div>

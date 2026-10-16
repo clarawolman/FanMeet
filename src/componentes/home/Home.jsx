@@ -6,14 +6,26 @@ import { usuariosService } from "../../services/usuariosService";
 import { notificacionesService } from "../../services/notificacionesService";
 import { matchingService } from "../../services/matchingService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
+import { partesFecha } from "../../utils/fechas";
 import Footer from "../generales/Footer";
 import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
-import LoadingSpinner from "../generales/LoadingSpinner";
+import { IconoBuscar } from "../generales/iconosNav";
 import CarruselFila from "./CarruselFila";
 import FansCompatiblesHome from "./FansCompatiblesHome";
 import BotonChatbot from "../chatbot/BotonChatbot";
 import { UsuarioContext } from "../../context/UsuarioContext";
+
+function EsqueletoFila() {
+  return (
+    <div className="home-esqueleto" aria-hidden="true">
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+      <div className="fmSkeleton" />
+    </div>
+  );
+}
 
 function capitalizar(texto) {
   return texto ? texto[0].toUpperCase() + texto.slice(1) : texto;
@@ -229,21 +241,12 @@ const generosOrdenados = [...generos].sort((a, b) => {
     await onEntrarConcierto(idConcierto);
   }
 
-  function formatearFecha(fecha) {
-    if (!fecha) return "Fecha a confirmar";
-
-    const fechaTexto = String(fecha);
-    const soloFecha = fechaTexto.split("T")[0];
-    const partes = soloFecha.split("-");
-
-    if (partes.length !== 3) return fechaTexto;
-
-    const [anio, mes, dia] = partes;
-    return `${dia}/${mes}/${anio.slice(2)}`;
-  }
-
   function renderCard(concierto, motivo) {
     const yaUnido = usuarioYaEstaUnido(concierto.id_concierto);
+    const fecha = partesFecha(concierto.fecha);
+    const titulo = concierto.nombre || concierto.artista?.nombre;
+    const cantidadFans = concierto.cantidadFans ?? 0;
+    const cantidadGrupos = concierto.cantidadGrupos ?? 0;
 
     return (
       <article
@@ -259,56 +262,61 @@ const generosOrdenados = [...generos].sort((a, b) => {
               concierto.foto ||
               ""
             }
-            alt={concierto.nombre || concierto.artista?.nombre}
+            alt={titulo}
             draggable={false}
           />
 
-          {yaUnido && (
-            <span className="home-card-badge-unido">✓ Unido</span>
+          {fecha && (
+            <time className="home-card-fecha" dateTime={String(concierto.fecha).slice(0, 10)}>
+              <span>{fecha.mes}</span>
+              <strong>{fecha.dia}</strong>
+            </time>
           )}
 
-          <button
-            className={
-              yaUnido
-                ? "home-card-btn-unirme home-card-btn-unirme--ver"
-                : "home-card-btn-unirme"
-            }
-            onClick={(e) => {
-              e.stopPropagation();
-              abrirConcierto(concierto);
-            }}
-          >
-            {yaUnido ? "Ver concierto" : "Unirme"}
-          </button>
+          {yaUnido && (
+            <span className="home-card-badge-unido">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Te uniste
+            </span>
+          )}
         </div>
 
         <div className="home-card-info">
-          <h3>{concierto.nombre || concierto.artista?.nombre}</h3>
-
           {concierto.nombre && concierto.artista?.nombre && (
             <p className="home-card-artista">{concierto.artista.nombre}</p>
           )}
 
-          {motivo && <p className="home-card-motivo">♪ {motivo}</p>}
+          <h3>{titulo}</h3>
 
-          <div className="home-card-meta">
-            <span>
-              {concierto.estadio?.nombre ||
-                concierto.estadio?.ciudad ||
-                "Estadio"}
-            </span>
-            <span>{formatearFecha(concierto.fecha)}</span>
-          </div>
+          <p className="home-card-meta">
+            {concierto.estadio?.nombre || concierto.estadio?.ciudad || "Estadio a confirmar"}
+            {fecha && <> · {fecha.anio}</>}
+          </p>
 
-          <div className="home-card-stats">
-            <span>
-              {concierto.cantidadGrupos ?? 0}{" "}
-              {concierto.cantidadGrupos === 1 ? "grupo" : "grupos"}
+          {motivo && <p className="home-card-motivo">{motivo}</p>}
+
+          <div className="home-card-pie">
+            <span className="home-card-stats fmDato">
+              {cantidadFans} {cantidadFans === 1 ? "fan" : "fans"} · {cantidadGrupos}{" "}
+              {cantidadGrupos === 1 ? "grupo" : "grupos"}
             </span>
-            <span>
-              {concierto.cantidadFans ?? 0}{" "}
-              {concierto.cantidadFans === 1 ? "fan unido" : "fans unidos"}
-            </span>
+
+            <button
+              type="button"
+              className={
+                yaUnido
+                  ? "home-card-btn-unirme home-card-btn-unirme--ver"
+                  : "home-card-btn-unirme"
+              }
+              onClick={(e) => {
+                e.stopPropagation();
+                abrirConcierto(concierto);
+              }}
+            >
+              {yaUnido ? "Ver" : "Unirme"}
+            </button>
           </div>
         </div>
       </article>
@@ -350,20 +358,26 @@ const generosOrdenados = [...generos].sort((a, b) => {
       />
 
       <main className="home-main">
-        <div className="home-search">
-          <div className="home-search-campo">
-            <span className="home-search-icono" aria-hidden="true">⌕</span>
+        <div className="home-intro">
+          {usuarioActual?.nombre && (
+            <p className="home-saludo">Hola, {usuarioActual.nombre}</p>
+          )}
+          <h1>¿A qué recital vas?</h1>
+
+          <label className="home-search-campo">
+            <IconoBuscar className="home-search-icono" />
 
             <input
-              type="text"
-              placeholder="Buscá tu concierto o artista"
+              type="search"
+              aria-label="Buscar conciertos"
+              placeholder="Artista, show, estadio o ciudad"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
             />
-          </div>
+          </label>
         </div>
 
-        {cargando && <LoadingSpinner texto="Cargando conciertos..." />}
+        {cargando && <EsqueletoFila />}
 
         {!cargando && conciertos.length === 0 && (
           <p className="home-estado">No hay conciertos disponibles.</p>
@@ -388,15 +402,13 @@ const generosOrdenados = [...generos].sort((a, b) => {
 
         {!cargando && !hayBusqueda && conciertos.length > 0 && (
           <section className="home-catalogo">
-            <section className="home-row">
+            <section className="home-row home-row--destacada">
               <div className="home-row-header">
-                <h2>Conciertos recomendados</h2>
-                <span>Según tus gustos</span>
+                <h2>Para vos</h2>
+                <span>Según tus artistas y géneros</span>
               </div>
 
-              {cargandoRecomendados && conciertosRecomendados.length === 0 && (
-                <p className="home-estado">Buscando conciertos para vos...</p>
-              )}
+              {cargandoRecomendados && conciertosRecomendados.length === 0 && <EsqueletoFila />}
 
               {!cargandoRecomendados && conciertosRecomendados.length === 0 && (
                 <div className="home-recomendados-vacio">
@@ -404,7 +416,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
                     Sumá tus artistas favoritos y géneros (o vinculá Last.fm) para
                     recibir conciertos recomendados.
                   </p>
-                  <button type="button" onClick={() => onNavegar("perfil")}>
+                  <button className="fmBotonPrimario" type="button" onClick={() => onNavegar("perfil")}>
                     Completar mi perfil
                   </button>
                 </div>
@@ -431,7 +443,6 @@ const generosOrdenados = [...generos].sort((a, b) => {
             <section className="home-row">
               <div className="home-row-header">
                 <h2>Destacados</h2>
-                <span>Todos</span>
               </div>
 
               <CarruselFila>
@@ -450,7 +461,10 @@ const generosOrdenados = [...generos].sort((a, b) => {
                 <section className="home-row" key={genero.id}>
                   <div className="home-row-header">
                     <h2>{genero.nombre}</h2>
-                    <span>{conciertosDelGenero.length}</span>
+                    <span>
+                      {conciertosDelGenero.length}{" "}
+                      {conciertosDelGenero.length === 1 ? "concierto" : "conciertos"}
+                    </span>
                   </div>
 
                   <CarruselFila>

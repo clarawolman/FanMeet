@@ -1,5 +1,5 @@
 .proximosConciertosPerfil {
-  padding: 0 16px;
+  padding: 0 var(--perfil-gutter, 16px);
 }
 
 .proximosConciertosPerfilHeader {
@@ -22,16 +22,19 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: var(--fm-accent);
-  font-family: var(--fm-font-display);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: var(--fm-border-strong);
+  text-underline-offset: 4px;
 }
 
 .proximosConciertosPerfilVerTodos:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--fm-accent);
 }
 
 .proximosConciertosPerfilVacio {
@@ -39,9 +42,9 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  border: 1.5px dashed var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
-  background: var(--fm-bg-soft);
+  background: var(--fm-surface);
   padding: 18px;
 }
 
@@ -53,10 +56,10 @@
 }
 
 .proximosConciertosPerfilDescubrir {
-  border: 1.5px solid var(--fm-accent);
+  border: 1px solid var(--fm-border-strong);
   border-radius: var(--fm-radius-pill);
   background: var(--fm-surface);
-  color: var(--fm-accent);
+  color: var(--fm-ink);
   padding: 9px 18px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
@@ -80,7 +83,7 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  border: 1.5px solid var(--fm-border);
+  border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
   background: var(--fm-surface);
   padding: 10px 14px;
@@ -91,8 +94,7 @@
 }
 
 .proximoConciertoItem:hover {
-  border-color: var(--fm-accent);
-  transform: translateY(-1px);
+  border-color: var(--fm-border-strong);
 }
 
 .proximoConciertoImagen {
@@ -134,13 +136,13 @@
 
 .proximoConciertoFlecha {
   color: var(--fm-muted);
-  font-size: 20px;
+  font-size: var(--fm-fs-lg);
   line-height: 1;
   flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
   .proximosConciertosPerfil {
-    padding: 0 40px;
+    padding: 0 var(--perfil-gutter, 40px);
   }
 }

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { lastfmService } from "../../services/lastfmService";
+import { useEffect, useRef, useState } from "react";
+import { lastfmService, MENSAJE_LASTFM } from "../../services/lastfmService";
 import FilaArtistas from "./filaArtistas";
 import IconoLastfm from "./iconoLastfm";
 import SugerenciasLastfm from "./sugerenciasLastfm";
 import "./escuchasPerfil.css";
+import { mostrarAviso } from "../../utils/avisos";
 
 const CANCIONES_VISIBLES = 5;
 
@@ -49,25 +50,99 @@ function FilaCancion({ cancion, posicion, detalle, destacado = false }) {
   );
 }
 
+// Donde public/lastfm-callback.html deja la respuesta de Last.fm.
+const CLAVE_RESPUESTA = "fm-lastfm-respuesta";
+
+function borrarRespuestaGuardada() {
+  try {
+    localStorage.removeItem(CLAVE_RESPUESTA);
+  } catch {
+    // sin localStorage igual llega por postMessage
+  }
+}
+
+// Vincular = iniciar sesión en Last.fm (en un popup) y aprobar FanMeet.
+// Así se confirma que la cuenta es de quien la vincula, sin importar si el
+// mail de Last.fm es otro. El token vuelve por postMessage o, si Last.fm
+// cortó el vínculo entre ventanas, por el evento "storage".
 function VincularLastfm({ onVinculado }) {
-  const [usuario, setUsuario] = useState("");
-  const [guardando, setGuardando] = useState(false);
+  // "inicial" | "esperando" (popup abierto) | "guardando"
+  const [estado, setEstado] = useState("inicial");
   const [error, setError] = useState("");
+  const procesado = useRef(false);
+  const onVinculadoRef = useRef(onVinculado);
 
-  async function manejarEnviar(e) {
-    e.preventDefault();
-    const limpio = usuario.trim();
-    if (!limpio) return;
+  useEffect(() => {
+    onVinculadoRef.current = onVinculado;
+  }, [onVinculado]);
 
-    setGuardando(true);
-    setError("");
-    try {
-      await lastfmService.vincular(limpio);
-      onVinculado();
-    } catch (err) {
-      setError(err.details?.[0]?.mensaje || err.message);
+  useEffect(() => {
+    if (estado !== "esperando") return undefined;
+
+    async function recibir(datos) {
+      if (datos?.tipo !== MENSAJE_LASTFM || procesado.current) return;
+      procesado.current = true;
+      borrarRespuestaGuardada();
+
+      if (!datos.token) {
+        setEstado("inicial");
+        setError(
+          datos.error === "no-disponible"
+            ? "Last.fm no está disponible por ahora. Probá más tarde."
+            : "No se conectó Last.fm. Podés volver a intentarlo cuando quieras."
+        );
+        return;
+      }
+
+      setEstado("guardando");
+      try {
+        await lastfmService.vincular(datos.token);
+        onVinculadoRef.current();
+      } catch (err) {
+        setError(err.details?.[0]?.mensaje || err.message);
+        setEstado("inicial");
+      }
     }
-    setGuardando(false);
+
+    function alRecibirMensaje(e) {
+      if (e.origin === window.location.origin) recibir(e.data);
+    }
+
+    function alCambiarStorage(e) {
+      if (e.key !== CLAVE_RESPUESTA || !e.newValue) return;
+      try {
+        recibir(JSON.parse(e.newValue));
+      } catch {
+        // valor corrupto: se ignora
+      }
+    }
+
+    window.addEventListener("message", alRecibirMensaje);
+    window.addEventListener("storage", alCambiarStorage);
+    return () => {
+      window.removeEventListener("message", alRecibirMensaje);
+      window.removeEventListener("storage", alCambiarStorage);
+    };
+  }, [estado]);
+
+  function conectar() {
+    setError("");
+    borrarRespuestaGuardada();
+
+    const popup = window.open(
+      lastfmService.urlAutorizacion(),
+      "fanmeet-lastfm",
+      "popup,width=520,height=720"
+    );
+    if (!popup) {
+      setError(
+        "Tu navegador bloqueó la ventana de Last.fm. Permití las ventanas emergentes para FanMeet y probá de nuevo."
+      );
+      return;
+    }
+
+    procesado.current = false;
+    setEstado("esperando");
   }
 
   return (
@@ -75,30 +150,38 @@ function VincularLastfm({ onVinculado }) {
       <IconoLastfm size={34} />
 
       <p>
-        Mostrá los artistas, canciones y álbumes más escuchados. Escribí el usuario de Last.fm
-        y listo.
+        Mostrá los artistas, canciones y álbumes más escuchados. Conectá tu cuenta de Last.fm:
+        iniciás sesión ahí y aprobás FanMeet, así confirmamos que es tuya. No hace falta que
+        tenga el mismo mail que FanMeet.
       </p>
 
-      <form className="escuchasForm" onSubmit={manejarEnviar}>
-        <input
-          className="escuchasInput"
-          type="text"
-          placeholder="Usuario de Last.fm"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
-          autoComplete="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          maxLength={15}
-        />
-        <button
-          className="escuchasBotonConectar"
-          type="submit"
-          disabled={guardando || !usuario.trim()}
-        >
-          {guardando ? "Buscando…" : "Vincular"}
+      {estado === "inicial" && (
+        <button className="escuchasBotonConectar" type="button" onClick={conectar}>
+          Conectar con Last.fm
         </button>
-      </form>
+      )}
+
+      {estado === "esperando" && (
+        <div className="escuchasEsperando" role="status">
+          <span>Iniciá sesión en la ventana de Last.fm y tocá “Yes, allow access”.</span>
+          <button
+            className="escuchasAccion"
+            type="button"
+            onClick={() => {
+              procesado.current = true;
+              setEstado("inicial");
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+
+      {estado === "guardando" && (
+        <p className="escuchasEsperando" role="status">
+          Confirmando tu cuenta…
+        </p>
+      )}
 
       {error && <small className="escuchasAviso">{error}</small>}
 
@@ -170,7 +253,7 @@ export default function EscuchasPerfil({ idUsuario, isOwnProfile, onPerfilMusica
       setMostrarSugerencias(false);
       onPerfilMusicalActualizado?.();
     } catch (err) {
-      alert("No se pudo desvincular Last.fm: " + err.message);
+      mostrarAviso("No se pudo desvincular Last.fm: " + err.message);
     }
   }
 

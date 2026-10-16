@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { usuariosService } from "../../services/usuariosService";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import "./SelectorGeneros.css";
+import { IconoBuscar, IconoCerrar } from "./iconosNav";
 
 const ESPERA_MS = 300;
 
@@ -11,9 +12,11 @@ function mismaClave(a, b) {
 
 // Buscador de géneros sobre todo lo que existe (MusicBrainz + Last.fm),
 // como el buscador de artistas de Spotify. Sin texto muestra los géneros
-// que ya eligió gente de FanMeet. Lo usan el registro y "Editar géneros".
-// `seleccionados` es una lista de { id, nombre }.
-export default function SelectorGeneros({ seleccionados, onCambiar }) {
+// que ya eligió gente de FanMeet (el backend los manda de más a menos
+// elegidos). Lo usan el registro y "Editar géneros".
+// `seleccionados` es una lista de { id, nombre }. Con `maxPopulares` solo se
+// sugieren esos primeros; el resto hay que buscarlos.
+export default function SelectorGeneros({ seleccionados, onCambiar, maxPopulares }) {
   const [populares, setPopulares] = useState([]);
   const [texto, setTexto] = useState("");
   const [resultados, setResultados] = useState([]);
@@ -92,7 +95,8 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
   }
 
   // Con el input vacío no mostramos lo que quedó de la búsqueda anterior.
-  const visibles = consulta ? resultados : populares.filter((g) => !estaElegido(g));
+  const sugeridos = maxPopulares ? populares.slice(0, maxPopulares) : populares;
+  const visibles = consulta ? resultados : sugeridos.filter((g) => !estaElegido(g));
   const errorVisible = consulta ? error : "";
 
   return (
@@ -108,7 +112,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
               aria-label={`Quitar ${genero.nombre}`}
             >
               {genero.nombre}
-              <span aria-hidden="true">✕</span>
+              <span aria-hidden="true"><IconoCerrar width="14" height="14" /></span>
             </button>
           ))}
         </div>
@@ -116,7 +120,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
 
       <div className="selectorGenerosBuscador">
         <span className="selectorGenerosBuscadorIcono" aria-hidden="true">
-          ⌕
+          <IconoBuscar />
         </span>
         <input
           type="search"
@@ -131,7 +135,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar }) {
       </div>
 
       {!consulta && visibles.length > 0 && (
-        <p className="selectorGenerosTitulo">Elegidos por otros fans</p>
+        <p className="selectorGenerosTitulo">{maxPopulares ? "Los más elegidos por otros fans" : "Elegidos por otros fans"}</p>
       )}
 
       {errorVisible && <p className="selectorGenerosMensaje">{errorVisible}</p>}

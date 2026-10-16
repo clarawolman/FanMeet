@@ -4,7 +4,7 @@
   display: flex;
   gap: 14px;
   overflow-x: auto;
-  padding: 0 16px 6px;
+  padding: 0 var(--perfil-gutter, 16px) 6px;
   scrollbar-width: none;
   scroll-snap-type: x proximity;
 }
@@ -95,7 +95,7 @@
   border: 1px solid var(--fm-border);
   background: var(--fm-surface);
   color: var(--fm-ink);
-  font-size: 12px;
+  font-size: var(--fm-fs-2xs);
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -105,8 +105,8 @@
 }
 
 .artistaCirculoQuitar:hover {
-  border-color: var(--fm-accent);
-  color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
+  color: var(--fm-ink);
 }
 
 /* Primer círculo "+" para sumar artistas (mismo lenguaje que el
@@ -125,12 +125,12 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 1.5px dashed var(--fm-ink);
-  background: var(--fm-bg-soft);
-  color: var(--fm-accent);
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
   font-family: var(--fm-font-display);
-  font-size: 30px;
-  font-weight: 600;
+  font-size: var(--fm-fs-2xl);
+  font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,13 +139,13 @@
 }
 
 .artistaAgregar:hover .artistaAgregarCirculo {
-  border-color: var(--fm-accent);
+  border-color: var(--fm-border-strong);
 }
 
 @media (min-width: 768px) {
   .filaArtistas .home-row-scroll {
     gap: 18px;
-    padding: 0 40px 8px;
+    padding: 0 var(--perfil-gutter, 40px) 8px;
   }
 
   .artistaCirculo,
@@ -153,4 +153,9 @@
     flex-basis: 128px;
     width: 128px;
   }
+}
+
+.artistaCirculoQuitar svg {
+  width: 12px;
+  height: 12px;
 }

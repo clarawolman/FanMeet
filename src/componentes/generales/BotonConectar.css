@@ -1,19 +1,16 @@
 .botonConectar {
-  padding: 9px 12px;
-  border: 1.5px solid var(--fm-accent);
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--fm-cta);
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-accent);
-  color: var(--fm-accent-ink);
-  font-family: var(--fm-font-display);
+  background: var(--fm-cta);
+  color: var(--fm-cta-ink);
+  font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: filter var(--fm-dur) var(--fm-ease), background var(--fm-dur) var(--fm-ease);
-}
-
-.botonConectar:hover:not(:disabled) {
-  filter: brightness(1.08);
+  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
 }
 
 /* ya no hay nada que hacer: se ve como etiqueta, no como acción */
@@ -23,13 +20,18 @@
 
 .botonConectar--solicitudEnviada,
 .botonConectar--amigos {
-  background: var(--fm-surface);
-  border-color: var(--fm-border);
+  background: transparent;
+  border-color: var(--fm-border-strong);
   color: var(--fm-muted);
 }
 
 .botonConectar--amigos {
-  color: var(--fm-accent);
-  border-color: var(--fm-accent-soft-border);
-  background: var(--fm-accent-soft-bg);
+  color: var(--fm-success);
+  border-color: transparent;
+  background: var(--fm-success-bg);
+}
+
+.botonConectar:not(.botonConectar--solicitudEnviada):not(.botonConectar--amigos):hover:not(:disabled) {
+  background: var(--fm-cta-hover);
+  border-color: var(--fm-cta-hover);
 }

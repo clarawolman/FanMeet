@@ -1,27 +1,29 @@
 import "./LoadingSpinner.css";
 
-function LoadingSpinner({ texto, tamano = 40, pantallaCompleta = false }) {
-  const spinner = (
-    <span
-      className="fmSpinner loadingSpinner"
-      style={{ width: tamano, height: tamano }}
-      aria-hidden="true"
-    />
-  );
-
+// En línea: esqueleto de lista (filas con imagen y dos líneas de texto),
+// que se parece a lo que va a aparecer. Pantalla completa: spinner discreto.
+function LoadingSpinner({ texto = "Cargando…", tamano = 32, pantallaCompleta = false, filas = 3 }) {
   if (!pantallaCompleta) {
     return (
-      <div className="loadingSpinnerInline">
-        {spinner}
-        {texto && <p>{texto}</p>}
+      <div className="loadingEsqueleto" role="status">
+        <span className="fmSoloLectores">{texto}</span>
+        {Array.from({ length: filas }, (_, i) => (
+          <div className="loadingEsqueletoFila" key={i} aria-hidden="true">
+            <div className="fmSkeleton loadingEsqueletoImagen" />
+            <div className="loadingEsqueletoTextos">
+              <div className="fmSkeleton loadingEsqueletoLinea" />
+              <div className="fmSkeleton loadingEsqueletoLinea loadingEsqueletoLinea--corta" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="loadingSpinnerPantalla">
-      {spinner}
-      {texto && <p>{texto}</p>}
+    <div className="loadingSpinnerPantalla" role="status">
+      <span className="fmSpinner" style={{ width: tamano, height: tamano }} aria-hidden="true" />
+      <p>{texto}</p>
     </div>
   );
 }
