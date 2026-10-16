@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./loginForm.css";
 import { authService } from "../../../services/authService";
 
-function LoginForm({ onIngresar, onRegistrarse }) {
+function LoginForm({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
   const [usuarioOMail, setUsuarioOMail] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -33,12 +33,17 @@ function LoginForm({ onIngresar, onRegistrarse }) {
       onIngresar(usuarioPerfil);
     } catch (error) {
       console.error(error);
+      setCargandoLogin(false);
+      // Cuenta creada pero sin confirmar: se lo lleva a ingresar el código.
+      if (error.details?.codigo === "mail_no_confirmado") {
+        onMailSinConfirmar(error.details.mail);
+        return;
+      }
       // Si el backend respondió con un error conocido (401), su mensaje ya
       // es el mismo texto que mostraba esta pantalla antes. Si fue un
       // fallo de red/servidor sin status, usamos el mensaje genérico de
       // siempre.
-      setErrorLogin(error.status ? error.message : "No pudimos conectarnos. Probá de nuevo en un momento.");
-      setCargandoLogin(false);
+      setErrorLogin(error.status ? error.message : "Error al iniciar sesión");
     }
   }
 

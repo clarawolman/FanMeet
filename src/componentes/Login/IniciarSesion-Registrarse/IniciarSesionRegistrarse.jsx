@@ -3,18 +3,17 @@ import "./IniciarSesionRegistrarse.css";
 import LoginForm from "./loginForm";
 import Marca, { IconoMarca } from "../../generales/Marca";
 
-function IniciarSesionRegistrarse({ onIngresar, onRegistrarse }) {
+function IniciarSesionRegistrarse({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
   return (
     <main className="pantallaLogin">
       <section className="loginContenido">
         <Marca className="loginMarca" as="p" />
 
-        <h1 className="loginTitulo">Encontrá con quién ir al próximo recital.</h1>
-        <p className="loginBajada">
-          Entrá para ver tus conciertos, tus grupos y a los fans que van al mismo show.
-        </p>
-
-        <LoginForm onIngresar={onIngresar} onRegistrarse={onRegistrarse} />
+        <LoginForm
+          onIngresar={onIngresar}
+          onRegistrarse={onRegistrarse}
+          onMailSinConfirmar={onMailSinConfirmar}
+        />
       </section>
 
       {/* Solo escritorio: panel de marca al costado del formulario */}

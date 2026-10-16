@@ -9,6 +9,7 @@ import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registra
 import Registro1 from "./componentes/Login/Registro1/Registro1";
 import Registro2 from "./componentes/Login/Registro2/Registro2";
 import Registro3 from "./componentes/Login/Registro3/Registro3";
+import VerificarMail from "./componentes/Login/VerificarMail/VerificarMail";
 import MisEventos from "./componentes/misEventos/MisEventos";
 import MisGrupos from "./componentes/misGrupos/MisGrupos";
 import Perfil from "./componentes/perfil/perfil";
@@ -26,6 +27,7 @@ import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
 import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
+import { supabase } from "./supabase";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -39,6 +41,10 @@ function App() {
   // El usuario logueado vive en UsuarioContext (src/context/UsuarioContext.jsx).
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const [datosRegistro, setDatosRegistro] = useState({});
+  // Pantalla "verificarMail": a qué mail se mandó el código, si hay que
+  // mandar uno nuevo al entrar (viene del login) y lo que quedó pendiente
+  // del registro (foto y artistas necesitan sesión).
+  const [verificacion, setVerificacion] = useState(null);
   const [concierto, setConcierto] = useState(null);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
   const [usuarioVisitado, setUsuarioVisitado] = useState(null);
@@ -52,6 +58,34 @@ function App() {
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
+  // Al recargar la página, supabase-js todavía tiene la sesión guardada en
+  // localStorage: mientras se recupera el usuario no se muestra el login.
+  const [restaurandoSesion, setRestaurandoSesion] = useState(true);
+
+  useEffect(() => {
+    let activo = true;
+
+    async function restaurarSesion() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) return;
+        const usuario = await usuariosService.obtenerMiPerfil();
+        if (activo) manejarIngreso(usuario);
+      } catch (error) {
+        // Sesión vencida o usuario borrado: se limpia y queda el login.
+        console.error("No se pudo restaurar la sesión:", error);
+        if (error.status === 401 || error.status === 404) await supabase.auth.signOut();
+      } finally {
+        if (activo) setRestaurandoSesion(false);
+      }
+    }
+
+    restaurarSesion();
+    return () => {
+      activo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -265,18 +299,29 @@ async function manejarFinalizarRegistro(datosPaso3) {
   delete datosSinFoto.artistas_favoritos;
 
   try {
-    const { usuario, conSesion } = await authService.registro(datosSinFoto);
-    let usuarioCreado = usuario;
+    const { usuario, requiereConfirmacion } = await authService.registro(datosSinFoto);
 
-    // Sin sesión no se puede subir la foto ni entrar a la app: hay que
-    // confirmar el mail e iniciar sesión.
-    if (!conSesion) {
+    if (requiereConfirmacion) {
+      // Sin sesión hasta confirmar el mail: la foto y los artistas se
+      // guardan cuando se verifica el código.
+      setVerificacion({ mail: usuario.mail, enviarAlEntrar: false, archivoFoto, artistasFavoritos });
       setDatosRegistro({});
       setCargando(false);
-      setErrorTexto("Te mandamos un mail para confirmar tu cuenta. Confirmala y después iniciá sesión.");
-      setPantalla("login");
+      setPantalla("verificarMail");
       return;
     }
+
+    await completarRegistro(usuario, archivoFoto, artistasFavoritos);
+  } catch (error) {
+    setErrorTexto(error.message || "Error al registrar usuario");
+    setCargando(false);
+  }
+}
+
+// Lo que necesita sesión: se corre apenas se crea la cuenta o, si hubo que
+// confirmar el mail, después de verificar el código.
+async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
+    let usuarioCreado = usuario;
 
     if (archivoFoto instanceof File) {
       try {
@@ -300,19 +345,35 @@ async function manejarFinalizarRegistro(datosPaso3) {
 
     setUsuarioActual(usuarioCreado);
     setDatosRegistro({});
+    setVerificacion(null);
     setCargando(false);
     setPantalla("home");
-  } catch (error) {
-    setErrorTexto(error.message || "Error al registrar usuario");
-    setCargando(false);
-  }
 }
+
+  async function manejarMailVerificado(usuario) {
+    await completarRegistro(usuario, verificacion?.archivoFoto, verificacion?.artistasFavoritos);
+  }
+
+  function manejarMailSinConfirmar(mail) {
+    setVerificacion({ mail, enviarAlEntrar: true });
+    setPantalla("verificarMail");
+  }
+
+  function salirDeVerificacion() {
+    setVerificacion(null);
+    setPantalla("login");
+  }
 
   const esPantallaLogin =
     pantalla === "login" ||
     pantalla === "registro1" ||
     pantalla === "registro2" ||
-    pantalla === "registro3";
+    pantalla === "registro3" ||
+    pantalla === "verificarMail";
+
+  if (restaurandoSesion) {
+    return <CargandoPantalla texto="Cargando..." />;
+  }
 
   if (!esPantallaLogin && pantalla !== "home" && cargando) {
     return <CargandoPantalla texto="Cargando concierto..." />;
@@ -367,6 +428,16 @@ async function manejarFinalizarRegistro(datosPaso3) {
         <IniciarSesionRegistrarse
           onIngresar={manejarIngreso}
           onRegistrarse={() => setPantalla("registro1")}
+          onMailSinConfirmar={manejarMailSinConfirmar}
+        />
+      )}
+
+      {pantalla === "verificarMail" && verificacion && (
+        <VerificarMail
+          mail={verificacion.mail}
+          enviarAlEntrar={verificacion.enviarAlEntrar}
+          onVerificado={manejarMailVerificado}
+          onVolver={salirDeVerificacion}
         />
       )}
 
