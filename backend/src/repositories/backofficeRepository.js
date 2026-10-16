@@ -79,7 +79,19 @@ export const backofficeRepository = {
     return unwrap(resultado, "Error cargando artistas");
   },
 
-  async obtenerOCrearArtista(nombre) {
+  // spotifyId llega si el moderador eligió el artista de la búsqueda de
+  // Spotify (necesita supabase/artista_spotify.sql); si no, se busca por nombre.
+  async obtenerOCrearArtista(nombre, spotifyId) {
+    if (spotifyId) {
+      const porId = await supabaseAdmin
+        .from("artista")
+        .select("*")
+        .eq("spotify_id", spotifyId)
+        .maybeSingle();
+      const fila = unwrap(porId, "Error buscando artista");
+      if (fila) return fila;
+    }
+
     const existente = await supabaseAdmin
       .from("artista")
       .select("*")
@@ -88,9 +100,22 @@ export const backofficeRepository = {
       .limit(1)
       .maybeSingle();
     const fila = unwrap(existente, "Error buscando artista");
-    if (fila) return fila;
+    if (fila && !spotifyId) return fila;
 
-    const resultado = await supabaseAdmin.from("artista").insert([{ nombre }]).select().single();
+    // Artista cargado antes de vincular con Spotify: se le agrega el id.
+    if (fila && !fila.spotify_id) {
+      const resultado = await supabaseAdmin
+        .from("artista")
+        .update({ spotify_id: spotifyId })
+        .eq("id_artista", fila.id_artista)
+        .select()
+        .single();
+      return unwrap(resultado, "Error vinculando artista con Spotify");
+    }
+
+    // No existe, o existe otro artista de Spotify con el mismo nombre.
+    const nuevo = spotifyId ? { nombre, spotify_id: spotifyId } : { nombre };
+    const resultado = await supabaseAdmin.from("artista").insert([nuevo]).select().single();
     return unwrap(resultado, "Error creando artista");
   },
 

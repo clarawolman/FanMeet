@@ -80,6 +80,8 @@ export const api = {
     solicitar(`/backoffice/reportes/${id}`, { method: "PATCH", body: { decision, resolucion } }),
 
   catalogo: () => solicitar("/backoffice/catalogo"),
+  buscarArtistas: (texto) =>
+    solicitar(conQuery("/spotify/buscar", { q: texto, tipo: "artista" }), { autenticado: false }),
   conciertos: () => solicitar("/backoffice/conciertos"),
   crearConcierto: (datos) => solicitar("/backoffice/conciertos", { method: "POST", body: datos }),
   editarConcierto: (id, cambios) =>

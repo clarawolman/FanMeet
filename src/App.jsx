@@ -225,7 +225,10 @@ function App() {
     setDatosRegistro((anteriores) => ({ ...anteriores, ...datos }));
   }
   async function manejarVerMasNotificacion(notificacion) {
-    if (notificacion.tipo === "concierto_unido" && notificacion.id_concierto) {
+    if (
+      (notificacion.tipo === "concierto_unido" || notificacion.tipo === "novedad_concierto") &&
+      notificacion.id_concierto
+    ) {
       await manejarEntrarConcierto(notificacion.id_concierto);
       return;
     }

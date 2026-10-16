@@ -20,6 +20,15 @@ export const artistaFavoritoRepository = {
     return unwrap(resultado, "Error cargando artistas favoritos");
   },
 
+  // Los que siguen a un artista (para avisarles de un concierto nuevo).
+  async listarPorSpotifyId(spotifyId) {
+    const resultado = await supabaseAdmin
+      .from("artista_favorito")
+      .select("id_usuario")
+      .eq("spotify_id", spotifyId);
+    return unwrap(resultado, "Error cargando seguidores del artista");
+  },
+
   async crear(idUsuario, artista) {
     const resultado = await supabaseAdmin
       .from("artista_favorito")

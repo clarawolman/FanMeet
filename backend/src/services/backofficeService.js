@@ -9,6 +9,8 @@ import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRe
 import { mensajeRepository } from "../repositories/mensajeRepository.js";
 import { mensajePrivadoRepository } from "../repositories/mensajePrivadoRepository.js";
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
+import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
+import { normalizarGenero } from "../helpers/generos.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
@@ -86,6 +88,39 @@ async function notificarFans(concierto, { titulo, descripcion }) {
     }))
   );
   return { notificados: relaciones.length, unidos: relaciones.length, minimo };
+}
+
+// Los que siguen al artista desde su perfil (artista_favorito). Si el
+// moderador lo eligió de Spotify se busca por id; si lo escribió a mano, por
+// nombre sin mayúsculas ni tildes.
+async function seguidoresDe(artista) {
+  if (artista.spotify_id) {
+    const favoritos = await artistaFavoritoRepository.listarPorSpotifyId(artista.spotify_id);
+    return [...new Set(favoritos.map((f) => f.id_usuario))];
+  }
+  const clave = normalizarGenero(artista.nombre);
+  const favoritos = await artistaFavoritoRepository.listarTodos();
+  return [
+    ...new Set(favoritos.filter((f) => normalizarGenero(f.nombre) === clave).map((f) => f.id_usuario)),
+  ];
+}
+
+// Concierto nuevo: avisa a los que siguen al artista.
+async function notificarSeguidores(concierto, artista) {
+  const nombreArtista = artista.nombre;
+  const seguidores = await seguidoresDe(artista);
+
+  await backofficeRepository.crearNotificaciones(
+    seguidores.map((idUsuario) => ({
+      id_usuario: idUsuario,
+      tipo: "novedad_concierto",
+      titulo: `¡${nombreArtista} tiene un concierto nuevo!`,
+      descripcion: `Se anunció ${concierto.nombre}. Entrá para ver los detalles y unirte.`,
+      imagen: concierto.imagenConcierto || "",
+      id_concierto: concierto.id_concierto,
+    }))
+  );
+  return seguidores.length;
 }
 
 const NOMBRES_CAMPO = {
@@ -249,19 +284,30 @@ export const backofficeService = {
     return filas.map(toConciertoResumen);
   },
 
-  // El artista se escribe por nombre: si no existe, se crea.
-  async crearConcierto({ artista, ...datos }) {
-    const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista);
-    return backofficeRepository.crearConcierto({ ...datos, id_artista: filaArtista.id_artista });
+  // El artista se elige de Spotify o se escribe por nombre: si no existe, se crea.
+  async crearConcierto({ artista, artista_spotify_id, ...datos }) {
+    const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista, artista_spotify_id);
+    const concierto = await backofficeRepository.crearConcierto({
+      ...datos,
+      id_artista: filaArtista.id_artista,
+    });
+
+    // El concierto ya quedó creado: si falla el aviso no se deshace.
+    try {
+      await notificarSeguidores(concierto, filaArtista);
+    } catch (error) {
+      console.error("No se pudo avisar a los seguidores del artista:", error);
+    }
+    return concierto;
   },
 
   // Cambiar datos de un concierto le avisa a sus fans (si son muchos).
-  async actualizarConcierto(idConcierto, { artista, ...cambios }) {
+  async actualizarConcierto(idConcierto, { artista, artista_spotify_id, ...cambios }) {
     const anterior = await conciertoRepository.obtenerPorId(idConcierto);
     if (!anterior) throw ApiError.notFound("El concierto no existe");
 
     if (artista) {
-      const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista);
+      const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista, artista_spotify_id);
       cambios.id_artista = filaArtista.id_artista;
     }
 

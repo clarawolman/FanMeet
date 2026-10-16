@@ -50,6 +50,12 @@ export const resolverReporteSchema = z.object({
 const camposConcierto = {
   nombre: z.string().trim().min(1, "Poné el nombre del show").max(150),
   artista: z.string().trim().min(1, "Poné el artista").max(150),
+  // Base62 de 22 caracteres. null = escrito a mano, sin vincular a Spotify.
+  artista_spotify_id: z
+    .string()
+    .regex(/^[A-Za-z0-9]{22}$/, "id de Spotify inválido")
+    .nullable()
+    .optional(),
   id_estadio: z.coerce.number().int().positive("Elegí un estadio"),
   id_estiloMusical: z.coerce.number().int().positive("Elegí un género"),
   fecha: fechaHora,

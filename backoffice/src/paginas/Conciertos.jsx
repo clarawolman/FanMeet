@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Cargando } from "../componentes";
 import { fechaCorta, useCarga } from "../utilidades";
 
-const VACIO = { nombre: "", artista: "", id_estadio: "", id_estiloMusical: "", fecha: "", imagenConcierto: "" };
+const VACIO = {
+  nombre: "",
+  artista: "",
+  artista_spotify_id: null,
+  id_estadio: "",
+  id_estiloMusical: "",
+  fecha: "",
+  imagenConcierto: "",
+};
 
 function aFormulario(c) {
   return {
     nombre: c.nombre || "",
     artista: c.artista?.nombre || "",
+    artista_spotify_id: c.artista?.spotify_id || null,
     id_estadio: String(c.id_estadio || ""),
     id_estiloMusical: String(c.id_estiloMusical || ""),
     // <input type="datetime-local"> quiere "2026-08-28T21:00"
@@ -23,6 +32,66 @@ function textoAviso(aviso) {
   if (aviso.notificados > 0) return `Se avisó a ${aviso.notificados} fans unidos.`;
   if (aviso.unidos === undefined) return "No hubo cambios para avisar.";
   return `No se avisó a nadie: tiene ${aviso.unidos} fans unidos y el mínimo para avisar es ${aviso.minimo}.`;
+}
+
+// Artista buscado en Spotify: con el id se avisa a los que lo siguen desde
+// su perfil. Si Spotify no lo tiene, queda el nombre escrito a mano.
+function CampoArtista({ nombre, spotifyId, onCambiar }) {
+  const [busqueda, setBusqueda] = useState({ texto: "", artistas: [] });
+  const texto = nombre.trim();
+  const buscar = !spotifyId && texto.length >= 2;
+
+  useEffect(() => {
+    if (!buscar) return undefined;
+    let activo = true;
+    const espera = setTimeout(async () => {
+      try {
+        const artistas = await api.buscarArtistas(texto);
+        if (activo) setBusqueda({ texto, artistas });
+      } catch {
+        // Sin Spotify igual se puede escribir el nombre.
+        if (activo) setBusqueda({ texto, artistas: [] });
+      }
+    }, 300);
+    return () => {
+      activo = false;
+      clearTimeout(espera);
+    };
+  }, [buscar, texto]);
+
+  const resultados = buscar && busqueda.texto === texto ? busqueda.artistas : [];
+
+  return (
+    <div>
+      <label>
+        Artista
+        <input
+          value={nombre}
+          onChange={(e) => onCambiar(e.target.value, null)}
+          required
+          maxLength={150}
+          autoComplete="off"
+        />
+        <small className="textoSuave">
+          {spotifyId
+            ? "✓ Vinculado con Spotify: se avisa a los que lo siguen."
+            : "Elegilo de la lista de Spotify para avisarles a sus seguidores."}
+        </small>
+      </label>
+      {resultados.length > 0 && (
+        <ul className="resultadosArtista">
+          {resultados.map((a) => (
+            <li key={a.spotify_id}>
+              <button type="button" className="conAvatar" onClick={() => onCambiar(a.nombre, a.spotify_id)}>
+                {a.imagen ? <img className="avatar" src={a.imagen} alt="" /> : <span className="avatar" />}
+                {a.nombre}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
@@ -44,6 +113,8 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
         // Solo se mandan los campos que cambiaron.
         const original = aFormulario(concierto);
         const cambios = Object.fromEntries(Object.entries(form).filter(([k, v]) => v !== original[k]));
+        // El id de Spotify solo tiene sentido junto al nombre del artista.
+        if ("artista_spotify_id" in cambios) cambios.artista = form.artista;
         if (Object.keys(cambios).length === 0) {
           onListo("No cambiaste nada.");
           return;
@@ -68,16 +139,11 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
           Nombre del show
           <input value={form.nombre} onChange={cambiar("nombre")} required maxLength={150} />
         </label>
-        <label>
-          Artista
-          <input value={form.artista} onChange={cambiar("artista")} list="lista-artistas" required maxLength={150} />
-          <datalist id="lista-artistas">
-            {catalogo.artistas.map((a) => (
-              <option key={a.id_artista} value={a.nombre} />
-            ))}
-          </datalist>
-          <small className="textoSuave">Si no existe, se crea.</small>
-        </label>
+        <CampoArtista
+          nombre={form.artista}
+          spotifyId={form.artista_spotify_id}
+          onCambiar={(artista, artista_spotify_id) => setForm((f) => ({ ...f, artista, artista_spotify_id }))}
+        />
         <label>
           Estadio
           <select value={form.id_estadio} onChange={cambiar("id_estadio")} required>

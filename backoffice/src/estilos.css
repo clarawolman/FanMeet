@@ -415,6 +415,38 @@ textarea:focus {
   gap: 0 16px;
 }
 
+.resultadosArtista {
+  list-style: none;
+  margin: -6px 0 14px;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+}
+
+.resultadosArtista button {
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--fm-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resultadosArtista button:hover,
+.resultadosArtista button:focus-visible {
+  background: var(--fm-bg-soft);
+}
+
+.resultadosArtista span.avatar {
+  background: var(--fm-bg-soft);
+}
+
 .vistaPrevia {
   max-width: 100%;
   width: 320px;
