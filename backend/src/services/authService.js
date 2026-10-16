@@ -4,6 +4,7 @@ import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository
 import { toUsuarioCompleto } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { FOTO_PERFIL_DEFAULT } from "../helpers/constants.js";
+import { errorCuentaSuspendida } from "../middlewares/authMiddleware.js";
 
 function formatearSesion(session) {
   if (!session) return null;
@@ -46,6 +47,9 @@ export const authService = {
     if (!usuario) {
       // Mismo caso borde que documenta App.jsx: cuenta de auth sin fila en "usuario".
       throw ApiError.unauthorized("Este usuario no existe");
+    }
+    if (usuario.estado === "suspendido") {
+      throw errorCuentaSuspendida();
     }
 
     return { usuario: toUsuarioCompleto(usuario), session: formatearSesion(data.session) };

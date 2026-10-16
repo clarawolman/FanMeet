@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "postinstall": "npm install --prefix backend",
-    "dev": "concurrently -n frontend,backend -c blue,green \"vite\" \"npm run dev --prefix backend\"",
+    "postinstall": "npm install --prefix backend && npm install --prefix backoffice",
+    "dev": "concurrently -n frontend,backend,backoffice -c blue,green,magenta \"vite\" \"npm run dev --prefix backend\" \"npm run dev --prefix backoffice\"",
     "dev:frontend": "vite",
     "dev:backend": "npm run dev --prefix backend",
+    "dev:backoffice": "npm run dev --prefix backoffice",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

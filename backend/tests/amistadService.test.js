@@ -12,7 +12,7 @@ vi.mock("../src/repositories/amistadRepository.js", () => ({
 }));
 
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
-  usuarioRepository: { listarPorIds: vi.fn() },
+  usuarioRepository: { listarActivosPorIds: vi.fn() },
 }));
 
 const { amistadRepository } = await import("../src/repositories/amistadRepository.js");
@@ -120,14 +120,14 @@ describe("amistadService.listarAmigos", () => {
       { id_solicitante: YO, id_receptor: OTRO },
       { id_solicitante: AJENO, id_receptor: YO },
     ]);
-    usuarioRepository.listarPorIds.mockResolvedValue([
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
       { id_usuario: OTRO, nombre: "Otro", mail: "otro@mail.com" },
       { id_usuario: AJENO, nombre: "Ajeno", mail: "ajeno@mail.com" },
     ]);
 
     const resultado = await amistadService.listarAmigos(YO);
 
-    expect(usuarioRepository.listarPorIds).toHaveBeenCalledWith([OTRO, AJENO]);
+    expect(usuarioRepository.listarActivosPorIds).toHaveBeenCalledWith([OTRO, AJENO]);
     expect(resultado.map((amigo) => amigo.id_usuario)).toEqual([OTRO, AJENO]);
     expect(resultado.every((amigo) => !("mail" in amigo) && !("fechanac" in amigo))).toBe(true);
   });

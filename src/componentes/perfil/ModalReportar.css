@@ -1,0 +1,79 @@
+.modalReportarCaja {
+  align-items: stretch;
+}
+
+.modalReportarForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modalReportarLabel {
+  font-family: var(--fm-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fm-ink);
+  margin-bottom: 6px;
+}
+
+.modalReportarCampo {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font: inherit;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.modalReportarTexto {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.modalReportarAyuda {
+  margin: -12px 0 22px;
+  text-align: center;
+  color: var(--fm-ink);
+  opacity: 0.75;
+}
+
+.modalReportarError {
+  margin: -6px 0 14px;
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.modalReportarCancelar {
+  margin: 12px 0 0;
+}
+
+/* Pill secundaria (gris) alineada con las de amistad/mensaje. */
+.headerPerfilReportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 10px 18px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-muted);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
+}
+
+.headerPerfilReportar:hover {
+  color: var(--fm-accent);
+  border-color: var(--fm-accent-soft-border);
+}
+
+.headerPerfilReportar:active {
+  transform: scale(0.96);
+}

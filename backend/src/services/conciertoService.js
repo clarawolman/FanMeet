@@ -16,7 +16,7 @@ import { env } from "../config/env.js";
 async function armarUsuariosResumen(idsUsuario) {
   const idsUnicos = [...new Set(idsUsuario)];
   if (idsUnicos.length === 0) return [];
-  const filas = await usuarioRepository.listarPorIds(idsUnicos);
+  const filas = await usuarioRepository.listarActivosPorIds(idsUnicos);
   return filas.map(toUsuarioResumen);
 }
 

@@ -211,6 +211,33 @@ describe("authService.registro", () => {
   });
 });
 
+describe("authService: moderación", () => {
+  it("un usuario suspendido no puede iniciar sesión", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: { user: { id: "u1" }, session: SESSION },
+      error: null,
+    });
+    usuarioRepository.obtenerPorId.mockResolvedValue({ ...USUARIO_ROW, estado: "suspendido" });
+
+    await expect(authService.login({ usuarioOMail: "ana@mail.com", contrasena: "x" })).rejects.toMatchObject({
+      status: 403,
+      details: { codigo: "CUENTA_SUSPENDIDA" },
+    });
+  });
+
+  it("avisa que falta confirmar el mail", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: {},
+      error: { code: "email_not_confirmed", message: "Email not confirmed" },
+    });
+
+    await expect(authService.login({ usuarioOMail: "ana@mail.com", contrasena: "x" })).rejects.toMatchObject({
+      status: 403,
+      details: { codigo: "mail_no_confirmado" },
+    });
+  });
+});
+
 describe("authService.registro con confirmación de mail", () => {
   it("devuelve requiereConfirmacion:true y session null cuando signUp no da sesión", async () => {
     authRepository.signUp.mockResolvedValue({

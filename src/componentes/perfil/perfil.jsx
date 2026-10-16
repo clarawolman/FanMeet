@@ -12,6 +12,7 @@ import ProximosConciertosPerfil from "./proximosConciertosPerfil";
 import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
+import ModalReportar from "./ModalReportar";
 import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
 import EscuchasPerfil from "./escuchasPerfil";
 import CompatibilidadPerfil from "./compatibilidadPerfil";
@@ -76,6 +77,7 @@ function Perfil({
 
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
+  const [mostrarReportar, setMostrarReportar] = useState(false);
   // Sube cuando cambia la música del perfil desde Last.fm (vincular o sumar
   // sugerencias): remonta el resumen y los favoritos para que se recarguen.
   const [versionMusica, setVersionMusica] = useState(0);
@@ -319,7 +321,12 @@ function Perfil({
         onEnviarMensaje={
           !isOwnProfile && onEnviarMensaje ? () => onEnviarMensaje(usuario.id_usuario) : undefined
         }
+        onReportar={!isOwnProfile ? () => setMostrarReportar(true) : undefined}
       />
+
+      {mostrarReportar && (
+        <ModalReportar usuario={usuario} onCerrar={() => setMostrarReportar(false)} />
+      )}
 
       <div className="perfilContenido">
         <ResumenLastfmPerfil

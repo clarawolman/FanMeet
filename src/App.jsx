@@ -29,6 +29,18 @@ import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
 import { supabase } from "./supabase";
 
+// Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
+// motivo acá para mostrarlo en el login después de recargar.
+function leerAvisoLogin() {
+  try {
+    const aviso = sessionStorage.getItem("fanmeet-aviso-login") || "";
+    sessionStorage.removeItem("fanmeet-aviso-login");
+    return aviso;
+  } catch {
+    return "";
+  }
+}
+
 function App() {
   const [pantalla, setPantalla] = useState("login");
 
@@ -57,7 +69,7 @@ function App() {
   const [pantallaAntesDePerfil, setPantallaAntesDePerfil] = useState("fansUnidos");
 
   const [cargando, setCargando] = useState(false);
-  const [errorTexto, setErrorTexto] = useState("");
+  const [errorTexto, setErrorTexto] = useState(leerAvisoLogin);
   // Al recargar la página, supabase-js todavía tiene la sesión guardada en
   // localStorage: mientras se recupera el usuario no se muestra el login.
   const [restaurandoSesion, setRestaurandoSesion] = useState(true);

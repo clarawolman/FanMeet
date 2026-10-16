@@ -6,7 +6,6 @@ import CardEvento from "./CardEvento";
 import CardEstadio from "./CardEstadio";
 import FansUnidos from "./FansUnidos";
 import FiltroSubEvento from "./FiltroSubEvento";
-import SubEventos from "./SubEventos";
 import Carrusel from "./Carrusel";
 import Footer from "../generales/Footer";
 

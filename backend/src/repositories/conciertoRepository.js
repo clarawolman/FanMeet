@@ -1,11 +1,24 @@
 import { supabaseAdmin } from "../config/supabaseClient.js";
 import { unwrap } from "../helpers/supabaseResult.js";
+import { usuarioRepository } from "./usuarioRepository.js";
 
 export const conciertoRepository = {
+  // usuarios_conciertos(count) contaría también a los suspendidos, así que
+  // se traen los ids y se cuentan solo los activos, devolviendo la misma
+  // forma [{ count }] que espera toConciertoResumen.
   async listarTodos() {
-    const resultado = await supabaseAdmin.from("concierto")
-      .select("*, artista(*), estadio(*), grupo(count), usuarios_conciertos(count)");
-    return unwrap(resultado, "Error cargando conciertos");
+    const [resultado, suspendidos] = await Promise.all([
+      supabaseAdmin
+        .from("concierto")
+        .select("*, artista(*), estadio(*), grupo(count), usuarios_conciertos(id_usuario)"),
+      usuarioRepository.listarIdsSuspendidos(),
+    ]);
+    return unwrap(resultado, "Error cargando conciertos").map((fila) => ({
+      ...fila,
+      usuarios_conciertos: [
+        { count: (fila.usuarios_conciertos || []).filter((u) => !suspendidos.has(u.id_usuario)).length },
+      ],
+    }));
   },
 
   async obtenerPorId(idConcierto) {

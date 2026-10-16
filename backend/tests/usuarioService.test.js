@@ -4,6 +4,7 @@ vi.mock("../src/repositories/usuarioRepository.js", () => ({
   usuarioRepository: {
     obtenerPorId: vi.fn(),
     actualizar: vi.fn(),
+    listarActivosPorIds: vi.fn(),
   },
 }));
 
@@ -35,7 +36,7 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
 }));
 
 vi.mock("../src/repositories/amistadRepository.js", () => ({
-  amistadRepository: { contarAceptadasDeUsuario: vi.fn() },
+  amistadRepository: { listarAceptadasDeUsuario: vi.fn() },
 }));
 
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
@@ -125,14 +126,20 @@ describe("usuarioService.obtenerEstadisticas", () => {
   it("combina los 3 contadores (conciertos, grupos, amigos)", async () => {
     usuariosConciertosRepository.contarPorUsuario.mockResolvedValue(3);
     grupoUsuarioRepository.contarPorUsuario.mockResolvedValue(2);
-    amistadRepository.contarAceptadasDeUsuario.mockResolvedValue(5);
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([
+      { id_solicitante: YO, id_receptor: "a1" },
+      { id_solicitante: "a2", id_receptor: YO },
+      { id_solicitante: YO, id_receptor: "suspendido" },
+    ]);
+    // listarActivosPorIds ya descarta al suspendido.
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([{ id_usuario: "a1" }, { id_usuario: "a2" }]);
 
     const resultado = await usuarioService.obtenerEstadisticas(YO);
 
     expect(usuariosConciertosRepository.contarPorUsuario).toHaveBeenCalledWith(YO);
     expect(grupoUsuarioRepository.contarPorUsuario).toHaveBeenCalledWith(YO);
-    expect(amistadRepository.contarAceptadasDeUsuario).toHaveBeenCalledWith(YO);
-    expect(resultado).toEqual({ conciertos: 3, grupos: 2, amigos: 5 });
+    expect(usuarioRepository.listarActivosPorIds).toHaveBeenCalledWith(["a1", "a2", "suspendido"]);
+    expect(resultado).toEqual({ conciertos: 3, grupos: 2, amigos: 2 });
   });
 });
 

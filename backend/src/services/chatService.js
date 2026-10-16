@@ -12,6 +12,7 @@ import { toMensaje } from "../entities/Mensaje.js";
 import { toMensajePrivado } from "../entities/MensajePrivado.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 
 const EXTENSIONES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
@@ -49,7 +50,7 @@ async function armarChatsPrivados(idUsuarioAutenticado) {
   if (idsAmigos.length === 0) return [];
 
   const [usuarios, recientes, noLeidos] = await Promise.all([
-    usuarioRepository.listarPorIds(idsAmigos),
+    usuarioRepository.listarActivosPorIds(idsAmigos),
     mensajePrivadoRepository.listarRecientesDeUsuario(idUsuarioAutenticado),
     mensajePrivadoRepository.listarNoLeidosDeUsuario(idUsuarioAutenticado),
   ]);
@@ -176,6 +177,9 @@ export const chatService = {
     }
     if (archivo && !esImagenValida(archivo)) {
       throw ApiError.badRequest("El archivo debe ser una imagen válida (jpg, png o webp)");
+    }
+    if (contieneMalasPalabras(texto)) {
+      throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
 
     await exigirAmistad(idUsuarioAutenticado, idOtroUsuario);

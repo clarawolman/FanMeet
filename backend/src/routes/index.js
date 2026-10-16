@@ -11,6 +11,8 @@ import spotifyRoutes from "./spotifyRoutes.js";
 import lastfmRoutes from "./lastfmRoutes.js";
 import matchingRoutes from "./matchingRoutes.js";
 import chatbotRoutes from "./chatbotRoutes.js";
+import reporteRoutes from "./reporteRoutes.js";
+import backofficeRoutes from "./backofficeRoutes.js";
 
 const router = Router();
 
@@ -26,5 +28,7 @@ router.use("/spotify", spotifyRoutes);
 router.use("/lastfm", lastfmRoutes);
 router.use("/matching", matchingRoutes);
 router.use("/chatbot", chatbotRoutes);
+router.use("/reportes", reporteRoutes);
+router.use("/backoffice", backofficeRoutes);
 
 export default router;

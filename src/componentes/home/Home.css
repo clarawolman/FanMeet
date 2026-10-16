@@ -181,7 +181,11 @@
   pointer-events: none;
 }
 
+/* Absoluta para que un póster vertical no estire la card: con overflow
+   visible (lo pide el botón Unirme) el aspect-ratio no frena al contenido. */
 .home-card-imagen img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;

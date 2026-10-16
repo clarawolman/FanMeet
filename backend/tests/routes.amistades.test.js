@@ -13,6 +13,17 @@ vi.mock("../src/services/amistadService.js", () => ({
 
 vi.mock("../src/config/jwks.js", () => ({ verificarToken: vi.fn() }));
 
+// authMiddleware mira en la base si la cuenta está suspendida y su rol.
+vi.mock("../src/repositories/usuarioRepository.js", async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    usuarioRepository: {
+      ...original.usuarioRepository,
+      obtenerEstadoYRol: vi.fn(async () => ({ estado: "activo", rol: "usuario" })),
+    },
+  };
+});
+
 const { amistadService } = await import("../src/services/amistadService.js");
 const { verificarToken } = await import("../src/config/jwks.js");
 const { ApiError } = await import("../src/helpers/ApiError.js");

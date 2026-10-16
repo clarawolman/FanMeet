@@ -64,15 +64,4 @@ export const amistadRepository = {
       .or(`id_solicitante.eq.${idUsuario},id_receptor.eq.${idUsuario}`);
     return unwrap(resultado, "Error cargando amigos");
   },
-
-  // Mismo patron que perfil.jsx::cargarEstadisticas para el contador "Amigos".
-  async contarAceptadasDeUsuario(idUsuario) {
-    const { count, error } = await supabaseAdmin
-      .from("amistad")
-      .select("*", { count: "exact", head: true })
-      .eq("estado", "aceptada")
-      .or(`id_solicitante.eq.${idUsuario},id_receptor.eq.${idUsuario}`);
-    if (error) throw new Error(`Error contando amigos: ${error.message}`);
-    return count || 0;
-  },
 };

@@ -3,6 +3,7 @@ import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRe
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { toMensaje } from "../entities/Mensaje.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 
 async function exigirMiembro(idUsuarioAutenticado, idGrupo) {
   const grupo = await grupoRepository.obtenerPorId(idGrupo);
@@ -29,6 +30,9 @@ export const mensajeService = {
   // resto del grupo, sin que este service tenga que llamar a
   // notificacionService.
   async enviar(idUsuarioAutenticado, idGrupo, contenido) {
+    if (contieneMalasPalabras(contenido)) {
+      throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
+    }
     await exigirMiembro(idUsuarioAutenticado, idGrupo);
 
     const fila = await mensajeRepository.crear({
