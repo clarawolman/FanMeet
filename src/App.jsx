@@ -265,7 +265,18 @@ async function manejarFinalizarRegistro(datosPaso3) {
   delete datosSinFoto.artistas_favoritos;
 
   try {
-    let usuarioCreado = await authService.registro(datosSinFoto);
+    const { usuario, conSesion } = await authService.registro(datosSinFoto);
+    let usuarioCreado = usuario;
+
+    // Sin sesión no se puede subir la foto ni entrar a la app: hay que
+    // confirmar el mail e iniciar sesión.
+    if (!conSesion) {
+      setDatosRegistro({});
+      setCargando(false);
+      setErrorTexto("Te mandamos un mail para confirmar tu cuenta. Confirmala y después iniciá sesión.");
+      setPantalla("login");
+      return;
+    }
 
     if (archivoFoto instanceof File) {
       try {

@@ -7,6 +7,7 @@ export function toUsuarioCompleto(row) {
   return {
     id_usuario: row.id_usuario,
     nombre: row.nombre,
+    apodo: row.apodo || null,
     mail: row.mail,
     fechanac: row.fechanac,
     genero: row.genero,
@@ -36,6 +37,7 @@ export function toUsuarioResumen(row) {
   return {
     id_usuario: row.id_usuario,
     nombre: row.nombre || "Usuario",
+    apodo: row.apodo || null,
     foto_perfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     edad: calcularEdad(row.fechanac),
   };
@@ -49,6 +51,7 @@ export function toUsuarioPublico(row) {
   return {
     id_usuario: row.id_usuario,
     nombre: row.nombre,
+    apodo: row.apodo || null,
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     estilo_asistencia: row.estilo_asistencia,
   };

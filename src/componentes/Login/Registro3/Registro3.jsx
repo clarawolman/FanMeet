@@ -96,6 +96,7 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
           <div className="registro3Selector">
             <SelectorGeneros
               seleccionados={generosSeleccionados}
+              maxPopulares={5}
               onCambiar={(lista) => {
                 setErrorRegistro3("");
                 setGenerosSeleccionados(lista);

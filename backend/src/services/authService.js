@@ -63,6 +63,7 @@ export const authService = {
     const usuarioCreado = await usuarioRepository.crear({
       id_usuario: data.user.id,
       nombre: datos.nombre,
+      apodo: datos.apodo || null,
       mail: datos.mail,
       fechanac: datos.fechanac,
       genero: datos.genero,

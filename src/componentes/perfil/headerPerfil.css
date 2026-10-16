@@ -119,6 +119,53 @@
   cursor: default;
 }
 
+/* edición: nombre/apodo + cambiar foto */
+.headerPerfilApodoLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.headerPerfilApodoLabel span {
+  font-weight: 400;
+  color: var(--fm-muted);
+}
+
+.headerPerfilApodoInput {
+  width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+}
+
+.headerPerfilApodoInput:focus {
+  outline: none;
+  border-color: var(--fm-ink);
+}
+
+.headerPerfilAccionesEdicion {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.headerPerfilAccionesEdicion > * {
+  flex: 1;
+}
+
+.headerPerfilBotonGuardar {
+  min-height: 40px;
+}
+
 /* "Amigos" + "Mensaje" en el perfil de otro usuario */
 .headerPerfilAccionesAmistad {
   grid-column: 1 / -1;
@@ -155,7 +202,8 @@
     grid-column: auto;
   }
 
-  .headerPerfilAccionesAmistad > * {
+  .headerPerfilAccionesAmistad > *,
+  .headerPerfilAccionesEdicion > * {
     flex: 0 0 auto;
   }
 }

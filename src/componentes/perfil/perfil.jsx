@@ -66,9 +66,13 @@ function Perfil({
   // La foto se actualiza optimistamente acá y también se guarda en el
   // UsuarioContext para que el resto de la app la vea.
   const [fotoLocal, setFotoLocal] = useState(null);
-  const usuario = fotoLocal
-    ? { ...usuarioBase, fotoperfil: fotoLocal }
-    : usuarioBase;
+  // Igual con el apodo; undefined = sin cambios locales.
+  const [apodoLocal, setApodoLocal] = useState(undefined);
+  const usuario = {
+    ...usuarioBase,
+    ...(fotoLocal && { fotoperfil: fotoLocal }),
+    ...(apodoLocal !== undefined && { apodo: apodoLocal }),
+  };
 
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
@@ -270,6 +274,21 @@ function Perfil({
     setSubiendoFoto(false);
   }
 
+  // Devuelve true si se guardó, para que el header cierre la edición.
+  async function manejarGuardarApodo(apodo) {
+    if (!isOwnProfile) return false;
+
+    try {
+      const usuarioActualizado = await usuariosService.actualizarApodo(apodo);
+      setApodoLocal(usuarioActualizado.apodo);
+      setUsuarioActual({ ...usuarioActual, apodo: usuarioActualizado.apodo });
+      return true;
+    } catch (error) {
+      mostrarAviso("No se pudo guardar el nombre: " + error.message);
+      return false;
+    }
+  }
+
   const generosConNombre = generosSeleccionadosIds.map((idEstilo) => {
     const genero = catalogoGeneros.find(
       (item) => String(idDeGenero(item)) === String(idEstilo)
@@ -293,6 +312,7 @@ function Perfil({
         onAccionAmistad={manejarAccionAmistad}
         onSubirFoto={manejarSubirFoto}
         subiendoFoto={subiendoFoto}
+        onGuardarApodo={manejarGuardarApodo}
         onVolver={onVolver}
         onNavegar={onNavegar}
         onCerrarSesion={onCerrarSesion}

@@ -31,10 +31,12 @@ export const authService = {
     return api.post("/auth/verificar-registro", { nombre, mail }, { autenticado: false });
   },
 
+  // Si Supabase tiene activada la confirmación de e-mail, la cuenta se crea
+  // pero no hay sesión hasta que el usuario confirme: conSesion = false.
   async registro(datosRegistro) {
     const resultado = await api.post("/auth/registro", datosRegistro, { autenticado: false });
     await aplicarSesion(resultado.session);
-    return resultado.usuario;
+    return { usuario: resultado.usuario, conSesion: Boolean(resultado.session) };
   },
 
   async logout() {

@@ -5,6 +5,7 @@ import { authService } from "../../../services/authService";
 
 function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
   const [nombre, setNombre] = useState(datosIniciales.nombre || "");
+  const [apodo, setApodo] = useState(datosIniciales.apodo || "");
   const [mail, setMail] = useState(datosIniciales.mail || "");
   const [contrasena, setContrasena] = useState(datosIniciales.contrasena || "");
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -106,6 +107,7 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
 
     onSiguiente({
       nombre: nombreLimpio,
+      apodo: apodo.trim(),
       mail: mailLimpio,
       contrasena,
       fechanac: fechaNacimiento,
@@ -144,6 +146,23 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
           </div>
 
           <div className="registroCampo">
+            <label htmlFor="reg-apodo">
+              Nombre <span className="registroOpcional">(opcional)</span>
+            </label>
+            <input
+              id="reg-apodo"
+              className="registroInput"
+              type="text"
+              name="fanmeet-registro-apodo"
+              autoComplete="off"
+              maxLength={30}
+              placeholder="Cómo querés que te vean, ej: Rama"
+              value={apodo}
+              onChange={(e) => setApodo(e.target.value)}
+            />
+          </div>
+
+          <div className="registroCampo registroCampoAncho">
             <label htmlFor="reg-mail">E-mail</label>
             <input
               id="reg-mail"

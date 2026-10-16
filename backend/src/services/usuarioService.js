@@ -51,6 +51,14 @@ export const usuarioService = {
     return toUsuarioCompleto(usuario);
   },
 
+  // Vacío borra el apodo y el perfil vuelve a mostrar el nombre de usuario.
+  async actualizarApodo(idUsuarioAutenticado, apodo) {
+    const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, {
+      apodo: apodo || null,
+    });
+    return toUsuarioCompleto(usuario);
+  },
+
   // Mismos 3 contadores que hoy calcula perfil.jsx::cargarEstadisticas.
   async obtenerEstadisticas(idUsuario) {
     const [conciertos, grupos, amigos] = await Promise.all([
@@ -61,8 +69,21 @@ export const usuarioService = {
     return { conciertos, grupos, amigos };
   },
 
+  // Ordenado de más a menos elegido por los usuarios de FanMeet.
   async obtenerCatalogoGeneros() {
-    return estiloMusicalRepository.listarCatalogo();
+    const [catalogo, selecciones] = await Promise.all([
+      estiloMusicalRepository.listarCatalogo(),
+      estiloMusicalRepository.listarTodasLasSelecciones(),
+    ]);
+
+    const elecciones = new Map();
+    for (const { id_estilo } of selecciones) {
+      const clave = String(id_estilo);
+      elecciones.set(clave, (elecciones.get(clave) || 0) + 1);
+    }
+
+    const vecesElegido = (genero) => elecciones.get(String(genero.id)) || 0;
+    return [...catalogo].sort((a, b) => vecesElegido(b) - vecesElegido(a));
   },
 
   async obtenerGenerosUsuario(idUsuario) {

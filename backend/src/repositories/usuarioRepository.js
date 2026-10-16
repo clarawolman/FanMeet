@@ -50,7 +50,7 @@ export const usuarioRepository = {
   async listarTodos() {
     const resultado = await supabaseAdmin
       .from(TABLA)
-      .select("id_usuario, nombre, fotoperfil, fechanac, estilo_asistencia");
+      .select("id_usuario, nombre, apodo, fotoperfil, fechanac, estilo_asistencia");
     return unwrap(resultado, "Error cargando usuarios");
   },
 

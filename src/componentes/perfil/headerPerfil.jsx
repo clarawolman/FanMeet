@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
 import HeaderApp from "../generales/HeaderApp";
@@ -13,14 +13,34 @@ export default function HeaderPerfil({
   onAccionAmistad,
   onSubirFoto,
   subiendoFoto,
+  onGuardarApodo,
   onVolver,
   onNavegar,
   onCerrarSesion,
   onEnviarMensaje,
 }) {
   const inputFotoRef = useRef(null);
+  const [editando, setEditando] = useState(false);
+  const [apodo, setApodo] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
-  function manejarClickEditar() {
+  // Como en Instagram: el nombre/apodo es opcional; sin él se ve el usuario.
+  const nombreVisible = usuario?.apodo || usuario?.nombre;
+
+  function abrirEdicion() {
+    setApodo(usuario?.apodo || "");
+    setEditando(true);
+  }
+
+  async function manejarGuardar(e) {
+    e.preventDefault();
+    setGuardando(true);
+    const ok = await onGuardarApodo(apodo.trim());
+    setGuardando(false);
+    if (ok) setEditando(false);
+  }
+
+  function manejarClickCambiarFoto() {
     if (inputFotoRef.current) {
       inputFotoRef.current.click();
     }
@@ -39,7 +59,7 @@ export default function HeaderPerfil({
     <div className="headerPerfil">
       <HeaderApp
         onVolver={onVolver}
-        titulo={onVolver ? usuario?.nombre : undefined}
+        titulo={onVolver ? nombreVisible : undefined}
         acciones={
           isOwnProfile && (
             <div className="headerPerfilAcciones">
@@ -75,7 +95,7 @@ export default function HeaderPerfil({
           <img
             className="headerPerfilFoto"
             src={usuario?.fotoperfil || usuario?.foto_perfil}
-            alt={usuario?.nombre}
+            alt={nombreVisible}
           />
 
           {isOwnProfile && (
@@ -90,20 +110,64 @@ export default function HeaderPerfil({
         </div>
 
         <div className="headerPerfilIdentidad">
-          <h2 className="headerPerfilNombre">{usuario?.nombre}</h2>
+          {editando ? (
+            <form id="headerPerfilFormApodo" onSubmit={manejarGuardar}>
+              <label className="headerPerfilApodoLabel" htmlFor="perfil-apodo">
+                Nombre <span>(opcional)</span>
+              </label>
+              <input
+                id="perfil-apodo"
+                className="headerPerfilApodoInput"
+                type="text"
+                maxLength={30}
+                placeholder="Cómo querés que te vean"
+                value={apodo}
+                onChange={(e) => setApodo(e.target.value)}
+                autoFocus
+              />
+            </form>
+          ) : (
+            <h2 className="headerPerfilNombre">{nombreVisible}</h2>
+          )}
           {usuario?.nombre && (
             <p className="headerPerfilHandle">@{usuario.nombre}</p>
           )}
         </div>
 
-        {isOwnProfile ? (
+        {isOwnProfile && editando ? (
+          <div className="headerPerfilAccionesEdicion">
+            <button
+              className="headerPerfilBotonEditar"
+              type="button"
+              onClick={manejarClickCambiarFoto}
+              disabled={subiendoFoto}
+            >
+              {subiendoFoto ? "Subiendo foto…" : "Cambiar foto"}
+            </button>
+            <button
+              className="headerPerfilBotonEditar"
+              type="button"
+              onClick={() => setEditando(false)}
+              disabled={guardando}
+            >
+              Cancelar
+            </button>
+            <button
+              className="fmBotonPrimario headerPerfilBotonGuardar"
+              type="submit"
+              form="headerPerfilFormApodo"
+              disabled={guardando}
+            >
+              {guardando ? "Guardando…" : "Guardar"}
+            </button>
+          </div>
+        ) : isOwnProfile ? (
           <button
             className="headerPerfilBotonEditar"
             type="button"
-            onClick={manejarClickEditar}
-            disabled={subiendoFoto}
+            onClick={abrirEdicion}
           >
-            {subiendoFoto ? "Subiendo foto…" : "Editar perfil"}
+            Editar perfil
           </button>
         ) : (
           <div className="headerPerfilAccionesAmistad">
