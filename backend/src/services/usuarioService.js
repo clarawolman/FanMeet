@@ -5,7 +5,7 @@ import { storageRepository } from "../repositories/storageRepository.js";
 import { usuariosConciertosRepository } from "../repositories/conciertoRepository.js";
 import { grupoUsuarioRepository } from "../repositories/grupoRepository.js";
 import { amistadRepository } from "../repositories/amistadRepository.js";
-import { toUsuarioCompleto, toUsuarioPublico } from "../entities/Usuario.js";
+import { toUsuarioCompleto, toUsuarioPublico, toUsuarioResumen } from "../entities/Usuario.js";
 import { toHighlight } from "../entities/Highlight.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { rutaArchivoUsuario } from "../helpers/sanitizeFilename.js";
@@ -28,6 +28,12 @@ export const usuarioService = {
     const usuario = await usuarioRepository.obtenerPorId(idUsuario);
     if (!usuario || usuario.estado === "suspendido") throw ApiError.notFound("El usuario no existe");
     return toUsuarioPublico(usuario);
+  },
+
+  // Buscador de "Descubrir": forma resumida, sin mail ni fecha de nacimiento.
+  async buscar(idUsuarioAutenticado, texto) {
+    const filas = await usuarioRepository.buscarActivos(texto, idUsuarioAutenticado);
+    return filas.map(toUsuarioResumen);
   },
 
   // idUsuarioAutenticado siempre sale de req.user.id (JWT), nunca de un

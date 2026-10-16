@@ -8,6 +8,7 @@ import {
   apodoSchema,
   generosSchema,
   buscarGeneroSchema,
+  buscarUsuarioSchema,
   nombreGeneroSchema,
   idUsuarioParamSchema,
 } from "../validators/usuarioValidators.js";
@@ -21,6 +22,13 @@ router.get("/generos/buscar", validate(buscarGeneroSchema, "query"), usuarioCont
 router.post("/generos/catalogo", validate(nombreGeneroSchema), usuarioController.agregarGenero);
 
 router.get("/me", authMiddleware, usuarioController.obtenerMiPerfil);
+// Antes de "/:idUsuario" para que "buscar" no se tome como un id.
+router.get(
+  "/buscar",
+  authMiddleware,
+  validate(buscarUsuarioSchema, "query"),
+  usuarioController.buscar
+);
 router.get("/me/generos", authMiddleware, usuarioController.obtenerMisGeneros);
 router.put(
   "/me/generos",

@@ -23,13 +23,13 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: var(--fm-ink);
+  color: var(--fm-accent-soft-ink);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
-  text-decoration-color: var(--fm-border-strong);
+  text-decoration-color: var(--fm-accent-soft-border);
   text-underline-offset: 4px;
 }
 
@@ -56,9 +56,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  border: none;
+  border: 1px solid var(--fm-card-borde);
   background: var(--fm-surface);
-  box-shadow: var(--fm-shadow-sm);
   border-radius: var(--fm-radius-lg);
   padding: 16px;
 }

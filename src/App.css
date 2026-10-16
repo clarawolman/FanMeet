@@ -7,9 +7,9 @@
    (negro de día, blanco de noche), como en las apps de tickets/música.
    Día y noche comparten el mismo diseño: solo cambian los valores. */
 :root {
-  /* superficies */
-  --fm-bg: #f4f4f6;
-  --fm-bg-soft: #eaeaee;
+  /* superficies (un toque cálido para que la base no quede gris muerto) */
+  --fm-bg: #f6f4f7;
+  --fm-bg-soft: #ece9ef;
   --fm-surface: #ffffff;
   --fm-surface-warm: #f0eff3;
   --fm-ink: #0f0f13;
@@ -21,6 +21,9 @@
   --fm-accent: #e62e6b;
   --fm-accent-hover: #cf2159;
   --fm-accent-ink: #ffffff;
+
+  /* borde fino de las cards */
+  --fm-card-borde: rgba(15, 15, 19, 0.09);
 
   /* acción principal (botones fuertes) */
   --fm-cta: #0f0f13;
@@ -112,8 +115,8 @@
 
 /* Noche: mismos tokens, otros valores. Nada más cambia. */
 :root[data-theme="dark"] {
-  --fm-bg: #0b0b0e;
-  --fm-bg-soft: #18181d;
+  --fm-bg: #0c0b0f;
+  --fm-bg-soft: #1a181e;
   --fm-surface: #131317;
   --fm-surface-warm: #1b1b21;
   --fm-ink: #f4f4f6;
@@ -123,6 +126,9 @@
 
   --fm-accent: #ff3d7f;
   --fm-accent-hover: #ff5a93;
+
+
+  --fm-card-borde: rgba(244, 244, 246, 0.1);
 
   --fm-cta: #f4f4f6;
   --fm-cta-hover: #ffffff;

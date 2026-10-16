@@ -10,6 +10,7 @@ import ModalConfirmacion from "../generales/ModalConfirmacion";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { mostrarAviso } from "../../utils/avisos";
+import { separarProximosYPasados } from "../../utils/fechas";
 
 function MisEventos({
   onIngresar,
@@ -21,6 +22,7 @@ function MisEventos({
   const [cargando, setCargando] = useState(true);
   const [eventoParaSalir, setEventoParaSalir] = useState(null);
   const [saliendo, setSaliendo] = useState(false);
+  const { proximos, pasados } = separarProximosYPasados(misEventos);
 
   useEffect(() => {
     if (usuarioActual?.id_usuario) {
@@ -82,17 +84,51 @@ function MisEventos({
         )}
 
         {!cargando && misEventos.length > 0 && (
-          <ul className="listaTarjetas">
-            {misEventos.map((evento) => (
-              <li key={evento.id_concierto}>
-                <CardEvento
-                  evento={evento}
-                  onIngresar={() => onIngresar(evento)}
-                  onSalir={setEventoParaSalir}
-                />
-              </li>
-            ))}
-          </ul>
+          <section className="listaSeccion">
+            <div className="listaSeccionHeader">
+              <h2>Próximos</h2>
+              <span className="listaSeccionCantidad">{proximos.length}</span>
+            </div>
+
+            {proximos.length === 0 ? (
+              <div className="listaMensaje">
+                <p>No tenés conciertos próximos.</p>
+                <button type="button" className="tarjetaBoton" onClick={() => onNavegar("home")}>
+                  Buscar conciertos
+                </button>
+              </div>
+            ) : (
+              <ul className="listaTarjetas">
+                {proximos.map((evento) => (
+                  <li key={evento.id_concierto}>
+                    <CardEvento
+                      evento={evento}
+                      onIngresar={() => onIngresar(evento)}
+                      onSalir={setEventoParaSalir}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        {/* Sin "Salir": salir de un concierto que ya pasó lo borraría del historial */}
+        {!cargando && pasados.length > 0 && (
+          <section className="listaSeccion">
+            <div className="listaSeccionHeader">
+              <h2>Historial de conciertos</h2>
+              <span className="listaSeccionCantidad">{pasados.length}</span>
+            </div>
+
+            <ul className="listaTarjetas">
+              {pasados.map((evento) => (
+                <li key={evento.id_concierto}>
+                  <CardEvento evento={evento} onIngresar={() => onIngresar(evento)} />
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
       </main>
 

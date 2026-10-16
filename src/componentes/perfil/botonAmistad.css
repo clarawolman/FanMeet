@@ -4,7 +4,7 @@
   padding: 10px 20px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-sm);
-  font-weight: 600;
+  font-weight: 500;
   text-transform: none;
   letter-spacing: 0.005em;
   cursor: pointer;
@@ -18,9 +18,9 @@
 }
 
 .botonAmistad.conectar {
-  background: var(--fm-cta);
-  color: var(--fm-cta-ink);
-  box-shadow: none;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  border-color: transparent;
 }
 
 .botonAmistad.enviada {
@@ -30,9 +30,9 @@
 }
 
 .botonAmistad.aceptar {
-  background: var(--fm-cta);
-  color: var(--fm-cta-ink);
-  box-shadow: none;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  border-color: transparent;
 }
 
 .botonAmistad.amigos {
@@ -53,9 +53,9 @@
 }
 
 .botonAmistad.conectar:hover:not(:disabled) {
-  background: var(--fm-cta-hover);
+  background: var(--fm-accent-hover);
 }
 
 .botonAmistad.aceptar:hover:not(:disabled) {
-  background: var(--fm-cta-hover);
+  background: var(--fm-accent-hover);
 }

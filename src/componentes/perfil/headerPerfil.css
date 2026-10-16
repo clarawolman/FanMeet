@@ -64,7 +64,6 @@
   border-radius: 50%;
   object-fit: cover;
   background: var(--fm-bg-soft);
-  box-shadow: 0 0 0 4px var(--fm-bg), 0 0 0 5px var(--fm-border-strong);
 }
 
 .headerPerfilIdentidad {
@@ -89,8 +88,8 @@
 
 .headerPerfilHandle {
   margin: 0;
-  font-family: var(--fm-font-data);
-  font-size: var(--fm-fs-xs);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
   color: var(--fm-muted);
 }
 
@@ -110,8 +109,8 @@
 }
 
 .headerPerfilBotonEditar:hover:not(:disabled) {
-  border-color: var(--fm-ink);
-  background: var(--fm-nav-hover-bg);
+  border-color: var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
 }
 
 .headerPerfilBotonEditar:disabled {

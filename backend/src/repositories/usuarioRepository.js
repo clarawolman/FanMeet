@@ -69,6 +69,23 @@ export const usuarioRepository = {
     return unwrap(resultado, "Error cargando usuarios");
   },
 
+  // Buscador de perfiles: por usuario (@nombre) o apodo, sin suspendidos
+  // ni la propia cuenta.
+  async buscarActivos(texto, idExcluido, limite = 20) {
+    // Comas y paréntesis romperían el .or() de PostgREST; % y _ son comodines.
+    const limpio = texto.replace(/[,()%_\\*]/g, " ").trim();
+    if (!limpio) return [];
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("id_usuario, nombre, apodo, fotoperfil, fechanac")
+      .or(`nombre.ilike.%${limpio}%,apodo.ilike.%${limpio}%`)
+      .neq("estado", "suspendido")
+      .neq("id_usuario", idExcluido)
+      .order("nombre")
+      .limit(limite);
+    return unwrap(resultado, "Error buscando usuarios");
+  },
+
   // Para descontar a los suspendidos de los contadores (son pocos).
   async listarIdsSuspendidos() {
     const resultado = await supabaseAdmin.from(TABLA).select("id_usuario").eq("estado", "suspendido");

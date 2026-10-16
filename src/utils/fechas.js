@@ -21,6 +21,26 @@ export function cuentaRegresiva(fecha) {
   return `En ${dias} días`;
 }
 
+// Separa conciertos en próximos (el más cercano primero; los que no tienen
+// fecha van al final) y pasados (el más reciente primero). Hoy cuenta como
+// próximo, igual que en cuentaRegresiva.
+export function separarProximosYPasados(eventos) {
+  const hoy = new Date();
+  const claveHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+  const clave = (evento) => String(evento.fecha || "").slice(0, 10);
+
+  const proximos = [];
+  const pasados = [];
+  for (const evento of eventos || []) {
+    if (clave(evento) && clave(evento) < claveHoy) pasados.push(evento);
+    else proximos.push(evento);
+  }
+
+  proximos.sort((a, b) => (clave(a) || "9999").localeCompare(clave(b) || "9999"));
+  pasados.sort((a, b) => clave(b).localeCompare(clave(a)));
+  return { proximos, pasados };
+}
+
 // "2026-08-15T20:00:00" -> "sáb 15 de agosto"
 export function formatearFechaLarga(fecha) {
   if (!fecha) return "";

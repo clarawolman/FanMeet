@@ -1,16 +1,19 @@
+/* Conectar / Aceptar solicitud: rosa de marca, igual que "Unirme" de la Home */
 .botonConectar {
-  min-height: 34px;
-  padding: 0 14px;
-  border: 1px solid var(--fm-cta);
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid transparent;
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-cta);
-  color: var(--fm-cta-ink);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
   font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 600;
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--fm-dur) var(--fm-ease), border-color var(--fm-dur) var(--fm-ease);
+  transition: background-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease),
+    transform var(--fm-dur) var(--fm-ease);
 }
 
 /* ya no hay nada que hacer: se ve como etiqueta, no como acción */
@@ -23,6 +26,7 @@
   background: transparent;
   border-color: var(--fm-border-strong);
   color: var(--fm-muted);
+  box-shadow: none;
 }
 
 .botonConectar--amigos {
@@ -32,6 +36,5 @@
 }
 
 .botonConectar:not(.botonConectar--solicitudEnviada):not(.botonConectar--amigos):hover:not(:disabled) {
-  background: var(--fm-cta-hover);
-  border-color: var(--fm-cta-hover);
+  background: var(--fm-accent-hover);
 }
