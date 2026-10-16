@@ -624,11 +624,18 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
           <div className={`chatsMensajeLinea ${esPropio ? "chatsMensajeLinea--propia" : ""}`}>
             {mostrarAutor &&
               (primeroDelAutor ? (
-                <img
-                  className="chatsAutorFoto"
-                  src={mensaje.usuario?.foto_perfil || fotoDefault}
-                  alt={mensaje.usuario?.nombre || "Usuario"}
-                />
+                <button
+                  type="button"
+                  className="chatsAutorFotoBoton"
+                  onClick={() => onVerUsuario?.(autor)}
+                  aria-label={`Ver perfil de ${mensaje.usuario?.nombre || "Usuario"}`}
+                >
+                  <img
+                    className="chatsAutorFoto"
+                    src={mensaje.usuario?.foto_perfil || fotoDefault}
+                    alt={mensaje.usuario?.nombre || "Usuario"}
+                  />
+                </button>
               ) : (
                 <span className="chatsAutorFoto chatsAutorFoto--hueco" />
               ))}

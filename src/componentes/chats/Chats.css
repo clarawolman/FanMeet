@@ -350,6 +350,19 @@
   margin-top: 2px;
 }
 
+.chatsAutorFotoBoton {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.chatsAutorFotoBoton .chatsAutorFoto {
+  display: block;
+}
+
 .chatsAutorFoto--hueco {
   height: 0;
 }
