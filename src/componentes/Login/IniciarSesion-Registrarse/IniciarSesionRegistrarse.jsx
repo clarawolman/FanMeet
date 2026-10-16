@@ -9,6 +9,11 @@ function IniciarSesionRegistrarse({ onIngresar, onRegistrarse, onMailSinConfirma
       <section className="loginContenido">
         <Marca className="loginMarca" as="p" />
 
+        <h1 className="loginTitulo">Encontrá con quién ir al próximo recital.</h1>
+        <p className="loginBajada">
+          Entrá para ver tus conciertos, tus grupos y a los fans que van al mismo show.
+        </p>
+
         <LoginForm
           onIngresar={onIngresar}
           onRegistrarse={onRegistrarse}

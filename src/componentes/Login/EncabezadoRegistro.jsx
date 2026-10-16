@@ -4,7 +4,8 @@ import "./RegistroComun.css";
 const TOTAL_PASOS = 3;
 
 // Encabezado compartido por los tres pasos del registro: volver, marca y
-// progreso. Cada paso solo dice en cuál está.
+// progreso. Cada paso solo dice en cuál está; sin paso (verificación de
+// mail) queda solo volver y marca.
 function EncabezadoRegistro({ paso, onVolver }) {
   return (
     <header className="regHeader">
@@ -17,23 +18,27 @@ function EncabezadoRegistro({ paso, onVolver }) {
 
         <Marca className="regMarca" />
 
-        <span className="regPaso">
-          Paso {paso} de {TOTAL_PASOS}
-        </span>
+        {paso && (
+          <span className="regPaso">
+            Paso {paso} de {TOTAL_PASOS}
+          </span>
+        )}
       </div>
 
-      <div
-        className="regBarra"
-        role="progressbar"
-        aria-valuemin={1}
-        aria-valuemax={TOTAL_PASOS}
-        aria-valuenow={paso}
-        aria-label={`Paso ${paso} de ${TOTAL_PASOS}`}
-      >
-        {Array.from({ length: TOTAL_PASOS }, (_, i) => (
-          <span key={i} className={i < paso ? "activo" : ""} />
-        ))}
-      </div>
+      {paso && (
+        <div
+          className="regBarra"
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={TOTAL_PASOS}
+          aria-valuenow={paso}
+          aria-label={`Paso ${paso} de ${TOTAL_PASOS}`}
+        >
+          {Array.from({ length: TOTAL_PASOS }, (_, i) => (
+            <span key={i} className={i < paso ? "activo" : ""} />
+          ))}
+        </div>
+      )}
     </header>
   );
 }

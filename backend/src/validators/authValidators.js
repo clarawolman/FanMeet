@@ -35,10 +35,11 @@ export const registroSchema = z.object({
   previewFoto: z.string().optional(),
 });
 
-// Supabase manda códigos de 6 dígitos por defecto (configurable hasta 10).
+// Tiene que coincidir con el largo configurado en Supabase
+// (Authentication → Providers → Email → Email OTP Length), hoy 8 (la idea es pasarlo a 6).
 export const verificarCodigoSchema = z.object({
   mail: z.string().trim().email("Mail inválido"),
-  codigo: z.string().trim().regex(/^[0-9]{6,10}$/, "El código son solo números"),
+  codigo: z.string().trim().regex(/^[0-9]{8}$/, "El código son 8 números"),
 });
 
 export const reenviarCodigoSchema = z.object({

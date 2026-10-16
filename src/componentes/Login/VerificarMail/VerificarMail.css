@@ -1,55 +1,206 @@
-.verificarTexto {
-  margin: 0 0 24px;
-  font-family: var(--fm-font-body);
+.verificarContenido {
+  max-width: calc(440px + 48px);
+}
+
+.verificarIcono {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent);
+}
+
+.verificarMail {
+  color: var(--fm-ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.verificarFormulario {
+  display: flex;
+  flex-direction: column;
+}
+
+.verificarEtiqueta {
+  margin-bottom: 10px;
   font-size: var(--fm-fs-sm);
-  line-height: 1.5;
+  font-weight: 600;
   color: var(--fm-ink);
 }
 
-.verificarTexto strong {
-  color: var(--fm-accent);
-  word-break: break-all;
+/* ===== CAJAS DEL CÓDIGO ===== */
+.verificarCajas {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--verificar-largo, 8), minmax(0, 1fr));
+  gap: 7px;
+  cursor: text;
 }
 
-.verificarCodigoInput {
+/* el input real ocupa todo el bloque pero no se ve: recibe teclado,
+   pegado y autocompletado, y las cajas muestran lo escrito */
+.verificarInputReal {
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
   border: none;
   background: transparent;
-  color: var(--fm-ink);
-  font-family: var(--fm-font-display);
-  font-size: 22px;
-  letter-spacing: 0.3em;
-  text-align: center;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 16px; /* evita el zoom de iOS al enfocar */
+  opacity: 0;
+  cursor: text;
+}
+
+.verificarInputReal:focus {
   outline: none;
 }
 
-.verificarAviso {
-  margin: 8px 0 -12px;
+.verificarCaja {
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-surface);
   color: var(--fm-ink);
-  font-family: var(--fm-font-body);
+  font-family: var(--fm-font-data, var(--fm-font-display));
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--fm-dur) var(--fm-ease),
+    box-shadow var(--fm-dur) var(--fm-ease),
+    transform var(--fm-dur) var(--fm-ease);
+}
+
+.verificarCajas:hover .verificarCaja {
+  border-color: var(--fm-muted);
+}
+
+.verificarCaja.llena {
+  border-color: var(--fm-ink);
+}
+
+.verificarCaja.activa {
+  border-color: var(--fm-ink);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
+}
+
+/* cursor titilando en la caja que sigue */
+.verificarCaja.activa:empty::after {
+  content: "";
+  width: 2px;
+  height: 26px;
+  border-radius: 1px;
+  background: var(--fm-accent);
+  animation: verificarCursor 1s steps(1) infinite;
+}
+
+@keyframes verificarCursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+.verificarCajas.conError .verificarCaja {
+  border-color: var(--fm-danger);
+}
+
+.verificarCajas.conError {
+  animation: verificarSacudir 320ms var(--fm-ease);
+}
+
+@keyframes verificarSacudir {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verificarCaja.activa:empty::after,
+  .verificarCajas.conError {
+    animation: none;
+  }
+}
+
+/* ===== MENSAJES Y ACCIONES ===== */
+.verificarMensaje {
+  margin-top: 16px;
+}
+
+.verificarAviso {
+  margin-bottom: 0;
+  padding: 10px 14px;
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-success-bg);
+  color: var(--fm-success);
   font-size: var(--fm-fs-sm);
-  text-align: center;
+  font-weight: 500;
+}
+
+.verificarBoton {
+  margin-top: 28px;
 }
 
 .verificarReenviar {
-  margin: 20px 0 0;
-  font-family: var(--fm-font-body);
+  margin: 22px 0 0;
+  color: var(--fm-muted);
   font-size: var(--fm-fs-sm);
-  color: var(--fm-ink);
-  text-align: center;
 }
 
 .verificarLink {
+  padding: 0;
   border: none;
   background: transparent;
-  padding: 0;
-  color: var(--fm-accent);
+  color: var(--fm-ink);
   font: inherit;
   font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--fm-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
   cursor: pointer;
+  transition: color var(--fm-dur) var(--fm-ease);
+}
+
+.verificarLink:hover:not(:disabled) {
+  color: var(--fm-accent);
 }
 
 .verificarLink:disabled {
-  opacity: 0.6;
+  color: var(--fm-muted);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
   cursor: default;
+}
+
+@media (max-width: 400px) {
+  .verificarCajas {
+    gap: 5px;
+  }
+
+  .verificarCaja {
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .verificarCaja.activa:empty::after {
+    height: 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .verificarBoton {
+    width: 100%;
+  }
 }

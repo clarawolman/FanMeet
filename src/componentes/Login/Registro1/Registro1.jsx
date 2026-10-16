@@ -156,7 +156,7 @@ function Registro1({ datosIniciales = {}, onVolver, onSiguiente }) {
               name="fanmeet-registro-apodo"
               autoComplete="off"
               maxLength={30}
-              placeholder="Cómo querés que te vean, ej: Rama"
+              placeholder=""
               value={apodo}
               onChange={(e) => setApodo(e.target.value)}
             />

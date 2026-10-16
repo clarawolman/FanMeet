@@ -43,7 +43,7 @@ function LoginForm({ onIngresar, onRegistrarse, onMailSinConfirmar }) {
       // es el mismo texto que mostraba esta pantalla antes. Si fue un
       // fallo de red/servidor sin status, usamos el mensaje genérico de
       // siempre.
-      setErrorLogin(error.status ? error.message : "Error al iniciar sesión");
+      setErrorLogin(error.status ? error.message : "No pudimos conectarnos. Probá de nuevo en un momento.");
     }
   }
 
