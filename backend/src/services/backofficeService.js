@@ -330,6 +330,31 @@ export const backofficeService = {
     return { concierto: actualizado, cambios: cambiados, aviso };
   },
 
+  // Borra el concierto con sus grupos, chats y fans unidos. A los unidos les
+  // avisa que se canceló (sin id_concierto: ya no hay a dónde llevarlos).
+  async eliminarConcierto(idConcierto) {
+    const concierto = await conciertoRepository.obtenerPorId(idConcierto);
+    if (!concierto) throw ApiError.notFound("El concierto no existe");
+
+    const unidos = await usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto);
+    await backofficeRepository.eliminarConcierto(idConcierto);
+
+    try {
+      await backofficeRepository.crearNotificaciones(
+        unidos.map((u) => ({
+          id_usuario: u.id_usuario,
+          tipo: "novedad_concierto",
+          titulo: `Se canceló ${concierto.nombre}`,
+          descripcion: "El concierto se dio de baja, junto con sus grupos.",
+          imagen: concierto.imagenConcierto || "",
+        }))
+      );
+    } catch (error) {
+      console.error("No se pudo avisar la baja del concierto:", error);
+    }
+    return { ok: true, notificados: unidos.length };
+  },
+
   async publicarNovedad(idConcierto, { titulo, descripcion }) {
     const concierto = await conciertoRepository.obtenerPorId(idConcierto);
     if (!concierto) throw ApiError.notFound("El concierto no existe");

@@ -1,16 +1,21 @@
 import { supabaseAdmin } from "../config/supabaseClient.js";
 import { unwrap } from "../helpers/supabaseResult.js";
 import { usuarioRepository } from "./usuarioRepository.js";
+import { hoyEnArgentina } from "../helpers/fechas.js";
 
 export const conciertoRepository = {
   // usuarios_conciertos(count) contaría también a los suspendidos, así que
   // se traen los ids y se cuentan solo los activos, devolviendo la misma
   // forma [{ count }] que espera toConciertoResumen.
-  async listarTodos() {
+  // soloProximos: sin los que ya pasaron (desde hoy, ver helpers/fechas.js).
+  async listarTodos({ soloProximos = false } = {}) {
+    let consulta = supabaseAdmin
+      .from("concierto")
+      .select("*, artista(*), estadio(*), grupo(count), usuarios_conciertos(id_usuario)");
+    if (soloProximos) consulta = consulta.gte("fecha", hoyEnArgentina());
+
     const [resultado, suspendidos] = await Promise.all([
-      supabaseAdmin
-        .from("concierto")
-        .select("*, artista(*), estadio(*), grupo(count), usuarios_conciertos(id_usuario)"),
+      consulta,
       usuarioRepository.listarIdsSuspendidos(),
     ]);
     return unwrap(resultado, "Error cargando conciertos").map((fila) => ({

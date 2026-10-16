@@ -11,6 +11,7 @@ import { toConciertoDetalle, toConciertoResumen } from "../entities/Concierto.js
 import { toGrupo } from "../entities/Grupo.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { conciertoYaPaso } from "../helpers/fechas.js";
 import { env } from "../config/env.js";
 
 async function armarUsuariosResumen(idsUsuario) {
@@ -27,8 +28,10 @@ async function armarGrupoConUsuarios(grupo) {
 }
 
 export const conciertoService = {
+  // Home y buscador: solo los que no pasaron. Los pasados siguen en Mis
+  // eventos de quienes se unieron (listarMisEventos).
   async listar() {
-    const filas = await conciertoRepository.listarTodos();
+    const filas = await conciertoRepository.listarTodos({ soloProximos: true });
     return filas.map(toConciertoResumen);
   },
 
@@ -92,6 +95,7 @@ export const conciertoService = {
 
     const yaUnido = await usuariosConciertosRepository.existeRelacion(idUsuarioAutenticado, idConcierto);
     if (yaUnido) return { ok: true, yaUnido: true };
+    if (conciertoYaPaso(concierto.fecha)) throw ApiError.badRequest("Este concierto ya pasó");
 
     await usuariosConciertosRepository.crearRelacion(idUsuarioAutenticado, idConcierto);
     await notificacionService.crear({

@@ -13,6 +13,12 @@ const VACIO = {
   imagenConcierto: "",
 };
 
+// "2026-10-16": no se puede elegir un día anterior (el backend también lo
+// rechaza, ver backend/src/helpers/fechas.js).
+function hoyEnArgentina() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(new Date());
+}
+
 function aFormulario(c) {
   return {
     nombre: c.nombre || "",
@@ -99,6 +105,9 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
   const [form, setForm] = useState(editando ? aFormulario(concierto) : VACIO);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  // Un concierto que ya pasó se puede editar sin tocar la fecha (solo se
+  // mandan los campos que cambiaron).
+  const fechaSinCambios = editando && form.fecha === aFormulario(concierto).fecha;
 
   function cambiar(campo) {
     return (e) => setForm((f) => ({ ...f, [campo]: e.target.value }));
@@ -168,7 +177,7 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
         </label>
         <label>
           Fecha y hora
-          <input type="datetime-local" value={form.fecha} onChange={cambiar("fecha")} required />
+          <input type="datetime-local" value={form.fecha} onChange={cambiar("fecha")} min={fechaSinCambios ? undefined : `${hoyEnArgentina()}T00:00`} required />
         </label>
         <label>
           Imagen (URL)
@@ -240,10 +249,49 @@ function FormularioNovedad({ concierto, onListo, onCancelar }) {
   );
 }
 
+function ConfirmarEliminar({ concierto, onListo, onCancelar }) {
+  const [eliminando, setEliminando] = useState(false);
+  const [error, setError] = useState("");
+
+  async function eliminar() {
+    setEliminando(true);
+    setError("");
+    try {
+      const { notificados } = await api.eliminarConcierto(concierto.id_concierto);
+      onListo(
+        `Se eliminó "${concierto.nombre}".` +
+          (notificados > 0 ? ` Se avisó a ${notificados} fans unidos.` : "")
+      );
+    } catch (err) {
+      setError(err.message);
+      setEliminando(false);
+    }
+  }
+
+  return (
+    <div className="tarjeta formulario">
+      <h2>¿Eliminar "{concierto.nombre}"?</h2>
+      <p>
+        Se borran también sus {concierto.cantidadGrupos} grupos (con sus chats) y se desune a sus{" "}
+        {concierto.cantidadFans} fans, que reciben un aviso de que se canceló. No se puede deshacer.
+      </p>
+      {error && <p className="mensajeError">{error}</p>}
+      <div className="acciones">
+        <button className="boton botonPeligro" type="button" onClick={eliminar} disabled={eliminando}>
+          {eliminando ? "Eliminando…" : "Eliminar definitivamente"}
+        </button>
+        <button className="boton" type="button" onClick={onCancelar} disabled={eliminando}>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Conciertos() {
   const conciertos = useCarga(() => api.conciertos(), []);
   const catalogo = useCarga(() => api.catalogo(), []);
-  // { tipo: "nuevo" | "editar" | "novedad", concierto? }
+  // { tipo: "nuevo" | "editar" | "novedad" | "eliminar", concierto? }
   const [abierto, setAbierto] = useState(null);
   const [mensaje, setMensaje] = useState("");
 
@@ -266,6 +314,9 @@ export default function Conciertos() {
 
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
+      {abierto?.tipo === "eliminar" && (
+        <ConfirmarEliminar concierto={abierto.concierto} onListo={terminar} onCancelar={() => setAbierto(null)} />
+      )}
       {abierto?.tipo === "novedad" && (
         <FormularioNovedad concierto={abierto.concierto} onListo={terminar} onCancelar={() => setAbierto(null)} />
       )}
@@ -315,6 +366,9 @@ export default function Conciertos() {
                     </button>
                     <button className="botonTexto" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "novedad", concierto: c }); }}>
                       Novedad
+                    </button>
+                    <button className="botonTexto botonTextoPeligro" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "eliminar", concierto: c }); }}>
+                      Eliminar
                     </button>
                   </td>
                 </tr>

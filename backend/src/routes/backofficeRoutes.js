@@ -51,6 +51,11 @@ router.patch(
   validate(actualizarConciertoSchema),
   c.actualizarConcierto
 );
+router.delete(
+  "/conciertos/:idConcierto",
+  validate(idConciertoParamSchema, "params"),
+  c.eliminarConcierto
+);
 router.post(
   "/conciertos/:idConcierto/novedades",
   validate(idConciertoParamSchema, "params"),

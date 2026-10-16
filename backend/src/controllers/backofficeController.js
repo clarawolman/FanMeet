@@ -48,6 +48,10 @@ export const backofficeController = {
     res.json(await backofficeService.actualizarConcierto(req.params.idConcierto, req.body));
   }),
 
+  eliminarConcierto: asyncHandler(async (req, res) => {
+    res.json(await backofficeService.eliminarConcierto(req.params.idConcierto));
+  }),
+
   publicarNovedad: asyncHandler(async (req, res) => {
     res.status(201).json(await backofficeService.publicarNovedad(req.params.idConcierto, req.body));
   }),

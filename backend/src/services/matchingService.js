@@ -506,7 +506,7 @@ export const matchingService = {
   async recomendarConciertos(idYo) {
     const [base, conciertos, amistades] = await Promise.all([
       cargarDatosBase(),
-      conciertoRepository.listarTodos(),
+      conciertoRepository.listarTodos({ soloProximos: true }),
       amistadRepository.listarAceptadasDeUsuario(idYo),
     ]);
 

@@ -524,6 +524,10 @@ textarea:focus {
   padding: 6px 8px;
 }
 
+.botonTextoPeligro {
+  color: var(--fm-peligro);
+}
+
 .acciones {
   display: flex;
   gap: 10px;

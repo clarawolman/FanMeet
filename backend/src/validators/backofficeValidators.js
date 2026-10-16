@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { conciertoYaPaso } from "../helpers/fechas.js";
 
 // "2026-08-28T21:00" (lo que manda un <input type="datetime-local">).
 const fechaHora = z
@@ -58,7 +59,8 @@ const camposConcierto = {
     .optional(),
   id_estadio: z.coerce.number().int().positive("Elegí un estadio"),
   id_estiloMusical: z.coerce.number().int().positive("Elegí un género"),
-  fecha: fechaHora,
+  // Mismo criterio que esconde los conciertos pasados: hoy todavía vale.
+  fecha: fechaHora.refine((fecha) => !conciertoYaPaso(fecha), "Esa fecha ya pasó: elegí hoy o un día futuro"),
   imagenConcierto: urlImagen,
 };
 

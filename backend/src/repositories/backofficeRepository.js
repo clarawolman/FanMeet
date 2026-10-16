@@ -74,6 +74,45 @@ export const backofficeRepository = {
     return unwrap(resultado, "Error actualizando el concierto");
   },
 
+  // Borra el concierto y todo lo que cuelga de él, de las tablas hijas al
+  // concierto, así no depende de cómo estén los "on delete" en Supabase.
+  // Los reportes de sus grupos quedan (reporte.id_grupo es "on delete set null").
+  async eliminarConcierto(idConcierto) {
+    const grupos = unwrap(
+      await supabaseAdmin.from("grupo").select("id_grupo").eq("id_concierto", idConcierto),
+      "Error cargando los grupos del concierto"
+    );
+    const idsGrupo = grupos.map((g) => g.id_grupo);
+
+    if (idsGrupo.length > 0) {
+      for (const tabla of ["notificacion", "mensaje_grupo", "grupos_usuarios"]) {
+        unwrap(
+          await supabaseAdmin.from(tabla).delete().in("id_grupo", idsGrupo),
+          `Error borrando ${tabla} de los grupos del concierto`
+        );
+      }
+      unwrap(
+        await supabaseAdmin.from("grupo").delete().in("id_grupo", idsGrupo),
+        "Error borrando los grupos del concierto"
+      );
+    }
+
+    for (const tabla of ["notificacion", "usuarios_conciertos"]) {
+      unwrap(
+        await supabaseAdmin.from(tabla).delete().eq("id_concierto", idConcierto),
+        `Error borrando ${tabla} del concierto`
+      );
+    }
+
+    const resultado = await supabaseAdmin
+      .from("concierto")
+      .delete()
+      .eq("id_concierto", idConcierto)
+      .select()
+      .maybeSingle();
+    return unwrap(resultado, "Error eliminando el concierto");
+  },
+
   async listarArtistas() {
     const resultado = await supabaseAdmin.from("artista").select("*").order("nombre");
     return unwrap(resultado, "Error cargando artistas");

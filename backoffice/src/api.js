@@ -86,6 +86,7 @@ export const api = {
   crearConcierto: (datos) => solicitar("/backoffice/conciertos", { method: "POST", body: datos }),
   editarConcierto: (id, cambios) =>
     solicitar(`/backoffice/conciertos/${id}`, { method: "PATCH", body: cambios }),
+  eliminarConcierto: (id) => solicitar(`/backoffice/conciertos/${id}`, { method: "DELETE" }),
   publicarNovedad: (id, titulo, descripcion) =>
     solicitar(`/backoffice/conciertos/${id}/novedades`, {
       method: "POST",

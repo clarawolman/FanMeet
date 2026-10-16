@@ -6,6 +6,7 @@ vi.mock("../src/repositories/backofficeRepository.js", () => ({
     actualizarConcierto: vi.fn(),
     obtenerOCrearArtista: vi.fn(),
     crearConcierto: vi.fn(),
+    eliminarConcierto: vi.fn(),
     cambiarEstadoUsuario: vi.fn(),
     banearEnAuth: vi.fn(),
   },
@@ -140,6 +141,28 @@ describe("backofficeService.crearConcierto", () => {
     const concierto = await backofficeService.crearConcierto({ artista: "Tini", nombre: "Futttura" });
 
     expect(concierto.id_artista).toBe(7);
+  });
+});
+
+describe("backofficeService.eliminarConcierto", () => {
+  it("borra el concierto y avisa a todos los unidos, sin link al concierto", async () => {
+    usuariosConciertosRepository.listarUsuariosPorConcierto.mockResolvedValue(unidos(2));
+
+    const resultado = await backofficeService.eliminarConcierto(4);
+
+    expect(backofficeRepository.eliminarConcierto).toHaveBeenCalledWith(4);
+    const filas = backofficeRepository.crearNotificaciones.mock.calls[0][0];
+    expect(filas.map((f) => f.id_usuario)).toEqual(["u0", "u1"]);
+    expect(filas[0].titulo).toMatch(/Se canceló/);
+    expect(filas[0]).not.toHaveProperty("id_concierto");
+    expect(resultado).toEqual({ ok: true, notificados: 2 });
+  });
+
+  it("responde 404 si el concierto no existe", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(null);
+
+    await expect(backofficeService.eliminarConcierto(99)).rejects.toMatchObject({ status: 404 });
+    expect(backofficeRepository.eliminarConcierto).not.toHaveBeenCalled();
   });
 });
 

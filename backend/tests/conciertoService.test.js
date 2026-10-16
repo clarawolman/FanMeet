@@ -88,6 +88,24 @@ describe("conciertoService.unirsePorCodigo", () => {
     );
     expect(resultado).toEqual({ ok: true, yaUnido: false });
   });
+
+  it("no deja unirse a un concierto que ya pasó", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue({ ...CONCIERTO, fecha: "2020-01-01T21:00:00" });
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(conciertoService.unirsePorCodigo(YO, 1, "FANMEET2026")).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(usuariosConciertosRepository.crearRelacion).not.toHaveBeenCalled();
+  });
+});
+
+describe("conciertoService.listar", () => {
+  it("pide solo los conciertos que no pasaron", async () => {
+    conciertoRepository.listarTodos.mockResolvedValue([]);
+    await conciertoService.listar();
+    expect(conciertoRepository.listarTodos).toHaveBeenCalledWith({ soloProximos: true });
+  });
 });
 
 describe("conciertoService.obtenerDetalle (autorización)", () => {
