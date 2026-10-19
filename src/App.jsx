@@ -229,7 +229,7 @@ function App() {
   }
   async function manejarVerMasNotificacion(notificacion) {
     if (
-      (notificacion.tipo === "concierto_unido" || notificacion.tipo === "novedad_concierto") &&
+      ["concierto_unido", "novedad_concierto", "recordatorio_concierto"].includes(notificacion.tipo) &&
       notificacion.id_concierto
     ) {
       await manejarEntrarConcierto(notificacion.id_concierto);

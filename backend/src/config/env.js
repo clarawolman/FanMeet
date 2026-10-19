@@ -32,6 +32,10 @@ export const env = {
   // cantidad de fans unidos.
   minimoUnidosParaNotificar: Number(process.env.MINIMO_UNIDOS_PARA_NOTIFICAR) || 10,
 
+  // Cada cuántos minutos se chequea si hay que mandar el recordatorio del
+  // día del show. 0 lo apaga (por ejemplo, si lo dispara un cron externo).
+  recordatoriosCadaMinutos: Number(process.env.RECORDATORIOS_CADA_MINUTOS ?? 15),
+
   // Last.fm y Spotify son opcionales: si faltan, el backend arranca igual y
   // solo sus endpoints responden 503.
   lastfmApiKey: process.env.LASTFM_API_KEY || "",
