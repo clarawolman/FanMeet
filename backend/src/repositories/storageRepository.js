@@ -15,4 +15,24 @@ export const storageRepository = {
     const { data } = supabaseAdmin.storage.from(bucket).getPublicUrl(ruta);
     return data.publicUrl;
   },
+
+  // Borra todos los archivos de una carpeta (sin subcarpetas) y devuelve
+  // cuántos borró. list() trae de a 1000, así que se repite hasta vaciarla.
+  async eliminarCarpeta(bucket, carpeta) {
+    let borrados = 0;
+    for (;;) {
+      const { data, error } = await supabaseAdmin.storage.from(bucket).list(carpeta, { limit: 1000 });
+      if (error) {
+        throw ApiError.internal(`Error listando ${bucket}/${carpeta}: ${error.message}`);
+      }
+      const rutas = (data || []).filter((a) => a.id).map((a) => `${carpeta}/${a.name}`);
+      if (rutas.length === 0) return borrados;
+
+      const resultado = await supabaseAdmin.storage.from(bucket).remove(rutas);
+      if (resultado.error) {
+        throw ApiError.internal(`Error borrando ${bucket}/${carpeta}: ${resultado.error.message}`);
+      }
+      borrados += rutas.length;
+    }
+  },
 };

@@ -7,6 +7,7 @@ vi.mock("../src/repositories/backofficeRepository.js", () => ({
     obtenerOCrearArtista: vi.fn(),
     crearConcierto: vi.fn(),
     eliminarConcierto: vi.fn(),
+    eliminarGrupos: vi.fn(),
     cambiarEstadoUsuario: vi.fn(),
     banearEnAuth: vi.fn(),
   },
@@ -22,8 +23,16 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
   usuariosConciertosRepository: { listarUsuariosPorConcierto: vi.fn() },
 }));
 vi.mock("../src/repositories/grupoRepository.js", () => ({
-  grupoRepository: { listarPorIds: vi.fn(async () => []), obtenerPorId: vi.fn(), actualizar: vi.fn() },
-  grupoUsuarioRepository: {},
+  grupoRepository: {
+    listarPorIds: vi.fn(async () => []),
+    listarPorConcierto: vi.fn(async () => []),
+    obtenerPorId: vi.fn(),
+    actualizar: vi.fn(),
+  },
+  grupoUsuarioRepository: { listarUsuariosPorGrupo: vi.fn() },
+}));
+vi.mock("../src/repositories/storageRepository.js", () => ({
+  storageRepository: { eliminarCarpeta: vi.fn(async () => 0) },
 }));
 vi.mock("../src/repositories/mensajeRepository.js", () => ({ mensajeRepository: {} }));
 vi.mock("../src/repositories/mensajePrivadoRepository.js", () => ({ mensajePrivadoRepository: {} }));
@@ -41,7 +50,8 @@ const { usuarioRepository } = await import("../src/repositories/usuarioRepositor
 const { conciertoRepository, usuariosConciertosRepository } = await import(
   "../src/repositories/conciertoRepository.js"
 );
-const { grupoRepository } = await import("../src/repositories/grupoRepository.js");
+const { grupoRepository, grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
+const { storageRepository } = await import("../src/repositories/storageRepository.js");
 const { artistaFavoritoRepository } = await import("../src/repositories/artistaFavoritoRepository.js");
 const { backofficeService } = await import("../src/services/backofficeService.js");
 const { env } = await import("../src/config/env.js");
@@ -167,6 +177,61 @@ describe("backofficeService.eliminarConcierto", () => {
 
     await expect(backofficeService.eliminarConcierto(99)).rejects.toMatchObject({ status: 404 });
     expect(backofficeRepository.eliminarConcierto).not.toHaveBeenCalled();
+  });
+
+  it("borra también las fotos de los chats de sus grupos", async () => {
+    usuariosConciertosRepository.listarUsuariosPorConcierto.mockResolvedValue([]);
+    grupoRepository.listarPorConcierto.mockResolvedValue([{ id_grupo: 5 }, { id_grupo: 6 }]);
+
+    await backofficeService.eliminarConcierto(4);
+
+    expect(storageRepository.eliminarCarpeta.mock.calls).toEqual([
+      ["chats", "grupos/5"],
+      ["chats", "grupos/6"],
+    ]);
+  });
+});
+
+describe("backofficeService.eliminarGrupo", () => {
+  const GRUPO = { id_grupo: 9, nombre: "Previa en Palermo", foto: "https://cdn/grupo.png" };
+
+  beforeEach(() => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([
+      { id_usuario: "u0" },
+      { id_usuario: "u1" },
+    ]);
+  });
+
+  it("borra el grupo y sus fotos, y avisa a los integrantes sin link al grupo", async () => {
+    const resultado = await backofficeService.eliminarGrupo(9);
+
+    expect(backofficeRepository.eliminarGrupos).toHaveBeenCalledWith([9]);
+    expect(storageRepository.eliminarCarpeta).toHaveBeenCalledWith("chats", "grupos/9");
+    const filas = backofficeRepository.crearNotificaciones.mock.calls[0][0];
+    expect(filas.map((f) => f.id_usuario)).toEqual(["u0", "u1"]);
+    expect(filas[0]).toMatchObject({ tipo: "cambio_grupo", imagen: GRUPO.foto });
+    expect(filas[0].titulo).toMatch(/Se eliminó el grupo Previa en Palermo/);
+    expect(filas[0]).not.toHaveProperty("id_grupo");
+    expect(resultado).toEqual({ ok: true, notificados: 2 });
+  });
+
+  it("si falla el borrado de las fotos, el grupo se elimina igual", async () => {
+    storageRepository.eliminarCarpeta.mockRejectedValueOnce(new Error("Storage caído"));
+    vi.spyOn(console, "error").mockImplementationOnce(() => {});
+
+    const resultado = await backofficeService.eliminarGrupo(9);
+
+    expect(backofficeRepository.eliminarGrupos).toHaveBeenCalled();
+    expect(resultado.notificados).toBe(2);
+  });
+
+  it("responde 404 si el grupo no existe", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(null);
+
+    await expect(backofficeService.eliminarGrupo(99)).rejects.toMatchObject({ status: 404 });
+    expect(backofficeRepository.eliminarGrupos).not.toHaveBeenCalled();
+    expect(storageRepository.eliminarCarpeta).not.toHaveBeenCalled();
   });
 });
 

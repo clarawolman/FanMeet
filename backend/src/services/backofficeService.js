@@ -7,6 +7,7 @@ import {
 } from "../repositories/conciertoRepository.js";
 import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRepository.js";
 import { mensajeRepository } from "../repositories/mensajeRepository.js";
+import { storageRepository } from "../repositories/storageRepository.js";
 import { mensajePrivadoRepository } from "../repositories/mensajePrivadoRepository.js";
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
 import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
@@ -19,6 +20,19 @@ import { validarCupoNuevo } from "./grupoService.js";
 
 // Cuántos mensajes de contexto ve el moderador al revisar un reporte.
 const MENSAJES_DE_CONTEXTO = 100;
+
+// Fotos de los chats de grupo (bucket "chats", carpeta grupos/<id>, ver
+// services/fotosChat.js). Se borran después que los grupos: si falla, el
+// grupo ya no existe y solo quedan archivos sueltos, así que no corta la baja.
+async function borrarFotosDeGrupos(idsGrupo) {
+  for (const idGrupo of idsGrupo) {
+    try {
+      await storageRepository.eliminarCarpeta("chats", `grupos/${idGrupo}`);
+    } catch (error) {
+      console.error(`No se pudieron borrar las fotos del grupo ${idGrupo}:`, error);
+    }
+  }
+}
 
 function resumenUsuario(fila) {
   if (!fila) return null;
@@ -339,7 +353,9 @@ export const backofficeService = {
     if (!concierto) throw ApiError.notFound("El concierto no existe");
 
     const unidos = await usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto);
+    const grupos = await grupoRepository.listarPorConcierto(idConcierto);
     await backofficeRepository.eliminarConcierto(idConcierto);
+    await borrarFotosDeGrupos(grupos.map((g) => g.id_grupo));
 
     try {
       await backofficeRepository.crearNotificaciones(
@@ -409,6 +425,33 @@ export const backofficeService = {
     // El moderador no es integrante: se les avisa a todos.
     const notificados = await avisarCambiosDeGrupo(grupo, actualizado);
     return { grupo: actualizado, notificados };
+  },
+
+  // Borra el grupo con sus integrantes, mensajes y fotos del chat. A los
+  // integrantes les avisa (sin id_grupo: ya no hay a dónde llevarlos).
+  async eliminarGrupo(idGrupo) {
+    const grupo = await grupoRepository.obtenerPorId(idGrupo);
+    if (!grupo) throw ApiError.notFound("El grupo no existe");
+
+    const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+    await backofficeRepository.eliminarGrupos([grupo.id_grupo]);
+    await borrarFotosDeGrupos([grupo.id_grupo]);
+
+    const destinatarios = [...new Set(integrantes.map((i) => i.id_usuario))];
+    try {
+      await backofficeRepository.crearNotificaciones(
+        destinatarios.map((idUsuario) => ({
+          id_usuario: idUsuario,
+          tipo: "cambio_grupo",
+          titulo: `Se eliminó el grupo ${grupo.nombre}`,
+          descripcion: "Un moderador dio de baja el grupo junto con su chat.",
+          imagen: grupo.foto || "",
+        }))
+      );
+    } catch (error) {
+      console.error("No se pudo avisar la baja del grupo:", error);
+    }
+    return { ok: true, notificados: destinatarios.length };
   },
 
   async mensajesDeGrupo(idGrupo) {

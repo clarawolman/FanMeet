@@ -68,6 +68,10 @@ export const backofficeController = {
     res.json(await backofficeService.actualizarGrupo(req.params.idGrupo, req.body));
   }),
 
+  eliminarGrupo: asyncHandler(async (req, res) => {
+    res.json(await backofficeService.eliminarGrupo(req.params.idGrupo));
+  }),
+
   mensajesDeGrupo: asyncHandler(async (req, res) => {
     res.json(await backofficeService.mensajesDeGrupo(req.params.idGrupo));
   }),

@@ -150,25 +150,84 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
   );
 }
 
+function plural(cantidad, singular, varios) {
+  return `${cantidad} ${cantidad === 1 ? singular : varios}`;
+}
+
+function ConfirmarEliminar({ grupo, onListo, onCancelar }) {
+  const [eliminando, setEliminando] = useState(false);
+  const [error, setError] = useState("");
+
+  async function eliminar() {
+    setEliminando(true);
+    setError("");
+    try {
+      const { notificados } = await api.eliminarGrupo(grupo.id_grupo);
+      onListo(
+        `Se eliminó "${grupo.nombre}".` +
+          (notificados > 0 ? ` Se avisó a ${plural(notificados, "integrante", "integrantes")}.` : "")
+      );
+    } catch (err) {
+      setError(err.message);
+      setEliminando(false);
+    }
+  }
+
+  return (
+    <div className="tarjeta formulario">
+      <h2>¿Eliminar "{grupo.nombre}"?</h2>
+      <p>
+        Tiene {plural(grupo.cantidadIntegrantes, "integrante", "integrantes")} y{" "}
+        {plural(grupo.cantidadMensajes, "mensaje", "mensajes")}. Se borra el grupo con su chat (también las fotos) y
+        los integrantes reciben un aviso. No se puede deshacer.
+      </p>
+      {error && <p className="mensajeError">{error}</p>}
+      <div className="acciones">
+        <button className="boton botonPeligro" type="button" onClick={eliminar} disabled={eliminando}>
+          {eliminando ? "Eliminando…" : "Eliminar definitivamente"}
+        </button>
+        <button className="boton" type="button" onClick={onCancelar} disabled={eliminando}>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Grupos() {
   const { datos, error, cargando, recargar } = useCarga(() => api.grupos(), []);
   const conciertos = useCarga(() => api.conciertos(), []);
   const [abierto, setAbierto] = useState(null);
   // null = sin formulario, { grupo: null } = nuevo, { grupo } = editar.
   const [formulario, setFormulario] = useState(null);
+  const [aEliminar, setAEliminar] = useState(null);
   const [mensaje, setMensaje] = useState("");
-  const refPanel = useMostrarAlAbrir(formulario || mensaje);
+  const refPanel = useMostrarAlAbrir(formulario || aEliminar || mensaje);
   const refChat = useMostrarAlAbrir(abierto);
 
   function abrirFormulario(grupo) {
     setMensaje("");
+    setAEliminar(null);
     setFormulario({ grupo });
+  }
+
+  function abrirEliminar(grupo) {
+    setMensaje("");
+    setFormulario(null);
+    setAEliminar(grupo);
   }
 
   function terminar(texto) {
     setFormulario(null);
     setMensaje(texto);
     recargar();
+  }
+
+  function terminarEliminar(texto) {
+    // Si estaba abierto el chat del grupo borrado, se cierra.
+    setAbierto((chat) => (chat?.id_grupo === aEliminar.id_grupo ? null : chat));
+    setAEliminar(null);
+    terminar(texto);
   }
 
   return (
@@ -184,6 +243,10 @@ export default function Grupos() {
 
       <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
+
+      {aEliminar && (
+        <ConfirmarEliminar grupo={aEliminar} onListo={terminarEliminar} onCancelar={() => setAEliminar(null)} />
+      )}
 
       {formulario && (
         <Cargando error={conciertos.error} cargando={conciertos.cargando}>
@@ -240,6 +303,9 @@ export default function Grupos() {
                     {/* stopPropagation: la fila abre el chat. */}
                     <button className="botonTexto" type="button" onClick={(e) => { e.stopPropagation(); abrirFormulario(g); }}>
                       Editar
+                    </button>
+                    <button className="botonTexto botonTextoPeligro" type="button" onClick={(e) => { e.stopPropagation(); abrirEliminar(g); }}>
+                      Eliminar
                     </button>
                   </td>
                 </tr>

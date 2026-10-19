@@ -72,6 +72,7 @@ router.patch(
   validate(actualizarGrupoSchema),
   c.actualizarGrupo
 );
+router.delete("/grupos/:idGrupo", validate(idGrupoParamSchema, "params"), c.eliminarGrupo);
 router.get("/grupos/:idGrupo/mensajes", validate(idGrupoParamSchema, "params"), c.mensajesDeGrupo);
 
 export default router;
