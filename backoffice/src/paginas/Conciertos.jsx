@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Cargando } from "../componentes";
-import { fechaCorta, ordenarPorNombre, useCarga } from "../utilidades";
+import { fechaCorta, ordenarPorNombre, useCarga, useMostrarAlAbrir } from "../utilidades";
 
 const VACIO = {
   nombre: "",
@@ -355,6 +355,7 @@ export default function Conciertos() {
   // { tipo: "nuevo" | "editar" | "novedad" | "eliminar", concierto? }
   const [abierto, setAbierto] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const refPanel = useMostrarAlAbrir(abierto || mensaje);
 
   const { proximos, pasados } = separarProximosYPasados(conciertos.datos || []);
 
@@ -380,6 +381,7 @@ export default function Conciertos() {
         )}
       </div>
 
+      <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
       {abierto?.tipo === "eliminar" && (
@@ -399,6 +401,7 @@ export default function Conciertos() {
           />
         </Cargando>
       )}
+      </div>
 
       <Cargando error={conciertos.error} cargando={conciertos.cargando}>
         <h2 className="tituloSeccion">

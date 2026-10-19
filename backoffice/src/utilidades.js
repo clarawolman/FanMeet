@@ -1,4 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+// Los formularios y paneles se abren arriba de la tabla: si estabas
+// scrolleado abajo, parecía que el botón no hacía nada. Cada vez que
+// `valor` cambia a algo (un panel abierto, un mensaje), lleva la vista
+// hasta el elemento que tenga el ref.
+export function useMostrarAlAbrir(valor) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (valor) ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [valor]);
+  return ref;
+}
 
 // Carga datos de la API y expone { datos, error, cargando, recargar }.
 // Vuelve a cargar cuando cambian las dependencias o al llamar recargar().

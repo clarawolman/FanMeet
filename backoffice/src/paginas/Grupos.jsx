@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Cargando, Conversacion } from "../componentes";
-import { fechaCorta, ordenarPorNombre, useCarga } from "../utilidades";
+import { fechaCorta, ordenarPorNombre, useCarga, useMostrarAlAbrir } from "../utilidades";
 
 const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "Mismo día" };
 
@@ -157,6 +157,8 @@ export default function Grupos() {
   // null = sin formulario, { grupo: null } = nuevo, { grupo } = editar.
   const [formulario, setFormulario] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const refPanel = useMostrarAlAbrir(formulario || mensaje);
+  const refChat = useMostrarAlAbrir(abierto);
 
   function abrirFormulario(grupo) {
     setMensaje("");
@@ -180,6 +182,7 @@ export default function Grupos() {
         )}
       </div>
 
+      <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
       {formulario && (
@@ -193,10 +196,11 @@ export default function Grupos() {
           />
         </Cargando>
       )}
+      </div>
 
       <Cargando error={error} cargando={cargando}>
         {abierto && (
-          <section className="tarjeta">
+          <section ref={refChat} className="tarjeta anclaPanel">
             <div className="tituloConAccion">
               <h2>Chat de "{abierto.nombre}"</h2>
               <button className="botonTexto" type="button" onClick={() => setAbierto(null)}>

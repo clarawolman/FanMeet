@@ -1094,3 +1094,9 @@ textarea:focus {
   margin-top: 6px;
   font-size: var(--fm-fs-body);
 }
+
+/* Panel que se abre arriba de la tabla: al scrollear hasta él, que no
+   quede pegado al borde de la ventana. */
+.anclaPanel {
+  scroll-margin-top: 16px;
+}
