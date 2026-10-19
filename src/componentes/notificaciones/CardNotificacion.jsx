@@ -25,8 +25,11 @@ function CardNotificacion({
   onRechazarSolicitud,
   procesando = false,
 }) {
-  const { tipo, titulo, descripcion, imagen, created_at } = notificacion;
+  const { tipo, titulo, descripcion, created_at } = notificacion;
   const esSolicitudAmistad = tipo === "solicitud_amistad";
+  // Algunas notificaciones viejas guardaron la vista previa local de la foto
+  // ("blob:..."), que solo existía en el navegador donde se creó.
+  const imagen = notificacion.imagen?.startsWith("blob:") ? "" : notificacion.imagen;
 
   return (
     <article className="cardNotificacion">

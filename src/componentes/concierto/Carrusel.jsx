@@ -61,7 +61,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
       <div className="SubEventosCarrusel" ref={ref}>
         {subEventos.map((ev) => (
           <SubEventos
-            key={ev.id}
+            key={ev.id_grupo}
             subEvento={ev}
             onAbrirGrupo={onAbrirGrupo}
           />
