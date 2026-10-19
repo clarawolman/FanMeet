@@ -18,6 +18,7 @@ import { conciertoYaPaso } from "../helpers/fechas.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
+import { olvidarEstadoUsuario } from "../middlewares/authMiddleware.js";
 import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
 import { validarCupoNuevo } from "./grupoService.js";
 
@@ -322,6 +323,7 @@ export const backofficeService = {
     }
 
     const actualizado = await backofficeRepository.cambiarEstadoUsuario(idUsuario, { estado, motivo });
+    olvidarEstadoUsuario(idUsuario);
     try {
       await backofficeRepository.banearEnAuth(idUsuario, estado === "suspendido");
     } catch (error) {

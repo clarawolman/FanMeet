@@ -1,0 +1,17 @@
+# El plan gratis de Render apaga el backend después de ~15 minutos sin
+# requests, y la primera request siguiente tarda 30-50 segundos en
+# despertarlo. Esto le pega a /health cada 10 minutos para que no se duerma.
+# GitHub puede atrasar unos minutos las ejecuciones programadas.
+name: Mantener backend despierto
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pegarle a /health
+        run: curl -fsS --max-time 90 --retry 2 "${{ vars.BACKEND_URL || 'https://fanmeet-o0h4.onrender.com' }}/health"

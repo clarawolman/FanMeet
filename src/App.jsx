@@ -1,25 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useContext, useEffect, useRef, useState } from "react";
 
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
 import PaginaNoEncontrada from "./componentes/generales/PaginaNoEncontrada";
-import Concierto from "./componentes/concierto/Concierto";
-import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
-import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
-import Home from "./componentes/home/Home";
 import IniciarSesionRegistrarse from "./componentes/Login/IniciarSesion-Registrarse/IniciarSesionRegistrarse";
-import Registro1 from "./componentes/Login/Registro1/Registro1";
-import Registro2 from "./componentes/Login/Registro2/Registro2";
-import Registro3 from "./componentes/Login/Registro3/Registro3";
-import VerificarMail from "./componentes/Login/VerificarMail/VerificarMail";
-import MisEventos from "./componentes/misEventos/MisEventos";
-import MisGrupos from "./componentes/misGrupos/MisGrupos";
-import Perfil from "./componentes/perfil/perfil";
-import EditarGeneros from "./componentes/editarGeneros/EditarGeneros";
-import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
-import Notificaciones from "./componentes/notificaciones/Notificaciones";
-import Chats from "./componentes/chats/Chats";
-import Descubrir from "./componentes/descubrir/Descubrir";
-import MomentoDetalle from "./componentes/momento/MomentoDetalle";
 import MenuLateral from "./componentes/generales/MenuLateral";
 import Avisos from "./componentes/generales/Avisos";
 import { ID_CHATBOT } from "./services/chatbotService";
@@ -33,6 +16,26 @@ import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
 import { supabase } from "./supabase";
 import { leerRuta, rutaDePantalla, tituloDePantalla, PANTALLAS_SIN_SESION } from "./utils/rutas";
+
+// Cada pantalla se descarga recién cuando se abre (code splitting), así la
+// primera carga baja mucho menos JavaScript.
+const Concierto = lazy(() => import("./componentes/concierto/Concierto"));
+const InfoGrupo = lazy(() => import("./componentes/infoGrupos/infoGrupo"));
+const CrearGrupo = lazy(() => import("./componentes/crearGrupo/CrearGrupo"));
+const Home = lazy(() => import("./componentes/home/Home"));
+const Registro1 = lazy(() => import("./componentes/Login/Registro1/Registro1"));
+const Registro2 = lazy(() => import("./componentes/Login/Registro2/Registro2"));
+const Registro3 = lazy(() => import("./componentes/Login/Registro3/Registro3"));
+const VerificarMail = lazy(() => import("./componentes/Login/VerificarMail/VerificarMail"));
+const MisEventos = lazy(() => import("./componentes/misEventos/MisEventos"));
+const MisGrupos = lazy(() => import("./componentes/misGrupos/MisGrupos"));
+const Perfil = lazy(() => import("./componentes/perfil/perfil"));
+const EditarGeneros = lazy(() => import("./componentes/editarGeneros/EditarGeneros"));
+const FansUnidosLista = lazy(() => import("./componentes/concierto/FansUnidosLista"));
+const Notificaciones = lazy(() => import("./componentes/notificaciones/Notificaciones"));
+const Chats = lazy(() => import("./componentes/chats/Chats"));
+const Descubrir = lazy(() => import("./componentes/descubrir/Descubrir"));
+const MomentoDetalle = lazy(() => import("./componentes/momento/MomentoDetalle"));
 
 // Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
 // motivo acá para mostrarlo en el login después de recargar.
@@ -615,7 +618,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
   }
 
   return (
-    <>
+    <Suspense fallback={<CargandoPantalla texto="Cargando..." />}>
       <Avisos />
       {!esPantallaLogin && usuarioActual && (
         <MenuLateral
@@ -844,7 +847,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onEnviarMensaje={manejarEnviarMensaje}
         />
       )}
-    </>
+    </Suspense>
   );
 }
 

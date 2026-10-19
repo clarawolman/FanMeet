@@ -1,5 +1,5 @@
 import "./Marca.css";
-import imLogo from "../../assets/imLogo.png";
+import imLogo from "../../assets/imLogo.webp";
 
 // Marca de FanMeet: el logo + el nombre. Se usa en el sidebar, el header,
 // el login y el registro.
