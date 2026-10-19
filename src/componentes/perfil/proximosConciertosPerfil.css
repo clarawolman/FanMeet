@@ -1,4 +1,7 @@
 .proximosConciertosPerfil {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
   padding: 0 var(--perfil-gutter, 16px);
 }
 
@@ -22,14 +25,14 @@
   border: none;
   background: transparent;
   padding: 0;
-  color: var(--fm-ink);
+  color: var(--fm-accent-soft-ink);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-xs);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   text-decoration: underline;
-  text-decoration-color: var(--fm-border-strong);
+  text-decoration-color: var(--fm-accent-soft-border);
   text-underline-offset: 4px;
 }
 
@@ -40,7 +43,8 @@
 .proximosConciertosPerfilVacio {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 12px;
   border: 1px solid var(--fm-border);
   border-radius: var(--fm-radius-md);
@@ -56,20 +60,20 @@
 }
 
 .proximosConciertosPerfilDescubrir {
-  border: 1px solid var(--fm-border-strong);
+  border: none;
   border-radius: var(--fm-radius-pill);
-  background: var(--fm-surface);
-  color: var(--fm-ink);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
   padding: 9px 18px;
   font-family: var(--fm-font-display);
   font-size: var(--fm-fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background var(--fm-dur) var(--fm-ease);
 }
 
 .proximosConciertosPerfilDescubrir:hover {
-  background: var(--fm-accent-soft-bg);
+  background: var(--fm-accent-hover);
 }
 
 .proximosConciertosPerfilLista {
@@ -95,6 +99,14 @@
 
 .proximoConciertoItem:hover {
   border-color: var(--fm-border-strong);
+}
+
+.proximoConciertoItem--fijo {
+  cursor: default;
+}
+
+.proximoConciertoItem--fijo:hover {
+  border-color: var(--fm-border);
 }
 
 .proximoConciertoImagen {
@@ -132,6 +144,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.proximoConciertoFecha {
+  color: var(--fm-accent-soft-ink);
+  font-weight: 500;
 }
 
 .proximoConciertoFlecha {

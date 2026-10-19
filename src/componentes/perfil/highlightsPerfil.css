@@ -44,9 +44,9 @@
   aspect-ratio: 1 / 1;
   width: 100%;
   border-radius: var(--fm-radius-md);
-  border: 1px solid var(--fm-border-strong);
-  background: var(--fm-surface);
-  color: var(--fm-ink);
+  border: 1.5px dashed var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent);
   font-size: var(--fm-fs-xl);
   font-weight: 400;
   cursor: pointer;

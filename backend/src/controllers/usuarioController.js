@@ -24,6 +24,11 @@ export const usuarioController = {
     res.json(usuario);
   }),
 
+  buscar: asyncHandler(async (req, res) => {
+    const usuarios = await usuarioService.buscar(req.user.id, req.query.q);
+    res.json(usuarios);
+  }),
+
   obtenerMiPerfil: asyncHandler(async (req, res) => {
     const usuario = await usuarioService.obtenerPerfil(req.user.id);
     res.json(usuario);

@@ -20,6 +20,10 @@ export const buscarGeneroSchema = z.object({
   q: z.string().trim().min(1, "Escribí algo para buscar").max(60),
 });
 
+export const buscarUsuarioSchema = z.object({
+  q: z.string().trim().min(2, "Escribí al menos 2 letras").max(40),
+});
+
 export const nombreGeneroSchema = z.object({
   nombre: z.string().trim().min(1, "Escribí un género").max(60),
 });

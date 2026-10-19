@@ -8,6 +8,7 @@ import Usuarios from "./paginas/Usuarios";
 import UsuarioDetalle from "./paginas/UsuarioDetalle";
 import Conciertos from "./paginas/Conciertos";
 import Grupos from "./paginas/Grupos";
+import { ICONOS, Marca, useTema } from "./componentes";
 
 const SECCIONES = [
   { id: "resumen", texto: "Resumen" },
@@ -30,6 +31,7 @@ export default function App() {
   const [sesion, setSesion] = useState("cargando");
   const [ruta, setRuta] = useState(leerRuta);
   const [avisoLogin, setAvisoLogin] = useState("");
+  const tema = useTema();
 
   useEffect(() => {
     const alCambiar = () => setRuta(leerRuta());
@@ -84,23 +86,33 @@ export default function App() {
   return (
     <div className="layout">
       <aside className="menu">
-        <div className="marca">
-          <img src="/Favicon.png" alt="" />
-          <div>
-            <strong>FanMeet</strong>
-            <span>Backoffice</span>
-          </div>
-        </div>
-        <nav>
-          {SECCIONES.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className={ruta.seccion === s.id ? "activo" : ""}>
-              {s.texto}
-            </a>
-          ))}
+        <Marca />
+        <nav aria-label="Principal">
+          {SECCIONES.map((s) => {
+            const activo = ruta.seccion === s.id;
+            return (
+              <a
+                key={s.id}
+                href={`#${s.id}`}
+                className={`itemMenu ${activo ? "activo" : ""}`}
+                aria-current={activo ? "page" : undefined}
+              >
+                {ICONOS[s.id]}
+                <span>{s.texto}</span>
+              </a>
+            );
+          })}
         </nav>
-        <button className="botonTexto cerrarSesion" type="button" onClick={cerrarSesion}>
-          Cerrar sesión
-        </button>
+        <div className="menuPie">
+          <button className="itemMenu" type="button" onClick={tema.alternar}>
+            {tema.oscuro ? ICONOS.sol : ICONOS.luna}
+            <span>{tema.oscuro ? "Modo día" : "Modo noche"}</span>
+          </button>
+          <button className="itemMenu" type="button" onClick={cerrarSesion}>
+            {ICONOS.salir}
+            <span>Cerrar sesión</span>
+          </button>
+        </div>
       </aside>
       <main className="contenido">{pagina}</main>
     </div>

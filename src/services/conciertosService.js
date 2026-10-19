@@ -13,6 +13,10 @@ export const conciertosService = {
     return api.get("/conciertos/mis-eventos");
   },
 
+  async listarDeUsuario(idUsuario) {
+    return api.get(`/conciertos/usuario/${idUsuario}`);
+  },
+
   async unirsePorCodigo(idConcierto, codigo) {
     return api.post(`/conciertos/${idConcierto}/unirse`, { codigo });
   },

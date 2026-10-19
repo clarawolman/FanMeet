@@ -315,3 +315,18 @@
 .tarjetaBoton:not(.tarjetaBoton--secundario):hover {
   background: var(--fm-cta-hover);
 }
+
+/* Sin eventos / sin grupos: card compacta, centrada a lo ancho */
+.listaLayout > .listaMensaje,
+.listaSeccion > .listaMensaje {
+  align-self: center;
+  width: 100%;
+  max-width: 460px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .listaLayout:has(> .listaMensaje) {
+    margin-inline: auto;
+  }
+}

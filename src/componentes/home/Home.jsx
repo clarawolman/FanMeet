@@ -10,7 +10,7 @@ import { partesFecha } from "../../utils/fechas";
 import Footer from "../generales/Footer";
 import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
-import { IconoBuscar } from "../generales/iconosNav";
+import Buscador from "../generales/Buscador";
 import CarruselFila from "./CarruselFila";
 import FansCompatiblesHome from "./FansCompatiblesHome";
 import BotonChatbot from "../chatbot/BotonChatbot";
@@ -364,17 +364,12 @@ const generosOrdenados = [...generos].sort((a, b) => {
           )}
           <h1>¿A qué recital vas?</h1>
 
-          <label className="home-search-campo">
-            <IconoBuscar className="home-search-icono" />
-
-            <input
-              type="search"
-              aria-label="Buscar conciertos"
-              placeholder="Artista, show, estadio o ciudad"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </label>
+          <Buscador
+            valor={busqueda}
+            onCambiar={setBusqueda}
+            etiqueta="Buscar conciertos"
+            placeholder="Artista, show, estadio o ciudad"
+          />
         </div>
 
         {cargando && <EsqueletoFila />}

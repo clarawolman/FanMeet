@@ -111,9 +111,13 @@ export const conciertoService = {
   },
 
   async listarMisEventos(idUsuarioAutenticado) {
-    const relaciones = await usuariosConciertosRepository.listarConciertosPorUsuario(
-      idUsuarioAutenticado
-    );
+    return conciertoService.listarEventosDeUsuario(idUsuarioAutenticado);
+  },
+
+  // Conciertos a los que se unió una persona (próximos y pasados). Es
+  // público para cualquier usuario logueado: se muestra en su perfil.
+  async listarEventosDeUsuario(idUsuario) {
+    const relaciones = await usuariosConciertosRepository.listarConciertosPorUsuario(idUsuario);
 
     const eventos = await Promise.all(
       relaciones.map(async ({ id_concierto }) => {

@@ -95,7 +95,7 @@ function Perfil({
   const [idAmistad, setIdAmistad] = useState(null);
   const [cargandoAmistad, setCargandoAmistad] = useState(false);
   const [proximosEventos, setProximosEventos] = useState([]);
-  const [cargandoEventos, setCargandoEventos] = useState(isOwnProfile);
+  const [cargandoEventos, setCargandoEventos] = useState(true);
 
   useEffect(() => {
     if (usuario?.id_usuario) {
@@ -119,14 +119,12 @@ function Perfil({
   }
 
   async function cargarProximosEventos() {
-    // Solo existe endpoint para "mis eventos" del usuario autenticado, así
-    // que en un perfil ajeno no hay de dónde traer esta lista.
-    if (!isOwnProfile) return;
-
     setCargandoEventos(true);
 
     try {
-      const eventos = await conciertosService.listarMisEventos();
+      const eventos = isOwnProfile
+        ? await conciertosService.listarMisEventos()
+        : await conciertosService.listarDeUsuario(usuario.id_usuario);
       setProximosEventos(eventos || []);
     } catch (error) {
       console.error("Error cargando próximos conciertos:", error);
@@ -380,15 +378,13 @@ function Perfil({
           onSeleccionar={manejarSeleccionarVibra}
         />
 
-        {isOwnProfile && (
-          <ProximosConciertosPerfil
-            eventos={proximosEventos}
-            cargando={cargandoEventos}
-            onVerConcierto={(evento) => onIngresarConcierto?.(evento.id_concierto)}
-            onVerTodos={() => onNavegar?.("misEventos")}
-            onDescubrir={() => onNavegar?.("home")}
-          />
-        )}
+        <ProximosConciertosPerfil
+          eventos={proximosEventos}
+          cargando={cargandoEventos}
+          isOwnProfile={isOwnProfile}
+          onVerConcierto={(evento) => onIngresarConcierto?.(evento.id_concierto)}
+          onDescubrir={() => onNavegar?.("home")}
+        />
 
         <HighlightsPerfil
           highlights={highlights}

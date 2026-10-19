@@ -6,11 +6,18 @@ import {
   idConciertoParamSchema,
   unirseConciertoSchema,
 } from "../validators/conciertoValidators.js";
+import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
 
 const router = Router();
 
 router.get("/", authMiddleware, conciertoController.listar);
 router.get("/mis-eventos", authMiddleware, conciertoController.listarMisEventos);
+router.get(
+  "/usuario/:idUsuario",
+  authMiddleware,
+  validate(idUsuarioParamSchema, "params"),
+  conciertoController.listarDeUsuario
+);
 router.get(
   "/:idConcierto",
   authMiddleware,

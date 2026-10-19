@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { Marca } from "../componentes";
 
 export default function Login({ aviso, onIngresar }) {
   const [usuario, setUsuario] = useState("");
@@ -22,9 +23,9 @@ export default function Login({ aviso, onIngresar }) {
 
   return (
     <div className="pantallaLogin">
-      <form className="tarjeta loginCaja" onSubmit={manejarEnviar}>
-        <img src="/Favicon.png" alt="" className="loginLogo" />
-        <h1>Backoffice</h1>
+      <form className="loginCaja" onSubmit={manejarEnviar}>
+        <Marca />
+        <h1>Moderación</h1>
         <p className="textoSuave">Entrá con tu cuenta de moderador de FanMeet.</p>
 
         {aviso && <p className="mensajeError">{aviso}</p>}

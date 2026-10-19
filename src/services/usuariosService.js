@@ -5,6 +5,11 @@ export const usuariosService = {
     return api.get("/usuarios/me");
   },
 
+  // [{ id_usuario, nombre, apodo, foto_perfil, edad }]
+  async buscar(texto) {
+    return api.get(`/usuarios/buscar?q=${encodeURIComponent(texto)}`);
+  },
+
   async obtenerPerfil(idUsuario) {
     return api.get(`/usuarios/${idUsuario}`);
   },
