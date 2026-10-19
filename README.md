@@ -47,6 +47,19 @@ Reglas de moderación:
 - Backoffice: Root Directory = `backoffice`. Mismas tres variables.
 - En el backend, poner `FRONTEND_URL` y `BACKOFFICE_URL` con las URLs de Vercel, y `CORS_ORIGIN` con la de la app de fans. El backend acepta las dos URLs por CORS.
 
+## Perfil: descripción, @nombre y momentos compartidos
+
+Setup: correr en el SQL Editor, en este orden (después de `backoffice.sql`): `supabase/perfil_momentos.sql` y `supabase/momentos_publicaciones.sql`.
+
+- "Editar perfil" cambia el nombre (apodo), la descripción (hasta 160 caracteres) y el @nombre de usuario. El @nombre se puede cambiar una vez cada 15 días y no puede estar en uso (sin importar mayúsculas).
+- Los momentos funcionan como publicaciones de Instagram (pantalla `/momento/:id`):
+  - Hasta 10 fotos en carrusel, pie de foto (hasta 2200 caracteres) y el concierto donde fue (solo conciertos a los que se unió).
+  - Etiquetar hasta 10 amigos: les llega una invitación y, si aceptan, el momento aparece también en su perfil. Quien lo borra solo lo saca de su perfil; las fotos se borran cuando ya no lo tiene nadie.
+  - Me gusta (también con doble toque), lista de a quiénes les gustó y opción de ocultar la cantidad.
+  - Comentarios con respuestas y me gusta; los borra quien los escribió o quien tenga el momento en su perfil. Se pueden desactivar. Pasan por el filtro de malas palabras.
+  - Guardar (pestaña "Guardados" del propio perfil, solo la ve uno), compartir por chat privado a amigos o copiar el enlace, editar el pie/concierto/opciones ("Editado") y fijar hasta 3 arriba del perfil.
+  - Avisos: me gusta, comentarios y respuestas.
+
 ## Música en el perfil: Last.fm + Spotify (opcional)
 
 - **"Lo que escuchás"** (top artistas, canciones y álbumes por período y escuchas recientes) sale de **Last.fm**. Cada usuario escribe su nombre de usuario de Last.fm en el perfil; para que refleje lo que escucha en Spotify, tiene que vincular Spotify en last.fm -> Settings -> Applications.

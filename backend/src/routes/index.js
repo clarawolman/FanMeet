@@ -13,6 +13,7 @@ import matchingRoutes from "./matchingRoutes.js";
 import chatbotRoutes from "./chatbotRoutes.js";
 import reporteRoutes from "./reporteRoutes.js";
 import backofficeRoutes from "./backofficeRoutes.js";
+import momentoRoutes from "./momentoRoutes.js";
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use("/matching", matchingRoutes);
 router.use("/chatbot", chatbotRoutes);
 router.use("/reportes", reporteRoutes);
 router.use("/backoffice", backofficeRoutes);
+router.use("/momentos", momentoRoutes);
 
 export default router;

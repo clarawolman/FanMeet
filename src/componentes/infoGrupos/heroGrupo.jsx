@@ -1,26 +1,23 @@
 import "./heroGrupo.css";
-export default function HeroGrupo({ grupo }) {
 
-   return (
-      <div className="heroGrupo">
+const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "El mismo día" };
 
-         <div className="heroImageContainer">
+// Foto del grupo a sangre con la categoría, el nombre y de qué concierto es.
+export default function HeroGrupo({ grupo, concierto }) {
+  const nombreConcierto = concierto?.nombre || grupo.concierto?.nombre;
 
-            <img
-               src={grupo.foto}
-               alt={grupo.nombre}
-            />
-
-         </div>
-
-         <h1>
-            {grupo.nombre}
-
-            <span>
-               {grupo.concierto?.nombre}
-            </span>
-         </h1>
-
+  return (
+    <div className="heroGrupo">
+      <div className="heroImageContainer">
+        <img src={grupo.foto} alt="" />
       </div>
-   );
+
+      {CATEGORIAS[grupo.categoria] && <span className="heroGrupoCategoria">{CATEGORIAS[grupo.categoria]}</span>}
+
+      <div className="heroGrupoTexto">
+        {nombreConcierto && <p className="heroGrupoConcierto">{nombreConcierto}</p>}
+        <h1>{grupo.nombre}</h1>
+      </div>
+    </div>
+  );
 }

@@ -1,4 +1,11 @@
+import multer from "multer";
 import { ApiError } from "../helpers/ApiError.js";
+
+const MENSAJES_MULTER = {
+  LIMIT_FILE_SIZE: "Cada foto puede pesar hasta 5 MB",
+  LIMIT_FILE_COUNT: "Subiste demasiadas fotos",
+  LIMIT_UNEXPECTED_FILE: "Subiste demasiadas fotos",
+};
 
 export function notFoundHandler(req, _res, next) {
   next(ApiError.notFound(`No existe la ruta ${req.method} ${req.originalUrl}`));
@@ -12,6 +19,10 @@ export function notFoundHandler(req, _res, next) {
 // nombres de tabla/columna/constraint u otra info interna. El detalle
 // completo solo queda en el log del servidor.
 export function errorHandler(err, _req, res, _next) {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: MENSAJES_MULTER[err.code] || "No se pudo subir el archivo" });
+  }
+
   if (err instanceof ApiError) {
     // Los 503 los lanzamos a proposito con un texto pensado para el usuario
     // ("Last.fm está limitando las consultas..."): esos si pasan.

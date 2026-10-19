@@ -1,8 +1,9 @@
+/* Tapa el perfil pero no la barra de abajo ni el sidebar (--fm-z-nav) */
 .listaAmigosPerfil {
   position: fixed;
   inset: 0;
-  z-index: var(--fm-z-sheet);
-  min-height: 100dvh;
+  z-index: calc(var(--fm-z-nav) - 1);
+  min-height: calc(100dvh / var(--fm-zoom));
   background-color: var(--fm-bg);
   font-family: var(--fm-font-body);
   overflow-y: auto;
@@ -62,7 +63,11 @@
   color: var(--fm-ink);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .listaAmigosPerfil {
+    left: var(--fm-sidebar);
+  }
+
   .listaAmigosPerfilMain {
     padding: 20px 32px;
   }

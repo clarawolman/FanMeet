@@ -126,7 +126,7 @@
   background: var(--fm-accent);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .registro3Contenido {
     max-width: calc(920px + 48px);
     padding-top: 40px;

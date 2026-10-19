@@ -1,10 +1,22 @@
-import { useRef } from "react";
+import { Children, useLayoutEffect, useRef } from "react";
 import "./CarruselFila.css";
 import { IconoAnterior, IconoSiguiente } from "../generales/iconosNav";
 
 export default function CarruselFila({ children }) {
   const scrollRef = useRef(null);
   const arrastre = useRef({ activo: false, inicioX: 0, scrollInicial: 0, movio: false });
+
+  // Si cambian las cards (ej. "Para vos" muestra primero las de tus géneros
+  // y después llegan las del backend en otro orden), el scroll-snap se queda
+  // pegado a la card en la que estaba, que puede haber quedado en el medio.
+  // Cuando cambia la lista, el carrusel vuelve al principio.
+  const claves = Children.toArray(children)
+    .map((hijo) => hijo?.key)
+    .join("|");
+
+  useLayoutEffect(() => {
+    scrollRef.current?.scrollTo({ left: 0, behavior: "instant" });
+  }, [claves]);
 
   function desplazar(direccion) {
     const el = scrollRef.current;

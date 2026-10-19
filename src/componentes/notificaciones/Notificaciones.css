@@ -1,36 +1,192 @@
 .pantallaNotificaciones {
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
-  padding-bottom: 96px;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
-/* ============================
-        LISTA
-============================ */
-
-.notificacionesLista {
+/* container: el filtro se acomoda al ancho real (ver Concierto.css) */
+.notificacionesContenido {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding: 8px 8px 20px;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+  box-sizing: border-box;
 }
 
-.mensajeNotificaciones {
-  font-family: var(--fm-font-mono);
-  color: var(--fm-muted);
+.notificacionesIntro h2 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--fm-ink);
+}
+
+.notificacionesIntro p {
+  margin: 6px 0 0;
   font-size: var(--fm-fs-sm);
-  text-align: center;
-  padding: 40px 0;
+  color: var(--fm-muted);
 }
 
-@media (min-width: 768px) {
+/* ===== SECCIONES: Nuevas / Hoy / Esta semana / Antes ===== */
+.notificacionesSeccion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notificacionesSeccionTitulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0 4px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fm-ink);
+}
+
+.notificacionesSeccionCantidad {
+  min-width: 20px;
+  padding: 2px 7px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* cada sección es una card con las filas adentro */
+.notificacionesGrupo {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+}
+
+/* ===== CARGANDO ===== */
+.notificacionEsqueleto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+}
+
+.notificacionEsqueletoFoto {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.notificacionEsqueletoTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notificacionEsqueletoTexto .fmSkeleton {
+  height: 12px;
+  border-radius: var(--fm-radius-pill);
+}
+
+.notificacionEsqueletoTexto .fmSkeleton:first-child {
+  width: 55%;
+}
+
+.notificacionEsqueletoTexto .fmSkeleton:last-child {
+  width: 80%;
+}
+
+/* ===== VACÍO ===== */
+.notificacionesVacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 44px 24px 40px;
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+  text-align: center;
+}
+
+/* la campana con dos anillos, como ondas de un aviso */
+.notificacionesVacioIcono {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent);
+}
+
+.notificacionesVacioIcono::before,
+.notificacionesVacioIcono::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 1px solid var(--fm-accent-soft-border);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.notificacionesVacioIcono::after {
+  inset: -22px;
+  opacity: 0.3;
+}
+
+.notificacionesVacioIcono svg {
+  width: 30px;
+  height: 30px;
+}
+
+.notificacionesVacio h3 {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fm-ink);
+}
+
+.notificacionesVacio p {
+  max-width: 36ch;
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
+  color: var(--fm-muted);
+  text-wrap: pretty;
+}
+
+.notificacionesVacio .fmBotonPrimario {
+  margin-top: 14px;
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaNotificaciones {
     padding-left: var(--fm-sidebar);
+    padding-bottom: 40px;
   }
 
-  .notificacionesLista {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 24px 24px 40px;
+  .notificacionesContenido {
+    gap: 20px;
+    padding: 28px 24px 40px;
   }
 }

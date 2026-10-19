@@ -1,7 +1,7 @@
 /* ===== Compartido por los 3 pasos del registro ===== */
 
 .regPantalla {
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   color: var(--fm-ink);
   display: flex;
@@ -81,7 +81,7 @@
 .regTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: clamp(28px, 7.5vw, 38px);
+  font-size: clamp(28px, calc(7.5vw / var(--fm-zoom)), 38px);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -107,7 +107,7 @@
   margin-top: 20px;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .regHeader {
     padding-top: 28px;
   }
@@ -117,7 +117,7 @@
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .regPantallaAncha .regHeaderFila,
   .regPantallaAncha .regBarra {
     max-width: 920px;

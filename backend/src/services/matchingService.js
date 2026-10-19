@@ -36,7 +36,7 @@ const PESO_SIMILARES = 0.4;
 const PESO_FAMILIA = 0.5;
 const MAX_DESCUBRIR = 50;
 // En Descubrir solo aparece gente con la que hay buena afinidad.
-const MIN_PORCENTAJE_DESCUBRIR = 60;
+const MIN_PORCENTAJE_DESCUBRIR = 40;
 // Cuántos "más parecidos" se muestran cuando nadie llega a ese mínimo.
 const MAX_CERCANOS = 6;
 const MAX_RECOMENDACIONES = 10;
@@ -463,9 +463,9 @@ export const matchingService = {
     return compararPerfiles(yo, otro, base.vocabulario);
   },
 
-  // Gente nueva con 60% o más de compatibilidad, de mayor a menor. Quedan
+  // Gente nueva con 40% o más de compatibilidad, de mayor a menor. Quedan
   // afuera los amigos y con quien ya hay una solicitud pendiente (enviada
-  // o recibida). Si nadie llega al 60%, se devuelven los más parecidos
+  // o recibida). Si nadie llega al 40%, se devuelven los más parecidos
   // igual (soloCercanos: true) para que la sección no quede vacía.
   async descubrir(idYo) {
     const [base, amistades] = await Promise.all([

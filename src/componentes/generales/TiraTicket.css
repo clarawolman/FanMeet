@@ -1,0 +1,108 @@
+.tiraTicket {
+  --muesca: 9px;
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  background: var(--fm-surface);
+  border-radius: var(--fm-radius-lg);
+  box-shadow: var(--fm-shadow);
+}
+
+/* muescas a los costados, del color del fondo */
+.tiraTicket::before,
+.tiraTicket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: calc(var(--muesca) * 2);
+  height: calc(var(--muesca) * 2);
+  margin-top: calc(var(--muesca) * -1);
+  border-radius: 50%;
+  background: var(--fm-bg);
+}
+
+.tiraTicket::before {
+  left: calc(var(--muesca) * -1);
+}
+
+.tiraTicket::after {
+  right: calc(var(--muesca) * -1);
+}
+
+.tiraTicketCelda {
+  min-width: 0;
+  padding: 14px 16px 15px;
+}
+
+.tiraTicketCelda + .tiraTicketCelda {
+  border-left: 1.5px dashed var(--fm-border-strong);
+}
+
+.tiraTicket dt {
+  margin-bottom: 3px;
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
+
+.tiraTicket dd {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--fm-fs-body);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--fm-ink);
+  overflow-wrap: break-word; /* parte entre palabras, no "Monument / al" */
+  hyphens: auto;
+}
+
+.tiraTicket dd small {
+  margin-top: 2px;
+  font-size: var(--fm-fs-xs);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--fm-muted);
+}
+
+/* si el contenido es angosto (celular, o tablet con sidebar), 3 celdas no
+   entran cómodas: la última va abajo a lo ancho */
+@container (max-width: 600px) {
+  .tiraTicket {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* la última va sola abajo, a lo ancho y centrada */
+  .tiraTicketCelda:nth-child(3) {
+    grid-column: 1 / -1;
+    border-left: none;
+    border-top: 1.5px dashed var(--fm-border-strong);
+    text-align: center;
+  }
+
+  .tiraTicketCelda:nth-child(3) dd {
+    align-items: center;
+  }
+
+  .tiraTicket::before,
+  .tiraTicket::after {
+    display: none;
+  }
+}
+
+@container (min-width: 720px) {
+  .tiraTicketCelda {
+    padding: 18px 22px 19px;
+  }
+
+  .tiraTicket dd {
+    font-size: var(--fm-fs-md);
+  }
+}

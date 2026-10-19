@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap");
 
 /* ===== TOKENS =====
    Base neutra (sin tinte crema) para que las fotos de los artistas sean
@@ -88,6 +88,9 @@
   /* layout */
   --fm-sidebar: 248px;
   --fm-contenido: 1120px;
+  /* escala de toda la interfaz según el ancho de la ventana; la calcula
+     utils/escalaPantalla.js. Quien use vh/vw tiene que dividir por esto */
+  --fm-zoom: 1;
 
   /* capas */
   --fm-z-raised: 10;
@@ -105,8 +108,9 @@
   --fm-font-body: "Geist", system-ui, -apple-system, sans-serif;
   /* histórico: lo usan botones y labels, queda en la sans */
   --fm-font-mono: var(--fm-font-body);
-  /* datos tipo ticket: fechas, contadores, porcentajes */
-  --fm-font-data: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* fechas, contadores, porcentajes: la misma tipografía que el resto
+     (una sola familia en toda la app); los números van tabulares */
+  --fm-font-data: var(--fm-font-body);
 
   font-family: var(--fm-font-body);
   font-feature-settings: "ss01", "cv11";
@@ -155,7 +159,7 @@
 }
 
 /* En el celular todo un punto más grande: se lee a distancia de brazo. */
-@media (max-width: 767px) {
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   :root {
     --fm-fs-2xs: 11.5px;
     --fm-fs-xs: 13px;
@@ -166,6 +170,12 @@
     --fm-fs-xl: 25px;
     --fm-fs-2xl: 30px;
   }
+}
+
+/* tablet: el diseño de celular, más grande. Escritorio: el mismo diseño,
+   que crece con la pantalla */
+html {
+  zoom: var(--fm-zoom);
 }
 
 body {
@@ -190,6 +200,7 @@ h3 {
 /* números alineados en contadores, fechas y porcentajes */
 time,
 .fmDato {
+  font-family: var(--fm-font-body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -228,32 +239,7 @@ p {
 }
 
 /* ===== ERROR GLOBAL (cuando no carga una pantalla) ===== */
-.fmErrorPantalla {
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.fmErrorPantalla > div {
-  max-width: 420px;
-}
-
-.fmErrorPantalla h1 {
-  margin: 0 0 8px;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-xl);
-  letter-spacing: -0.02em;
-}
-
-.fmErrorPantalla p {
-  margin: 0 0 20px;
-  color: var(--fm-muted);
-  font-size: var(--fm-fs-body);
-  line-height: 1.5;
-}
-
 .app {
   width: 100%;
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
 }

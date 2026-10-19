@@ -5,8 +5,9 @@
 
 .highlightsPerfilHeader {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 10px;
 }
 
@@ -19,155 +20,152 @@
   color: var(--fm-ink);
 }
 
-.highlightsPerfilVacio {
-  margin: 0;
+.highlightsPerfilPublicar {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--fm-accent-soft-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.highlightsPerfilPestanas {
+  display: flex;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--fm-border);
+}
+
+.highlightsPerfilPestanas button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--fm-muted);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.highlightsPerfilPestanas button.activa {
+  border-bottom-color: var(--fm-ink);
+  color: var(--fm-ink);
+}
+
+.highlightsPerfilVacio {
+  margin: 0;
+  padding: 8px 0 4px;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.45;
   color: var(--fm-muted);
 }
 
+/* grilla tipo Instagram: 3 columnas, cuadrados, poco espacio */
 .highlightsPerfilGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.highlightAddCard:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.highlightAddCard {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  border-radius: var(--fm-radius-md);
-  border: 1.5px dashed var(--fm-accent-soft-border);
-  background: var(--fm-accent-soft-bg);
-  color: var(--fm-accent);
-  font-size: var(--fm-fs-xl);
-  font-weight: 400;
-  cursor: pointer;
-  font-family: var(--fm-font-display);
+  gap: 4px;
 }
 
 .highlightCard {
+  position: relative;
+  display: block;
   aspect-ratio: 1 / 1;
-  border-radius: var(--fm-radius-md);
-  border: 1px solid var(--fm-border);
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-sm);
   overflow: hidden;
   background: var(--fm-bg-soft);
-  padding: 0;
   cursor: pointer;
-  display: block;
 }
 
-.highlightCard img {
+.highlightCard > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
-.highlightCard:hover img {
-  transform: scale(1.03);
-}
-
-/* ===== Overlay tipo historias/feed ===== */
-.highlightOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: var(--fm-z-panel);
-  background: rgba(26, 23, 18, 0.96);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
-}
-
-.highlightOverlayBarras {
+.highlightCardIconos {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
+  top: 6px;
+  right: 6px;
   display: flex;
   gap: 4px;
+  color: var(--fm-on-photo);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 
-.highlightOverlayBarra {
-  flex: 1;
-  height: 2px;
-  border-radius: 0;
-  background: rgba(246, 241, 231, 0.3);
-}
-
-.highlightOverlayBarra.activa {
-  background: var(--fm-accent);
-}
-
-.highlightOverlayCerrar {
+/* momento compartido: las caritas de quienes lo tienen */
+.highlightCardParticipantes {
   position: absolute;
-  top: 34px;
-  right: 16px;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-bg);
-  background: rgba(246, 241, 231, 0.1);
-  color: var(--fm-bg);
-  font-size: var(--fm-fs-body);
-  cursor: pointer;
+  left: 6px;
+  bottom: 6px;
+  display: flex;
+}
+
+.highlightCardParticipantes img {
+  width: 22px;
+  height: 22px;
+  margin-left: -7px;
+  border: 2px solid var(--fm-surface);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+}
+
+.highlightCardParticipantes img:first-child {
+  margin-left: 0;
+}
+
+/* al pasar el mouse: me gusta y comentarios, como en Instagram */
+.highlightCardDatos {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 18px;
+  background: rgba(8, 8, 12, 0.42);
+  color: var(--fm-on-photo);
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity var(--fm-dur) var(--fm-ease);
 }
 
-.highlightOverlayImagen {
-  max-width: min(92vw, 480px);
-  max-height: 80vh;
-  border: 1px solid var(--fm-bg);
-  border-radius: var(--fm-radius-sm);
-  object-fit: contain;
-  box-shadow: none;
-}
-
-.highlightOverlayNav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--fm-radius-sm);
-  border: 1px solid var(--fm-bg);
-  background: rgba(246, 241, 231, 0.1);
-  color: var(--fm-bg);
-  font-size: var(--fm-fs-lg);
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
+.highlightCardDatos span {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
 }
 
-.highlightOverlayNavPrev {
-  left: 12px;
+@media (hover: hover) {
+  .highlightCard:hover .highlightCardDatos,
+  .highlightCard:focus-visible .highlightCardDatos {
+    opacity: 1;
+  }
 }
 
-.highlightOverlayNavNext {
-  right: 12px;
-}
-
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .highlightsPerfil {
     padding: 0 var(--perfil-gutter, 40px);
   }
 
-  .highlightOverlayNav {
-    width: 46px;
-    height: 46px;
+  .highlightsPerfilGrid {
+    gap: 8px;
   }
 }

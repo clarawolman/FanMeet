@@ -1,50 +1,38 @@
-/* ===== GROUP CARD — foto de sala a sangre, sin marco ===== */
+/* ===== CARD DE GRUPO — foto a sangre, toda la card se toca ===== */
 .SubEventoCard {
-  flex: 0 0 auto;
-  flex-shrink: 0;
-  width: 220px;
-  height: 280px;
-  border-radius: var(--fm-radius-md);
   position: relative;
-  background-color: var(--fm-bg);
+  flex: 0 0 auto;
+  display: block;
+  width: 240px;
+  height: 300px;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-lg);
+  overflow: hidden;
+  background-color: var(--fm-bg-soft);
+  box-shadow: var(--fm-shadow-sm);
+  color: var(--fm-on-photo);
+  font-family: var(--fm-font-body);
+  text-align: left;
   scroll-snap-align: start;
   cursor: pointer;
-  overflow: hidden;
-  transition: box-shadow var(--fm-dur) var(--fm-ease);
+  transition: transform 260ms var(--fm-ease), box-shadow 260ms var(--fm-ease);
 }
 
-/* sin moverse ni sombra al pasar el mouse: solo se marca el borde */
-.SubEventoCard:hover .SubEventoImagen {
-  transform: scale(1.04);
+.SubEventoCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--fm-shadow);
 }
 
-/* velo al pie para que el texto blanco se lea sobre cualquier foto,
-   sin depender del tema claro/oscuro */
-.SubEventoOverlay {
-  position: absolute;
-  inset: 0;
-  background: var(--fm-scrim);
+.SubEventoCard:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
-/* Pre / After / Hoy, arriba a la izquierda de la foto */
-.SubEventoCategoria {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  padding: 4px 11px;
-  border-radius: var(--fm-radius-pill);
-  background: rgba(255, 255, 255, 0.94);
-  border: none;
-  color: #0f0f13;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-2xs);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.SubEventoCard:focus-visible {
+  outline: 2px solid var(--fm-accent);
+  outline-offset: 2px;
 }
 
-/* misma foto subexpuesta en claro y en oscuro, como el resto de las
-   cards de concierto */
 .SubEventoImagen {
   position: absolute;
   inset: 0;
@@ -52,139 +40,169 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.9) saturate(0.92);
-  transition: transform 600ms var(--fm-ease);
+  filter: brightness(0.92) saturate(1.05);
+  transition: transform 700ms var(--fm-ease);
 }
 
-/* contenido flotando sobre la foto */
-.SubEventoContenido {
+.SubEventoCard:hover .SubEventoImagen {
+  transform: scale(1.05);
+}
+
+/* velo al pie para que el texto blanco se lea sobre cualquier foto */
+.SubEventoOverlay {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 14px;
+  inset: 0;
+  background: var(--fm-scrim);
+}
+
+.SubEventoArriba {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Pre / After / Hoy */
+.SubEventoCategoria,
+.SubEventoVoy {
+  padding: 4px 10px;
+  border-radius: var(--fm-radius-pill);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.SubEventoCategoria {
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f0f13;
+}
+
+.SubEventoVoy {
+  background: var(--fm-accent);
+  color: #fff;
+}
+
+/* la fecha como talón, arriba a la derecha */
+.SubEventoFecha {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  color: var(--fm-on-photo);
+  align-items: center;
+  min-width: 42px;
+  padding: 5px 6px 4px;
+  border-radius: var(--fm-radius-sm);
+  background: rgba(12, 11, 15, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  line-height: 1;
+}
+
+.SubEventoFecha strong {
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.SubEventoFecha span {
+  margin-top: 2px;
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.SubEventoContenido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .SubEventoTitulo {
-  margin: 0;
   font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-md);
+  font-size: var(--fm-fs-lg);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--fm-on-photo);
-  line-height: 1.15;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
-  white-space: nowrap;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .SubEventoInfo {
-  margin: 0;
-  font-size: var(--fm-fs-2xs);
-  color: rgba(255, 255, 255, 0.92);
+  font-size: var(--fm-fs-xs);
   font-weight: 500;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.88);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* fila avatares + asistentes */
 .SubEventoUsuarios {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .SubEventoAvatares {
   display: flex;
-  flex-direction: row;
 }
 
-.SubEventoAvatares .SubEventoAvatar {
-  width: 22px;
-  height: 22px;
+.SubEventoAvatar {
+  width: 24px;
+  height: 24px;
+  margin-left: -8px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid var(--fm-bg);
-  margin-right: -7px;
+  border: 1.5px solid rgba(12, 11, 15, 0.7);
 }
-.SubEventoAvatares .SubEventoAvatar:last-child { margin-right: 0; }
 
-.SubEventoExtra {
-  margin-left: 10px;
-  font-size: var(--fm-fs-2xs);
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+.SubEventoAvatar:first-child {
+  margin-left: 0;
 }
 
 .SubEventoAsistiran {
-  margin: 0;
-  font-size: var(--fm-fs-2xs);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* botón unirme — ghost, sin relleno, sin glow */
-.SubEventoBoton {
-  margin-top: 10px;
-  width: 100%;
-  padding: 8px 0;
-  background: rgba(255, 255, 255, 0.16);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: var(--fm-on-photo);
+  flex: 1;
   font-size: var(--fm-fs-xs);
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: var(--fm-radius-pill);
-  cursor: pointer;
-  transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
-}
-.SubEventoBoton:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.92);
 }
 
-/* ===== MOBILE: cards más grandes y texto legible ===== */
-@media (max-width: 767px) {
+.SubEventoFlecha {
+  flex-shrink: 0;
+  transition: transform var(--fm-dur) var(--fm-ease);
+}
+
+.SubEventoCard:hover .SubEventoFlecha {
+  transform: translateX(3px);
+}
+
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .SubEventoCard {
-    width: 250px;
-    height: 310px;
+    width: 252px;
+    height: 316px;
   }
+}
 
-  .SubEventoCategoria {
-    font-size: var(--fm-fs-xs);
-  }
-
-  .SubEventoContenido {
-    padding: 16px;
-    gap: 4px;
-  }
-
-  .SubEventoTitulo {
-    font-size: var(--fm-fs-lg);
-  }
-
-  .SubEventoInfo,
-  .SubEventoExtra,
-  .SubEventoAsistiran {
-    font-size: var(--fm-fs-body);
-  }
-
-  .SubEventoAvatares .SubEventoAvatar {
-    width: 26px;
-    height: 26px;
-  }
-
-  .SubEventoBoton {
-    padding: 11px 0;
-    font-size: var(--fm-fs-sm);
+@media (prefers-reduced-motion: reduce) {
+  .SubEventoCard,
+  .SubEventoImagen {
+    transition: none;
   }
 }

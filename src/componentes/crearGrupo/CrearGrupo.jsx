@@ -3,6 +3,7 @@ import { gruposService } from "../../services/gruposService";
 import "./CrearGrupo.css";
 
 import HeaderCrearGrupo from "./HeaderCrearGrupo";
+import FondoAmbiente from "../generales/FondoAmbiente";
 import FormCrearGrupo from "./FormCrearGrupo";
 import DescartarCambios from "./DescartarCambios";
 import { UsuarioContext } from "../../context/UsuarioContext";
@@ -144,6 +145,7 @@ function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
 
   return (
     <div className="crearGrupoPantalla">
+      <FondoAmbiente imagen={formulario.imagenPreview || concierto?.imagen} />
       <HeaderCrearGrupo onVolver={manejarVolver} />
 
       <main className="crearGrupoMain">
@@ -153,6 +155,8 @@ function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
           crearGrupo={crearGrupo}
           guardando={guardando}
           errorTexto={errorTexto}
+          concierto={concierto}
+          imagenDefault={IMAGEN_GRUPO_DEFAULT}
         />
       </main>
 

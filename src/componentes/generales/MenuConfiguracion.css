@@ -18,7 +18,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(320px, 86vw);
+  width: min(320px, calc(86vw / var(--fm-zoom)));
   background: var(--fm-surface);
   border-right: 1px solid var(--fm-border);
   box-shadow: var(--fm-shadow);

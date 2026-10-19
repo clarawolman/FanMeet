@@ -26,7 +26,7 @@
 .home-intro h1 {
   margin: 0 0 20px;
   font-family: var(--fm-font-display);
-  font-size: clamp(32px, 8vw, 52px);
+  font-size: clamp(32px, calc(8vw / var(--fm-zoom)), 52px);
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.045em;
@@ -85,12 +85,12 @@
 
 /* se ve una card entera y asoma la siguiente */
 .home-row-scroll .home-card {
-  flex: 0 0 min(72vw, 300px);
+  flex: 0 0 min(calc(72vw / var(--fm-zoom)), 300px);
   scroll-snap-align: start;
 }
 
 .home-row--destacada .home-row-scroll .home-card {
-  flex-basis: min(84vw, 360px);
+  flex-basis: min(calc(84vw / var(--fm-zoom)), 360px);
 }
 
 .home-resultados-grid {
@@ -269,9 +269,10 @@
 
 .home-card-stats {
   color: var(--fm-muted);
-  font-family: var(--fm-font-data);
-  font-size: 11.5px;
-  letter-spacing: -0.01em;
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .home-card-btn-unirme {
@@ -324,7 +325,7 @@
 }
 
 .home-esqueleto .fmSkeleton {
-  flex: 0 0 min(72vw, 300px);
+  flex: 0 0 min(calc(72vw / var(--fm-zoom)), 300px);
   aspect-ratio: 4 / 3;
 }
 
@@ -420,7 +421,7 @@
 }
 
 /* ===== TABLET ===== */
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantalla-home {
     --home-gutter: 40px;
     padding-left: var(--fm-sidebar);
@@ -455,7 +456,7 @@
 }
 
 /* ===== DESKTOP ===== */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantalla-home {
     --home-gutter: 56px;
   }
@@ -482,7 +483,7 @@
   }
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 1440px) and (hover: hover) and (pointer: fine) {
   .pantalla-home {
     --home-gutter: 72px;
   }

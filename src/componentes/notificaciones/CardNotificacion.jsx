@@ -1,21 +1,31 @@
 import "./CardNotificacion.css";
-import { IconoCerrar } from "../generales/iconosNav";
+import { IconoCerrar, IconoNavChat, IconoNavGrupos } from "../generales/iconosNav";
+import { IconoCalendario } from "../generales/iconosTarjeta";
+import { IconoCarrusel, IconoComentario, IconoCorazon } from "../momento/iconosMomento";
+import { haceCuanto } from "../../utils/fechas";
 
-function formatearTiempo(fecha) {
-  if (!fecha) return "";
-
-  const creada = new Date(fecha);
-  const minutos = Math.floor((Date.now() - creada.getTime()) / 60000);
-
-  if (minutos < 1) return "Recién";
-  if (minutos < 60) return `Hace ${minutos} minuto${minutos === 1 ? "" : "s"}`;
-
-  const horas = Math.floor(minutos / 60);
-  if (horas < 24) return `Hace ${horas} hora${horas === 1 ? "" : "s"}`;
-
-  const dias = Math.floor(horas / 24);
-  return `Hace ${dias} día${dias === 1 ? "" : "s"}`;
+// Insignia sobre la foto: de un vistazo se sabe de qué es cada aviso.
+function IconoAmistad(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M3.5 20c.6-3.6 3.2-6 6.5-6 1.4 0 2.6.4 3.6 1.1M18 14v6M15 17h6" />
+    </svg>
+  );
 }
+
+const INSIGNIAS = {
+  solicitud_amistad: { Icono: IconoAmistad, tono: "accent" },
+  amistad_aceptada: { Icono: IconoAmistad, tono: "exito" },
+  momento_etiquetado: { Icono: IconoCarrusel, tono: "accent" },
+  momento_like: { Icono: (p) => <IconoCorazon lleno {...p} />, tono: "accent" },
+  momento_comentario: { Icono: IconoComentario, tono: "tinta" },
+  concierto_unido: { Icono: IconoCalendario, tono: "tinta" },
+  novedad_concierto: { Icono: IconoCalendario, tono: "tinta" },
+  grupo_unido: { Icono: IconoNavGrupos, tono: "tinta" },
+  mensaje_grupo: { Icono: IconoNavChat, tono: "tinta" },
+  mensaje_privado: { Icono: IconoNavChat, tono: "tinta" },
+};
 
 function CardNotificacion({
   notificacion,
@@ -25,28 +35,36 @@ function CardNotificacion({
   onRechazarSolicitud,
   procesando = false,
 }) {
-  const { tipo, titulo, descripcion, imagen, created_at } = notificacion;
-  const esSolicitudAmistad = tipo === "solicitud_amistad";
+  const { tipo, titulo, descripcion, imagen, created_at, leida } = notificacion;
+  const insignia = INSIGNIAS[tipo];
+  // Solicitud de amistad o invitación a sumar un momento: se responden acá.
+  const esSolicitudAmistad = tipo === "solicitud_amistad" || tipo === "momento_etiquetado";
 
   return (
-    <article className="cardNotificacion">
-      {imagen ? (
-        <img src={imagen} alt="" className="cardNotificacionImagen" />
-      ) : (
-        <span className="cardNotificacionImagen cardNotificacionImagen--vacia" aria-hidden="true" />
-      )}
+    <article className={`cardNotificacion ${leida ? "" : "cardNotificacion--nueva"}`}>
+      <span className="cardNotificacionFoto">
+        {imagen ? (
+          <img src={imagen} alt="" className="cardNotificacionImagen" />
+        ) : (
+          <span className="cardNotificacionImagen cardNotificacionImagen--vacia" aria-hidden="true" />
+        )}
+        {insignia && (
+          <span className={`cardNotificacionInsignia cardNotificacionInsignia--${insignia.tono}`} aria-hidden="true">
+            <insignia.Icono />
+          </span>
+        )}
+      </span>
 
       <div className="cardNotificacionContenido">
-        <div className="cardNotificacionCabecera">
-          <h3 className="cardNotificacionTitulo">{titulo}</h3>
-          <time className="cardNotificacionTiempo" dateTime={created_at}>
-            {formatearTiempo(created_at)}
-          </time>
-        </div>
+        <h3 className="cardNotificacionTitulo">{titulo}</h3>
 
         {descripcion && (
           <p className="cardNotificacionDescripcion">{descripcion}</p>
         )}
+
+        <time className="cardNotificacionTiempo" dateTime={created_at}>
+          {haceCuanto(created_at)}
+        </time>
 
         {esSolicitudAmistad ? (
           <div className="cardNotificacionAcciones">

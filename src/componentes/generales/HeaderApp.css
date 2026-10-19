@@ -145,7 +145,7 @@
   background: var(--fm-bg-soft);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .headerAppMenu {
     display: none;
   }

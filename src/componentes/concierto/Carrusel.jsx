@@ -39,7 +39,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
     if (!el) return;
 
     const card = el.querySelector(".SubEventoCard");
-    const step = (card?.offsetWidth || 220) + 12;
+    const step = (card?.offsetWidth || 240) + 14;
 
     el.scrollBy({
       left: dir === "left" ? -step * 2 : step * 2,
@@ -53,7 +53,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
     <div className="CarruselWrapper">
 
       {!hideArrowsIfFew && showLeft && (
-        <button className="CarruselBtn left" onClick={() => scroll("left")}>
+        <button type="button" className="CarruselBtn left" onClick={() => scroll("left")} aria-label="Grupos anteriores">
           <IconoAnterior />
         </button>
       )}
@@ -61,7 +61,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
       <div className="SubEventosCarrusel" ref={ref}>
         {subEventos.map((ev) => (
           <SubEventos
-            key={ev.id}
+            key={ev.id_grupo}
             subEvento={ev}
             onAbrirGrupo={onAbrirGrupo}
           />
@@ -69,7 +69,7 @@ function Carrusel({ subEventos, onAbrirGrupo }) {
       </div>
 
       {!hideArrowsIfFew && showRight && (
-        <button className="CarruselBtn right" onClick={() => scroll("right")}>
+        <button type="button" className="CarruselBtn right" onClick={() => scroll("right")} aria-label="Más grupos">
           <IconoSiguiente />
         </button>
       )}

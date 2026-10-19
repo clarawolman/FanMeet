@@ -5,7 +5,17 @@ import { ApiError } from "../helpers/ApiError.js";
 export const notificacionService = {
   // Usada internamente por conciertoService/grupoService al unirse a un
   // concierto/grupo (mismo disparador que hoy tiene notificaciones.js).
-  async crear({ idUsuario, tipo, titulo, descripcion, imagen, idConcierto, idGrupo }) {
+  async crear({
+    idUsuario,
+    tipo,
+    titulo,
+    descripcion,
+    imagen,
+    idConcierto,
+    idGrupo,
+    idUsuarioRelacionado,
+    idHighlight,
+  }) {
     await notificacionRepository.crear({
       id_usuario: idUsuario,
       tipo,
@@ -14,6 +24,10 @@ export const notificacionService = {
       imagen,
       id_concierto: idConcierto,
       id_grupo: idGrupo,
+      // Solo se mandan si vienen: las columnas nuevas (id_highlight) no
+      // rompen las notificaciones de siempre si todavía no se corrió el SQL.
+      ...(idUsuarioRelacionado && { id_usuario_relacionado: idUsuarioRelacionado }),
+      ...(idHighlight && { id_highlight: idHighlight }),
     });
   },
 

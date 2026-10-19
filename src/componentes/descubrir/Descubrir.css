@@ -1,5 +1,5 @@
 .pantallaDescubrir {
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   display: flex;
   flex-direction: column;
@@ -14,6 +14,12 @@
   margin: 0 auto;
   padding: 20px 16px 110px;
   box-sizing: border-box;
+}
+
+/* Todo centrado: título, buscador, avisos y grilla */
+.pantallaDescubrir .headerAppFilaTitulo {
+  justify-content: center;
+  text-align: center;
 }
 
 .descubrirMensaje {
@@ -50,9 +56,9 @@
 
 .descubrirAviso {
   max-width: 68ch;
-  margin: 0 0 20px;
-  padding: 0 0 0 14px;
-  border-left: 2px solid var(--fm-accent);
+  margin: 0 auto 20px;
+  padding: 0;
+  text-align: center;
   color: var(--fm-muted);
   font-size: var(--fm-fs-sm);
   line-height: 1.5;
@@ -152,7 +158,7 @@
   margin: 10px 12px 12px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaDescubrir {
     padding-left: var(--fm-sidebar);
   }
@@ -163,17 +169,21 @@
   }
 
   .descubrirGrilla {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, 220px);
+    justify-content: center;
     gap: 16px;
   }
 }
 
 /* ===== BUSCADOR DE PERFILES ===== */
 .descubrirBuscador {
-  margin-bottom: 20px;
+  max-width: 560px;
+  margin: 0 auto 20px;
 }
 
 .descubrirResultados {
+  max-width: 560px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -181,6 +191,7 @@
 
 .descubrirResultadosEstado {
   margin: 0;
+  text-align: center;
   color: var(--fm-muted);
   font-size: var(--fm-fs-sm);
 }

@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import "./SubEventos.css";
-import { formatearFechaDMA } from "../../utils/fechas";
+import { partesFecha } from "../../utils/fechas";
+import { UsuarioContext } from "../../context/UsuarioContext";
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=400&q=80";
 
@@ -10,65 +12,64 @@ const CATEGORIAS = {
   mismo_dia: "Hoy",
 };
 
+// Card de un grupo: foto a sangre, chip de categoría, fecha como talón
+// y quiénes van. Toda la card abre el grupo.
 function SubEventos({ subEvento, onAbrirGrupo }) {
+  const { usuarioActual } = useContext(UsuarioContext);
+  const usuarios = subEvento.usuarios || [];
+  const fecha = partesFecha(subEvento.fecha);
+  const hora = subEvento.hora?.slice(0, 5);
+  const voy = usuarios.some((u) => u.id_usuario === usuarioActual?.id_usuario);
+
   return (
-    <section className="SubEventoCard" onClick={() => onAbrirGrupo(subEvento)}>
+    <button
+      type="button"
+      className="SubEventoCard"
+      onClick={() => !window.__carouselDragging && onAbrirGrupo(subEvento)}
+    >
+      <img className="SubEventoImagen" src={subEvento.foto || subEvento.imagen || FALLBACK_IMG} alt="" />
+      <span className="SubEventoOverlay" />
 
-      <img
-        className="SubEventoImagen"
-        src={subEvento.foto || subEvento.imagen || FALLBACK_IMG}
-        alt={subEvento.nombre}
-      />
+      <span className="SubEventoArriba">
+        {CATEGORIAS[subEvento.categoria] && (
+          <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
+        )}
+        {voy && <span className="SubEventoVoy">Vas</span>}
+      </span>
 
-      <div className="SubEventoOverlay" />
-
-      {CATEGORIAS[subEvento.categoria] && (
-        <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
+      {fecha && (
+        <span className="SubEventoFecha" aria-hidden="true">
+          <strong>{fecha.dia}</strong>
+          <span>{fecha.mes}</span>
+        </span>
       )}
 
-      <div className="SubEventoContenido">
-        <h3 className="SubEventoTitulo">{subEvento.nombre}</h3>
+      <span className="SubEventoContenido">
+        <span className="SubEventoTitulo">{subEvento.nombre}</span>
 
-        <p className="SubEventoInfo">
-          {subEvento.ubicacion} · {formatearFechaDMA(subEvento.fecha)}
-        </p>
+        <span className="SubEventoInfo">
+          {[hora && `${hora} h`, subEvento.ubicacion].filter(Boolean).join(" · ")}
+        </span>
 
-        <div className="SubEventoUsuarios">
-          <div className="SubEventoAvatares">
-            {subEvento.usuarios.slice(0, 3).map((usuario) => (
-              <img
-                key={usuario.id_usuario}
-                className="SubEventoAvatar"
-                src={usuario.foto_perfil}
-                alt={usuario.nombre}
-              />
-            ))}
-          </div>
-
-          {subEvento.usuarios.length > 3 && (
-            <span className="SubEventoExtra">
-              +{subEvento.usuarios.length - 3}
+        <span className="SubEventoUsuarios">
+          {usuarios.length > 0 && (
+            <span className="SubEventoAvatares">
+              {usuarios.slice(0, 3).map((usuario) => (
+                <img key={usuario.id_usuario} className="SubEventoAvatar" src={usuario.foto_perfil} alt="" />
+              ))}
             </span>
           )}
-
           <span className="SubEventoAsistiran">
-            {subEvento.usuarios.length} asistirán
+            {usuarios.length === 0
+              ? "Sé el primero en sumarte"
+              : `${usuarios.length} ${usuarios.length === 1 ? "va" : "van"}`}
           </span>
-        </div>
-
-        <button
-          className="SubEventoBoton"
-          onClick={(e) => {
-            if (window.__carouselDragging) return;
-
-            e.stopPropagation();
-            onAbrirGrupo(subEvento);
-          }}
-        >
-          Ver más
-        </button>
-      </div>
-    </section>
+          <svg className="SubEventoFlecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
+      </span>
+    </button>
   );
 }
 

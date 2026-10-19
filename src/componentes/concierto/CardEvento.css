@@ -1,22 +1,31 @@
-/* ===== HERO — foto de sala a sangre, texto flotando encima ===== */
+/* ===== HERO — foto a sangre, título grande abajo ===== */
 .CardEvento {
   position: relative;
   width: 100%;
-  height: 340px;
+  aspect-ratio: 4 / 3;
+  min-height: 280px; /* en celulares chicos 4:3 queda bajo para un título de 3 líneas */
+  max-height: 440px;
   border-radius: var(--fm-radius-lg);
   overflow: hidden;
-  background-color: var(--fm-bg);
-  box-shadow: var(--fm-shadow-sm);
+  background-color: var(--fm-bg-soft);
+  box-shadow: var(--fm-shadow);
 }
 
-/* la foto se ve igual de día y de noche; el velo de abajo asegura
-   que el texto blanco se lea */
 .EventoImagen {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.9) saturate(0.92);
+  filter: brightness(0.92) saturate(1.05);
+  animation: eventoZoom 1400ms var(--fm-ease) both;
+}
+
+@keyframes eventoZoom {
+  from {
+    transform: scale(1.06);
+  }
 }
 
 /* velo al pie para leer el texto sobre la foto */
@@ -26,62 +35,108 @@
   background: var(--fm-scrim);
 }
 
+/* cuánto falta, arriba a la izquierda */
+.EventoFalta {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: var(--fm-radius-pill);
+  background: rgba(12, 11, 15, 0.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  color: var(--fm-on-photo);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.EventoFalta--hoy {
+  background: var(--fm-accent);
+  box-shadow: none;
+}
+
+/* "Hoy": un punto que late, como "en vivo" */
+.EventoFaltaPunto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: eventoLatido 1.6s ease-in-out infinite;
+}
+
+@keyframes eventoLatido {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
 .EventoContenido {
   position: absolute;
   left: 20px;
   right: 20px;
-  bottom: 20px;
+  bottom: 46px; /* la tira de datos se monta 28px sobre la foto */
   color: var(--fm-on-photo);
+  animation: eventoEntrar 700ms var(--fm-ease) 120ms both;
+}
+
+@keyframes eventoEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 
 .EventoArtista {
-  display: inline-block;
-  margin: 0 0 10px;
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  font-family: var(--fm-font-body);
+  margin: 0 0 8px;
   font-size: var(--fm-fs-sm);
   font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--fm-on-photo);
+  opacity: 0.9;
 }
 
 .EventoTitulo {
   margin: 0;
+  max-width: 16ch;
   font-family: var(--fm-font-display);
-  font-size: clamp(34px, 9vw, 44px);
-  line-height: 0.92;
+  /* cqi = ancho del contenido (ver .conciertoLayout) */
+  font-size: clamp(28px, 8.5cqi, 64px);
+  line-height: 0.95;
   font-weight: 800;
-  text-transform: uppercase;
   letter-spacing: -0.045em;
+  text-wrap: balance;
   color: var(--fm-on-photo);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
 }
 
-.EventoFecha {
-  margin: 14px 0 0;
-  font-family: var(--fm-font-data);
-  font-size: var(--fm-fs-sm);
-  font-weight: 500;
-  color: var(--fm-on-photo);
-  opacity: 0.85;
+@media (prefers-reduced-motion: reduce) {
+  .EventoImagen,
+  .EventoContenido,
+  .EventoFaltaPunto {
+    animation: none;
+  }
 }
 
-.EventoUbicacion {
-  display: inline-block;
-  margin: 6px 0 0;
-  padding: 0;
-  border-radius: 0;
-  background-color: transparent;
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 500;
-  color: var(--fm-on-photo);
-  opacity: 0.75;
-}
+/* formato ancho solo si el contenido es ancho de verdad */
+@container (min-width: 640px) {
+  .CardEvento {
+    aspect-ratio: 16 / 7;
+  }
 
-@media (min-width: 768px) {
-  .CardEvento { height: 420px; }
-  .EventoTitulo { font-size: 64px; }
-  .EventoContenido { left: 32px; right: 32px; bottom: 32px; }
+  .EventoFalta {
+    top: 22px;
+    left: 24px;
+  }
+
+  .EventoContenido {
+    left: 32px;
+    right: 32px;
+    bottom: 56px;
+  }
 }

@@ -158,7 +158,7 @@
   flex-shrink: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .proximosConciertosPerfil {
     padding: 0 var(--perfil-gutter, 40px);
   }

@@ -5,8 +5,8 @@
 ============================ */
 
 .pantallaLista {
-  min-height: 100dvh;
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   display: flex;
   flex-direction: column;
@@ -289,7 +289,7 @@
 }
 
 /* ===== DESKTOP: grilla, alineada con el título del header ===== */
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaLista {
     padding-left: var(--fm-sidebar);
   }
@@ -325,7 +325,7 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .listaLayout:has(> .listaMensaje) {
     margin-inline: auto;
   }

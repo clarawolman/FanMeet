@@ -124,7 +124,7 @@
   transition: transform var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
 }
 /* CELULAR / TABLET CHICA: modal centrado y más angosto */
-@media (max-width: 767px) {
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .home-overlay {
     align-items: center;
     justify-content: center;
