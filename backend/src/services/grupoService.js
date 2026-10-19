@@ -118,6 +118,16 @@ export const grupoService = {
     const yaConfirmado = await grupoUsuarioRepository.existeRelacion(idUsuarioAutenticado, idGrupo);
     if (yaConfirmado) return { ok: true, yaConfirmado: true };
 
+    // Mismo criterio que crear y obtenerDetalle: solo se suma quien entró
+    // al concierto con el código (los ids de grupo son fáciles de adivinar).
+    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
+      idUsuarioAutenticado,
+      grupo.id_concierto
+    );
+    if (!perteneceAlConcierto) {
+      throw ApiError.forbidden("No pertenecés al concierto de este grupo");
+    }
+
     if (grupo.cupo) {
       const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
       if (integrantes.length >= grupo.cupo) {

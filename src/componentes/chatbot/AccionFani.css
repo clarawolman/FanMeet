@@ -1,0 +1,75 @@
+/* Propuesta de Fani dentro de su burbuja (Chats.jsx): ocupa todo el ancho
+   y la hora queda abajo, como en el resto de los mensajes. */
+.accionFani {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-bg);
+}
+
+.accionFaniTitulo {
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.accionFaniDetalle {
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+}
+
+.accionFaniBotones {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.accionFaniConfirmar,
+.accionFaniCancelar {
+  flex: 1;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--fm-radius-pill);
+  font: inherit;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.accionFaniConfirmar {
+  border: none;
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+}
+
+.accionFaniConfirmar:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
+}
+
+.accionFaniCancelar {
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+}
+
+.accionFaniConfirmar:disabled,
+.accionFaniCancelar:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.accionFaniEstado {
+  margin-top: 4px;
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-muted);
+}
+
+.accionFaniEstado--hecha {
+  color: var(--fm-success);
+}

@@ -13,6 +13,15 @@ export const enviarMensajeSchema = z.object({
     .default(""),
 });
 
+// Confirmar o cancelar una propuesta de Fani (ver chatbotService.resolverAccion).
+export const idMensajeParamSchema = z.object({
+  idMensaje: z.coerce.number().int().positive("id de mensaje inválido"),
+});
+
+export const resolverAccionSchema = z.object({
+  decision: z.enum(["confirmar", "cancelar"]),
+});
+
 export const listarMensajesQuerySchema = z.object({
   antes_de: z.coerce.number().int().positive().optional(),
   limite: z.coerce.number().int().min(1).max(100).optional(),

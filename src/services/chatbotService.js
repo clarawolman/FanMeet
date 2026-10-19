@@ -18,4 +18,11 @@ export const chatbotService = {
   async enviar(contenido) {
     return api.post("/chatbot/mensajes", { contenido });
   },
+
+  // Confirmar o cancelar una propuesta de Fani (sumarse a un grupo).
+  // Devuelve { mensaje, respuesta }: el mensaje actualizado y, si se
+  // confirmó, la respuesta nueva de Fani (si no, null).
+  async resolverAccion(idMensaje, decision) {
+    return api.post(`/chatbot/mensajes/${idMensaje}/accion`, { decision });
+  },
 };

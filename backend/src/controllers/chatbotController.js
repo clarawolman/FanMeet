@@ -14,4 +14,8 @@ export const chatbotController = {
     const resultado = await chatbotService.enviar(req.user.id, req.body.contenido);
     res.status(201).json(resultado);
   }),
+
+  resolverAccion: asyncHandler(async (req, res) => {
+    res.json(await chatbotService.resolverAccion(req.user.id, req.params.idMensaje, req.body.decision));
+  }),
 };

@@ -179,6 +179,16 @@ describe("grupoService.unirse", () => {
     );
     expect(resultado).toEqual({ ok: true, yaConfirmado: false });
   });
+
+  it("no deja sumarse a quien no está unido al concierto del grupo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(grupoService.unirse(OTRO_USUARIO, GRUPO.id_grupo)).rejects.toMatchObject({ status: 403 });
+    expect(usuariosConciertosRepository.existeRelacion).toHaveBeenCalledWith(OTRO_USUARIO, GRUPO.id_concierto);
+    expect(grupoUsuarioRepository.crearRelacion).not.toHaveBeenCalled();
+  });
 });
 
 describe("grupoService.salir", () => {
