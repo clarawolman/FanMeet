@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Cargando } from "../componentes";
+import ImportarConciertos from "./ImportarConciertos";
 import { fechaCorta, ordenarPorNombre, useCarga, useMostrarAlAbrir } from "../utilidades";
 
 const VACIO = {
@@ -352,7 +353,7 @@ function separarProximosYPasados(conciertos) {
 export default function Conciertos() {
   const conciertos = useCarga(() => api.conciertos(), []);
   const catalogo = useCarga(() => api.catalogo(), []);
-  // { tipo: "nuevo" | "editar" | "novedad" | "eliminar", concierto? }
+  // { tipo: "nuevo" | "importar" | "editar" | "novedad" | "eliminar", concierto? }
   const [abierto, setAbierto] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const refPanel = useMostrarAlAbrir(abierto || mensaje);
@@ -375,15 +376,21 @@ export default function Conciertos() {
       <div className="tituloConAccion">
         <h1>Conciertos</h1>
         {!abierto && (
-          <button className="boton botonPrincipal" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "nuevo" }); }}>
-            + Nuevo concierto
-          </button>
+          <div className="acciones">
+            <button className="boton" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "importar" }); }}>
+              Importar lista
+            </button>
+            <button className="boton botonPrincipal" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "nuevo" }); }}>
+              + Nuevo concierto
+            </button>
+          </div>
         )}
       </div>
 
       <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
+      {abierto?.tipo === "importar" && <ImportarConciertos onListo={terminar} onCancelar={() => setAbierto(null)} />}
       {abierto?.tipo === "eliminar" && (
         <ConfirmarEliminar concierto={abierto.concierto} onListo={terminar} onCancelar={() => setAbierto(null)} />
       )}

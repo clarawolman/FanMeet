@@ -665,6 +665,39 @@ time {
   white-space: nowrap;
 }
 
+/* ===== IMPORTAR CONCIERTOS ===== */
+textarea.textoImportar {
+  min-height: 180px;
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-xs);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.resumenPrevia {
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+}
+
+.textoError {
+  color: var(--fm-danger);
+  font-weight: 600;
+}
+
+.tabla tbody tr.filaConError,
+.tabla tbody tr.filaConError:hover {
+  background: var(--fm-danger-bg);
+}
+
+.erroresFila {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--fm-danger);
+  font-size: var(--fm-fs-xs);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
 .miniatura {
   display: block;
   width: 56px;

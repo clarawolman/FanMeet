@@ -12,6 +12,9 @@ import { mensajePrivadoRepository } from "../repositories/mensajePrivadoReposito
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
 import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
 import { normalizarGenero } from "../helpers/generos.js";
+import { claveConcierto, esUrlHttp, leerFechaHora, leerFilas } from "../helpers/importarConciertos.js";
+import { problemaConImagen } from "../helpers/imagenRemota.js";
+import { conciertoYaPaso } from "../helpers/fechas.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
@@ -137,6 +140,118 @@ async function notificarSeguidores(concierto, artista) {
     }))
   );
   return seguidores.length;
+}
+
+// Crea el concierto (y el artista si no existe) y avisa a sus seguidores.
+// El concierto ya quedó creado: si falla el aviso no se deshace.
+async function crearYAvisar({ artista, artista_spotify_id, ...datos }) {
+  const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista, artista_spotify_id);
+  const concierto = await backofficeRepository.crearConcierto({
+    ...datos,
+    id_artista: filaArtista.id_artista,
+  });
+
+  let notificados = 0;
+  try {
+    notificados = await notificarSeguidores(concierto, filaArtista);
+  } catch (error) {
+    console.error("No se pudo avisar a los seguidores del artista:", error);
+  }
+  return { concierto, notificados };
+}
+
+const MAXIMO_IMPORTACION = 200;
+
+// Valida cada fila de una importación en lote contra la base, sin crear
+// nada. Cada fila vuelve con sus errores y, si no tiene, con los datos
+// listos para crearConcierto. Los estadios y géneros no se crean acá:
+// tienen que existir (se cargan por SQL).
+async function revisarImportacion(texto) {
+  const filas = leerFilas(texto);
+  if (filas.length === 0) {
+    throw ApiError.badRequest("No encontré conciertos en lo que pegaste");
+  }
+  if (filas.length > MAXIMO_IMPORTACION) {
+    throw ApiError.badRequest(`Se pueden importar hasta ${MAXIMO_IMPORTACION} conciertos por vez`);
+  }
+
+  const [estadios, estilos, existentes] = await Promise.all([
+    backofficeRepository.listarEstadios(),
+    estiloMusicalRepository.listarCatalogo(),
+    backofficeRepository.listarConciertos(),
+  ]);
+  const porNombre = (lista) => new Map(lista.map((x) => [normalizarGenero(x.nombre), x]));
+  const estadioPorNombre = porNombre(estadios);
+  const estiloPorNombre = porNombre(estilos);
+  const yaCargados = new Set(existentes.map((c) => claveConcierto(c.nombre, c.fecha)));
+  const primeraFilaDe = new Map();
+
+  // Cada URL se prueba una sola vez, todas a la vez.
+  const urls = [...new Set(filas.map((f) => f.imagen).filter(esUrlHttp))];
+  const problemaDe = new Map(await Promise.all(urls.map(async (url) => [url, await problemaConImagen(url)])));
+
+  return filas.map((f) => {
+    const errores = [];
+    const estadio = estadioPorNombre.get(normalizarGenero(f.estadio));
+    const estilo = estiloPorNombre.get(normalizarGenero(f.genero));
+    const fecha = leerFechaHora(f.fecha, f.hora);
+    const fechaValida = typeof fecha === "string";
+
+    if (!f.nombre) errores.push("Falta el nombre");
+    else if (f.nombre.length > 150) errores.push("El nombre es muy largo (máximo 150 caracteres)");
+
+    if (!f.artista) errores.push("Falta el artista");
+    else if (f.artista.length > 150) errores.push("El artista es muy largo (máximo 150 caracteres)");
+
+    if (!f.estadio) errores.push("Falta el estadio");
+    else if (!estadio) errores.push(`No existe el estadio "${f.estadio}"`);
+
+    if (!f.genero) errores.push("Falta el género");
+    else if (!estilo) errores.push(`No existe el género "${f.genero}"`);
+
+    if (!f.fecha) errores.push("Falta la fecha");
+    else if (!fecha) errores.push(`Fecha inválida: "${`${f.fecha} ${f.hora}`.trim()}"`);
+    else if (fecha.sinHora) errores.push("Falta la hora");
+    else if (conciertoYaPaso(fecha)) errores.push("La fecha ya pasó");
+
+    if (!f.imagen) errores.push("Falta la imagen");
+    else if (!esUrlHttp(f.imagen)) errores.push("La imagen tiene que ser una URL (https://...)");
+    else if (problemaDe.get(f.imagen)) errores.push(problemaDe.get(f.imagen));
+
+    if (f.nombre && fechaValida) {
+      const clave = claveConcierto(f.nombre, fecha);
+      if (yaCargados.has(clave)) {
+        errores.push("Ya existe un concierto con ese nombre ese día");
+      } else if (primeraFilaDe.has(clave)) {
+        errores.push(`Repetido: es igual a la fila ${primeraFilaDe.get(clave)}`);
+      } else {
+        primeraFilaDe.set(clave, f.fila);
+      }
+    }
+
+    return {
+      fila: f.fila,
+      nombre: f.nombre,
+      artista: f.artista,
+      // Con el nombre como está en la base, para que se vea qué se eligió.
+      estadio: estadio?.nombre || f.estadio,
+      genero: estilo?.nombre || f.genero,
+      fecha: fechaValida ? fecha : `${f.fecha} ${f.hora}`.trim(),
+      imagen: f.imagen,
+      errores,
+      datos:
+        errores.length === 0
+          ? {
+              nombre: f.nombre,
+              artista: f.artista,
+              id_estadio: estadio.id_estadio,
+              id_estiloMusical: estilo.id_estiloMusical,
+              fecha,
+              imagenConcierto: f.imagen,
+            }
+          : null,
+    };
+  });
 }
 
 const NOMBRES_CAMPO = {
@@ -301,20 +416,39 @@ export const backofficeService = {
   },
 
   // El artista se elige de Spotify o se escribe por nombre: si no existe, se crea.
-  async crearConcierto({ artista, artista_spotify_id, ...datos }) {
-    const filaArtista = await backofficeRepository.obtenerOCrearArtista(artista, artista_spotify_id);
-    const concierto = await backofficeRepository.crearConcierto({
-      ...datos,
-      id_artista: filaArtista.id_artista,
-    });
-
-    // El concierto ya quedó creado: si falla el aviso no se deshace.
-    try {
-      await notificarSeguidores(concierto, filaArtista);
-    } catch (error) {
-      console.error("No se pudo avisar a los seguidores del artista:", error);
-    }
+  async crearConcierto(datos) {
+    const { concierto } = await crearYAvisar(datos);
     return concierto;
+  },
+
+  // Vista previa de la importación en lote: no crea nada.
+  async previaImportacion(texto) {
+    const filas = await revisarImportacion(texto);
+    return { filas: filas.map(({ datos: _datos, ...fila }) => fila) };
+  },
+
+  // Vuelve a validar todo (no se confía en la vista previa: la base pudo
+  // cambiar) y crea solo las filas sin errores, de a una para que un
+  // artista repetido se cree una sola vez.
+  async importarConciertos(texto) {
+    const filas = await revisarImportacion(texto);
+    const creados = [];
+    const fallidos = [];
+    let notificados = 0;
+
+    for (const fila of filas) {
+      if (!fila.datos) continue;
+      try {
+        const resultado = await crearYAvisar({ ...fila.datos, artista_spotify_id: null });
+        creados.push({ fila: fila.fila, id_concierto: resultado.concierto.id_concierto, nombre: fila.nombre });
+        notificados += resultado.notificados;
+      } catch (error) {
+        fallidos.push({ fila: fila.fila, nombre: fila.nombre, error: error.message });
+      }
+    }
+
+    const conErrores = filas.filter((f) => !f.datos).map(({ datos: _datos, ...fila }) => fila);
+    return { creados, conErrores, fallidos, notificados };
   },
 
   // Cambiar datos de un concierto le avisa a sus fans (si son muchos).

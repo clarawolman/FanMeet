@@ -91,6 +91,11 @@ export const actualizarGrupoSchema = crearGrupoSchema
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
 
+// Texto pegado con la lista de conciertos (lo interpreta el service).
+export const importarConciertosSchema = z.object({
+  texto: z.string().trim().min(1, "Pegá la lista de conciertos").max(200_000, "La lista es demasiado larga"),
+});
+
 export const novedadSchema = z.object({
   titulo: z.string().trim().min(1, "Poné un título").max(100),
   descripcion: z.string().trim().min(1, "Escribí la novedad").max(500),

@@ -8,6 +8,8 @@ vi.mock("../src/repositories/backofficeRepository.js", () => ({
     crearConcierto: vi.fn(),
     eliminarConcierto: vi.fn(),
     eliminarGrupos: vi.fn(),
+    listarEstadios: vi.fn(),
+    listarConciertos: vi.fn(),
     cambiarEstadoUsuario: vi.fn(),
     banearEnAuth: vi.fn(),
   },
@@ -36,7 +38,10 @@ vi.mock("../src/repositories/storageRepository.js", () => ({
 }));
 vi.mock("../src/repositories/mensajeRepository.js", () => ({ mensajeRepository: {} }));
 vi.mock("../src/repositories/mensajePrivadoRepository.js", () => ({ mensajePrivadoRepository: {} }));
-vi.mock("../src/repositories/estiloMusicalRepository.js", () => ({ estiloMusicalRepository: {} }));
+vi.mock("../src/repositories/estiloMusicalRepository.js", () => ({
+  estiloMusicalRepository: { listarCatalogo: vi.fn() },
+}));
+vi.mock("../src/helpers/imagenRemota.js", () => ({ problemaConImagen: vi.fn(async () => null) }));
 vi.mock("../src/services/avisoCambiosGrupo.js", () => ({
   avisarCambiosDeGrupo: vi.fn(async () => 3),
 }));
@@ -53,6 +58,8 @@ const { conciertoRepository, usuariosConciertosRepository } = await import(
 const { grupoRepository, grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
 const { storageRepository } = await import("../src/repositories/storageRepository.js");
 const { artistaFavoritoRepository } = await import("../src/repositories/artistaFavoritoRepository.js");
+const { estiloMusicalRepository } = await import("../src/repositories/estiloMusicalRepository.js");
+const { problemaConImagen } = await import("../src/helpers/imagenRemota.js");
 const { backofficeService } = await import("../src/services/backofficeService.js");
 const { env } = await import("../src/config/env.js");
 
@@ -155,6 +162,106 @@ describe("backofficeService.crearConcierto", () => {
     const concierto = await backofficeService.crearConcierto({ artista: "Tini", nombre: "Futttura" });
 
     expect(concierto.id_artista).toBe(7);
+  });
+});
+
+describe("importación de conciertos en lote", () => {
+  const IMG = "https://cdn.test/show.jpg";
+  const ENCABEZADO = "Nombre\tArtista\tEstadio\tGénero\tFecha y hora\tImagen";
+  const fila = (...celdas) => celdas.join("\t");
+  const lista = (...filas) => [ENCABEZADO, ...filas].join("\n");
+
+  beforeEach(() => {
+    backofficeRepository.listarEstadios.mockResolvedValue([
+      { id_estadio: 1, nombre: "Movistar Arena" },
+      { id_estadio: 2, nombre: "River Plate" },
+    ]);
+    estiloMusicalRepository.listarCatalogo.mockResolvedValue([
+      { id_estiloMusical: 10, nombre: "Rock" },
+      { id_estiloMusical: 11, nombre: "singer-songwriter" },
+    ]);
+    backofficeRepository.listarConciertos.mockResolvedValue([
+      { id_concierto: 1, nombre: "Take Cover Tour", fecha: "2099-02-25T21:00:00" },
+    ]);
+    backofficeRepository.obtenerOCrearArtista.mockImplementation(async (nombre) => ({ id_artista: 7, nombre }));
+    let id = 100;
+    backofficeRepository.crearConcierto.mockImplementation(async (datos) => ({ id_concierto: id++, ...datos }));
+    artistaFavoritoRepository.listarTodos.mockResolvedValue([{ id_usuario: "u1", nombre: "Rush" }]);
+  });
+
+  it("la vista previa marca cada error en su fila y no crea nada", async () => {
+    problemaConImagen.mockImplementation(async (url) => (url.includes("rota") ? "La imagen no carga" : null));
+
+    const { filas } = await backofficeService.previaImportacion(
+      lista(
+        fila("Fifty Something", "Rush", "movistar arena", "rock", "15/01/2099 21:00", IMG),
+        fila("Show X", "Jungle", "Teatro Colón", "Indie", "15/01/2099 21:00", IMG),
+        fila("Viejo", "Rush", "River Plate", "rock", "15/01/2020 21:00", IMG),
+        fila("Sin foto", "Rush", "River Plate", "rock", "16/01/2099 21:00", "https://cdn.test/rota.jpg"),
+        fila("Take Cover Tour", "Foo Fighters", "River Plate", "rock", "25/02/2099 22:00", IMG),
+        fila("fifty something", "Rush", "River Plate", "rock", "15/01/2099 23:00", IMG),
+        fila("Sin hora", "Rush", "River Plate", "rock", "20/01/2099", "imagen.jpg")
+      )
+    );
+
+    expect(filas.map((f) => f.errores)).toEqual([
+      [],
+      ['No existe el estadio "Teatro Colón"', 'No existe el género "Indie"'],
+      ["La fecha ya pasó"],
+      ["La imagen no carga"],
+      ["Ya existe un concierto con ese nombre ese día"],
+      ["Repetido: es igual a la fila 1"],
+      ["Falta la hora", "La imagen tiene que ser una URL (https://...)"],
+    ]);
+    // Muestra el nombre como está en la base y la fecha ya interpretada.
+    expect(filas[0]).toMatchObject({ estadio: "Movistar Arena", genero: "Rock", fecha: "2099-01-15T21:00" });
+    expect(filas[0]).not.toHaveProperty("datos");
+    // La misma URL se prueba una sola vez.
+    expect(problemaConImagen).toHaveBeenCalledTimes(2);
+    expect(backofficeRepository.crearConcierto).not.toHaveBeenCalled();
+  });
+
+  it("crea solo las filas válidas y avisa a los seguidores de cada artista", async () => {
+    const resultado = await backofficeService.importarConciertos(
+      lista(
+        fila("Fifty Something", "Rush", "Movistar Arena", "rock", "15/01/2099 21:00", IMG),
+        fila("Show X", "Jungle", "Teatro Colón", "rock", "15/01/2099 21:00", IMG),
+        fila("Lives Outgrown", "Beth Gibbons", "River Plate", "Singer Songwriter", "27/05/2099 21:00", IMG)
+      )
+    );
+
+    expect(backofficeRepository.crearConcierto.mock.calls.map((c) => c[0])).toEqual([
+      { nombre: "Fifty Something", id_estadio: 1, id_estiloMusical: 10, fecha: "2099-01-15T21:00", imagenConcierto: IMG, id_artista: 7 },
+      { nombre: "Lives Outgrown", id_estadio: 2, id_estiloMusical: 11, fecha: "2099-05-27T21:00", imagenConcierto: IMG, id_artista: 7 },
+    ]);
+    expect(backofficeRepository.obtenerOCrearArtista).toHaveBeenCalledWith("Rush", null);
+    expect(resultado.creados).toEqual([
+      { fila: 1, id_concierto: 100, nombre: "Fifty Something" },
+      { fila: 3, id_concierto: 101, nombre: "Lives Outgrown" },
+    ]);
+    expect(resultado.conErrores.map((f) => f.fila)).toEqual([2]);
+    expect(resultado.fallidos).toEqual([]);
+    expect(resultado.notificados).toBe(1);
+  });
+
+  it("si falla una fila al crearla, sigue con las demás", async () => {
+    backofficeRepository.crearConcierto
+      .mockRejectedValueOnce(new Error("Error creando el concierto"))
+      .mockImplementationOnce(async (datos) => ({ id_concierto: 200, ...datos }));
+
+    const resultado = await backofficeService.importarConciertos(
+      lista(
+        fila("Uno", "Rush", "Movistar Arena", "rock", "15/01/2099 21:00", IMG),
+        fila("Dos", "Rush", "Movistar Arena", "rock", "16/01/2099 21:00", IMG)
+      )
+    );
+
+    expect(resultado.fallidos).toEqual([{ fila: 1, nombre: "Uno", error: "Error creando el concierto" }]);
+    expect(resultado.creados).toEqual([{ fila: 2, id_concierto: 200, nombre: "Dos" }]);
+  });
+
+  it("responde 400 si no hay filas", async () => {
+    await expect(backofficeService.previaImportacion(ENCABEZADO)).rejects.toMatchObject({ status: 400 });
   });
 });
 
