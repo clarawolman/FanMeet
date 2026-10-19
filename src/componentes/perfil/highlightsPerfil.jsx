@@ -1,182 +1,206 @@
 import { useEffect, useRef, useState } from "react";
 import "./highlightsPerfil.css";
-import { IconoAnterior, IconoCerrar, IconoSiguiente } from "../generales/iconosNav";
+import NuevoMomento from "./nuevoMomento";
+import { momentosService } from "../../services/momentosService";
+import { mostrarAviso } from "../../utils/avisos";
+import {
+  IconoCarrusel,
+  IconoComentario,
+  IconoCorazon,
+  IconoFijado,
+  IconoGrilla,
+  IconoGuardar,
+} from "../momento/iconosMomento";
 
-const MAX_HIGHLIGHTS = 4;
+export const MAX_FOTOS = 10;
 
-export default function HighlightsPerfil({
-  highlights,
-  isOwnProfile,
-  subiendo,
-  error,
-  onSubirHighlight,
-}) {
+// Momentos del perfil, como la grilla de Instagram. En el propio perfil
+// hay una pestaña con los guardados (solo los ve uno).
+export default function HighlightsPerfil({ idPerfil, isOwnProfile, onAbrirMomento }) {
   const inputArchivoRef = useRef(null);
-  const [indiceAbierto, setIndiceAbierto] = useState(null);
-
-  function manejarClickAgregar() {
-    if (inputArchivoRef.current) {
-      inputArchivoRef.current.click();
-    }
-  }
-
-  function manejarArchivoSeleccionado(e) {
-    const archivo = e.target.files?.[0];
-    e.target.value = "";
-
-    if (archivo) {
-      onSubirHighlight(archivo);
-    }
-  }
-
-  function irAnterior() {
-    setIndiceAbierto((actual) =>
-      actual === null ? actual : (actual - 1 + highlights.length) % highlights.length
-    );
-  }
-
-  function irSiguiente() {
-    setIndiceAbierto((actual) =>
-      actual === null ? actual : (actual + 1) % highlights.length
-    );
-  }
+  const [pestana, setPestana] = useState("momentos");
+  const [momentos, setMomentos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  // Fotos elegidas que todavía no se publicaron
+  const [fotosNuevas, setFotosNuevas] = useState(null);
+  // Sube para volver a pedir la lista (después de publicar)
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
-    if (indiceAbierto === null) return;
+    let cancelado = false;
+    const pedido =
+      pestana === "guardados"
+        ? momentosService.listarGuardados()
+        : momentosService.listarDeUsuario(idPerfil);
+    pedido
+      .then((datos) => {
+        if (cancelado) return;
+        setMomentos(datos || []);
+        setError("");
+      })
+      .catch((err) => {
+        if (cancelado) return;
+        console.error("Error cargando momentos:", err);
+        setMomentos([]);
+        setError(err.message);
+      })
+      .finally(() => !cancelado && setCargando(false));
+    return () => {
+      cancelado = true;
+    };
+  }, [idPerfil, pestana, version]);
 
-    function manejarTecla(e) {
-      if (e.key === "Escape") setIndiceAbierto(null);
-      if (e.key === "ArrowLeft") irAnterior();
-      if (e.key === "ArrowRight") irSiguiente();
+  function cambiarPestana(nueva) {
+    if (nueva === pestana) return;
+    setCargando(true);
+    setMomentos([]);
+    setPestana(nueva);
+  }
+
+  function manejarArchivosSeleccionados(e) {
+    const archivos = [...(e.target.files || [])];
+    e.target.value = "";
+    if (archivos.length === 0) return;
+    if (archivos.length > MAX_FOTOS) {
+      mostrarAviso(`Podés subir hasta ${MAX_FOTOS} fotos por momento. Usamos las primeras ${MAX_FOTOS}.`, "info");
     }
+    setFotosNuevas(archivos.slice(0, MAX_FOTOS));
+  }
 
-    window.addEventListener("keydown", manejarTecla);
-    return () => window.removeEventListener("keydown", manejarTecla);
-  }, [indiceAbierto, highlights.length]);
+  function alPublicar(cantidadEtiquetados) {
+    setFotosNuevas(null);
+    setCargando(true);
+    if (pestana === "momentos") setVersion((v) => v + 1);
+    else cambiarPestana("momentos");
+    mostrarAviso(
+      cantidadEtiquetados > 0
+        ? `Publicado. ${cantidadEtiquetados === 1 ? "Le avisamos a tu amigo" : "Les avisamos a tus amigos"} para que lo sumen a su perfil.`
+        : "Publicado.",
+      "exito"
+    );
+  }
 
-  const hayContenido = highlights.length > 0 || isOwnProfile;
-  const hayLugar = highlights.length < MAX_HIGHLIGHTS;
-  const highlightAbierto =
-    indiceAbierto !== null ? highlights[indiceAbierto] : null;
+  const vacio = !cargando && !error && momentos.length === 0;
 
   return (
     <section className="highlightsPerfil">
       <div className="highlightsPerfilHeader">
         <h3>Momentos</h3>
+
+        {isOwnProfile && (
+          <button
+            type="button"
+            className="highlightsPerfilPublicar"
+            onClick={() => inputArchivoRef.current?.click()}
+          >
+            + Nuevo momento
+          </button>
+        )}
+        {isOwnProfile && (
+          <input
+            ref={inputArchivoRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            onChange={manejarArchivosSeleccionados}
+            hidden
+          />
+        )}
       </div>
 
-      {error && (
-        <p className="highlightsPerfilVacio">
-          No pudimos cargar los momentos ({error}).
-        </p>
-      )}
-
-      {!error && !hayContenido && (
-        <p className="highlightsPerfilVacio">
-          Todavía no hay fotos de recitales.
-        </p>
-      )}
-
-      {!error && hayContenido && (
-        <div className="highlightsPerfilGrid">
-          {isOwnProfile && hayLugar && (
-            <button
-              className="highlightAddCard"
-              type="button"
-              onClick={manejarClickAgregar}
-              disabled={subiendo}
-              aria-label="Agregar highlight"
-            >
-              {subiendo ? "…" : "+"}
-            </button>
-          )}
-
-          {isOwnProfile && hayLugar && (
-            <input
-              ref={inputArchivoRef}
-              type="file"
-              accept="image/*"
-              onChange={manejarArchivoSeleccionado}
-              hidden
-            />
-          )}
-
-          {highlights.map((highlight, indice) => (
-            <button
-              className="highlightCard"
-              type="button"
-              key={highlight.id_highlight}
-              onClick={() => setIndiceAbierto(indice)}
-              aria-label="Ver highlight"
-            >
-              <img src={highlight.url_imagen} alt="Highlight" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {highlightAbierto && (
-        <div
-          className="highlightOverlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setIndiceAbierto(null)}
-        >
-          <div className="highlightOverlayBarras">
-            {highlights.map((highlight, indice) => (
-              <span
-                key={highlight.id_highlight}
-                className={`highlightOverlayBarra ${
-                  indice === indiceAbierto ? "activa" : ""
-                }`}
-              />
-            ))}
-          </div>
-
+      {isOwnProfile && (
+        <div className="highlightsPerfilPestanas" role="tablist">
           <button
-            className="highlightOverlayCerrar"
             type="button"
-            onClick={() => setIndiceAbierto(null)}
-            aria-label="Cerrar"
+            role="tab"
+            aria-selected={pestana === "momentos"}
+            className={pestana === "momentos" ? "activa" : ""}
+            onClick={() => cambiarPestana("momentos")}
           >
-            <IconoCerrar />
+            <IconoGrilla width="16" height="16" /> Momentos
           </button>
-
-          <img
-            className="highlightOverlayImagen"
-            src={highlightAbierto.url_imagen}
-            alt="Highlight"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          {highlights.length > 1 && (
-            <>
-              <button
-                className="highlightOverlayNav highlightOverlayNavPrev"
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  irAnterior();
-                }}
-                aria-label="Anterior"
-              >
-                <IconoAnterior />
-              </button>
-
-              <button
-                className="highlightOverlayNav highlightOverlayNavNext"
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  irSiguiente();
-                }}
-                aria-label="Siguiente"
-              >
-                <IconoSiguiente />
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={pestana === "guardados"}
+            className={pestana === "guardados" ? "activa" : ""}
+            onClick={() => cambiarPestana("guardados")}
+          >
+            <IconoGuardar width="16" height="16" /> Guardados
+          </button>
         </div>
+      )}
+
+      {error && <p className="highlightsPerfilVacio">No pudimos cargar los momentos ({error}).</p>}
+
+      {vacio && (
+        <p className="highlightsPerfilVacio">
+          {pestana === "guardados"
+            ? "Todavía no guardaste momentos. Tocá el marcador en un momento para guardarlo acá (solo vos lo ves)."
+            : isOwnProfile
+              ? "Compartí las fotos de tus recitales: podés subir varias, contar cómo fue y etiquetar a quienes fueron con vos."
+              : "Todavía no hay fotos de recitales."}
+        </p>
+      )}
+
+      {cargando && momentos.length === 0 && (
+        <div className="highlightsPerfilGrid" aria-hidden="true">
+          <span className="highlightCard fmSkeleton" />
+          <span className="highlightCard fmSkeleton" />
+          <span className="highlightCard fmSkeleton" />
+        </div>
+      )}
+
+      {momentos.length > 0 && (
+        <div className="highlightsPerfilGrid">
+          {momentos.map((momento) => {
+            const participantes = momento.participantes || [];
+            return (
+              <button
+                className="highlightCard"
+                type="button"
+                key={momento.id_highlight}
+                onClick={() => onAbrirMomento?.(momento.id_highlight)}
+                aria-label={`Ver momento de ${participantes.map((u) => u.apodo || u.nombre).join(" y ")}`}
+              >
+                <img src={momento.url_imagen} alt="" loading="lazy" />
+
+                <span className="highlightCardIconos" aria-hidden="true">
+                  {momento.fijado && <IconoFijado lleno width="16" height="16" />}
+                  {momento.cantidadFotos > 1 && <IconoCarrusel width="16" height="16" />}
+                </span>
+
+                {participantes.length > 1 && (
+                  <span className="highlightCardParticipantes" aria-hidden="true">
+                    {participantes.slice(0, 3).map((u) => (
+                      <img key={u.id_usuario} src={u.foto_perfil} alt="" />
+                    ))}
+                  </span>
+                )}
+
+                <span className="highlightCardDatos" aria-hidden="true">
+                  {momento.cantidadLikes !== null && (
+                    <span>
+                      <IconoCorazon lleno width="18" height="18" /> {momento.cantidadLikes}
+                    </span>
+                  )}
+                  <span>
+                    <IconoComentario width="18" height="18" /> {momento.cantidadComentarios}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {fotosNuevas && (
+        <NuevoMomento
+          fotos={fotosNuevas}
+          onPublicado={alPublicar}
+          onCancelar={() => setFotosNuevas(null)}
+        />
       )}
     </section>
   );

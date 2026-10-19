@@ -1,0 +1,38 @@
+/* El contenedor de la pantalla tiene que ser position: relative e isolation: isolate */
+.fondoAmbiente {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 560px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fondoAmbienteFoto {
+  position: absolute;
+  inset: -80px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(70px) saturate(1.3);
+  opacity: 0.38;
+  transform: scale(1.1);
+}
+
+/* se apaga hacia abajo hasta el color de fondo */
+.fondoAmbiente::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, var(--fm-bg) 92%);
+}
+
+:root[data-theme="dark"] .fondoAmbienteFoto {
+  opacity: 0.32;
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .fondoAmbiente {
+    left: var(--fm-sidebar);
+    height: 640px;
+  }
+}

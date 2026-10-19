@@ -1,37 +1,37 @@
 import "./participantesGrupo.css";
-// "3 fans confirmados · quedan 5 lugares" (o "· Completo"). Sin cupo, solo
-// la cantidad.
+
+// "quedan 5 lugares" o "completo". Sin cupo, nada.
 function textoLugares(cantidad, cupo) {
-   if (!cupo) return "";
-   const quedan = cupo - cantidad;
-   if (quedan <= 0) return " · Completo";
-   return ` · ${quedan === 1 ? "queda 1 lugar" : `quedan ${quedan} lugares`}`;
+  if (!cupo) return "";
+  const quedan = cupo - cantidad;
+  if (quedan <= 0) return " · completo";
+  return ` · ${quedan === 1 ? "queda 1 lugar" : `quedan ${quedan} lugares`}`;
 }
 
-export default function ParticipantesGrupo({ participantes, cupo, onVerFansConfirmados }) {
+// Quién organiza y quiénes van. Tocarlo abre la lista de fans confirmados.
+export default function ParticipantesGrupo({ participantes = [], idCreador, cupo, onVerFansConfirmados }) {
+  const creador = participantes.find((u) => u.id_usuario === idCreador);
+  const cantidad = participantes.length;
 
-   return (
-      <button
-         className="participantesGrupo"
-         type="button"
-         onClick={onVerFansConfirmados}
-      >
+  return (
+    <button className="participantesGrupo" type="button" onClick={onVerFansConfirmados}>
+      <span className="imagenesParticipantes" aria-hidden="true">
+        {participantes.slice(0, 5).map((user) => (
+          <img key={user.id_usuario} src={user.foto_perfil} alt="" className="fotoParticipante" />
+        ))}
+      </span>
 
-         <div className="imagenesParticipantes">
-            {participantes.slice(0, 4).map((user) => (
-               <img
-                  key={user.id_usuario}
-                  src={user.foto_perfil}
-                  alt={user.nombre}
-                  className="fotoParticipante"
-               />
-            ))}
-         </div>
+      <span className="participantesGrupoTexto">
+        <strong>
+          {cantidad === 0 ? "Todavía no va nadie" : `${cantidad} ${cantidad === 1 ? "fan va" : "fans van"}`}
+          {textoLugares(cantidad, cupo)}
+        </strong>
+        {creador && <small>Organiza {creador.apodo || creador.nombre}</small>}
+      </span>
 
-         <span>
-            {participantes.length} fans confirmados{textoLugares(participantes.length, cupo)}
-         </span>
-
-      </button>
-   );
+      <svg className="participantesGrupoFlecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" />
+      </svg>
+    </button>
+  );
 }

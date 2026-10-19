@@ -1,37 +1,28 @@
 import "./CardEvento.css";
+import { cuentaRegresiva } from "../../utils/fechas";
 
-const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
+// Hero del concierto: la foto a sangre, cuánto falta arriba y el artista
+// + nombre del show abajo. Fecha, hora y lugar van en la tira de abajo.
+function CardEvento({ concierto }) {
+  const falta = cuentaRegresiva(concierto.fecha);
+  const artista = concierto.artista?.nombre;
+  const titulo = concierto.nombre || artista;
 
-function formatearFecha(fecha) {
-  if (!fecha) return "";
-
-  const dia = new Date(fecha);
-
-  if (isNaN(dia.getTime())) return fecha;
-
-  return `${dia.getDate()} de ${MESES[dia.getMonth()]} de ${dia.getFullYear()}`;
-}
-
-function CardEvento({concierto}) {
   return (
     <section className="CardEvento">
-      <img className="EventoImagen"
-        src={concierto.imagen}
-        alt={concierto.nombre}
-      />
+      <img className="EventoImagen" src={concierto.imagen} alt="" />
+      <div className="EventoOverlay" />
 
-      <div className="EventoOverlay"></div>
+      {falta && (
+        <span className={`EventoFalta ${falta === "Hoy" ? "EventoFalta--hoy" : ""}`}>
+          {falta === "Hoy" && <span className="EventoFaltaPunto" aria-hidden="true" />}
+          {falta}
+        </span>
+      )}
 
       <div className="EventoContenido">
-        <p className="EventoArtista">{concierto.artista.nombre}</p>
-        <h2 className="EventoTitulo">{concierto.nombre}</h2>
-        <p className="EventoFecha">{formatearFecha(concierto.fecha)}</p>
-        <p className="EventoUbicacion">
-          {concierto.estadio.nombre}, {concierto.estadio.ciudad}
-        </p>
+        {artista && artista !== titulo && <p className="EventoArtista">{artista}</p>}
+        <h2 className="EventoTitulo">{titulo}</h2>
       </div>
     </section>
   );

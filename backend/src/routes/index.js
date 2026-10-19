@@ -14,6 +14,7 @@ import chatbotRoutes from "./chatbotRoutes.js";
 import reporteRoutes from "./reporteRoutes.js";
 import bloqueoRoutes from "./bloqueoRoutes.js";
 import backofficeRoutes from "./backofficeRoutes.js";
+import momentoRoutes from "./momentoRoutes.js";
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use("/chatbot", chatbotRoutes);
 router.use("/reportes", reporteRoutes);
 router.use("/bloqueos", bloqueoRoutes);
 router.use("/backoffice", backofficeRoutes);
+router.use("/momentos", momentoRoutes);
 
 export default router;

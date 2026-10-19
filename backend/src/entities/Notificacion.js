@@ -11,6 +11,7 @@ export function toNotificacion(row) {
     id_grupo: row.id_grupo,
     id_usuario_relacionado: row.id_usuario_relacionado,
     id_amistad: row.id_amistad,
+    id_highlight: row.id_highlight ?? null,
     leida: row.leida,
     created_at: row.created_at,
   };

@@ -5,6 +5,8 @@ import "../generales/HeaderApp.css";
 import { IconoCerrar, IconoNavMenu } from "../generales/iconosNav";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
 import { chatsService } from "../../services/chatsService";
+import { idMomentoEnTexto } from "../../services/momentosService";
+import { IconoCarrusel } from "../momento/iconosMomento";
 import { mensajesService } from "../../services/mensajesService";
 import { chatbotService, ID_CHATBOT } from "../../services/chatbotService";
 import { supabase } from "../../supabase";
@@ -183,7 +185,7 @@ function Tildes({ leido }) {
   );
 }
 
-function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
+function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicial }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const { abrirMenu } = useContext(MenuLateralContext);
   const idYo = usuarioActual?.id_usuario;
@@ -684,7 +686,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
                   <img src={mensaje.imagen} alt="Foto" onLoad={manejarImagenCargada} />
                 </button>
               )}
-              {mensaje.contenido && <p className="chatsBurbujaTexto">{mensaje.contenido}</p>}
+              {mensaje.contenido && renderContenido(mensaje.contenido)}
               {esBotAbierto && mensaje.accion && (
                 <AccionFani
                   idMensaje={mensaje.id_mensaje}
@@ -702,6 +704,26 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
         </div>
       );
     });
+  }
+
+  // Un momento compartido (link /momento/:id) se ve como tarjeta para abrirlo
+  function renderContenido(contenido) {
+    const idMomento = idMomentoEnTexto(contenido);
+    if (!idMomento) return <p className="chatsBurbujaTexto">{contenido}</p>;
+
+    const texto = contenido.replace(/\S*\/momento\/\S+/, "").trim();
+    return (
+      <>
+        {texto && <p className="chatsBurbujaTexto">{texto}</p>}
+        <button type="button" className="chatsMomentoCompartido" onClick={() => onAbrirMomento?.(idMomento)}>
+          <IconoCarrusel width="18" height="18" />
+          <span>
+            <strong>Momento compartido</strong>
+            <small>Tocá para verlo</small>
+          </span>
+        </button>
+      </>
+    );
   }
 
   function renderPreview(chat) {

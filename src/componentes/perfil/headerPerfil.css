@@ -150,6 +150,72 @@
   border-color: var(--fm-ink);
 }
 
+/* descripción del perfil (bio) */
+.headerPerfilDescripcion {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--fm-fs-body);
+  line-height: 1.45;
+  color: var(--fm-ink);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.headerPerfilFormulario {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.headerPerfilUsuarioInput {
+  position: relative;
+}
+
+.headerPerfilUsuarioInput > span {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fm-muted);
+  pointer-events: none;
+}
+
+.headerPerfilUsuarioInput .headerPerfilApodoInput {
+  padding-left: 30px;
+}
+
+.headerPerfilApodoInput:disabled {
+  color: var(--fm-muted);
+  background: var(--fm-bg-soft);
+  cursor: not-allowed;
+}
+
+.headerPerfilDescripcionInput {
+  height: auto;
+  min-height: 84px;
+  padding: 12px 14px;
+  border-radius: var(--fm-radius-md);
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.headerPerfilAyuda {
+  margin: 6px 2px 0;
+  font-size: var(--fm-fs-xs);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.headerPerfilAyuda--error {
+  color: var(--fm-danger);
+}
+
+.headerPerfilContador {
+  text-align: right;
+  font-family: var(--fm-font-data);
+}
+
 .headerPerfilAccionesEdicion {
   grid-column: 1 / -1;
   display: flex;
@@ -189,7 +255,7 @@
   justify-content: center;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .headerPerfilInfo {
     grid-template-columns: auto 1fr auto;
     max-width: 680px;
@@ -212,6 +278,17 @@
   .headerPerfilBotonEditar,
   .headerPerfilAccionesAmistad {
     grid-column: auto;
+  }
+
+  /* la acción queda al lado del nombre aunque abajo venga la descripción */
+  .headerPerfilInfo > .headerPerfilBotonEditar,
+  .headerPerfilAccionesAmistad {
+    grid-row: 1;
+    grid-column: 3;
+  }
+
+  .headerPerfilAccionesEdicion {
+    justify-content: flex-end;
   }
 
   .headerPerfilAccionesAmistad > *,

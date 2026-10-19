@@ -102,6 +102,19 @@ export const usuarioRepository = {
   },
 
   // Mismo texto de error que hoy usa App.jsx::manejarFinalizarRegistro.
+  // "Ana" y "ana" serían el mismo @ para la gente: se compara sin
+  // mayúsculas. En ilike "_" y "%" son comodines, así que se escapan.
+  async existeNombreSinMayusculas(nombre, idExcluido) {
+    const patron = nombre.replace(/[\\%_]/g, (c) => `\\${c}`);
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("id_usuario")
+      .ilike("nombre", patron)
+      .neq("id_usuario", idExcluido)
+      .limit(1);
+    return unwrap(resultado, "Error verificando nombre de usuario").length > 0;
+  },
+
   async crear(datosUsuario) {
     const resultado = await supabaseAdmin.from(TABLA).insert([datosUsuario]).select().single();
     return unwrap(resultado, "Error al registrar usuario");

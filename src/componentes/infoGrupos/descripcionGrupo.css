@@ -1,30 +1,31 @@
 .descripcionGrupo {
-  background: var(--fm-surface);
+  padding: 18px 18px 20px;
   border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
   box-shadow: var(--fm-shadow-sm);
-  padding: 16px;
-  margin: 10px 16px 0;
 }
 
 .descripcionGrupo h3 {
   margin: 0 0 8px;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-md);
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  color: var(--fm-ink);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
 }
 
 .descripcionGrupo p {
   margin: 0;
-  font-size: var(--fm-fs-sm);
-  color: var(--fm-muted);
+  max-width: 65ch;
+  font-size: var(--fm-fs-body);
   line-height: 1.6;
+  color: var(--fm-ink);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .descripcionGrupo {
-    margin: 12px 0 0;
-    padding: 20px;
+    padding: 22px 24px 24px;
   }
 }

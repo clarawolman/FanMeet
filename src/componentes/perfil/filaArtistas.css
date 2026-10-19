@@ -142,7 +142,7 @@
   border-color: var(--fm-border-strong);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .filaArtistas .home-row-scroll {
     gap: 18px;
     padding: 0 var(--perfil-gutter, 40px) 8px;

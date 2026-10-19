@@ -1,6 +1,12 @@
 import multer from "multer";
 import { ApiError } from "../helpers/ApiError.js";
 
+const MENSAJES_MULTER = {
+  LIMIT_FILE_SIZE: "Cada foto puede pesar hasta 5 MB",
+  LIMIT_FILE_COUNT: "Subiste demasiadas fotos",
+  LIMIT_UNEXPECTED_FILE: "Subiste demasiadas fotos",
+};
+
 export function notFoundHandler(req, _res, next) {
   next(ApiError.notFound(`No existe la ruta ${req.method} ${req.originalUrl}`));
 }
@@ -16,9 +22,7 @@ export function errorHandler(err, _req, res, _next) {
   // Archivo de más de 5 MB (o campos de más): es culpa del pedido, no del
   // servidor.
   if (err instanceof multer.MulterError) {
-    const error =
-      err.code === "LIMIT_FILE_SIZE" ? "La foto no puede superar los 5 MB" : "El archivo no es válido";
-    return res.status(400).json({ error });
+    return res.status(400).json({ error: MENSAJES_MULTER[err.code] || "No se pudo subir el archivo" });
   }
 
   if (err instanceof ApiError) {

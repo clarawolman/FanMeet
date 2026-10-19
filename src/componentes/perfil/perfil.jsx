@@ -12,13 +12,13 @@ import ProximosConciertosPerfil from "./proximosConciertosPerfil";
 import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
+import ListaConciertosPerfil from "./listaConciertosPerfil";
 import ModalReportar from "./ModalReportar";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import { bloqueosService } from "../../services/bloqueosService";
 import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
 import EscuchasPerfil from "./escuchasPerfil";
 import CompatibilidadPerfil from "./compatibilidadPerfil";
-import ResumenLastfmPerfil from "./resumenLastfmPerfil";
 import LoadingSpinner from "../generales/LoadingSpinner";
 import { idDeGenero, nombreDeGenero } from "../../utils/generos";
 import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
@@ -57,6 +57,7 @@ function Perfil({
   onVerUsuario,
   onEnviarMensaje,
   onIngresarConcierto,
+  onAbrirMomento,
 }) {
   const { usuarioActual, setUsuarioActual } = useContext(UsuarioContext);
   const usuarioBase = usuarioPerfil || usuarioActual;
@@ -69,16 +70,17 @@ function Perfil({
   // La foto se actualiza optimistamente acá y también se guarda en el
   // UsuarioContext para que el resto de la app la vea.
   const [fotoLocal, setFotoLocal] = useState(null);
-  // Igual con el apodo; undefined = sin cambios locales.
-  const [apodoLocal, setApodoLocal] = useState(undefined);
+  // Igual con apodo, @nombre y descripción después de "Editar perfil".
+  const [perfilLocal, setPerfilLocal] = useState(null);
   const usuario = {
     ...usuarioBase,
     ...(fotoLocal && { fotoperfil: fotoLocal }),
-    ...(apodoLocal !== undefined && { apodo: apodoLocal }),
+    ...perfilLocal,
   };
 
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
+  const [mostrarConciertos, setMostrarConciertos] = useState(false);
   const [mostrarReportar, setMostrarReportar] = useState(false);
   const [mostrarBloquear, setMostrarBloquear] = useState(false);
   const [bloqueando, setBloqueando] = useState(false);
@@ -91,21 +93,12 @@ function Perfil({
   const [generosSeleccionadosIds, setGenerosSeleccionadosIds] = useState([]);
   const [catalogoGeneros, setCatalogoGeneros] = useState([]);
   const [vibraActual, setVibraActual] = useState(usuarioBase?.estilo_asistencia || "");
-  const [highlights, setHighlights] = useState([]);
-  const [highlightsError, setHighlightsError] = useState("");
-  const [subiendoHighlight, setSubiendoHighlight] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [estadoAmistad, setEstadoAmistad] = useState("conectar");
   const [idAmistad, setIdAmistad] = useState(null);
   const [cargandoAmistad, setCargandoAmistad] = useState(false);
   const [proximosEventos, setProximosEventos] = useState([]);
   const [cargandoEventos, setCargandoEventos] = useState(true);
-
-  useEffect(() => {
-    if (usuario?.id_usuario) {
-      cargarDatosPerfil();
-    }
-  }, [usuario?.id_usuario]);
 
   async function cargarDatosPerfil() {
     setCargando(true);
@@ -114,7 +107,6 @@ function Perfil({
       cargarEstadisticas(),
       cargarGeneros(),
       cargarCatalogoGeneros(),
-      cargarHighlights(),
       cargarAmistad(),
       cargarProximosEventos(),
     ]);
@@ -236,18 +228,6 @@ function Perfil({
     }
   }
 
-  async function cargarHighlights() {
-    try {
-      const datos = await usuariosService.listarHighlights(usuario.id_usuario);
-      setHighlightsError("");
-      setHighlights(datos || []);
-    } catch (error) {
-      console.error("Error cargando highlights:", error);
-      setHighlights([]);
-      setHighlightsError(error.message);
-    }
-  }
-
   async function manejarSeleccionarVibra(idVibra) {
     if (!isOwnProfile || idVibra === vibraActual) return;
 
@@ -261,21 +241,6 @@ function Perfil({
       setVibraActual(anterior);
       mostrarAviso("No se pudo actualizar tu ambiente de concierto: " + error.message);
     }
-  }
-
-  async function manejarSubirHighlight(archivo) {
-    if (!isOwnProfile || highlights.length >= 4) return;
-
-    setSubiendoHighlight(true);
-
-    try {
-      await usuariosService.subirHighlight(archivo);
-      await cargarHighlights();
-    } catch (error) {
-      mostrarAviso("No se pudo subir la imagen: " + error.message);
-    }
-
-    setSubiendoHighlight(false);
   }
 
   async function manejarSubirFoto(archivo) {
@@ -295,19 +260,33 @@ function Perfil({
   }
 
   // Devuelve true si se guardó, para que el header cierre la edición.
-  async function manejarGuardarApodo(apodo) {
+  async function manejarGuardarPerfil(cambios) {
     if (!isOwnProfile) return false;
 
     try {
-      const usuarioActualizado = await usuariosService.actualizarApodo(apodo);
-      setApodoLocal(usuarioActualizado.apodo);
-      setUsuarioActual({ ...usuarioActual, apodo: usuarioActualizado.apodo });
+      const actualizado = await usuariosService.actualizarPerfil(cambios);
+      const datos = {
+        apodo: actualizado.apodo,
+        nombre: actualizado.nombre,
+        descripcion: actualizado.descripcion,
+        nombre_cambiado_at: actualizado.nombre_cambiado_at,
+      };
+      setPerfilLocal(datos);
+      setUsuarioActual({ ...usuarioActual, ...datos });
       return true;
     } catch (error) {
-      mostrarAviso("No se pudo guardar el nombre: " + error.message);
+      mostrarAviso("No se pudo guardar el perfil: " + error.message);
       return false;
     }
   }
+
+  // Abajo de las funciones que usa, para no llamarlas antes de declararlas.
+  useEffect(() => {
+    if (usuario?.id_usuario) {
+      cargarDatosPerfil();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuario?.id_usuario]);
 
   const generosConNombre = generosSeleccionadosIds.map((idEstilo) => {
     const genero = catalogoGeneros.find(
@@ -332,7 +311,7 @@ function Perfil({
         onAccionAmistad={manejarAccionAmistad}
         onSubirFoto={manejarSubirFoto}
         subiendoFoto={subiendoFoto}
-        onGuardarApodo={manejarGuardarApodo}
+        onGuardarPerfil={manejarGuardarPerfil}
         onVolver={onVolver}
         onNavegar={onNavegar}
         onCerrarSesion={onCerrarSesion}
@@ -363,11 +342,6 @@ function Perfil({
       )}
 
       <div className="perfilContenido">
-        <ResumenLastfmPerfil
-          key={`resumen-${usuario.id_usuario}-${versionMusica}`}
-          idUsuario={usuario.id_usuario}
-        />
-
         {!isOwnProfile && (
           <CompatibilidadPerfil
             key={`compatibilidad-${usuario.id_usuario}`}
@@ -378,7 +352,9 @@ function Perfil({
 
         <StatsPerfil
           estadisticas={estadisticas}
-          onVerConciertos={isOwnProfile ? () => onNavegar?.("misEventos") : undefined}
+          onVerConciertos={
+            isOwnProfile ? () => onNavegar?.("misEventos") : () => setMostrarConciertos(true)
+          }
           onVerAmigos={() => setMostrarAmigos(true)}
           onVerGrupos={isOwnProfile ? () => onNavegar?.("misGrupos") : undefined}
         />
@@ -423,11 +399,10 @@ function Perfil({
         />
 
         <HighlightsPerfil
-          highlights={highlights}
+          key={`momentos-${usuario.id_usuario}`}
+          idPerfil={usuario.id_usuario}
           isOwnProfile={isOwnProfile}
-          subiendo={subiendoHighlight}
-          error={highlightsError}
-          onSubirHighlight={manejarSubirHighlight}
+          onAbrirMomento={onAbrirMomento}
         />
 
         {cargando && <LoadingSpinner texto="Cargando perfil..." />}
@@ -457,6 +432,14 @@ function Perfil({
             setMostrarAmigos(false);
             onVerUsuario?.(idUsuario);
           }}
+        />
+      )}
+
+      {mostrarConciertos && (
+        <ListaConciertosPerfil
+          usuario={usuario}
+          eventos={proximosEventos}
+          onVolver={() => setMostrarConciertos(false)}
         />
       )}
     </div>

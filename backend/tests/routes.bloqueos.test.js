@@ -15,7 +15,10 @@ vi.mock("../src/services/bloqueoService.js", async (importOriginal) => {
   };
 });
 vi.mock("../src/services/usuarioService.js", () => ({
-  usuarioService: { obtenerPerfilPublico: vi.fn(), listarHighlights: vi.fn() },
+  usuarioService: { obtenerPerfilPublico: vi.fn() },
+}));
+vi.mock("../src/services/momentoService.js", () => ({
+  momentoService: { listarDeUsuario: vi.fn() },
 }));
 vi.mock("../src/services/chatService.js", () => ({
   chatService: { listarMensajes: vi.fn(), enviar: vi.fn() },
@@ -34,6 +37,7 @@ vi.mock("../src/repositories/usuarioRepository.js", async (importOriginal) => {
 const { bloqueoRepository } = await import("../src/repositories/bloqueoRepository.js");
 const { bloqueoService } = await import("../src/services/bloqueoService.js");
 const { usuarioService } = await import("../src/services/usuarioService.js");
+const { momentoService } = await import("../src/services/momentoService.js");
 const { chatService } = await import("../src/services/chatService.js");
 const { verificarToken } = await import("../src/config/jwks.js");
 const { crearApp } = await import("../src/app.js");
@@ -72,17 +76,17 @@ describe("rutas con :idUsuario y un bloqueo de por medio", () => {
   });
 
   it("sin bloqueo, el perfil se ve normal", async () => {
-    usuarioService.obtenerPerfilPublico.mockResolvedValue({ id_usuario: OTRO, nombre: "Otro" });
+    momentoService.listarDeUsuario.mockResolvedValue([]);
 
     const respuesta = await request(app).get(`/api/usuarios/${OTRO}/highlights`).set(auth);
 
     expect(respuesta.status).toBe(200);
-    expect(usuarioService.listarHighlights).toHaveBeenCalledWith(OTRO);
+    expect(momentoService.listarDeUsuario).toHaveBeenCalledWith(OTRO, YO);
   });
 
   it("el propio perfil nunca se bloquea", async () => {
     bloqueoRepository.existeEntre.mockResolvedValueOnce(true);
-    usuarioService.listarHighlights.mockResolvedValue([]);
+    momentoService.listarDeUsuario.mockResolvedValue([]);
 
     const respuesta = await request(app).get(`/api/usuarios/${YO}/highlights`).set(auth);
 

@@ -17,7 +17,8 @@
   border-top: 1px solid var(--fm-border);
 }
 
-.footerMarca {
+/* .footer delante: Marca.css (display: inline-flex) puede cargar después */
+.footer .footerMarca {
   display: none;
 }
 
@@ -111,21 +112,21 @@
 }
 
 /* en mobile esos destinos están en el menú hamburguesa */
-@media (max-width: 767px) {
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .footerButton--escritorio {
     display: none;
   }
 }
 
 /* ===== DESKTOP: sidebar fijo a la izquierda, siempre abierto ===== */
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .footer {
     top: 0;
     right: auto;
     bottom: 0;
     left: 0;
     width: var(--fm-sidebar);
-    height: 100dvh;
+    height: calc(100dvh / var(--fm-zoom));
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -138,7 +139,7 @@
     border-right: 1px solid var(--fm-border);
   }
 
-  .footerMarca {
+  .footer .footerMarca {
     display: inline-flex;
     margin: 0 0 30px 10px;
     font-size: 20px;

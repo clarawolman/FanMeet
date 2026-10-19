@@ -179,10 +179,10 @@ describe("matchingService.descubrir", () => {
     expect(fans[0]).not.toHaveProperty("mail");
   });
 
-  it("solo muestra gente nueva con 60% o más, lista para conectar", async () => {
+  it("solo muestra gente nueva con 40% o más, lista para conectar", async () => {
     const { fans } = await matchingService.descubrir(YO);
 
-    expect(fans.every((f) => f.porcentaje >= 60)).toBe(true);
+    expect(fans.every((f) => f.porcentaje >= 40)).toBe(true);
     expect(fans[0]).toMatchObject({ id_usuario: GEMELO, estadoAmistad: "conectar", idAmistad: null });
   });
 
@@ -198,11 +198,13 @@ describe("matchingService.descubrir", () => {
     expect(fans.map((f) => f.id_usuario)).not.toContain(GEMELO);
   });
 
-  it("si nadie llega al 60%, devuelve los más parecidos igual", async () => {
+  it("si nadie llega al 40%, devuelve los más parecidos igual", async () => {
     artistaFavoritoRepository.listarTodos.mockResolvedValue([
       { id_usuario: YO, nombre: "Duki" },
       { id_usuario: YO, nombre: "Khea" },
       { id_usuario: YO, nombre: "Bizarrap" },
+      { id_usuario: YO, nombre: "Paulo Londra" },
+      { id_usuario: YO, nombre: "Nicki Nicole" },
       { id_usuario: GEMELO, nombre: "Duki" },
       { id_usuario: GEMELO, nombre: "Taylor Swift" },
       { id_usuario: GEMELO, nombre: "Coldplay" },
@@ -218,7 +220,7 @@ describe("matchingService.descubrir", () => {
 
     expect(soloCercanos).toBe(true);
     expect(fans.map((f) => f.id_usuario)).toEqual([GEMELO]);
-    expect(fans[0].porcentaje).toBeLessThan(60);
+    expect(fans[0].porcentaje).toBeLessThan(40);
   });
 
   it("avisa si el propio perfil no tiene gustos para comparar", async () => {

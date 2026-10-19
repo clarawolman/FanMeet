@@ -45,20 +45,24 @@ function CardEvento({ evento, onIngresar, onSalir }) {
           )}
         </ul>
 
-        <div className="tarjetaAcciones">
-          {onSalir && (
-            <button
-              className="tarjetaBoton tarjetaBoton--secundario"
-              type="button"
-              onClick={() => onSalir(evento)}
-            >
-              Salir
-            </button>
-          )}
-          <button className="tarjetaBoton" type="button" onClick={() => onIngresar(evento)}>
-            Ingresar
-          </button>
-        </div>
+        {(onIngresar || onSalir) && (
+          <div className="tarjetaAcciones">
+            {onSalir && (
+              <button
+                className="tarjetaBoton tarjetaBoton--secundario"
+                type="button"
+                onClick={() => onSalir(evento)}
+              >
+                Salir
+              </button>
+            )}
+            {onIngresar && (
+              <button className="tarjetaBoton" type="button" onClick={() => onIngresar(evento)}>
+                Ingresar
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

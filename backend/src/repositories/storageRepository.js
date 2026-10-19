@@ -35,4 +35,15 @@ export const storageRepository = {
       borrados += rutas.length;
     }
   },
+
+  // Recibe la URL pública que devolvió subirArchivo. Si falla solo queda
+  // un archivo huérfano en el bucket: no se corta la operación por eso.
+  async eliminarPorUrl(bucket, urlPublica) {
+    const marca = `/object/public/${bucket}/`;
+    const inicio = String(urlPublica || "").indexOf(marca);
+    if (inicio === -1) return;
+    const ruta = decodeURIComponent(urlPublica.slice(inicio + marca.length));
+    const { error } = await supabaseAdmin.storage.from(bucket).remove([ruta]);
+    if (error) console.error(`No se pudo borrar ${ruta} de ${bucket}:`, error.message);
+  },
 };

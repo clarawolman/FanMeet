@@ -61,3 +61,23 @@ export function partesFecha(fecha) {
   if (!anio || !mes || !dia) return null;
   return { dia: String(dia), mes: MESES_CORTOS[mes - 1], anio: String(anio) };
 }
+
+// Como en Instagram: "Recién", "5 min", "3 h", "2 d", y después la fecha
+// ("12 de agosto", con año si no es este año).
+export function haceCuanto(fecha, ahora = new Date()) {
+  if (!fecha) return "";
+  const momento = new Date(fecha);
+  if (Number.isNaN(momento.getTime())) return "";
+  const minutos = Math.floor((ahora - momento) / 60000);
+  if (minutos < 1) return "Recién";
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `${horas} h`;
+  const dias = Math.floor(horas / 24);
+  if (dias < 7) return `${dias} d`;
+  return momento.toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: momento.getFullYear() === ahora.getFullYear() ? undefined : "numeric",
+  });
+}

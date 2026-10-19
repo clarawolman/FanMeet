@@ -44,6 +44,6 @@ describe("errorHandler con errores de multer", () => {
     errorHandler(new multer.MulterError("LIMIT_FILE_SIZE"), {}, res, () => {});
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: "La foto no puede superar los 5 MB" });
+    expect(res.json).toHaveBeenCalledWith({ error: "Cada foto puede pesar hasta 5 MB" });
   });
 });

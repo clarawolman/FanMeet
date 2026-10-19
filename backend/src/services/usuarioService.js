@@ -1,18 +1,24 @@
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
-import { highlightRepository } from "../repositories/highlightRepository.js";
 import { storageRepository } from "../repositories/storageRepository.js";
 import { usuariosConciertosRepository } from "../repositories/conciertoRepository.js";
 import { grupoUsuarioRepository } from "../repositories/grupoRepository.js";
 import { amistadRepository } from "../repositories/amistadRepository.js";
 import { toUsuarioCompleto, toUsuarioPublico, toUsuarioResumen } from "../entities/Usuario.js";
-import { toHighlight } from "../entities/Highlight.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { sinBloqueados } from "./bloqueoService.js";
 import { rutaArchivoUsuario } from "../helpers/sanitizeFilename.js";
 import { esImagenValida } from "../helpers/validarImagen.js";
 
-const MAX_HIGHLIGHTS = 4;
+export const DIAS_ENTRE_CAMBIOS_DE_NOMBRE = 15;
+const DIA = 24 * 60 * 60 * 1000;
+
+// Cuándo puede volver a cambiar su @nombre (null = ya puede)
+export function proximoCambioDeNombre(nombreCambiadoAt, ahora = new Date()) {
+  if (!nombreCambiadoAt) return null;
+  const proximo = new Date(new Date(nombreCambiadoAt).getTime() + DIAS_ENTRE_CAMBIOS_DE_NOMBRE * DIA);
+  return proximo > ahora ? proximo : null;
+}
 
 export const usuarioService = {
   // Uso exclusivo para el propio usuario autenticado (GET /usuarios/me):
@@ -68,6 +74,38 @@ export const usuarioService = {
     return toUsuarioCompleto(usuario);
   },
 
+  // "Editar perfil": apodo, descripción y @nombre juntos. Solo se toca lo
+  // que viene; el @nombre se puede cambiar una vez cada 15 días.
+  async actualizarPerfil(idUsuarioAutenticado, { apodo, descripcion, nombre }) {
+    const actual = await usuarioRepository.obtenerPorId(idUsuarioAutenticado);
+    if (!actual) throw ApiError.notFound("El usuario no existe");
+
+    const cambios = {};
+    if (apodo !== undefined) cambios.apodo = apodo || null;
+    if (descripcion !== undefined) cambios.descripcion = descripcion || null;
+
+    if (nombre !== undefined && nombre !== actual.nombre) {
+      const proximo = proximoCambioDeNombre(actual.nombre_cambiado_at);
+      if (proximo) {
+        const dias = Math.ceil((proximo.getTime() - Date.now()) / DIA);
+        throw ApiError.badRequest(
+          `Podés cambiar tu nombre de usuario una vez cada ${DIAS_ENTRE_CAMBIOS_DE_NOMBRE} días. ` +
+            (dias === 1 ? "Te falta 1 día." : `Te faltan ${dias} días.`)
+        );
+      }
+
+      const ocupado = await usuarioRepository.existeNombreSinMayusculas(nombre, idUsuarioAutenticado);
+      if (ocupado) throw ApiError.badRequest("Ese nombre de usuario ya está en uso");
+
+      cambios.nombre = nombre;
+      cambios.nombre_cambiado_at = new Date().toISOString();
+    }
+
+    if (Object.keys(cambios).length === 0) return toUsuarioCompleto(actual);
+    const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, cambios);
+    return toUsuarioCompleto(usuario);
+  },
+
   // Mismos 3 contadores que hoy calcula perfil.jsx::cargarEstadisticas.
   // Los amigos suspendidos no cuentan (tampoco aparecen en la lista), ni
   // los que tienen un bloqueo con quien mira (idQuienMira).
@@ -110,26 +148,5 @@ export const usuarioService = {
   async guardarGeneros(idUsuarioAutenticado, idsEstilos) {
     await estiloMusicalRepository.reemplazarSeleccion(idUsuarioAutenticado, idsEstilos);
     return this.obtenerGenerosUsuario(idUsuarioAutenticado);
-  },
-
-  async listarHighlights(idUsuario) {
-    const filas = await highlightRepository.listarPorUsuario(idUsuario);
-    return filas.map(toHighlight);
-  },
-
-  async subirHighlight(idUsuarioAutenticado, archivo) {
-    if (!esImagenValida(archivo)) {
-      throw ApiError.badRequest("El archivo debe ser una imagen válida (jpg, png o webp)");
-    }
-
-    const existentes = await highlightRepository.listarPorUsuario(idUsuarioAutenticado);
-    if (existentes.length >= MAX_HIGHLIGHTS) {
-      throw ApiError.badRequest(`Ya alcanzaste el máximo de ${MAX_HIGHLIGHTS} highlights`);
-    }
-
-    const ruta = rutaArchivoUsuario(idUsuarioAutenticado, archivo.originalname);
-    const url = await storageRepository.subirArchivo("highlights", ruta, archivo.buffer, archivo.mimetype);
-    const highlight = await highlightRepository.crear(idUsuarioAutenticado, url);
-    return toHighlight(highlight);
   },
 };

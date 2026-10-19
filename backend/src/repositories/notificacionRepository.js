@@ -15,6 +15,28 @@ export const notificacionRepository = {
     unwrap(resultado, "Error creando notificaciones");
   },
 
+  // La invitación a un momento ya no hace falta una vez respondida.
+  async eliminarInvitacionMomento(idUsuario, idHighlight) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .delete()
+      .eq("id_usuario", idUsuario)
+      .eq("tipo", "momento_etiquetado")
+      .eq("id_highlight", idHighlight);
+    return unwrap(resultado, "Error borrando la invitación");
+  },
+
+  // Al sacar un me gusta: el aviso de "le gustó" ya no corresponde.
+  async eliminarDeMomento({ tipo, idHighlight, idUsuarioRelacionado }) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .delete()
+      .eq("tipo", tipo)
+      .eq("id_highlight", idHighlight)
+      .eq("id_usuario_relacionado", idUsuarioRelacionado);
+    return unwrap(resultado, "Error borrando notificación");
+  },
+
   async listarPorUsuario(idUsuario) {
     const resultado = await supabaseAdmin
       .from(TABLA)

@@ -13,6 +13,7 @@ vi.mock("../src/repositories/usuarioRepository.js", () => ({
     obtenerPorId: vi.fn(),
     actualizar: vi.fn(),
     listarActivosPorIds: vi.fn(),
+    existeNombreSinMayusculas: vi.fn(),
   },
 }));
 
@@ -24,16 +25,10 @@ vi.mock("../src/repositories/estiloMusicalRepository.js", () => ({
   },
 }));
 
-vi.mock("../src/repositories/highlightRepository.js", () => ({
-  highlightRepository: {
-    listarPorUsuario: vi.fn(),
-    crear: vi.fn(),
-  },
+vi.mock("../src/repositories/storageRepository.js", () => ({
+  storageRepository: { subirArchivo: vi.fn(), eliminarPorUrl: vi.fn() },
 }));
 
-vi.mock("../src/repositories/storageRepository.js", () => ({
-  storageRepository: { subirArchivo: vi.fn() },
-}));
 
 vi.mock("../src/repositories/conciertoRepository.js", () => ({
   usuariosConciertosRepository: { contarPorUsuario: vi.fn() },
@@ -48,12 +43,11 @@ vi.mock("../src/repositories/amistadRepository.js", () => ({
 }));
 
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
-const { highlightRepository } = await import("../src/repositories/highlightRepository.js");
 const { storageRepository } = await import("../src/repositories/storageRepository.js");
 const { usuariosConciertosRepository } = await import("../src/repositories/conciertoRepository.js");
 const { grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
 const { amistadRepository } = await import("../src/repositories/amistadRepository.js");
-const { usuarioService } = await import("../src/services/usuarioService.js");
+const { usuarioService, proximoCambioDeNombre } = await import("../src/services/usuarioService.js");
 
 const YO = "yo-uuid";
 const JPEG_VALIDO = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
@@ -181,39 +175,67 @@ describe("usuarioService.actualizarFoto / actualizarVibra (identidad)", () => {
   });
 });
 
-describe("usuarioService.subirHighlight (límite de 4)", () => {
-  it("rechaza si ya tiene 4 highlights", async () => {
-    highlightRepository.listarPorUsuario.mockResolvedValue([{}, {}, {}, {}]);
+describe("usuarioService.actualizarPerfil", () => {
+  it("guarda apodo y descripción (vacío = sin dato)", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, nombre: "ana" });
+    usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, nombre: "ana" });
 
-    await expect(
-      usuarioService.subirHighlight(YO, { originalname: "a.jpg", buffer: JPEG_VALIDO, mimetype: "image/jpeg" })
-    ).rejects.toMatchObject({ status: 400 });
-    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
+    await usuarioService.actualizarPerfil(YO, { apodo: "Ani", descripcion: "" });
+
+    expect(usuarioRepository.actualizar).toHaveBeenCalledWith(YO, { apodo: "Ani", descripcion: null });
   });
 
-  it("permite subir si tiene menos de 4", async () => {
-    highlightRepository.listarPorUsuario.mockResolvedValue([{}, {}]);
-    storageRepository.subirArchivo.mockResolvedValue("https://cdn/highlights/yo-uuid/a.jpg");
-    highlightRepository.crear.mockResolvedValue({ id_highlight: 1, id_usuario: YO, url_imagen: "url" });
+  it("cambia el @nombre y guarda cuándo", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, nombre: "ana", nombre_cambiado_at: null });
+    usuarioRepository.existeNombreSinMayusculas.mockResolvedValue(false);
+    usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, nombre: "ana.rock" });
 
-    const resultado = await usuarioService.subirHighlight(YO, {
-      originalname: "a.jpg",
-      buffer: JPEG_VALIDO,
-      mimetype: "image/jpeg",
+    await usuarioService.actualizarPerfil(YO, { nombre: "ana.rock" });
+
+    expect(usuarioRepository.actualizar).toHaveBeenCalledWith(YO, {
+      nombre: "ana.rock",
+      nombre_cambiado_at: expect.any(String),
     });
-
-    expect(highlightRepository.crear).toHaveBeenCalledWith(YO, expect.any(String));
-    expect(resultado.id_usuario).toBe(YO);
   });
 
-  it("rechaza con 400 si el contenido no es una imagen real, sin llegar a chequear el límite de 4", async () => {
-    await expect(
-      usuarioService.subirHighlight(YO, {
-        originalname: "a.jpg",
-        buffer: Buffer.from("no soy una imagen"),
-        mimetype: "image/jpeg",
-      })
-    ).rejects.toMatchObject({ status: 400 });
-    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
+  it("no deja cambiar el @nombre otra vez antes de 15 días", async () => {
+    const hace3Dias = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, nombre: "ana", nombre_cambiado_at: hace3Dias });
+
+    await expect(usuarioService.actualizarPerfil(YO, { nombre: "ana.rock" })).rejects.toMatchObject({
+      status: 400,
+      message: expect.stringContaining("12 días"),
+    });
+    expect(usuarioRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  it("no deja usar un @nombre de otra persona", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, nombre: "ana" });
+    usuarioRepository.existeNombreSinMayusculas.mockResolvedValue(true);
+
+    await expect(usuarioService.actualizarPerfil(YO, { nombre: "Juan" })).rejects.toMatchObject({ status: 400 });
+  });
+
+  it("mandar el mismo @nombre no cuenta como cambio", async () => {
+    const ayer = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, nombre: "ana", nombre_cambiado_at: ayer });
+    usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, nombre: "ana" });
+
+    await usuarioService.actualizarPerfil(YO, { nombre: "ana", apodo: "Ani" });
+
+    expect(usuarioRepository.actualizar).toHaveBeenCalledWith(YO, { apodo: "Ani" });
+  });
+});
+
+describe("proximoCambioDeNombre", () => {
+  const ahora = new Date("2026-10-19T12:00:00Z");
+
+  it("null si nunca lo cambió o ya pasaron 15 días", () => {
+    expect(proximoCambioDeNombre(null, ahora)).toBeNull();
+    expect(proximoCambioDeNombre("2026-10-04T12:00:00Z", ahora)).toBeNull();
+  });
+
+  it("la fecha desde la que puede volver a cambiarlo", () => {
+    expect(proximoCambioDeNombre("2026-10-10T12:00:00Z", ahora)).toEqual(new Date("2026-10-25T12:00:00Z"));
   });
 });

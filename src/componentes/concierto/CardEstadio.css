@@ -1,32 +1,47 @@
 .EstadioCard {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: stretch;
+  gap: 14px;
+  height: 100%;
+  padding: 12px;
   background: var(--fm-surface);
-  border: none;
   border-radius: var(--fm-radius-lg);
   box-shadow: var(--fm-shadow-sm);
-  padding: 14px;
-  min-height: 76px;
   box-sizing: border-box;
 }
 
 .EstadioImagen {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--fm-radius-sm);
+  width: 84px;
+  min-height: 84px;
+  border-radius: var(--fm-radius-md);
   object-fit: cover;
   flex-shrink: 0;
+  background: var(--fm-bg-soft);
 }
 
-.EstadioContenido { min-width: 0; }
+.EstadioContenido {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2px 4px 2px 0;
+}
+
+.EstadioEtiqueta {
+  margin: 0 0 2px;
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
 
 .EstadioNombre {
-  margin: 0 0 3px;
+  margin: 0;
   font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  text-transform: none;
+  font-size: var(--fm-fs-md);
+  font-weight: 650;
+  letter-spacing: -0.02em;
   color: var(--fm-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -34,12 +49,27 @@
 }
 
 .EstadioDireccion {
-  margin: 0;
-  font-family: var(--fm-font-body);
+  margin: 2px 0 0;
   font-size: var(--fm-fs-xs);
   color: var(--fm-muted);
-  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.EstadioMapa {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  margin-top: 8px;
+  color: var(--fm-accent);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.EstadioMapa:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

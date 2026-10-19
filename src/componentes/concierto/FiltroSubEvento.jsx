@@ -1,26 +1,27 @@
 import "./FiltroSubEvento.css";
 
-function FiltroSubEvento({ filtros, filtroActivo, onCambiarFiltro }) {
+// Control segmentado: Todos / Pre / After / Hoy, con cuántos grupos hay en cada uno.
+function FiltroSubEvento({ filtros, filtroActivo, onCambiarFiltro, cantidades = {}, etiqueta = "Filtrar grupos" }) {
   return (
-    <section className="filtro-sub-evento">
-      {filtros.map((filtro) => (
-        <button
-          type="button"
-          key={filtro.id}
-          className={
-            filtroActivo === filtro.id
-              ? "filtro-sub-evento__boton filtro-sub-evento__boton--activo"
-              : "filtro-sub-evento__boton"
-          }
-          onClick={() => {
-            console.log("TOQUÉ FILTRO:", filtro.id);
-            onCambiarFiltro(filtro.id);
-          }}
-        >
-          {filtro.nombre}
-        </button>
-      ))}
-    </section>
+    <div className="filtro-sub-evento" role="tablist" aria-label={etiqueta}>
+      {filtros.map((filtro) => {
+        const activo = filtroActivo === filtro.id;
+        const cantidad = cantidades[filtro.id];
+        return (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activo}
+            key={filtro.id}
+            className={`filtro-sub-evento__boton ${activo ? "filtro-sub-evento__boton--activo" : ""}`}
+            onClick={() => onCambiarFiltro(filtro.id)}
+          >
+            {filtro.nombre}
+            {cantidad !== undefined && <span className="filtro-sub-evento__cantidad">{cantidad}</span>}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

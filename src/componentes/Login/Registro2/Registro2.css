@@ -163,7 +163,7 @@
   background: var(--fm-nav-hover-bg);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .registro2Contenido {
     padding-top: 40px;
     display: grid;

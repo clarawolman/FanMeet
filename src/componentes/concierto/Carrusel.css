@@ -3,18 +3,17 @@
   width: 100%;
 }
 
-/* scroll base */
+/* el padding deja lugar a la sombra y al "levantarse" de las cards;
+   el margen negativo lo compensa para que queden alineadas al título */
 .SubEventosCarrusel {
   display: flex;
-  gap: 12px;
-
+  gap: 14px;
+  margin: -8px -12px;
+  padding: 8px 12px 14px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-padding: 0 12px;
   scroll-behavior: smooth;
-
-  padding: 10px;
-  width: 100%;
-
   scrollbar-width: none;
 }
 
@@ -22,56 +21,44 @@
   display: none;
 }
 
-/* cards */
-.SubEventoCard {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
-
-/* ========================= */
-/* FLECHAS */
-/* ========================= */
-
+/* ===== FLECHAS ===== */
 .CarruselBtn {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 3px);
   transform: translateY(-50%);
-
-  width: 38px;
-  height: 38px;
-
-  border-radius: 50%;
-  border: 1px solid rgba(242, 237, 228, 0.35);
-
-  background: rgba(18, 16, 15, 0.55);
-  backdrop-filter: none;
-
-  color: var(--fm-ink);
-
-  font-size: var(--fm-fs-lg);
-
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   z-index: var(--fm-z-raised);
-
-  transition: border-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow);
+  color: var(--fm-ink);
+  cursor: pointer;
+  transition: transform var(--fm-dur) var(--fm-ease);
 }
 
 .CarruselBtn:hover {
-  border-color: var(--fm-border-strong);
-  color: var(--fm-ink);
+  transform: translateY(-50%) scale(1.06);
 }
 
-.CarruselBtn.left { left: 8px; }
-.CarruselBtn.right { right: 8px; }
+.CarruselBtn:active {
+  transform: translateY(-50%) scale(0.96);
+}
 
-.CarruselBtn {
-  display: grid;
-  place-items: center;
-  padding: 0;
-  color: var(--fm-on-photo);
+.CarruselBtn.left {
+  left: -10px;
+}
+
+.CarruselBtn.right {
+  right: -10px;
+}
+
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .CarruselBtn {
+    display: none;
+  }
 }

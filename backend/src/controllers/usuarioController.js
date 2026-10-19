@@ -45,6 +45,11 @@ export const usuarioController = {
     res.json(usuario);
   }),
 
+  actualizarPerfil: asyncHandler(async (req, res) => {
+    const usuario = await usuarioService.actualizarPerfil(req.user.id, req.body);
+    res.json(usuario);
+  }),
+
   actualizarApodo: asyncHandler(async (req, res) => {
     const usuario = await usuarioService.actualizarApodo(req.user.id, req.body.apodo);
     res.json(usuario);
@@ -76,16 +81,5 @@ export const usuarioController = {
   guardarMisGeneros: asyncHandler(async (req, res) => {
     const generos = await usuarioService.guardarGeneros(req.user.id, req.body.ids_estilos);
     res.json(generos);
-  }),
-
-  listarHighlights: asyncHandler(async (req, res) => {
-    const highlights = await usuarioService.listarHighlights(req.params.idUsuario);
-    res.json(highlights);
-  }),
-
-  subirHighlight: asyncHandler(async (req, res) => {
-    if (!req.file) throw ApiError.badRequest("Falta el archivo del highlight");
-    const highlight = await usuarioService.subirHighlight(req.user.id, req.file);
-    res.status(201).json(highlight);
   }),
 };
