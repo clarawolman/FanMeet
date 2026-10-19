@@ -7,7 +7,7 @@ import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRe
 import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
-import { amistadRepository } from "../repositories/amistadRepository.js";
+import { usuarioService } from "./usuarioService.js";
 import { calcularEdad } from "../entities/Usuario.js";
 import { toMensajeChatbot } from "../entities/MensajeChatbot.js";
 import { ApiError } from "../helpers/ApiError.js";
@@ -96,7 +96,7 @@ function resumirConcierto(fila, nombresEstilo) {
 // los que el usuario está unido, así que la IA no puede contar lo que
 // nunca recibió.
 async function armarDatosParaUsuario(idUsuario) {
-  const [conciertos, catalogo, relaciones, misGrupos, usuario, misEstilos, misArtistas, cantidadAmigos] =
+  const [conciertos, catalogo, relaciones, misGrupos, usuario, misEstilos, misArtistas, estadisticas] =
     await Promise.all([
       conciertoRepository.listarTodos(),
       estiloMusicalRepository.listarCatalogo(),
@@ -105,7 +105,8 @@ async function armarDatosParaUsuario(idUsuario) {
       usuarioRepository.obtenerPorId(idUsuario),
       estiloMusicalRepository.listarIdsPorUsuario(idUsuario),
       artistaFavoritoRepository.listarPorUsuario(idUsuario),
-      amistadRepository.contarAceptadasDeUsuario(idUsuario),
+      // Mismo contador que el perfil (sin amigos suspendidos).
+      usuarioService.obtenerEstadisticas(idUsuario),
     ]);
 
   const nombresEstilo = new Map(catalogo.map((e) => [String(idDeEstilo(e)), nombreDeEstilo(e)]));
@@ -136,7 +137,7 @@ async function armarDatosParaUsuario(idUsuario) {
       vibra_en_conciertos: NOMBRES_VIBRA[usuario?.estilo_asistencia] || "sin elegir",
       generos_favoritos: misEstilos.map((e) => nombresEstilo.get(String(e.id_estilo))).filter(Boolean),
       artistas_favoritos: misArtistas.map((a) => a.nombre),
-      cantidad_de_amigos: cantidadAmigos,
+      cantidad_de_amigos: estadisticas.amigos,
     },
     conciertos: ordenados.map((c) => ({
       ...resumirConcierto(c, nombresEstilo),

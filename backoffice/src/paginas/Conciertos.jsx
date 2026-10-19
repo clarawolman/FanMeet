@@ -288,12 +288,80 @@ function ConfirmarEliminar({ concierto, onListo, onCancelar }) {
   );
 }
 
+function TablaConciertos({ conciertos, onAbrir }) {
+  return (
+    <div className="tablaScroll">
+      <table className="tabla">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Show</th>
+            <th>Fecha</th>
+            <th>Estadio</th>
+            <th>Fans</th>
+            <th>Grupos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {conciertos.map((c) => (
+            <tr key={c.id_concierto}>
+              <td>
+                <img className="miniatura" src={c.imagen} alt="" />
+              </td>
+              <td>
+                <strong>{c.nombre}</strong>
+                <div className="textoSuave">{c.artista?.nombre}</div>
+              </td>
+              <td>{fechaCorta(c.fecha)}</td>
+              <td>{c.estadio?.nombre}</td>
+              <td>{c.cantidadFans}</td>
+              <td>{c.cantidadGrupos}</td>
+              <td className="accionesFila">
+                <button className="botonTexto" type="button" onClick={() => onAbrir("editar", c)}>
+                  Editar
+                </button>
+                <button className="botonTexto" type="button" onClick={() => onAbrir("novedad", c)}>
+                  Novedad
+                </button>
+                <button className="botonTexto botonTextoPeligro" type="button" onClick={() => onAbrir("eliminar", c)}>
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Mismo criterio que el backend (backend/src/helpers/fechas.js): un
+// concierto sigue vigente todo el día del show. Próximos del más cercano al
+// más lejano; los pasados del más reciente al más viejo.
+function separarProximosYPasados(conciertos) {
+  const hoy = hoyEnArgentina();
+  const porFecha = [...conciertos].sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)));
+  const yaPaso = (c) => Boolean(c.fecha) && String(c.fecha).slice(0, 10) < hoy;
+  return {
+    proximos: porFecha.filter((c) => !yaPaso(c)),
+    pasados: porFecha.filter(yaPaso).reverse(),
+  };
+}
+
 export default function Conciertos() {
   const conciertos = useCarga(() => api.conciertos(), []);
   const catalogo = useCarga(() => api.catalogo(), []);
   // { tipo: "nuevo" | "editar" | "novedad" | "eliminar", concierto? }
   const [abierto, setAbierto] = useState(null);
   const [mensaje, setMensaje] = useState("");
+
+  const { proximos, pasados } = separarProximosYPasados(conciertos.datos || []);
+
+  function abrir(tipo, concierto) {
+    setMensaje("");
+    setAbierto({ tipo, concierto });
+  }
 
   function terminar(texto) {
     setAbierto(null);
@@ -333,49 +401,23 @@ export default function Conciertos() {
       )}
 
       <Cargando error={conciertos.error} cargando={conciertos.cargando}>
-        <div className="tablaScroll">
-          <table className="tabla">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Show</th>
-                <th>Fecha</th>
-                <th>Estadio</th>
-                <th>Fans</th>
-                <th>Grupos</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {conciertos.datos?.map((c) => (
-                <tr key={c.id_concierto}>
-                  <td>
-                    <img className="miniatura" src={c.imagen} alt="" />
-                  </td>
-                  <td>
-                    <strong>{c.nombre}</strong>
-                    <div className="textoSuave">{c.artista?.nombre}</div>
-                  </td>
-                  <td>{fechaCorta(c.fecha)}</td>
-                  <td>{c.estadio?.nombre}</td>
-                  <td>{c.cantidadFans}</td>
-                  <td>{c.cantidadGrupos}</td>
-                  <td className="accionesFila">
-                    <button className="botonTexto" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "editar", concierto: c }); }}>
-                      Editar
-                    </button>
-                    <button className="botonTexto" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "novedad", concierto: c }); }}>
-                      Novedad
-                    </button>
-                    <button className="botonTexto botonTextoPeligro" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "eliminar", concierto: c }); }}>
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <h2 className="tituloSeccion">
+          Próximos <span className="cantidadSeccion">{proximos.length}</span>
+        </h2>
+        {proximos.length > 0 ? (
+          <TablaConciertos conciertos={proximos} onAbrir={abrir} />
+        ) : (
+          <p className="textoSuave">No hay conciertos próximos.</p>
+        )}
+
+        {pasados.length > 0 && (
+          <>
+            <h2 className="tituloSeccion">
+              Ya pasaron <span className="cantidadSeccion">{pasados.length}</span>
+            </h2>
+            <TablaConciertos conciertos={pasados} onAbrir={abrir} />
+          </>
+        )}
       </Cargando>
     </>
   );

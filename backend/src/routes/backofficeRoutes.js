@@ -15,6 +15,7 @@ import {
   actualizarConciertoSchema,
   novedadSchema,
   crearGrupoSchema,
+  actualizarGrupoSchema,
 } from "../validators/backofficeValidators.js";
 
 const router = Router();
@@ -65,6 +66,12 @@ router.post(
 
 router.get("/grupos", c.listarGrupos);
 router.post("/grupos", validate(crearGrupoSchema), c.crearGrupo);
+router.patch(
+  "/grupos/:idGrupo",
+  validate(idGrupoParamSchema, "params"),
+  validate(actualizarGrupoSchema),
+  c.actualizarGrupo
+);
 router.get("/grupos/:idGrupo/mensajes", validate(idGrupoParamSchema, "params"), c.mensajesDeGrupo);
 
 export default router;

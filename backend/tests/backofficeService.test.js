@@ -22,7 +22,7 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
   usuariosConciertosRepository: { listarUsuariosPorConcierto: vi.fn() },
 }));
 vi.mock("../src/repositories/grupoRepository.js", () => ({
-  grupoRepository: { listarPorIds: vi.fn(async () => []) },
+  grupoRepository: { listarPorIds: vi.fn(async () => []), obtenerPorId: vi.fn(), actualizar: vi.fn() },
   grupoUsuarioRepository: {},
 }));
 vi.mock("../src/repositories/mensajeRepository.js", () => ({ mensajeRepository: {} }));
@@ -38,6 +38,7 @@ const { usuarioRepository } = await import("../src/repositories/usuarioRepositor
 const { conciertoRepository, usuariosConciertosRepository } = await import(
   "../src/repositories/conciertoRepository.js"
 );
+const { grupoRepository } = await import("../src/repositories/grupoRepository.js");
 const { artistaFavoritoRepository } = await import("../src/repositories/artistaFavoritoRepository.js");
 const { backofficeService } = await import("../src/services/backofficeService.js");
 const { env } = await import("../src/config/env.js");
@@ -198,5 +199,34 @@ describe("backofficeService.resolverReporte", () => {
     await expect(
       backofficeService.cambiarEstadoUsuario("b", "b", { estado: "suspendido", motivo: "x" })
     ).rejects.toMatchObject({ status: 400 });
+  });
+});
+
+describe("backofficeService.actualizarGrupo", () => {
+  beforeEach(() => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 9, nombre: "Previa", foto: "https://x.com/a.jpg" });
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ id_grupo: id, ...cambios }));
+  });
+
+  it("guarda solo los campos que llegan", async () => {
+    await backofficeService.actualizarGrupo(9, { nombre: "Previa nueva", hora: "19:00" });
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(9, { nombre: "Previa nueva", hora: "19:00" });
+  });
+
+  it("foto vacía le saca la foto al grupo", async () => {
+    await backofficeService.actualizarGrupo(9, { foto: "" });
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(9, { foto: null });
+  });
+
+  it("si el grupo no existe responde 404", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(null);
+    await expect(backofficeService.actualizarGrupo(9, { nombre: "X" })).rejects.toMatchObject({ status: 404 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  it("si lo pasan a un concierto que no existe responde 404", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(null);
+    await expect(backofficeService.actualizarGrupo(9, { id_concierto: 99 })).rejects.toMatchObject({ status: 404 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
   });
 });

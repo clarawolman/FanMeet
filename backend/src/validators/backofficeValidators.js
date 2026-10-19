@@ -84,6 +84,11 @@ export const crearGrupoSchema = z.object({
   foto: z.union([urlImagen, z.literal("")]).optional(),
 });
 
+// Solo los campos que cambiaron. Foto "" = sacarle la foto al grupo.
+export const actualizarGrupoSchema = crearGrupoSchema
+  .partial()
+  .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
+
 export const novedadSchema = z.object({
   titulo: z.string().trim().min(1, "Poné un título").max(100),
   descripcion: z.string().trim().min(1, "Escribí la novedad").max(500),

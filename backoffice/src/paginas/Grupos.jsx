@@ -16,8 +16,23 @@ function MensajesDelGrupo({ idGrupo }) {
 
 const VACIO = { id_concierto: "", nombre: "", categoria: "", fecha: "", hora: "", ubicacion: "", descripcion: "", foto: "" };
 
-function FormularioGrupo({ conciertos, onListo, onCancelar }) {
-  const [form, setForm] = useState(VACIO);
+function aFormulario(g) {
+  return {
+    id_concierto: String(g.id_concierto || ""),
+    nombre: g.nombre || "",
+    categoria: g.categoria || "",
+    fecha: g.fecha ? String(g.fecha).slice(0, 10) : "",
+    // <input type="time"> quiere "19:00", la base guarda "19:00:00".
+    hora: g.hora ? String(g.hora).slice(0, 5) : "",
+    ubicacion: g.ubicacion || "",
+    descripcion: g.descripcion || "",
+    foto: g.foto || "",
+  };
+}
+
+function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
+  const editando = Boolean(grupo);
+  const [form, setForm] = useState(editando ? aFormulario(grupo) : VACIO);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 
@@ -41,8 +56,20 @@ function FormularioGrupo({ conciertos, onListo, onCancelar }) {
     setGuardando(true);
     setError("");
     try {
-      await api.crearGrupo(form);
-      onListo(`Grupo "${form.nombre.trim()}" creado.`);
+      if (editando) {
+        // Solo se mandan los campos que cambiaron.
+        const original = aFormulario(grupo);
+        const cambios = Object.fromEntries(Object.entries(form).filter(([k, v]) => v !== original[k]));
+        if (Object.keys(cambios).length === 0) {
+          onListo("No cambiaste nada.");
+          return;
+        }
+        await api.actualizarGrupo(grupo.id_grupo, cambios);
+        onListo(`Grupo "${form.nombre.trim()}" actualizado.`);
+      } else {
+        await api.crearGrupo(form);
+        onListo(`Grupo "${form.nombre.trim()}" creado.`);
+      }
     } catch (err) {
       setError(err.message);
       setGuardando(false);
@@ -51,7 +78,7 @@ function FormularioGrupo({ conciertos, onListo, onCancelar }) {
 
   return (
     <form className="tarjeta formulario" onSubmit={manejarEnviar}>
-      <h2>Nuevo grupo</h2>
+      <h2>{editando ? `Editar "${grupo.nombre}"` : "Nuevo grupo"}</h2>
       <div className="camposGrilla">
         <label>
           Concierto
@@ -104,7 +131,7 @@ function FormularioGrupo({ conciertos, onListo, onCancelar }) {
       {error && <p className="mensajeError">{error}</p>}
       <div className="acciones">
         <button className="boton botonPrincipal" type="submit" disabled={guardando}>
-          {guardando ? "Creando…" : "Crear grupo"}
+          {guardando ? "Guardando…" : editando ? "Guardar cambios" : "Crear grupo"}
         </button>
         <button className="boton" type="button" onClick={onCancelar} disabled={guardando}>
           Cancelar
@@ -118,11 +145,17 @@ export default function Grupos() {
   const { datos, error, cargando, recargar } = useCarga(() => api.grupos(), []);
   const conciertos = useCarga(() => api.conciertos(), []);
   const [abierto, setAbierto] = useState(null);
-  const [creando, setCreando] = useState(false);
+  // null = sin formulario, { grupo: null } = nuevo, { grupo } = editar.
+  const [formulario, setFormulario] = useState(null);
   const [mensaje, setMensaje] = useState("");
 
+  function abrirFormulario(grupo) {
+    setMensaje("");
+    setFormulario({ grupo });
+  }
+
   function terminar(texto) {
-    setCreando(false);
+    setFormulario(null);
     setMensaje(texto);
     recargar();
   }
@@ -131,8 +164,8 @@ export default function Grupos() {
     <>
       <div className="tituloConAccion">
         <h1>Grupos</h1>
-        {!creando && (
-          <button className="boton botonPrincipal" type="button" onClick={() => { setMensaje(""); setCreando(true); }}>
+        {!formulario && (
+          <button className="boton botonPrincipal" type="button" onClick={() => abrirFormulario(null)}>
             + Nuevo grupo
           </button>
         )}
@@ -140,9 +173,15 @@ export default function Grupos() {
 
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
-      {creando && (
+      {formulario && (
         <Cargando error={conciertos.error} cargando={conciertos.cargando}>
-          <FormularioGrupo conciertos={conciertos.datos || []} onListo={terminar} onCancelar={() => setCreando(false)} />
+          <FormularioGrupo
+            key={formulario.grupo?.id_grupo || "nuevo"}
+            grupo={formulario.grupo}
+            conciertos={conciertos.datos || []}
+            onListo={terminar}
+            onCancelar={() => setFormulario(null)}
+          />
         </Cargando>
       )}
 
@@ -169,6 +208,7 @@ export default function Grupos() {
                 <th>Cuándo</th>
                 <th>Integrantes</th>
                 <th>Mensajes</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -183,6 +223,12 @@ export default function Grupos() {
                   <td>{fechaCorta(`${g.fecha}T${g.hora || "00:00"}`)}</td>
                   <td>{g.cantidadIntegrantes}</td>
                   <td>{g.cantidadMensajes}</td>
+                  <td className="accionesFila">
+                    {/* stopPropagation: la fila abre el chat. */}
+                    <button className="botonTexto" type="button" onClick={(e) => { e.stopPropagation(); abrirFormulario(g); }}>
+                      Editar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

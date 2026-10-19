@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { crearConciertoSchema, actualizarConciertoSchema } from "../src/validators/backofficeValidators.js";
+import { crearConciertoSchema, actualizarConciertoSchema, actualizarGrupoSchema } from "../src/validators/backofficeValidators.js";
 import { hoyEnArgentina } from "../src/helpers/fechas.js";
 
 const CONCIERTO = {
@@ -35,5 +35,25 @@ describe("actualizarConciertoSchema: fecha", () => {
 
   it("deja editar otros campos sin mandar la fecha", () => {
     expect(actualizarConciertoSchema.safeParse({ nombre: "Otro nombre" }).success).toBe(true);
+  });
+});
+
+describe("actualizarGrupoSchema", () => {
+  it("acepta cambiar un solo campo", () => {
+    const resultado = actualizarGrupoSchema.safeParse({ hora: "19:30" });
+    expect(resultado.success).toBe(true);
+    expect(resultado.data).toEqual({ hora: "19:30" });
+  });
+
+  it("rechaza si no mandan ningún cambio", () => {
+    expect(actualizarGrupoSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("acepta foto vacía para sacarla", () => {
+    expect(actualizarGrupoSchema.safeParse({ foto: "" }).success).toBe(true);
+  });
+
+  it("rechaza una ubicación demasiado corta", () => {
+    expect(actualizarGrupoSchema.safeParse({ ubicacion: "bar" }).success).toBe(false);
   });
 });

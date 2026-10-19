@@ -391,6 +391,20 @@ export const backofficeService = {
     });
   },
 
+  async actualizarGrupo(idGrupo, { foto, ...cambios }) {
+    const grupo = await grupoRepository.obtenerPorId(idGrupo);
+    if (!grupo) throw ApiError.notFound("El grupo no existe");
+    if (cambios.id_concierto) {
+      const concierto = await conciertoRepository.obtenerPorId(cambios.id_concierto);
+      if (!concierto) throw ApiError.notFound("El concierto no existe");
+    }
+
+    return grupoRepository.actualizar(idGrupo, {
+      ...cambios,
+      ...(foto !== undefined ? { foto: foto || null } : {}),
+    });
+  },
+
   async mensajesDeGrupo(idGrupo) {
     const grupo = await grupoRepository.obtenerPorId(idGrupo);
     if (!grupo) throw ApiError.notFound("El grupo no existe");

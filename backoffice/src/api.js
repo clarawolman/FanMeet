@@ -95,5 +95,6 @@ export const api = {
 
   grupos: () => solicitar("/backoffice/grupos"),
   crearGrupo: (datos) => solicitar("/backoffice/grupos", { method: "POST", body: datos }),
+  actualizarGrupo: (id, cambios) => solicitar(`/backoffice/grupos/${id}`, { method: "PATCH", body: cambios }),
   mensajesDeGrupo: (id) => solicitar(`/backoffice/grupos/${id}/mensajes`),
 };

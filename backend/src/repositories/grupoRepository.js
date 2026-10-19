@@ -30,6 +30,16 @@ export const grupoRepository = {
     return unwrap(resultado, "Error cargando grupos del concierto");
   },
 
+  async actualizar(idGrupo, cambios) {
+    const resultado = await supabaseAdmin
+      .from("grupo")
+      .update(cambios)
+      .eq("id_grupo", idGrupo)
+      .select()
+      .maybeSingle();
+    return unwrap(resultado, "Error actualizando grupo");
+  },
+
   async eliminar(idGrupo) {
     const resultado = await supabaseAdmin.from("grupo").delete().eq("id_grupo", idGrupo);
     return unwrap(resultado, "Error eliminando grupo");

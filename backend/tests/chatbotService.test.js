@@ -37,8 +37,8 @@ vi.mock("../src/repositories/artistaFavoritoRepository.js", () => ({
   artistaFavoritoRepository: { listarPorUsuario: vi.fn() },
 }));
 
-vi.mock("../src/repositories/amistadRepository.js", () => ({
-  amistadRepository: { contarAceptadasDeUsuario: vi.fn() },
+vi.mock("../src/services/usuarioService.js", () => ({
+  usuarioService: { obtenerEstadisticas: vi.fn() },
 }));
 
 const { mensajeChatbotRepository } = await import("../src/repositories/mensajeChatbotRepository.js");
@@ -49,7 +49,7 @@ const { grupoRepository, grupoUsuarioRepository } = await import("../src/reposit
 const { estiloMusicalRepository } = await import("../src/repositories/estiloMusicalRepository.js");
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
 const { artistaFavoritoRepository } = await import("../src/repositories/artistaFavoritoRepository.js");
-const { amistadRepository } = await import("../src/repositories/amistadRepository.js");
+const { usuarioService } = await import("../src/services/usuarioService.js");
 const { chatbotService } = await import("../src/services/chatbotService.js");
 
 const YO = "yo-uuid";
@@ -80,7 +80,7 @@ beforeEach(() => {
     estilo_asistencia: "campo",
   });
   artistaFavoritoRepository.listarPorUsuario.mockResolvedValue([{ spotify_id: "x", nombre: "Soda Stereo" }]);
-  amistadRepository.contarAceptadasDeUsuario.mockResolvedValue(3);
+  usuarioService.obtenerEstadisticas.mockResolvedValue({ conciertos: 1, grupos: 1, amigos: 3 });
   conciertoRepository.listarTodos.mockResolvedValue([
     { id_concierto: 1, nombre: "Unido Fest", id_estiloMusical: 2, fecha: "2099-01-01" },
     { id_concierto: 2, nombre: "Ajeno Fest", id_estiloMusical: 2, fecha: "2099-02-01" },
