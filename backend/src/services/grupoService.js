@@ -12,6 +12,18 @@ import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 
+// Al bajar el cupo no puede quedar gente afuera. Se cuentan las relaciones
+// (no solo los usuarios activos): un suspendido que vuelve sigue adentro.
+export async function validarCupoNuevo(idGrupo, cupo) {
+  if (cupo === null || cupo === undefined) return;
+  const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+  if (cupo < integrantes.length) {
+    throw ApiError.badRequest(
+      `Ya hay ${integrantes.length} integrantes: el cupo no puede ser menor`
+    );
+  }
+}
+
 async function armarUsuariosDeGrupo(idGrupo) {
   const relaciones = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
   const idsUnicos = [...new Set(relaciones.map((r) => r.id_usuario))];
@@ -106,6 +118,13 @@ export const grupoService = {
     const yaConfirmado = await grupoUsuarioRepository.existeRelacion(idUsuarioAutenticado, idGrupo);
     if (yaConfirmado) return { ok: true, yaConfirmado: true };
 
+    if (grupo.cupo) {
+      const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+      if (integrantes.length >= grupo.cupo) {
+        throw new ApiError(409, "El grupo está completo");
+      }
+    }
+
     await grupoUsuarioRepository.crearRelacion(idUsuarioAutenticado, idGrupo);
     await notificacionService.crear({
       idUsuario: idUsuarioAutenticado,
@@ -136,6 +155,7 @@ export const grupoService = {
     if (contieneMalasPalabras(textos)) {
       throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
+    await validarCupoNuevo(idGrupo, cambios.cupo);
 
     const actualizado = await grupoRepository.actualizar(idGrupo, cambios);
     await avisarCambiosDeGrupo(grupo, actualizado, { excepto: idUsuarioAutenticado });

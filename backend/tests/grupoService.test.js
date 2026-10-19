@@ -230,3 +230,50 @@ describe("grupoService.actualizar", () => {
     expect(grupoRepository.actualizar).not.toHaveBeenCalled();
   });
 });
+
+describe("cupo del grupo", () => {
+  beforeEach(() => {
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ ...GRUPO, ...cambios }));
+  });
+
+  it("no deja unirse si el grupo está completo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 2 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "a" }, { id_usuario: "b" }]);
+
+    await expect(grupoService.unirse(OTRO_USUARIO, 1)).rejects.toMatchObject({ status: 409 });
+    expect(grupoUsuarioRepository.crearRelacion).not.toHaveBeenCalled();
+  });
+
+  it("deja unirse si queda lugar", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 3 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "a" }, { id_usuario: "b" }]);
+
+    await grupoService.unirse(OTRO_USUARIO, 1);
+    expect(grupoUsuarioRepository.crearRelacion).toHaveBeenCalledWith(OTRO_USUARIO, 1);
+  });
+
+  it("sin cupo no cuenta integrantes", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: null });
+
+    await grupoService.unirse(OTRO_USUARIO, 1);
+    expect(grupoUsuarioRepository.listarUsuariosPorGrupo).not.toHaveBeenCalled();
+    expect(grupoUsuarioRepository.crearRelacion).toHaveBeenCalled();
+  });
+
+  it("el creador no puede bajar el cupo por debajo de los integrantes", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{}, {}, {}]);
+
+    await expect(grupoService.actualizar(CREADOR, 1, { cupo: 2 })).rejects.toMatchObject({ status: 400 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  it("el creador puede sacar el límite", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 4 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+
+    await grupoService.actualizar(CREADOR, 1, { cupo: null });
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(1, { cupo: null });
+  });
+});

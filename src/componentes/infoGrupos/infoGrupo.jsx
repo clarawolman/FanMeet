@@ -35,6 +35,7 @@ function InfoGrupo({
   const [eliminando, setEliminando] = useState(false);
 
   const esCreador = usuarioActual?.id_usuario === grupo.id_creador;
+  const completo = Boolean(grupo.cupo) && (grupo.usuarios || []).length >= grupo.cupo;
 
   useEffect(() => {
     if (usuarioActual && grupo) {
@@ -122,6 +123,7 @@ function InfoGrupo({
 
         <ParticipantesGrupo
           participantes={grupo.usuarios}
+          cupo={grupo.cupo}
           onVerFansConfirmados={onVerFansConfirmados}
         />
 
@@ -131,7 +133,14 @@ function InfoGrupo({
 
         <MapaGrupo ubicacion={grupo.ubicacion} />
 
-        {!verificandoConfirmacion && !confirmado && (
+        {!verificandoConfirmacion && !confirmado && completo && (
+          <div className="confirmacionGrupo">
+            <h3>Grupo completo</h3>
+            <p>Ya se ocuparon los {grupo.cupo} lugares. Si alguien sale del grupo, se libera un lugar.</p>
+          </div>
+        )}
+
+        {!verificandoConfirmacion && !confirmado && !completo && (
           <ConfirmacionGrupo
             onConfirmar={confirmarAsistenciaGrupo}
             cargandoConfirmacion={cargandoConfirmacion}

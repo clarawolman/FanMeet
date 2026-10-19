@@ -151,6 +151,44 @@ function FormCrearGrupo({
           </div>
         </div>
 
+        <div className="crearGrupoCategoriaBloque">
+          <p className="crearGrupoLabelTexto">Cupo</p>
+
+          <div className="crearGrupoCategorias">
+            <button
+              type="button"
+              className={!formulario.limitado ? "crearGrupoCategoria activa" : "crearGrupoCategoria"}
+              onClick={() => actualizarCampo("limitado", false)}
+            >
+              Sin límite
+            </button>
+
+            <button
+              type="button"
+              className={formulario.limitado ? "crearGrupoCategoria activa" : "crearGrupoCategoria"}
+              onClick={() => actualizarCampo("limitado", true)}
+            >
+              Limitado
+            </button>
+          </div>
+
+          {formulario.limitado && (
+            <label className="crearGrupoLabel crearGrupoCupo">
+              ¿Cuántas personas en total? (vos incluido/a)
+              <input
+                className="crearGrupoInput"
+                type="number"
+                inputMode="numeric"
+                min={2}
+                max={500}
+                placeholder="Ej: 8"
+                value={formulario.cupo}
+                onChange={(e) => actualizarCampo("cupo", e.target.value)}
+              />
+            </label>
+          )}
+        </div>
+
         {errorTexto && <p className="crearGrupoError">{errorTexto}</p>}
 
         <button className="crearGrupoBoton" type="submit" disabled={guardando}>

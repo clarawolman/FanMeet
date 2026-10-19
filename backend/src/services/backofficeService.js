@@ -15,6 +15,7 @@ import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
 import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
+import { validarCupoNuevo } from "./grupoService.js";
 
 // Cuántos mensajes de contexto ve el moderador al revisar un reporte.
 const MENSAJES_DE_CONTEXTO = 100;
@@ -399,6 +400,7 @@ export const backofficeService = {
       const concierto = await conciertoRepository.obtenerPorId(cambios.id_concierto);
       if (!concierto) throw ApiError.notFound("El concierto no existe");
     }
+    await validarCupoNuevo(idGrupo, cambios.cupo);
 
     const actualizado = await grupoRepository.actualizar(idGrupo, {
       ...cambios,

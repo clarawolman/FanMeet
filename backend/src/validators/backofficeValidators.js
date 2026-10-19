@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { conciertoYaPaso } from "../helpers/fechas.js";
+import { cupoSchema } from "./grupoValidators.js";
 
 // "2026-08-28T21:00" (lo que manda un <input type="datetime-local">).
 const fechaHora = z
@@ -82,6 +83,7 @@ export const crearGrupoSchema = z.object({
   categoria: z.enum(["pre", "after", "mismo_dia"], { message: "Elegí un tipo de grupo" }),
   id_concierto: z.coerce.number().int().positive("Elegí un concierto"),
   foto: z.union([urlImagen, z.literal("")]).optional(),
+  cupo: cupoSchema.optional(),
 });
 
 // Solo los campos que cambiaron. Foto "" = sacarle la foto al grupo.

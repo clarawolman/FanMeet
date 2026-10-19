@@ -199,6 +199,11 @@
   margin-top: 2px;
 }
 
+/* el número del cupo aparece debajo de "Sin límite / Limitado" */
+.crearGrupoCupo {
+  margin-top: 14px;
+}
+
 .crearGrupoLabelTexto {
   margin: 0 0 10px;
   color: var(--fm-ink);

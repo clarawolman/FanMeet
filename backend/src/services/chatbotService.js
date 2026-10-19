@@ -153,6 +153,7 @@ async function armarDatosParaUsuario(idUsuario) {
         fecha: g.fecha,
         hora: g.hora,
         integrantes: miembros.filter((m) => m.id_grupo === g.id_grupo).length,
+        cupo: g.cupo ?? "sin límite",
         el_usuario_es_miembro: idsMisGrupos.has(g.id_grupo),
       })),
     })),

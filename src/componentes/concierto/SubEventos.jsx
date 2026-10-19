@@ -11,6 +11,9 @@ const CATEGORIAS = {
 };
 
 function SubEventos({ subEvento, onAbrirGrupo }) {
+  const cantidad = subEvento.usuarios.length;
+  const completo = Boolean(subEvento.cupo) && cantidad >= subEvento.cupo;
+
   return (
     <section className="SubEventoCard" onClick={() => onAbrirGrupo(subEvento)}>
 
@@ -25,6 +28,8 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
       {CATEGORIAS[subEvento.categoria] && (
         <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
       )}
+
+      {completo && <span className="SubEventoCompleto">Completo</span>}
 
       <div className="SubEventoContenido">
         <h3 className="SubEventoTitulo">{subEvento.nombre}</h3>
@@ -52,7 +57,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
           )}
 
           <span className="SubEventoAsistiran">
-            {subEvento.usuarios.length} asistirán
+            {subEvento.cupo ? `${cantidad}/${subEvento.cupo} lugares` : `${cantidad} asistirán`}
           </span>
         </div>
 

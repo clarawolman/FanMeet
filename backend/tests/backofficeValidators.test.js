@@ -57,3 +57,22 @@ describe("actualizarGrupoSchema", () => {
     expect(actualizarGrupoSchema.safeParse({ ubicacion: "bar" }).success).toBe(false);
   });
 });
+
+describe("cupoSchema", async () => {
+  const { cupoSchema } = await import("../src/validators/grupoValidators.js");
+
+  it("vacío o null es sin límite", () => {
+    expect(cupoSchema.parse("")).toBeNull();
+    expect(cupoSchema.parse(null)).toBeNull();
+  });
+
+  it("acepta el número como texto (input de formulario)", () => {
+    expect(cupoSchema.parse("8")).toBe(8);
+  });
+
+  it("rechaza menos de 2, decimales y más de 500", () => {
+    expect(cupoSchema.safeParse(1).success).toBe(false);
+    expect(cupoSchema.safeParse(2.5).success).toBe(false);
+    expect(cupoSchema.safeParse(501).success).toBe(false);
+  });
+});

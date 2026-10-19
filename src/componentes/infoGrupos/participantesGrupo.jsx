@@ -1,5 +1,14 @@
 import "./participantesGrupo.css";
-export default function ParticipantesGrupo({ participantes, onVerFansConfirmados }) {
+// "3 fans confirmados · quedan 5 lugares" (o "· Completo"). Sin cupo, solo
+// la cantidad.
+function textoLugares(cantidad, cupo) {
+   if (!cupo) return "";
+   const quedan = cupo - cantidad;
+   if (quedan <= 0) return " · Completo";
+   return ` · ${quedan === 1 ? "queda 1 lugar" : `quedan ${quedan} lugares`}`;
+}
+
+export default function ParticipantesGrupo({ participantes, cupo, onVerFansConfirmados }) {
 
    return (
       <button
@@ -20,7 +29,7 @@ export default function ParticipantesGrupo({ participantes, onVerFansConfirmados
          </div>
 
          <span>
-            {participantes.length} fans confirmados
+            {participantes.length} fans confirmados{textoLugares(participantes.length, cupo)}
          </span>
 
       </button>

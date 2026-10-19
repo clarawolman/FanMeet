@@ -14,7 +14,8 @@ function MensajesDelGrupo({ idGrupo }) {
   );
 }
 
-const VACIO = { id_concierto: "", nombre: "", categoria: "", fecha: "", hora: "", ubicacion: "", descripcion: "", foto: "" };
+// cupo "" = sin límite.
+const VACIO = { id_concierto: "", nombre: "", categoria: "", fecha: "", hora: "", ubicacion: "", descripcion: "", foto: "", cupo: "" };
 
 function aFormulario(g) {
   return {
@@ -27,6 +28,7 @@ function aFormulario(g) {
     ubicacion: g.ubicacion || "",
     descripcion: g.descripcion || "",
     foto: g.foto || "",
+    cupo: g.cupo ? String(g.cupo) : "",
   };
 }
 
@@ -120,6 +122,10 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
         <label>
           Punto de encuentro
           <input value={form.ubicacion} onChange={cambiar("ubicacion")} required minLength={6} maxLength={150} placeholder="Ej: Bar de la esquina del estadio" />
+        </label>
+        <label>
+          Cupo (vacío = sin límite)
+          <input type="number" min={2} max={500} value={form.cupo} onChange={cambiar("cupo")} placeholder="Sin límite" />
         </label>
         <label>
           Foto (URL, opcional)
@@ -224,7 +230,7 @@ export default function Grupos() {
                   <td>{g.concierto}</td>
                   <td>{CATEGORIAS[g.categoria] || g.categoria}</td>
                   <td>{fechaCorta(`${g.fecha}T${g.hora || "00:00"}`)}</td>
-                  <td>{g.cantidadIntegrantes}</td>
+                  <td>{g.cupo ? `${g.cantidadIntegrantes} / ${g.cupo}` : g.cantidadIntegrantes}</td>
                   <td>{g.cantidadMensajes}</td>
                   <td className="accionesFila">
                     {/* stopPropagation: la fila abre el chat. */}
