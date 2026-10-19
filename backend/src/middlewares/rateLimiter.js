@@ -32,6 +32,19 @@ export const reporteRateLimiter = rateLimit({
   message: { error: "Mandaste muchos reportes seguidos. Probá de nuevo más tarde." },
 });
 
+// Fotos en los chats (privados y de grupo): pocas por minuto por usuario.
+// Va después de multer, así solo cuentan los mensajes que traen una foto;
+// los de texto siguen con el límite general.
+export const fotosChatRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user.id,
+  skip: (req) => !req.file,
+  message: { error: "Mandaste muchas fotos seguidas. Esperá un minuto." },
+});
+
 // Limite general para el resto de la API.
 export const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000,

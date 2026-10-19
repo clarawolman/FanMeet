@@ -34,3 +34,16 @@ describe("errorHandler", () => {
     expect(res.json).toHaveBeenCalledWith({ error: "Error interno del servidor" });
   });
 });
+
+describe("errorHandler con errores de multer", () => {
+  it("una foto de más de 5 MB responde 400, no 500", async () => {
+    const { default: multer } = await import("multer");
+    const { errorHandler } = await import("../src/middlewares/errorHandler.js");
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+
+    errorHandler(new multer.MulterError("LIMIT_FILE_SIZE"), {}, res, () => {});
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: "La foto no puede superar los 5 MB" });
+  });
+});

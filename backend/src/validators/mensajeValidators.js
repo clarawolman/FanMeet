@@ -1,13 +1,16 @@
 import { z } from "zod";
 
-// Mismo limite que el check de la columna "contenido" en
-// supabase/mensajes_grupo.sql.
+// El texto es opcional porque un mensaje puede ser solo una foto (llega
+// como multipart, campo "imagen"); mensajeService exige que haya al menos
+// una de las dos cosas. Mismo límite que el check de la columna
+// (supabase/fotos_chat_grupo.sql).
 export const enviarMensajeSchema = z.object({
   contenido: z
     .string()
     .trim()
-    .min(1, "El mensaje no puede estar vacío")
-    .max(2000, "El mensaje no puede superar los 2000 caracteres"),
+    .max(2000, "El mensaje no puede superar los 2000 caracteres")
+    .optional()
+    .default(""),
 });
 
 export const listarMensajesQuerySchema = z.object({

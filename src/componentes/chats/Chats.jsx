@@ -570,7 +570,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
 
     try {
       if (chatAbierto.tipo === "grupo") {
-        const mensajeCreado = await mensajesService.enviar(chatAbierto.id, contenido);
+        const mensajeCreado = await mensajesService.enviar(chatAbierto.id, contenido, imagenAdjunta?.archivo);
         procesarMensajeEntrante("grupo", mensajeCreado);
       } else {
         const mensajeCreado = await chatsService.enviar(chatAbierto.id, contenido, imagenAdjunta?.archivo);
@@ -842,8 +842,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, chatInicial }) {
               )}
 
               <form className="chatsForm" onSubmit={manejarEnviar}>
-                {/* El chat de grupo (mensaje_grupo) y el del bot son solo texto */}
-                {chatAbierto.tipo === "privado" && (
+                {/* Los chats privados y de grupo aceptan fotos; el del bot es solo texto */}
+                {chatAbierto.tipo !== "bot" && (
                   <>
                     <input
                       ref={inputArchivoRef}

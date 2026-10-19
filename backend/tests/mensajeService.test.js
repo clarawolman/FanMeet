@@ -16,6 +16,10 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
   },
 }));
 
+vi.mock("../src/repositories/storageRepository.js", () => ({
+  storageRepository: { subirArchivo: vi.fn() },
+}));
+
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
   usuarioRepository: {
     obtenerPorId: vi.fn(),
@@ -28,6 +32,7 @@ const { grupoRepository, grupoUsuarioRepository } = await import(
   "../src/repositories/grupoRepository.js"
 );
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
+const { storageRepository } = await import("../src/repositories/storageRepository.js");
 const { mensajeService } = await import("../src/services/mensajeService.js");
 
 const MIEMBRO = "miembro-uuid";
@@ -52,7 +57,7 @@ describe("mensajeService.enviar", () => {
   it("rechaza con 404 si el grupo no existe", async () => {
     grupoRepository.obtenerPorId.mockResolvedValue(null);
 
-    await expect(mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, "hola")).rejects.toMatchObject({
+    await expect(mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, { contenido: "hola" })).rejects.toMatchObject({
       status: 404,
     });
     expect(mensajeRepository.crear).not.toHaveBeenCalled();
@@ -61,7 +66,7 @@ describe("mensajeService.enviar", () => {
   it("rechaza con 403 si el usuario no es miembro del grupo", async () => {
     grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
 
-    await expect(mensajeService.enviar(AJENO, GRUPO.id_grupo, "hola")).rejects.toMatchObject({
+    await expect(mensajeService.enviar(AJENO, GRUPO.id_grupo, { contenido: "hola" })).rejects.toMatchObject({
       status: 403,
     });
     expect(mensajeRepository.crear).not.toHaveBeenCalled();
@@ -71,16 +76,63 @@ describe("mensajeService.enviar", () => {
     grupoUsuarioRepository.existeRelacion.mockResolvedValue({ id: 1 });
     mensajeRepository.crear.mockResolvedValue(FILA_MENSAJE);
 
-    const resultado = await mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, "hola");
+    const resultado = await mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, { contenido: " hola " });
 
     expect(mensajeRepository.crear).toHaveBeenCalledWith({
       idGrupo: GRUPO.id_grupo,
       idUsuario: MIEMBRO,
       contenido: "hola",
+      imagen: null,
     });
     expect(resultado.usuario).toEqual(
       expect.objectContaining({ id_usuario: MIEMBRO, nombre: "Fan" })
     );
+  });
+});
+
+describe("mensajeService.enviar con fotos", () => {
+  const PNG = {
+    mimetype: "image/png",
+    buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0]),
+  };
+
+  it("rechaza un mensaje sin texto ni foto", async () => {
+    await expect(mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, { contenido: "  " })).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(mensajeRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un archivo que dice ser png pero no lo es", async () => {
+    const falso = { mimetype: "image/png", buffer: Buffer.from("<svg onload=alert(1)>") };
+    await expect(
+      mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, { archivo: falso })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
+  });
+
+  it("si no es integrante, no sube la foto", async () => {
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    await expect(
+      mensajeService.enviar(AJENO, GRUPO.id_grupo, { archivo: PNG })
+    ).rejects.toMatchObject({ status: 403 });
+    expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
+  });
+
+  it("sube la foto en la carpeta del grupo y guarda su URL", async () => {
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    storageRepository.subirArchivo.mockResolvedValue("https://cdn/foto.png");
+    mensajeRepository.crear.mockResolvedValue({ ...FILA_MENSAJE, contenido: "", imagen: "https://cdn/foto.png" });
+
+    const resultado = await mensajeService.enviar(MIEMBRO, GRUPO.id_grupo, { archivo: PNG });
+
+    const [bucket, ruta] = storageRepository.subirArchivo.mock.calls[0];
+    expect(bucket).toBe("chats");
+    expect(ruta).toMatch(/^grupos\/1\/[0-9a-f-]+\.png$/);
+    expect(mensajeRepository.crear).toHaveBeenCalledWith(
+      expect.objectContaining({ contenido: "", imagen: "https://cdn/foto.png" })
+    );
+    expect(resultado.imagen).toBe("https://cdn/foto.png");
   });
 });
 

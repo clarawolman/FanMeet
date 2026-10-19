@@ -1,8 +1,5 @@
-import { randomUUID } from "node:crypto";
 import { mensajePrivadoRepository } from "../repositories/mensajePrivadoRepository.js";
 import { notificacionRepository } from "../repositories/notificacionRepository.js";
-import { storageRepository } from "../repositories/storageRepository.js";
-import { esImagenValida } from "../helpers/validarImagen.js";
 import { amistadRepository } from "../repositories/amistadRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRepository.js";
@@ -13,9 +10,8 @@ import { toMensajePrivado } from "../entities/MensajePrivado.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { exigirSinBloqueo } from "./bloqueoService.js";
+import { subirFotoDeChat, validarTextoOFoto } from "./fotosChat.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
-
-const EXTENSIONES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 // Solo se puede chatear con amigos (amistad aceptada) y sin un bloqueo de
 // por medio. Se chequea en cada lectura y envio: si se elimina la amistad,
@@ -175,23 +171,14 @@ export const chatService = {
   // (igual que la foto de perfil) y se guarda con un nombre aleatorio.
   async enviar(idUsuarioAutenticado, idOtroUsuario, { contenido = "", archivo } = {}) {
     const texto = contenido.trim();
-    if (!texto && !archivo) {
-      throw ApiError.badRequest("El mensaje no puede estar vacío");
-    }
-    if (archivo && !esImagenValida(archivo)) {
-      throw ApiError.badRequest("El archivo debe ser una imagen válida (jpg, png o webp)");
-    }
+    validarTextoOFoto(texto, archivo);
     if (contieneMalasPalabras(texto)) {
       throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
 
     await exigirAmistad(idUsuarioAutenticado, idOtroUsuario);
 
-    let imagen = null;
-    if (archivo) {
-      const ruta = `${idUsuarioAutenticado}/${randomUUID()}.${EXTENSIONES[archivo.mimetype]}`;
-      imagen = await storageRepository.subirArchivo("chats", ruta, archivo.buffer, archivo.mimetype);
-    }
+    const imagen = archivo ? await subirFotoDeChat(idUsuarioAutenticado, archivo) : null;
 
     const fila = await mensajePrivadoRepository.crear({
       idEmisor: idUsuarioAutenticado,

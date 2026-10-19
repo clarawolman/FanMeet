@@ -4,6 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { upload } from "../middlewares/upload.js";
+import { fotosChatRateLimiter } from "../middlewares/rateLimiter.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
 import { idGrupoParamSchema } from "../validators/grupoValidators.js";
 import {
@@ -37,6 +38,7 @@ router.post(
   validate(idUsuarioParamSchema, "params"),
   sinBloqueo,
   upload.single("imagen"),
+  fotosChatRateLimiter,
   validate(enviarMensajePrivadoSchema),
   chatController.enviar
 );

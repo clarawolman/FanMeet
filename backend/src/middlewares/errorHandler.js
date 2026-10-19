@@ -1,3 +1,4 @@
+import multer from "multer";
 import { ApiError } from "../helpers/ApiError.js";
 
 export function notFoundHandler(req, _res, next) {
@@ -12,6 +13,14 @@ export function notFoundHandler(req, _res, next) {
 // nombres de tabla/columna/constraint u otra info interna. El detalle
 // completo solo queda en el log del servidor.
 export function errorHandler(err, _req, res, _next) {
+  // Archivo de más de 5 MB (o campos de más): es culpa del pedido, no del
+  // servidor.
+  if (err instanceof multer.MulterError) {
+    const error =
+      err.code === "LIMIT_FILE_SIZE" ? "La foto no puede superar los 5 MB" : "El archivo no es válido";
+    return res.status(400).json({ error });
+  }
+
   if (err instanceof ApiError) {
     // Los 503 los lanzamos a proposito con un texto pensado para el usuario
     // ("Last.fm está limitando las consultas..."): esos si pasan.

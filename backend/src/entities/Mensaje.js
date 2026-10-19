@@ -10,6 +10,7 @@ export function toMensaje(row, { usuario } = {}) {
     id_grupo: row.id_grupo,
     id_usuario: row.id_usuario,
     contenido: row.contenido,
+    imagen: row.imagen || null,
     created_at: row.created_at,
     usuario: usuario
       ? {

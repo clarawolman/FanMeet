@@ -4,6 +4,7 @@ import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { toMensaje } from "../entities/Mensaje.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
+import { subirFotoDeChat, validarTextoOFoto } from "./fotosChat.js";
 
 async function exigirMiembro(idUsuarioAutenticado, idGrupo) {
   const grupo = await grupoRepository.obtenerPorId(idGrupo);
@@ -29,16 +30,22 @@ export const mensajeService = {
   // supabase/mensajes_grupo.sql) corre igual sobre este insert y notifica al
   // resto del grupo, sin que este service tenga que llamar a
   // notificacionService.
-  async enviar(idUsuarioAutenticado, idGrupo, contenido) {
-    if (contieneMalasPalabras(contenido)) {
+  // Texto, foto o las dos cosas, como en los chats privados. La foto solo se
+  // sube después de confirmar que quien la manda es integrante del grupo.
+  async enviar(idUsuarioAutenticado, idGrupo, { contenido = "", archivo } = {}) {
+    const texto = contenido.trim();
+    validarTextoOFoto(texto, archivo);
+    if (contieneMalasPalabras(texto)) {
       throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
     await exigirMiembro(idUsuarioAutenticado, idGrupo);
 
+    const imagen = archivo ? await subirFotoDeChat(`grupos/${idGrupo}`, archivo) : null;
     const fila = await mensajeRepository.crear({
       idGrupo,
       idUsuario: idUsuarioAutenticado,
-      contenido,
+      contenido: texto,
+      imagen,
     });
 
     const usuario = await usuarioRepository.obtenerPorId(idUsuarioAutenticado);
