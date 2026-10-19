@@ -28,31 +28,15 @@ Vamos a seguir con las mejoras de FanMeet. Todo se hace en la branch **`mejoras`
 | 6 | Bloquear usuarios (tabla `bloqueo`, middleware `sinBloqueo` en las rutas con `:idUsuario`, filtro `sinBloqueados` en las listas; los grupos compartidos no cambian) | `8ef6c11` |
 | 7 | Consejos de seguridad antes de unirse a un grupo (`ModalConsejosSeguridad`, "no volver a mostrar" en `localStorage`) | `c723e5f` |
 | 8 | Fotos en los chats de grupo (columna `mensaje_grupo.imagen`, helper `services/fotosChat.js`, `fotosChatRateLimiter`: 5 fotos por minuto) | `a1a570c` |
+| 9 | Eliminar grupos desde el backoffice (confirmación con integrantes y mensajes, aviso `cambio_grupo` sin link, borra las fotos del chat en Storage con `storageRepository.eliminarCarpeta`; eliminar un concierto también las borra) | `1bb3f18` |
+| 10 | Importar conciertos en lote desde el backoffice (tabla de planilla, CSV o Markdown; vista previa con errores por fila en `/conciertos/importar/previa`; el parser está en `helpers/importarConciertos.js` y la prueba de imágenes en `helpers/imagenRemota.js`) | `d4108fd` |
+| 11 | Fani hace acciones con function calling de Gemini (`services/faniHerramientas.js`): buscar grupos con lugar, mis grupos y próximos eventos, y proponer sumarse a un grupo. La propuesta queda en `mensaje_chatbot.accion` con botones Confirmar / Cancelar (`AccionFani.jsx`); el backend suma recién al confirmar. `grupoService.unirse` ahora exige estar unido al concierto | `31eb94f` |
 
-Los SQL de estas mejoras (`recordatorio_concierto.sql`, `bloqueos.sql`, `fotos_chat_grupo.sql`) ya están corridos en la base.
+Los SQL de estas mejoras (`recordatorio_concierto.sql`, `bloqueos.sql`, `fotos_chat_grupo.sql`, `fani_acciones.sql`) ya están corridos en la base.
 
-## Mejoras que faltan (en este orden)
+## Mejoras que faltan
 
-### 9. Eliminar grupos desde el backoffice
-- Botón "Eliminar" en Grupos, con una confirmación que diga cuántos integrantes y mensajes tiene.
-- Borra el grupo con sus integrantes y mensajes, y les manda una notificación a los integrantes.
-- Los mensajes ahora pueden tener fotos (bucket `chats`, carpeta `grupos/<id_grupo>/`): decidí con la usuaria si se borran también del Storage.
-- El patrón a seguir es "Eliminar concierto" en `backoffice/src/paginas/Conciertos.jsx` y `backofficeService.eliminarConcierto`.
-
-### 10. Importar conciertos en lote desde el backoffice
-- Pegar una lista (CSV o una tabla copiada) con: nombre, artista, estadio, género, fecha y hora, imagen.
-- Mostrar una vista previa antes de crear, con los errores marcados por fila: estadio o género inexistente, fecha pasada, imagen inválida, concierto duplicado.
-- Crear solo las filas válidas, avisar a los seguidores de cada artista como hace `crearConcierto`, y mostrar un resumen.
-- Los estadios y géneros **no** se crean desde el backoffice: tienen que existir en la base. Los cargo yo por SQL.
-- Hay un ejemplo de lista en `supabase/conciertos_timeout.md`.
-
-### 11. Que Fani (el chatbot) pueda hacer acciones
-- Hoy Fani solo responde con los datos que recibe: `backend/src/services/chatbotService.js`, que usa Gemini.
-- Sumar *function calling* de Gemini para cosas como:
-  - buscar grupos con lugar en mis conciertos;
-  - contarme mis grupos y próximos eventos;
-  - unirme a un grupo, **siempre pidiéndome confirmación antes**. Al confirmar, que Fani también recuerde los consejos de seguridad de la mejora 7.
-- Tiene que respetar las reglas de privacidad que ya tiene el prompt: solo grupos de conciertos a los que estoy unido, nunca datos de otros usuarios, nunca códigos de acceso. Las acciones tienen que reusar los services existentes (por ejemplo `grupoService.unirse`), que ya validan permisos y cupo. Tampoco tiene que mostrar a usuarios con los que hay un bloqueo (`sinBloqueados` en `services/bloqueoService.js`).
+No queda ninguna de la lista. Si te pido mejoras nuevas, agregalas acá con el mismo formato (un título por mejora y viñetas con lo que tiene que hacer) antes de arrancar.
 
 ## Datos técnicos del proyecto (para no perder tiempo)
 
@@ -71,6 +55,8 @@ Los SQL de estas mejoras (`recordatorio_concierto.sql`, `bloqueos.sql`, `fotos_c
   - Para `curl`, agregá `--ssl-no-revoke`.
 - **CSS global:** `src/App.css` achica todos los botones en `:active` con `transform`. Si un botón usa un `::after` estirado para cubrir una tarjeta entera, ponele `transform: none` en `:active`, si no el clic no llega (ver `CardNotificacion.css`).
 - **Probar la interfaz sin loguearse:** se puede armar una página HTML temporal en la raíz que monte un componente con datos simulados y abrirla con Edge en modo headless con `--remote-debugging-port`, manejándolo por CDP desde Node. Usá `Emulation.setDeviceMetricsOverride` para el ancho: con `--window-size` la captura sale recortada. Usá un puerto distinto en cada corrida, porque el Edge anterior puede seguir ocupando el puerto. Borrá la página al terminar.
+- **Commits:** agregá los archivos por nombre, no con `git add -A`: en la máquina están los `.env` con las claves (ignorados por git, pero el permiso automático lo bloquea igual).
+- **Fani:** las herramientas están en `services/faniHerramientas.js`. Los tests de `chatbotService` mockean `grupoService` y `bloqueoRepository`, y simulan Gemini con `fetch` (ver `pideHerramienta` y `responde` en el test).
 - **Notificaciones:** se crean con `notificacionRepository.crear` o `crearVarias`. Al tocarlas, la app las maneja en `manejarVerMasNotificacion`, en `src/App.jsx`.
 
-Empezá por la **mejora 9**. Primero leé el código relevante, contame en pocas líneas cómo la vas a hacer y arrancá.
+Preguntame qué mejora sigue. Antes de cada una, leé el código relevante, contame en pocas líneas cómo la vas a hacer y arrancá.
