@@ -64,8 +64,11 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
           onListo("No cambiaste nada.");
           return;
         }
-        await api.actualizarGrupo(grupo.id_grupo, cambios);
-        onListo(`Grupo "${form.nombre.trim()}" actualizado.`);
+        const { notificados } = await api.actualizarGrupo(grupo.id_grupo, cambios);
+        onListo(
+          `Grupo "${form.nombre.trim()}" actualizado.` +
+            (notificados > 0 ? ` Se avisó a ${notificados} integrantes.` : "")
+        );
       } else {
         await api.crearGrupo(form);
         onListo(`Grupo "${form.nombre.trim()}" creado.`);

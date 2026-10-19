@@ -5,6 +5,7 @@ import {
 } from "../repositories/conciertoRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { notificacionService } from "./notificacionService.js";
+import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
 import { toGrupo, toGrupoConConcierto } from "../entities/Grupo.js";
 import { toConciertoDetalle } from "../entities/Concierto.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
@@ -137,6 +138,7 @@ export const grupoService = {
     }
 
     const actualizado = await grupoRepository.actualizar(idGrupo, cambios);
+    await avisarCambiosDeGrupo(grupo, actualizado, { excepto: idUsuarioAutenticado });
     return toGrupo(actualizado, { usuarios: await armarUsuariosDeGrupo(idGrupo) });
   },
 

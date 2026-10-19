@@ -14,6 +14,7 @@ import { normalizarGenero } from "../helpers/generos.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
+import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
 
 // Cuántos mensajes de contexto ve el moderador al revisar un reporte.
 const MENSAJES_DE_CONTEXTO = 100;
@@ -399,10 +400,13 @@ export const backofficeService = {
       if (!concierto) throw ApiError.notFound("El concierto no existe");
     }
 
-    return grupoRepository.actualizar(idGrupo, {
+    const actualizado = await grupoRepository.actualizar(idGrupo, {
       ...cambios,
       ...(foto !== undefined ? { foto: foto || null } : {}),
     });
+    // El moderador no es integrante: se les avisa a todos.
+    const notificados = await avisarCambiosDeGrupo(grupo, actualizado);
+    return { grupo: actualizado, notificados };
   },
 
   async mensajesDeGrupo(idGrupo) {

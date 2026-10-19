@@ -9,6 +9,12 @@ export const notificacionRepository = {
     return unwrap(resultado, "Error creando notificación");
   },
 
+  async crearVarias(filas) {
+    if (filas.length === 0) return;
+    const resultado = await supabaseAdmin.from(TABLA).insert(filas);
+    unwrap(resultado, "Error creando notificaciones");
+  },
+
   async listarPorUsuario(idUsuario) {
     const resultado = await supabaseAdmin
       .from(TABLA)

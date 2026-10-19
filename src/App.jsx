@@ -25,9 +25,11 @@ import { ID_CHATBOT } from "./services/chatbotService";
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
+import { gruposService } from "./services/gruposService";
 import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
 import { supabase } from "./supabase";
+import { mostrarAviso } from "./utils/avisos";
 
 // Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
 // motivo acá para mostrarlo en el login después de recargar.
@@ -182,6 +184,7 @@ function App() {
   async function abrirGrupoConConcierto(grupo, origen) {
     const pudoCargar = await cargarConciertoPorId(grupo.id_concierto);
     if (!pudoCargar) {
+      mostrarAviso("No se pudo abrir el grupo. Probá de nuevo.");
       setPantalla(origen);
       return;
     }
@@ -235,6 +238,18 @@ function App() {
 
     if (notificacion.tipo === "grupo_unido") {
       setPantalla("misGrupos");
+    }
+
+    if (notificacion.tipo === "cambio_grupo" && notificacion.id_grupo) {
+      try {
+        const grupo = await gruposService.obtenerDetalle(notificacion.id_grupo);
+        await abrirGrupoConConcierto(grupo, "notificaciones");
+      } catch (error) {
+        // El grupo se borró o ya no estás en el concierto.
+        console.error("No se pudo abrir el grupo de la notificación:", error);
+        mostrarAviso("Ese grupo ya no está disponible.");
+      }
+      return;
     }
 
     if (notificacion.tipo === "mensaje_grupo" && notificacion.id_grupo) {

@@ -40,6 +40,10 @@ vi.mock("../src/services/notificacionService.js", () => ({
   notificacionService: { crear: vi.fn() },
 }));
 
+vi.mock("../src/services/avisoCambiosGrupo.js", () => ({
+  avisarCambiosDeGrupo: vi.fn(async () => 0),
+}));
+
 const { grupoRepository, grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
 const { conciertoRepository, usuariosConciertosRepository } = await import(
   "../src/repositories/conciertoRepository.js"
@@ -47,6 +51,7 @@ const { conciertoRepository, usuariosConciertosRepository } = await import(
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
 const { notificacionService } = await import("../src/services/notificacionService.js");
 const { grupoService } = await import("../src/services/grupoService.js");
+const { avisarCambiosDeGrupo } = await import("../src/services/avisoCambiosGrupo.js");
 
 const CREADOR = "creador-uuid";
 const OTRO_USUARIO = "otro-uuid";
@@ -197,9 +202,20 @@ describe("grupoService.actualizar", () => {
     expect(grupo).toMatchObject({ id_grupo: 1, hora: "19:30", usuarios: [] });
   });
 
+  it("avisa el cambio a los integrantes, menos al creador", async () => {
+    await grupoService.actualizar(CREADOR, 1, { hora: "19:30" });
+
+    expect(avisarCambiosDeGrupo).toHaveBeenCalledWith(
+      GRUPO,
+      expect.objectContaining({ hora: "19:30" }),
+      { excepto: CREADOR }
+    );
+  });
+
   it("rechaza con 403 si no es el creador", async () => {
     await expect(grupoService.actualizar(OTRO_USUARIO, 1, { nombre: "Mío" })).rejects.toMatchObject({ status: 403 });
     expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+    expect(avisarCambiosDeGrupo).not.toHaveBeenCalled();
   });
 
   it("rechaza con 404 si el grupo no existe", async () => {

@@ -28,6 +28,9 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
 vi.mock("../src/repositories/mensajeRepository.js", () => ({ mensajeRepository: {} }));
 vi.mock("../src/repositories/mensajePrivadoRepository.js", () => ({ mensajePrivadoRepository: {} }));
 vi.mock("../src/repositories/estiloMusicalRepository.js", () => ({ estiloMusicalRepository: {} }));
+vi.mock("../src/services/avisoCambiosGrupo.js", () => ({
+  avisarCambiosDeGrupo: vi.fn(async () => 3),
+}));
 vi.mock("../src/repositories/artistaFavoritoRepository.js", () => ({
   artistaFavoritoRepository: { listarTodos: vi.fn(), listarPorSpotifyId: vi.fn() },
 }));
@@ -208,9 +211,10 @@ describe("backofficeService.actualizarGrupo", () => {
     grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ id_grupo: id, ...cambios }));
   });
 
-  it("guarda solo los campos que llegan", async () => {
-    await backofficeService.actualizarGrupo(9, { nombre: "Previa nueva", hora: "19:00" });
+  it("guarda solo los campos que llegan y avisa a los integrantes", async () => {
+    const resultado = await backofficeService.actualizarGrupo(9, { nombre: "Previa nueva", hora: "19:00" });
     expect(grupoRepository.actualizar).toHaveBeenCalledWith(9, { nombre: "Previa nueva", hora: "19:00" });
+    expect(resultado).toMatchObject({ grupo: { id_grupo: 9, nombre: "Previa nueva" }, notificados: 3 });
   });
 
   it("foto vacía le saca la foto al grupo", async () => {
