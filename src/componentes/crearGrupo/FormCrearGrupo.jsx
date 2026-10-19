@@ -30,6 +30,7 @@ function FormCrearGrupo({
   errorTexto,
   concierto,
   imagenDefault,
+  editando = false,
 }) {
   function actualizarCampo(campo, valor) {
     setFormulario({
@@ -153,6 +154,45 @@ function FormCrearGrupo({
           </div>
         </fieldset>
 
+        <fieldset className="crearGrupoCampo crearGrupoTipos">
+          <legend className="crearGrupoCampoEtiqueta">Cupo</legend>
+          <div className="crearGrupoCategorias">
+            {[
+              { limitado: false, nombre: "Sin límite", detalle: "Se suma quien quiera" },
+              { limitado: true, nombre: "Limitado", detalle: "Hasta cierta cantidad" },
+            ].map((opcion) => (
+              <label
+                key={opcion.nombre}
+                className={`crearGrupoCategoria ${formulario.limitado === opcion.limitado ? "activa" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="limitado"
+                  checked={formulario.limitado === opcion.limitado}
+                  onChange={() => actualizarCampo("limitado", opcion.limitado)}
+                />
+                <strong>{opcion.nombre}</strong>
+                <small>{opcion.detalle}</small>
+              </label>
+            ))}
+          </div>
+          {formulario.limitado && (
+            <label className="crearGrupoCupo">
+              <span className="crearGrupoCampoEtiqueta">¿Cuántas personas en total? (vos incluido/a)</span>
+              <input
+                className="crearGrupoInput"
+                type="number"
+                inputMode="numeric"
+                min={2}
+                max={500}
+                placeholder="Ej: 8"
+                value={formulario.cupo}
+                onChange={(e) => actualizarCampo("cupo", e.target.value)}
+              />
+            </label>
+          )}
+        </fieldset>
+
         <label className="crearGrupoCampo">
           <span className="crearGrupoCampoFila">
             <span className="crearGrupoCampoEtiqueta">Descripción</span>
@@ -176,11 +216,13 @@ function FormCrearGrupo({
 
       <div className="crearGrupoBarra">
         <span className="crearGrupoBarraTexto">
-          <strong>{nombre || "Nuevo grupo"}</strong>
+          <strong>{nombre || (editando ? "Editar grupo" : "Nuevo grupo")}</strong>
           <small>Los fans del show lo van a ver así.</small>
         </span>
         <button className="fmBotonPrimario" type="submit" disabled={guardando}>
-          {guardando ? "Creando…" : "Crear grupo"}
+          {guardando
+            ? editando ? "Guardando…" : "Creando…"
+            : editando ? "Guardar cambios" : "Crear grupo"}
         </button>
       </div>
     </form>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Cargando } from "../componentes";
-import { fechaCorta, useCarga } from "../utilidades";
+import ImportarConciertos from "./ImportarConciertos";
+import { fechaCorta, ordenarPorNombre, useCarga, useMostrarAlAbrir } from "../utilidades";
 
 const VACIO = {
   nombre: "",
@@ -157,7 +158,7 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
           Estadio
           <select value={form.id_estadio} onChange={cambiar("id_estadio")} required>
             <option value="">Elegí…</option>
-            {catalogo.estadios.map((e) => (
+            {ordenarPorNombre(catalogo.estadios).map((e) => (
               <option key={e.id_estadio} value={e.id_estadio}>
                 {e.nombre} ({e.ciudad})
               </option>
@@ -168,7 +169,7 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
           Género
           <select value={form.id_estiloMusical} onChange={cambiar("id_estiloMusical")} required>
             <option value="">Elegí…</option>
-            {catalogo.estilos.map((e) => (
+            {ordenarPorNombre(catalogo.estilos).map((e) => (
               <option key={e.id} value={e.id}>
                 {e.nombre}
               </option>
@@ -352,9 +353,10 @@ function separarProximosYPasados(conciertos) {
 export default function Conciertos() {
   const conciertos = useCarga(() => api.conciertos(), []);
   const catalogo = useCarga(() => api.catalogo(), []);
-  // { tipo: "nuevo" | "editar" | "novedad" | "eliminar", concierto? }
+  // { tipo: "nuevo" | "importar" | "editar" | "novedad" | "eliminar", concierto? }
   const [abierto, setAbierto] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const refPanel = useMostrarAlAbrir(abierto || mensaje);
 
   const { proximos, pasados } = separarProximosYPasados(conciertos.datos || []);
 
@@ -374,14 +376,21 @@ export default function Conciertos() {
       <div className="tituloConAccion">
         <h1>Conciertos</h1>
         {!abierto && (
-          <button className="boton botonPrincipal" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "nuevo" }); }}>
-            + Nuevo concierto
-          </button>
+          <div className="acciones">
+            <button className="boton" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "importar" }); }}>
+              Importar lista
+            </button>
+            <button className="boton botonPrincipal" type="button" onClick={() => { setMensaje(""); setAbierto({ tipo: "nuevo" }); }}>
+              + Nuevo concierto
+            </button>
+          </div>
         )}
       </div>
 
+      <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
+      {abierto?.tipo === "importar" && <ImportarConciertos onListo={terminar} onCancelar={() => setAbierto(null)} />}
       {abierto?.tipo === "eliminar" && (
         <ConfirmarEliminar concierto={abierto.concierto} onListo={terminar} onCancelar={() => setAbierto(null)} />
       )}
@@ -399,6 +408,7 @@ export default function Conciertos() {
           />
         </Cargando>
       )}
+      </div>
 
       <Cargando error={conciertos.error} cargando={conciertos.cargando}>
         <h2 className="tituloSeccion">

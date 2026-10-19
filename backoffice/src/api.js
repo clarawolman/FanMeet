@@ -87,6 +87,9 @@ export const api = {
   editarConcierto: (id, cambios) =>
     solicitar(`/backoffice/conciertos/${id}`, { method: "PATCH", body: cambios }),
   eliminarConcierto: (id) => solicitar(`/backoffice/conciertos/${id}`, { method: "DELETE" }),
+  previaImportacion: (texto) =>
+    solicitar("/backoffice/conciertos/importar/previa", { method: "POST", body: { texto } }),
+  importarConciertos: (texto) => solicitar("/backoffice/conciertos/importar", { method: "POST", body: { texto } }),
   publicarNovedad: (id, titulo, descripcion) =>
     solicitar(`/backoffice/conciertos/${id}/novedades`, {
       method: "POST",
@@ -96,5 +99,6 @@ export const api = {
   grupos: () => solicitar("/backoffice/grupos"),
   crearGrupo: (datos) => solicitar("/backoffice/grupos", { method: "POST", body: datos }),
   actualizarGrupo: (id, cambios) => solicitar(`/backoffice/grupos/${id}`, { method: "PATCH", body: cambios }),
+  eliminarGrupo: (id) => solicitar(`/backoffice/grupos/${id}`, { method: "DELETE" }),
   mensajesDeGrupo: (id) => solicitar(`/backoffice/grupos/${id}/mensajes`),
 };

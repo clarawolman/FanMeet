@@ -8,6 +8,14 @@ import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
 import { usuarioService } from "./usuarioService.js";
+import { grupoService } from "./grupoService.js";
+import { sinBloqueados } from "./bloqueoService.js";
+import {
+  DECLARACIONES,
+  NOMBRES_CATEGORIA_GRUPO,
+  ejecutarHerramienta,
+  validarUnionAGrupo,
+} from "./faniHerramientas.js";
 import { calcularEdad } from "../entities/Usuario.js";
 import { toMensajeChatbot } from "../entities/MensajeChatbot.js";
 import { ApiError } from "../helpers/ApiError.js";
@@ -35,20 +43,28 @@ const NOMBRES_VIBRA = {
   campo: "Primera Fila: ojos en el escenario, cantando cada palabra",
 };
 
-const NOMBRES_CATEGORIA_GRUPO = {
-  pre: "Previa (antes del concierto)",
-  after: "After (después del concierto)",
-  mismo_dia: "Mismo día",
-};
+// Cuántas veces seguidas puede la IA pedir herramientas antes de responder.
+const MAXIMO_VUELTAS_HERRAMIENTAS = 4;
+
+// Los mismos consejos que ModalConsejosSeguridad (src/componentes/infoGrupos).
+const CONSEJOS_SEGURIDAD =
+  "Antes de ir, acordate: avisale a alguien de confianza con quién vas, dónde y a qué hora; no compartas tu dirección, documentos ni datos bancarios; y si algo no está bien, reportá y bloqueá desde el perfil de la persona.";
 
 const INSTRUCCIONES = `Sos Fani, la asistente virtual de la app FanMeet (tu logo es un robotito violeta que saluda). FanMeet conecta fans que van al mismo concierto: cada usuario se une a un concierto con un código de acceso y, una vez adentro, puede ver a los otros fans unidos, armar o sumarse a grupos (previa, after o mismo día), y chatear con sus amigos y con sus grupos.
 
 Tu trabajo:
-- Responder sobre el perfil del usuario con el que hablás (está en mi_perfil): su nombre, edad, su vibra en los conciertos, sus géneros y artistas favoritos y cuántos amigos tiene. Podés usarlo para personalizar: llamarlo por su nombre o recomendarle conciertos de la app que coincidan con sus gustos. Para cambiar algo del perfil, explicale que lo hace desde la sección Perfil de la app (vos no podés modificar nada).
+- Responder sobre el perfil del usuario con el que hablás (está en mi_perfil): su nombre, edad, su vibra en los conciertos, sus géneros y artistas favoritos y cuántos amigos tiene. Podés usarlo para personalizar: llamarlo por su nombre o recomendarle conciertos de la app que coincidan con sus gustos. Para cambiar algo del perfil, explicale que lo hace desde la sección Perfil de la app (vos no podés modificarlo).
 - Contar cosas básicas sobre artistas y bandas (de dónde son, género, años de carrera, discos o canciones más conocidas), sobre todo de los que tocan en los conciertos de la app o están entre sus favoritos. Esto lo sabés por tu conocimiento general: quedate en lo conocido y, si no estás seguro de un dato o puede estar desactualizado (giras, lanzamientos recientes), decilo.
 - Responder sobre los conciertos de la app de cada categoría (género musical): nombre del show, artista, fecha, hora, estadio, ciudad, cuántos fans y grupos tiene. Si un concierto tiene ya_paso en true, aclaralo ("fue el ...").
 - Si el usuario está unido a un concierto, también podés contarle sobre los grupos de ese concierto.
 - Ayudar con cómo usar la app: unirse a un concierto con el código, crear o sumarse a un grupo, agregar amigos, chatear, editar el perfil y los géneros favoritos.
+
+Herramientas (usalas cuando hagan falta, sin nombrarlas ni mostrar ids):
+- buscar_grupos_con_lugar: para recomendar grupos con lugar en sus conciertos.
+- mis_grupos_y_proximos_eventos: para contarle sus grupos y sus próximos conciertos.
+- proponer_unirse_a_grupo: solo cuando el usuario te pide sumarse a un grupo concreto. NUNCA lo suma: le aparecen los botones Confirmar y Cancelar debajo de tu mensaje, y se suma recién cuando toca Confirmar. Proponé un solo grupo por mensaje. Si el grupo no está claro, preguntale cuál antes de proponer. Si te contesta "sí" por escrito, recordale que toque Confirmar en tu mensaje anterior.
+- En el historial, tus mensajes con una propuesta terminan con una nota entre corchetes que dice si el usuario la confirmó o la canceló. Esas notas son solo para vos: no las escribas en tus respuestas.
+- Fuera de sumarse a un grupo con confirmación, no podés hacer nada por el usuario (crear grupos, salir, agregar amigos, cambiar el perfil): explicale cómo hacerlo desde la app.
 
 Privacidad (muy importante):
 - Solo tenés datos de grupos de los conciertos a los que el usuario está unido. Si pregunta por los grupos de un concierto al que no se unió, explicale que esa información es privada para quienes se unieron y que puede unirse desde el Inicio con el código de acceso del concierto. No inventes ni adivines grupos.
@@ -119,8 +135,11 @@ async function armarDatosParaUsuario(idUsuario) {
   const ordenados = [...conciertos].sort((a, b) => String(a.fecha || "9999").localeCompare(String(b.fecha || "9999")));
 
   const unidos = conciertos.filter((c) => idsUnidos.has(c.id_concierto));
+  // Sin los grupos que creó alguien con quien hay un bloqueo.
   const gruposPorConcierto = await Promise.all(
-    unidos.map((c) => grupoRepository.listarPorConcierto(c.id_concierto))
+    unidos.map(async (c) =>
+      sinBloqueados(idUsuario, await grupoRepository.listarPorConcierto(c.id_concierto), "id_creador")
+    )
   );
   const todosLosGrupos = gruposPorConcierto.flat();
   const miembros = await grupoUsuarioRepository.listarUsuariosPorGrupos(
@@ -146,6 +165,7 @@ async function armarDatosParaUsuario(idUsuario) {
     conciertos_a_los_que_esta_unido: unidos.map((c, i) => ({
       ...resumirConcierto(c, nombresEstilo),
       grupos: gruposPorConcierto[i].map((g) => ({
+        id_grupo: g.id_grupo,
         nombre: g.nombre,
         tipo: NOMBRES_CATEGORIA_GRUPO[g.categoria] || g.categoria,
         descripcion: g.descripcion || "",
@@ -153,6 +173,7 @@ async function armarDatosParaUsuario(idUsuario) {
         fecha: g.fecha,
         hora: g.hora,
         integrantes: miembros.filter((m) => m.id_grupo === g.id_grupo).length,
+        cupo: g.cupo ?? "sin límite",
         el_usuario_es_miembro: idsMisGrupos.has(g.id_grupo),
       })),
     })),
@@ -161,37 +182,29 @@ async function armarDatosParaUsuario(idUsuario) {
 
 // El historial guardado pasa al formato de Gemini (el rol de la IA se
 // llama "model"). La conversación tiene que arrancar con un mensaje del usuario.
+// A Fani le sirve saber qué pasó con sus propuestas anteriores.
+const ESTADOS_ACCION = {
+  pendiente: "el usuario todavía no la confirmó",
+  hecha: "el usuario confirmó y ya está en el grupo",
+  cancelada: "el usuario la canceló",
+};
+
+function notaDeAccion(accion) {
+  if (accion?.tipo !== "unirse_grupo") return "";
+  return `\n[propuesta: sumarse al grupo "${accion.grupo}" — ${ESTADOS_ACCION[accion.estado] || accion.estado}]`;
+}
+
 function armarHistorial(filas) {
   const desdePrimeroDelUsuario = filas.slice(filas.findIndex((f) => f.rol === "user"));
   return desdePrimeroDelUsuario.map((f) => ({
     role: f.rol === "assistant" ? "model" : "user",
-    parts: [{ text: f.contenido }],
+    parts: [{ text: f.contenido + (f.rol === "assistant" ? notaDeAccion(f.accion) : "") }],
   }));
 }
 
-async function preguntarALaIA(idUsuario, historial) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new ApiError(503);
-  }
-
-  const datos = await armarDatosParaUsuario(idUsuario);
-  const cuerpoPedido = JSON.stringify({
-    systemInstruction: {
-      parts: [
-        { text: INSTRUCCIONES },
-        { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
-      ],
-    },
-    contents: historial,
-    generationConfig: {
-      // El límite incluye lo que el modelo "piensa" antes de responder.
-      maxOutputTokens: 2048,
-      // Pensar poco: más rápido y gasta menos cuota gratis.
-      thinkingConfig: { thinkingLevel: "low" },
-    },
-  });
-
+// Un pedido a Gemini, probando los modelos de respaldo si hace falta.
+// Devuelve el JSON de la respuesta.
+async function llamarAGemini(apiKey, cuerpoPedido) {
   // 429: se acabó la cuota gratis de ese modelo. 503: Gemini está saturado.
   // En los dos casos se prueba con el modelo siguiente.
   const modelos = [...new Set([MODELO, ...MODELOS_RESPALDO])];
@@ -223,19 +236,81 @@ async function preguntarALaIA(idUsuario, historial) {
     throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
   }
 
-  const cuerpo = await respuesta.json();
-  const candidato = cuerpo.candidates?.[0];
-  const texto = (candidato?.content?.parts ?? [])
-    .map((parte) => parte.text ?? "")
-    .join("")
-    .trim();
+  return respuesta.json();
+}
 
-  // Bloqueado por los filtros de seguridad de Gemini, o respuesta vacía.
-  const bloqueado = cuerpo.promptFeedback?.blockReason || candidato?.finishReason === "SAFETY";
-  if (bloqueado || !texto) {
-    return `Perdón, con eso no te puedo ayudar 😕 Si necesitás algo más, escribinos a ${MAIL_QUEJAS}.`;
+// Le pregunta a la IA y ejecuta las herramientas que pida, hasta que
+// responde con texto. Devuelve { texto, accion }: la acción (si propuso
+// una) queda pendiente hasta que el usuario la confirma.
+async function preguntarALaIA(idUsuario, historial) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new ApiError(503);
   }
-  return texto;
+
+  const datos = await armarDatosParaUsuario(idUsuario);
+  const pedidoFijo = {
+    systemInstruction: {
+      parts: [
+        { text: INSTRUCCIONES },
+        { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
+      ],
+    },
+    tools: [{ functionDeclarations: DECLARACIONES }],
+    generationConfig: {
+      // El límite incluye lo que el modelo "piensa" antes de responder.
+      maxOutputTokens: 2048,
+      // Pensar poco: más rápido y gasta menos cuota gratis.
+      thinkingConfig: { thinkingLevel: "low" },
+    },
+  };
+
+  const contents = [...historial];
+  let accion = null;
+  const sinRespuesta = `Perdón, con eso no te puedo ayudar 😕 Si necesitás algo más, escribinos a ${MAIL_QUEJAS}.`;
+
+  for (let vuelta = 0; vuelta < MAXIMO_VUELTAS_HERRAMIENTAS; vuelta++) {
+    const cuerpo = await llamarAGemini(apiKey, JSON.stringify({ ...pedidoFijo, contents }));
+    const candidato = cuerpo.candidates?.[0];
+    const partes = candidato?.content?.parts ?? [];
+
+    // Bloqueado por los filtros de seguridad de Gemini.
+    if (cuerpo.promptFeedback?.blockReason || candidato?.finishReason === "SAFETY") {
+      return { texto: sinRespuesta, accion: null };
+    }
+
+    const llamadas = partes.filter((p) => p.functionCall);
+    if (llamadas.length === 0) {
+      const texto = partes
+        .filter((p) => !p.thought)
+        .map((p) => p.text ?? "")
+        .join("")
+        .trim();
+      if (texto) return { texto, accion };
+      break;
+    }
+
+    // Se devuelve el turno de la IA tal cual (Gemini necesita sus
+    // "thoughtSignature") y después las respuestas de las herramientas.
+    contents.push(candidato.content);
+    const respuestas = [];
+    for (const { functionCall } of llamadas) {
+      const resultado = await ejecutarHerramienta(idUsuario, functionCall.name, functionCall.args);
+      if (resultado.accion) accion = resultado.accion;
+      respuestas.push({
+        functionResponse: {
+          name: functionCall.name,
+          ...(functionCall.id ? { id: functionCall.id } : {}),
+          response: resultado.respuesta,
+        },
+      });
+    }
+    contents.push({ role: "user", parts: respuestas });
+  }
+
+  // Propuso sumarse pero no escribió nada: igual se muestran los botones.
+  if (accion) return { texto: `¿Te sumo a "${accion.grupo}"? Tocá Confirmar y listo 🙌`, accion };
+  return { texto: sinRespuesta, accion: null };
 }
 
 export const chatbotService = {
@@ -259,17 +334,61 @@ export const chatbotService = {
     const filas = await mensajeChatbotRepository.listarDeUsuario(idUsuario, {
       limite: MENSAJES_DE_HISTORIAL,
     });
-    const textoRespuesta = await preguntarALaIA(idUsuario, armarHistorial(filas));
+    const { texto: textoRespuesta, accion } = await preguntarALaIA(idUsuario, armarHistorial(filas));
 
     const filaRespuesta = await mensajeChatbotRepository.crear({
       idUsuario,
       rol: "assistant",
       contenido: textoRespuesta,
+      accion,
     });
 
     return {
       mensajeUsuario: toMensajeChatbot(filaUsuario),
       respuesta: toMensajeChatbot(filaRespuesta),
     };
+  },
+
+  // El usuario tocó Confirmar o Cancelar en una propuesta de Fani. Acá se
+  // hace la acción de verdad, con las mismas validaciones que la app.
+  // Devuelve el mensaje actualizado y, si se sumó, la respuesta de Fani.
+  async resolverAccion(idUsuario, idMensaje, decision) {
+    const fila = await mensajeChatbotRepository.obtenerDeUsuario(idUsuario, idMensaje);
+    if (!fila?.accion) throw ApiError.notFound("Ese mensaje no tiene nada para confirmar");
+    const yaResuelta = () => new ApiError(409, "Eso ya lo resolviste");
+    if (fila.accion.estado !== "pendiente") throw yaResuelta();
+
+    if (decision === "cancelar") {
+      const actualizada = await mensajeChatbotRepository.cambiarAccion(idMensaje, "pendiente", {
+        ...fila.accion,
+        estado: "cancelada",
+      });
+      if (!actualizada) throw yaResuelta();
+      return { mensaje: toMensajeChatbot(actualizada), respuesta: null };
+    }
+
+    // Primero se marca como hecha: si llegan dos "Confirmar" a la vez, solo
+    // uno pasa. Si unirse falla, vuelve a quedar pendiente.
+    const reservada = await mensajeChatbotRepository.cambiarAccion(idMensaje, "pendiente", {
+      ...fila.accion,
+      estado: "hecha",
+    });
+    if (!reservada) throw yaResuelta();
+
+    let grupo;
+    try {
+      ({ grupo } = await validarUnionAGrupo(idUsuario, fila.accion.id_grupo));
+      await grupoService.unirse(idUsuario, fila.accion.id_grupo);
+    } catch (error) {
+      await mensajeChatbotRepository.cambiarAccion(idMensaje, "hecha", fila.accion);
+      throw error;
+    }
+
+    const filaRespuesta = await mensajeChatbotRepository.crear({
+      idUsuario,
+      rol: "assistant",
+      contenido: `¡Listo, ya estás en "${grupo.nombre}"! 🙌 Lo tenés en Mis grupos y ya podés escribir en el chat del grupo. ${CONSEJOS_SEGURIDAD}`,
+    });
+    return { mensaje: toMensajeChatbot(reservada), respuesta: toMensajeChatbot(filaRespuesta) };
   },
 };

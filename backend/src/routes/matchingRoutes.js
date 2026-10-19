@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { matchingController } from "../controllers/matchingController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
 
@@ -12,6 +13,7 @@ router.get(
   "/usuarios/:idUsuario",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   matchingController.compatibilidad
 );
 

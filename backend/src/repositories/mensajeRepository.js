@@ -4,10 +4,10 @@ import { unwrap } from "../helpers/supabaseResult.js";
 const TABLA = "mensaje_grupo";
 
 export const mensajeRepository = {
-  async crear({ idGrupo, idUsuario, contenido }) {
+  async crear({ idGrupo, idUsuario, contenido, imagen = null }) {
     const resultado = await supabaseAdmin
       .from(TABLA)
-      .insert([{ id_grupo: idGrupo, id_usuario: idUsuario, contenido }])
+      .insert([{ id_grupo: idGrupo, id_usuario: idUsuario, contenido, imagen }])
       .select()
       .single();
     return unwrap(resultado, "Error enviando el mensaje");

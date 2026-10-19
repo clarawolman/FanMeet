@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { hoyEnArgentina, conciertoYaPaso } from "../src/helpers/fechas.js";
+import { hoyEnArgentina, conciertoYaPaso, horaEnArgentina, diaSiguiente } from "../src/helpers/fechas.js";
 
 // 16/10/2026 a las 01:00 UTC = 15/10/2026 a las 22:00 en Argentina.
 const AHORA = new Date("2026-10-16T01:00:00Z");
@@ -20,5 +20,17 @@ describe("helpers/fechas", () => {
 
   it("sin fecha no se considera pasado", () => {
     expect(conciertoYaPaso(null, AHORA)).toBe(false);
+  });
+});
+
+describe("horaEnArgentina y diaSiguiente", () => {
+  it("horaEnArgentina resta 3 horas a la UTC", () => {
+    expect(horaEnArgentina(AHORA)).toBe(22);
+    expect(horaEnArgentina(new Date("2026-10-16T03:00:00Z"))).toBe(0);
+  });
+
+  it("diaSiguiente cruza fin de mes y de año", () => {
+    expect(diaSiguiente("2026-10-31")).toBe("2026-11-01");
+    expect(diaSiguiente("2026-12-31")).toBe("2027-01-01");
   });
 });

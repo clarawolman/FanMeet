@@ -12,6 +12,8 @@ import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import FondoAmbiente from "../generales/FondoAmbiente";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
+import ModalConsejosSeguridad from "./ModalConsejosSeguridad";
+import { consejosOcultos } from "../../utils/consejosSeguridad";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { mostrarAviso } from "../../utils/avisos";
 
@@ -23,6 +25,7 @@ function InfoGrupo({
   onGrupoEliminado,
   onVerFansConfirmados,
   onAbrirChat,
+  onEditar,
 }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [confirmado, setConfirmado] = useState(false);
@@ -33,8 +36,10 @@ function InfoGrupo({
   const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] =
     useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [mostrarConsejos, setMostrarConsejos] = useState(false);
 
   const esCreador = usuarioActual?.id_usuario === grupo.id_creador;
+  const completo = Boolean(grupo.cupo) && (grupo.usuarios || []).length >= grupo.cupo;
 
   useEffect(() => {
     if (usuarioActual && grupo) {
@@ -52,6 +57,16 @@ function InfoGrupo({
     );
     setConfirmado(yaConfirmado);
     setVerificandoConfirmacion(false);
+  }
+
+  // Antes de unirse se muestran consejos de seguridad, salvo que la persona
+  // haya marcado "no volver a mostrar".
+  function pedirConfirmacionAsistencia() {
+    if (consejosOcultos()) {
+      confirmarAsistenciaGrupo();
+    } else {
+      setMostrarConsejos(true);
+    }
   }
 
   async function confirmarAsistenciaGrupo() {
@@ -72,6 +87,7 @@ function InfoGrupo({
 
     setConfirmado(true);
     setCargandoConfirmacion(false);
+    setMostrarConsejos(false);
   }
 
   async function confirmarSalirDelGrupo() {
@@ -127,6 +143,7 @@ function InfoGrupo({
         <ParticipantesGrupo
           participantes={grupo.usuarios}
           idCreador={grupo.id_creador}
+          cupo={grupo.cupo}
           onVerFansConfirmados={onVerFansConfirmados}
         />
 
@@ -134,12 +151,19 @@ function InfoGrupo({
 
         <MapaGrupo ubicacion={grupo.ubicacion} />
 
-        {!verificandoConfirmacion && confirmado && (
+        {!verificandoConfirmacion && (confirmado || (esCreador && onEditar)) && (
           <div className="infoGrupoSecundarias">
-            <button className="botonSalirGrupo" type="button" onClick={() => setMostrarConfirmarSalida(true)}>
-              Salir del grupo
-            </button>
-            {esCreador && (
+            {esCreador && onEditar && (
+              <button className="botonEditarGrupo" type="button" onClick={onEditar}>
+                Editar grupo
+              </button>
+            )}
+            {confirmado && (
+              <button className="botonSalirGrupo" type="button" onClick={() => setMostrarConfirmarSalida(true)}>
+                Salir del grupo
+              </button>
+            )}
+            {confirmado && esCreador && (
               <button className="botonEliminarGrupo" type="button" onClick={() => setMostrarConfirmarEliminar(true)}>
                 Eliminar grupo
               </button>
@@ -150,12 +174,21 @@ function InfoGrupo({
         {!verificandoConfirmacion && (
           <ConfirmacionGrupo
             confirmado={confirmado}
-            onConfirmar={confirmarAsistenciaGrupo}
+            completo={completo}
+            onConfirmar={pedirConfirmacionAsistencia}
             onAbrirChat={onAbrirChat}
             cargandoConfirmacion={cargandoConfirmacion}
           />
         )}
       </div>
+
+      {mostrarConsejos && (
+        <ModalConsejosSeguridad
+          confirmando={cargandoConfirmacion}
+          onConfirmar={confirmarAsistenciaGrupo}
+          onCancelar={() => setMostrarConsejos(false)}
+        />
+      )}
 
       {mostrarConfirmarSalida && (
         <ModalConfirmacion

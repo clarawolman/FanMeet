@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { spotifyController } from "../controllers/spotifyController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
 import {
@@ -36,6 +37,7 @@ router.get(
   "/usuarios/:idUsuario/favoritos",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   spotifyController.listarFavoritos
 );
 

@@ -3,6 +3,7 @@ import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { toAmistad, calcularEstadoAmistad } from "../entities/Amistad.js";
 import { toUsuarioPublico } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { exigirSinBloqueo, sinBloqueados } from "./bloqueoService.js";
 
 export const amistadService = {
   async obtenerEstado(idUsuarioActual, idUsuarioPerfil) {
@@ -17,6 +18,7 @@ export const amistadService = {
     if (idSolicitante === idReceptor) {
       throw ApiError.badRequest("No podés enviarte una solicitud a vos mismo");
     }
+    await exigirSinBloqueo(idSolicitante, idReceptor);
 
     const existente = await amistadRepository.buscarEntreUsuarios(idSolicitante, idReceptor);
     if (existente) {
@@ -36,6 +38,7 @@ export const amistadService = {
     if (amistad.id_receptor !== idUsuarioAutenticado) {
       throw ApiError.forbidden("Solo quien recibió la solicitud puede aceptarla");
     }
+    await exigirSinBloqueo(amistad.id_solicitante, amistad.id_receptor);
 
     const actualizada = await amistadRepository.actualizarEstado(idAmistad, "aceptada");
     return toAmistad(actualizada);
@@ -58,7 +61,8 @@ export const amistadService = {
   // listaAmigosPerfil.jsx solo lee id_usuario/nombre/fotoperfil, así que se
   // devuelve la forma pública (sin mail/fechanac). Antes se devolvía la fila
   // completa; se corrigió por la auditoría de seguridad.
-  async listarAmigos(idUsuario) {
+  // Sin los que tienen un bloqueo con quien mira la lista (idQuienMira).
+  async listarAmigos(idUsuario, idQuienMira = idUsuario) {
     const relaciones = await amistadRepository.listarAceptadasDeUsuario(idUsuario);
     const idsAmigos = relaciones.map((r) =>
       r.id_solicitante === idUsuario ? r.id_receptor : r.id_solicitante
@@ -66,6 +70,6 @@ export const amistadService = {
 
     if (idsAmigos.length === 0) return [];
     const filas = await usuarioRepository.listarActivosPorIds(idsAmigos);
-    return filas.map(toUsuarioPublico);
+    return (await sinBloqueados(idQuienMira, filas)).map(toUsuarioPublico);
   },
 };

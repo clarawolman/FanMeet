@@ -28,7 +28,7 @@
   margin-bottom: 10px;
 }
 
-/* salir / eliminar: acciones de bajo peso, al final y en texto */
+/* editar / salir / eliminar: acciones de bajo peso, al final y en texto */
 .infoGrupoSecundarias {
   display: flex;
   flex-wrap: wrap;
@@ -37,6 +37,7 @@
   padding: 8px 0 4px;
 }
 
+.botonEditarGrupo,
 .botonSalirGrupo,
 .botonEliminarGrupo {
   min-height: 40px;
@@ -51,10 +52,12 @@
   transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
+.botonEditarGrupo,
 .botonSalirGrupo {
   color: var(--fm-muted);
 }
 
+.botonEditarGrupo:hover,
 .botonSalirGrupo:hover {
   color: var(--fm-ink);
   background: var(--fm-bg-soft);

@@ -1,0 +1,61 @@
+.modalConsejosCaja {
+  align-items: stretch;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+
+.modalConsejosLista {
+  list-style: none;
+  margin: -8px 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalConsejosLista li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 3px solid var(--fm-accent);
+}
+
+.modalConsejosLista strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-ink);
+}
+
+.modalConsejosLista span {
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+  line-height: 1.35;
+}
+
+.modalConsejosNoMostrar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-ink);
+  cursor: pointer;
+}
+
+.modalConsejosNoMostrar input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--fm-accent);
+  cursor: pointer;
+}
+
+.modalConsejosConfirmar {
+  margin-bottom: 12px;
+}
+
+.modalConsejosCancelar {
+  margin-bottom: 0;
+}

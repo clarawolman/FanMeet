@@ -14,6 +14,7 @@ import {
   crearConciertoSchema,
   actualizarConciertoSchema,
   novedadSchema,
+  importarConciertosSchema,
   crearGrupoSchema,
   actualizarGrupoSchema,
 } from "../validators/backofficeValidators.js";
@@ -46,6 +47,8 @@ router.patch(
 router.get("/catalogo", c.catalogo);
 router.get("/conciertos", c.listarConciertos);
 router.post("/conciertos", validate(crearConciertoSchema), c.crearConcierto);
+router.post("/conciertos/importar/previa", validate(importarConciertosSchema), c.previaImportacion);
+router.post("/conciertos/importar", validate(importarConciertosSchema), c.importarConciertos);
 router.patch(
   "/conciertos/:idConcierto",
   validate(idConciertoParamSchema, "params"),
@@ -72,6 +75,7 @@ router.patch(
   validate(actualizarGrupoSchema),
   c.actualizarGrupo
 );
+router.delete("/grupos/:idGrupo", validate(idGrupoParamSchema, "params"), c.eliminarGrupo);
 router.get("/grupos/:idGrupo/mensajes", validate(idGrupoParamSchema, "params"), c.mensajesDeGrupo);
 
 export default router;

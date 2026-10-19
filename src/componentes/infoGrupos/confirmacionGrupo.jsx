@@ -2,7 +2,7 @@ import "./confirmacionGrupo.css";
 
 // Barra fija abajo con la acción principal del grupo: sumarse o, si ya
 // estás, ir al chat. Siempre a mano sin tener que bajar hasta el final.
-export default function ConfirmacionGrupo({ confirmado, onConfirmar, onAbrirChat, cargandoConfirmacion }) {
+export default function ConfirmacionGrupo({ confirmado, completo = false, onConfirmar, onAbrirChat, cargandoConfirmacion }) {
   return (
     <div className="confirmacionGrupo" role="region" aria-label="Asistencia">
       <div className="confirmacionGrupoTexto">
@@ -16,6 +16,11 @@ export default function ConfirmacionGrupo({ confirmado, onConfirmar, onAbrirChat
             </strong>
             <small>Coordiná con los demás en el chat.</small>
           </>
+        ) : completo ? (
+          <>
+            <strong>Grupo completo</strong>
+            <small>Ya se ocuparon todos los lugares. Si alguien sale, se libera uno.</small>
+          </>
         ) : (
           <>
             <strong>¿Vas con este grupo?</strong>
@@ -28,7 +33,7 @@ export default function ConfirmacionGrupo({ confirmado, onConfirmar, onAbrirChat
         <button type="button" className="fmBotonPrimario" onClick={onAbrirChat}>
           Ir al chat
         </button>
-      ) : (
+      ) : completo ? null : (
         <button type="button" className="fmBotonPrimario" onClick={onConfirmar} disabled={cargandoConfirmacion}>
           {cargandoConfirmacion ? "Sumándote…" : "Me sumo"}
         </button>

@@ -13,6 +13,7 @@ import { supabase } from "../../supabase";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import fotoDefault from "../../assets/fotoDefault.png";
 import LogoChatbot from "../chatbot/LogoChatbot";
+import AccionFani from "../chatbot/AccionFani";
 
 const NOMBRE_CHATBOT = "Fani";
 
@@ -207,6 +208,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
   const [imagenAmpliada, setImagenAmpliada] = useState(null);
   // Mientras la IA arma la respuesta se muestra "escribiendo…"
   const [botEscribiendo, setBotEscribiendo] = useState(false);
+  // id del mensaje de Fani cuya propuesta se está confirmando o cancelando.
+  const [resolviendoAccion, setResolviendoAccion] = useState(null);
 
   // Los handlers de Realtime se registran una sola vez: leen el chat
   // abierto y la lista desde refs para no quedar con valores viejos.
@@ -555,6 +558,30 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
     setBotEscribiendo(false);
   }
 
+  // Confirmar o cancelar lo que propuso Fani. Si se confirma, el backend
+  // suma al usuario al grupo y Fani responde con los consejos de seguridad.
+  async function resolverAccionFani(idMensaje, decision) {
+    setResolviendoAccion(idMensaje);
+    setErrorEnvio("");
+    try {
+      const { mensaje: actualizado, respuesta } = await chatbotService.resolverAccion(idMensaje, decision);
+      setMensajes((actuales) => {
+        const conCambio = actuales.map((m) => (m.id_mensaje === actualizado.id_mensaje ? actualizado : m));
+        return respuesta ? [...conCambio, respuesta] : conCambio;
+      });
+      if (respuesta) {
+        scrollPendienteRef.current = "abajo";
+        setChats((actuales) =>
+          actuales.map((c) => (c.tipo === "bot" ? { ...c, ultimoMensaje: respuesta } : c))
+        );
+      }
+    } catch (error) {
+      console.error("Error resolviendo la propuesta de Fani:", error);
+      setErrorEnvio(error.message || "No se pudo completar. Probá de nuevo.");
+    }
+    setResolviendoAccion(null);
+  }
+
   async function manejarEnviar(evento) {
     evento.preventDefault();
     const contenido = texto.trim();
@@ -572,7 +599,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
 
     try {
       if (chatAbierto.tipo === "grupo") {
-        const mensajeCreado = await mensajesService.enviar(chatAbierto.id, contenido);
+        const mensajeCreado = await mensajesService.enviar(chatAbierto.id, contenido, imagenAdjunta?.archivo);
         procesarMensajeEntrante("grupo", mensajeCreado);
       } else {
         const mensajeCreado = await chatsService.enviar(chatAbierto.id, contenido, imagenAdjunta?.archivo);
@@ -660,6 +687,14 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
                 </button>
               )}
               {mensaje.contenido && renderContenido(mensaje.contenido)}
+              {esBotAbierto && mensaje.accion && (
+                <AccionFani
+                  idMensaje={mensaje.id_mensaje}
+                  accion={mensaje.accion}
+                  resolviendo={resolviendoAccion === mensaje.id_mensaje}
+                  onResolver={resolverAccionFani}
+                />
+              )}
               <span className="chatsBurbujaHora">
                 {formatearHora(mensaje.created_at)}
                 {esPropio && chatAbierto.tipo === "privado" && <Tildes leido={mensaje.leido} />}
@@ -831,7 +866,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
                 {!cargandoMensajes && mensajes.length === 0 && (
                   <p className="chatsMensajesEstado">
                     {esBotAbierto
-                      ? "Hola, soy Fani. Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app."
+                      ? "Hola, soy Fani. Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app. También puedo buscarte un grupo con lugar y sumarte (siempre te pido que confirmes)."
                       : esGrupoAbierto
                         ? `Este es el chat del grupo ${chatAbierto.nombre}. Mandá el primer mensaje.`
                         : `Todavía no hay mensajes. Escribile a ${chatAbierto.nombre}.`}
@@ -864,8 +899,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
               )}
 
               <form className="chatsForm" onSubmit={manejarEnviar}>
-                {/* El chat de grupo (mensaje_grupo) y el del bot son solo texto */}
-                {chatAbierto.tipo === "privado" && (
+                {/* Los chats privados y de grupo aceptan fotos; el del bot es solo texto */}
+                {chatAbierto.tipo !== "bot" && (
                   <>
                     <input
                       ref={inputArchivoRef}

@@ -9,6 +9,12 @@ export const notificacionRepository = {
     return unwrap(resultado, "Error creando notificación");
   },
 
+  async crearVarias(filas) {
+    if (filas.length === 0) return;
+    const resultado = await supabaseAdmin.from(TABLA).insert(filas);
+    unwrap(resultado, "Error creando notificaciones");
+  },
+
   // La invitación a un momento ya no hace falta una vez respondida.
   async eliminarInvitacionMomento(idUsuario, idHighlight) {
     const resultado = await supabaseAdmin
@@ -75,6 +81,19 @@ export const notificacionRepository = {
       .eq("id_grupo", idGrupo)
       .eq("leida", false);
     return unwrap(resultado, "Error marcando notificaciones como leídas");
+  },
+
+  // Al bloquear: las notificaciones de uno sobre el otro (solicitudes,
+  // mensajes privados) se borran, en los dos sentidos.
+  async eliminarEntreUsuarios(idUsuarioA, idUsuarioB, tipos) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .delete()
+      .in("tipo", tipos)
+      .or(
+        `and(id_usuario.eq.${idUsuarioA},id_usuario_relacionado.eq.${idUsuarioB}),and(id_usuario.eq.${idUsuarioB},id_usuario_relacionado.eq.${idUsuarioA})`
+      );
+    unwrap(resultado, "Error eliminando notificaciones");
   },
 
   async contarNoLeidas(idUsuario) {

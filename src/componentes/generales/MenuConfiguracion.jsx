@@ -2,6 +2,7 @@ import { useContext } from "react";
 import "./MenuConfiguracion.css";
 import { TemaContext } from "../../context/TemaContext";
 import { IconoCerrar } from "./iconosNav";
+import UsuariosBloqueados from "./UsuariosBloqueados";
 
 // Panel de Configuración. Se abre desde el ítem "Configuración" del menú
 // lateral (Footer), que controla si está abierto.
@@ -42,6 +43,8 @@ function MenuConfiguracion({ abierto, onCerrar }) {
             <span className="themeSwitchThumb" />
           </button>
         </div>
+
+        <UsuariosBloqueados abierto={abierto} />
       </aside>
     </div>
   );

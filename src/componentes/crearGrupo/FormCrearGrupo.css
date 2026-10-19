@@ -450,3 +450,11 @@
     padding: 26px 26px 28px;
   }
 }
+
+/* el número del cupo aparece debajo de "Sin límite / Limitado" */
+.crearGrupoCupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}

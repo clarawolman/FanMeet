@@ -11,7 +11,7 @@ vi.mock("../src/repositories/usuarioRepository.js", async (importOriginal) => {
 });
 
 vi.mock("../src/services/backofficeService.js", () => ({
-  backofficeService: { resumen: vi.fn(), cambiarEstadoUsuario: vi.fn() },
+  backofficeService: { resumen: vi.fn(), cambiarEstadoUsuario: vi.fn(), eliminarGrupo: vi.fn() },
 }));
 
 const { verificarToken } = await import("../src/config/jwks.js");
@@ -60,6 +60,25 @@ describe("rutas del backoffice", () => {
 
     expect(respuesta.status).toBe(422);
     expect(backofficeService.cambiarEstadoUsuario).not.toHaveBeenCalled();
+  });
+
+  it("DELETE /grupos/:id elimina el grupo si es moderador", async () => {
+    usuarioRepository.obtenerEstadoYRol.mockResolvedValue({ estado: "activo", rol: "moderador" });
+    backofficeService.eliminarGrupo.mockResolvedValue({ ok: true, notificados: 2 });
+
+    const respuesta = await conToken(request(app).delete("/api/backoffice/grupos/9"));
+
+    expect(respuesta.status).toBe(200);
+    expect(respuesta.body.notificados).toBe(2);
+  });
+
+  it("DELETE /grupos/:id da 403 a un usuario común", async () => {
+    usuarioRepository.obtenerEstadoYRol.mockResolvedValue({ estado: "activo", rol: "usuario" });
+
+    const respuesta = await conToken(request(app).delete("/api/backoffice/grupos/9"));
+
+    expect(respuesta.status).toBe(403);
+    expect(backofficeService.eliminarGrupo).not.toHaveBeenCalled();
   });
 });
 

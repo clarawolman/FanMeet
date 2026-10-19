@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { conciertoYaPaso } from "../helpers/fechas.js";
+import { cupoSchema } from "./grupoValidators.js";
 
 // "2026-08-28T21:00" (lo que manda un <input type="datetime-local">).
 const fechaHora = z
@@ -82,12 +83,18 @@ export const crearGrupoSchema = z.object({
   categoria: z.enum(["pre", "after", "mismo_dia"], { message: "Elegí un tipo de grupo" }),
   id_concierto: z.coerce.number().int().positive("Elegí un concierto"),
   foto: z.union([urlImagen, z.literal("")]).optional(),
+  cupo: cupoSchema.optional(),
 });
 
 // Solo los campos que cambiaron. Foto "" = sacarle la foto al grupo.
 export const actualizarGrupoSchema = crearGrupoSchema
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
+
+// Texto pegado con la lista de conciertos (lo interpreta el service).
+export const importarConciertosSchema = z.object({
+  texto: z.string().trim().min(1, "Pegá la lista de conciertos").max(200_000, "La lista es demasiado larga"),
+});
 
 export const novedadSchema = z.object({
   titulo: z.string().trim().min(1, "Poné un título").max(100),

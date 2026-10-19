@@ -5,11 +5,24 @@ import {
 } from "../repositories/conciertoRepository.js";
 import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { notificacionService } from "./notificacionService.js";
+import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
 import { toGrupo, toGrupoConConcierto } from "../entities/Grupo.js";
 import { toConciertoDetalle } from "../entities/Concierto.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
+
+// Al bajar el cupo no puede quedar gente afuera. Se cuentan las relaciones
+// (no solo los usuarios activos): un suspendido que vuelve sigue adentro.
+export async function validarCupoNuevo(idGrupo, cupo) {
+  if (cupo === null || cupo === undefined) return;
+  const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+  if (cupo < integrantes.length) {
+    throw ApiError.badRequest(
+      `Ya hay ${integrantes.length} integrantes: el cupo no puede ser menor`
+    );
+  }
+}
 
 async function armarUsuariosDeGrupo(idGrupo) {
   const relaciones = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
@@ -105,6 +118,23 @@ export const grupoService = {
     const yaConfirmado = await grupoUsuarioRepository.existeRelacion(idUsuarioAutenticado, idGrupo);
     if (yaConfirmado) return { ok: true, yaConfirmado: true };
 
+    // Mismo criterio que crear y obtenerDetalle: solo se suma quien entró
+    // al concierto con el código (los ids de grupo son fáciles de adivinar).
+    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
+      idUsuarioAutenticado,
+      grupo.id_concierto
+    );
+    if (!perteneceAlConcierto) {
+      throw ApiError.forbidden("No pertenecés al concierto de este grupo");
+    }
+
+    if (grupo.cupo) {
+      const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+      if (integrantes.length >= grupo.cupo) {
+        throw new ApiError(409, "El grupo está completo");
+      }
+    }
+
     await grupoUsuarioRepository.crearRelacion(idUsuarioAutenticado, idGrupo);
     await notificacionService.crear({
       idUsuario: idUsuarioAutenticado,
@@ -121,6 +151,25 @@ export const grupoService = {
   async salir(idUsuarioAutenticado, idGrupo) {
     await grupoUsuarioRepository.eliminarRelacion(idUsuarioAutenticado, idGrupo);
     return { ok: true };
+  },
+
+  async actualizar(idUsuarioAutenticado, idGrupo, cambios) {
+    const grupo = await grupoRepository.obtenerPorId(idGrupo);
+    if (!grupo) throw ApiError.notFound("El grupo no existe");
+
+    if (grupo.id_creador !== idUsuarioAutenticado) {
+      throw ApiError.forbidden("Solo el creador puede editar el grupo");
+    }
+
+    const textos = [cambios.nombre, cambios.descripcion, cambios.ubicacion].filter(Boolean).join(" ");
+    if (contieneMalasPalabras(textos)) {
+      throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
+    }
+    await validarCupoNuevo(idGrupo, cambios.cupo);
+
+    const actualizado = await grupoRepository.actualizar(idGrupo, cambios);
+    await avisarCambiosDeGrupo(grupo, actualizado, { excepto: idUsuarioAutenticado });
+    return toGrupo(actualizado, { usuarios: await armarUsuariosDeGrupo(idGrupo) });
   },
 
   // Autorizacion real en el backend: antes esto dependia solo de ocultar

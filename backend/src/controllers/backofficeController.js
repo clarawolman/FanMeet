@@ -48,6 +48,14 @@ export const backofficeController = {
     res.json(await backofficeService.actualizarConcierto(req.params.idConcierto, req.body));
   }),
 
+  previaImportacion: asyncHandler(async (req, res) => {
+    res.json(await backofficeService.previaImportacion(req.body.texto));
+  }),
+
+  importarConciertos: asyncHandler(async (req, res) => {
+    res.status(201).json(await backofficeService.importarConciertos(req.body.texto));
+  }),
+
   eliminarConcierto: asyncHandler(async (req, res) => {
     res.json(await backofficeService.eliminarConcierto(req.params.idConcierto));
   }),
@@ -66,6 +74,10 @@ export const backofficeController = {
 
   actualizarGrupo: asyncHandler(async (req, res) => {
     res.json(await backofficeService.actualizarGrupo(req.params.idGrupo, req.body));
+  }),
+
+  eliminarGrupo: asyncHandler(async (req, res) => {
+    res.json(await backofficeService.eliminarGrupo(req.params.idGrupo));
   }),
 
   mensajesDeGrupo: asyncHandler(async (req, res) => {

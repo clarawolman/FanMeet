@@ -22,7 +22,9 @@ const INSIGNIAS = {
   momento_comentario: { Icono: IconoComentario, tono: "tinta" },
   concierto_unido: { Icono: IconoCalendario, tono: "tinta" },
   novedad_concierto: { Icono: IconoCalendario, tono: "tinta" },
+  recordatorio_concierto: { Icono: IconoCalendario, tono: "accent" },
   grupo_unido: { Icono: IconoNavGrupos, tono: "tinta" },
+  cambio_grupo: { Icono: IconoNavGrupos, tono: "tinta" },
   mensaje_grupo: { Icono: IconoNavChat, tono: "tinta" },
   mensaje_privado: { Icono: IconoNavChat, tono: "tinta" },
 };
@@ -35,10 +37,13 @@ function CardNotificacion({
   onRechazarSolicitud,
   procesando = false,
 }) {
-  const { tipo, titulo, descripcion, imagen, created_at, leida } = notificacion;
+  const { tipo, titulo, descripcion, created_at, leida } = notificacion;
   const insignia = INSIGNIAS[tipo];
   // Solicitud de amistad o invitación a sumar un momento: se responden acá.
   const esSolicitudAmistad = tipo === "solicitud_amistad" || tipo === "momento_etiquetado";
+  // Algunas notificaciones viejas guardaron la vista previa local de la foto
+  // ("blob:..."), que solo existía en el navegador donde se creó.
+  const imagen = notificacion.imagen?.startsWith("blob:") ? "" : notificacion.imagen;
 
   return (
     <article className={`cardNotificacion ${leida ? "" : "cardNotificacion--nueva"}`}>

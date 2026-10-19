@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 
+// Sin bloqueos, salvo que el test diga otra cosa.
+vi.mock("../src/repositories/bloqueoRepository.js", () => ({
+  bloqueoRepository: {
+    idsConBloqueo: vi.fn(async () => new Set()),
+    existeEntre: vi.fn(async () => false),
+  },
+}));
+
 vi.mock("../src/services/amistadService.js", () => ({
   amistadService: {
     obtenerEstado: vi.fn(),

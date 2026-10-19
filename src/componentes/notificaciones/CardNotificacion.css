@@ -156,6 +156,13 @@
   border-radius: inherit;
 }
 
+/* App.css achica todos los botones al apretarlos (transform). Con transform
+   el ::after se posiciona contra el botón (0px de alto) en vez de la fila:
+   la capa desaparece entre mousedown y mouseup y el click nunca llega. */
+.cardNotificacion .cardNotificacionVerMas:active {
+  transform: none;
+}
+
 .cardNotificacionEliminar {
   position: relative;
   z-index: 1;

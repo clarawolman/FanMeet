@@ -1,5 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Sin bloqueos, salvo que el test diga otra cosa.
+vi.mock("../src/repositories/bloqueoRepository.js", () => ({
+  bloqueoRepository: {
+    idsConBloqueo: vi.fn(async () => new Set()),
+    existeEntre: vi.fn(async () => false),
+  },
+}));
+
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
   usuarioRepository: {
     obtenerPorId: vi.fn(),

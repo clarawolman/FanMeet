@@ -10,6 +10,8 @@ export function toMensajeChatbot(row) {
     id_emisor: row.rol === "user" ? row.id_usuario : ID_CHATBOT,
     rol: row.rol,
     contenido: row.contenido,
+    // Propuesta de Fani con botones Confirmar / Cancelar (ver chatbotService).
+    accion: row.accion || null,
     created_at: row.created_at,
   };
 }

@@ -13,6 +13,7 @@ import { toConciertoResumen } from "../entities/Concierto.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { normalizarGenero, familiaDe, esTagGenerico } from "../helpers/generos.js";
 import { generoService } from "./generoService.js";
+import { bloqueoRepository } from "../repositories/bloqueoRepository.js";
 import { ApiError } from "../helpers/ApiError.js";
 
 // Matching de gustos musicales, sin IA: cada usuario se resume en un
@@ -468,13 +469,16 @@ export const matchingService = {
   // o recibida). Si nadie llega al 40%, se devuelven los más parecidos
   // igual (soloCercanos: true) para que la sección no quede vacía.
   async descubrir(idYo) {
-    const [base, amistades] = await Promise.all([
+    const [base, amistades, bloqueados] = await Promise.all([
       cargarDatosBase(),
       amistadRepository.listarDeUsuario(idYo),
+      bloqueoRepository.idsConBloqueo(idYo),
     ]);
-    const conRelacion = new Set(
-      amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante))
-    );
+    // Con un bloqueo de por medio (en cualquier sentido) tampoco se sugiere.
+    const conRelacion = new Set([
+      ...amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante)),
+      ...bloqueados,
+    ]);
     const ids = [...base.usuarios.keys()].filter((id) => id !== idYo && !conRelacion.has(id));
     const [yo, ...otros] = await construirPerfiles([idYo, ...ids], base);
 

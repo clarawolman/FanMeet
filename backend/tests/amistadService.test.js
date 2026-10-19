@@ -1,5 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Sin bloqueos, salvo que el test diga otra cosa.
+vi.mock("../src/repositories/bloqueoRepository.js", () => ({
+  bloqueoRepository: {
+    idsConBloqueo: vi.fn(async () => new Set()),
+    existeEntre: vi.fn(async () => false),
+  },
+}));
+
 vi.mock("../src/repositories/amistadRepository.js", () => ({
   amistadRepository: {
     buscarEntreUsuarios: vi.fn(),
@@ -130,5 +138,33 @@ describe("amistadService.listarAmigos", () => {
     expect(usuarioRepository.listarActivosPorIds).toHaveBeenCalledWith([OTRO, AJENO]);
     expect(resultado.map((amigo) => amigo.id_usuario)).toEqual([OTRO, AJENO]);
     expect(resultado.every((amigo) => !("mail" in amigo) && !("fechanac" in amigo))).toBe(true);
+  });
+});
+
+describe("amistadService con bloqueos", () => {
+  it("no deja mandar una solicitud si hay un bloqueo entre los dos", async () => {
+    const { bloqueoRepository } = await import("../src/repositories/bloqueoRepository.js");
+    bloqueoRepository.existeEntre.mockResolvedValueOnce(true);
+
+    await expect(amistadService.crearSolicitud(YO, OTRO)).rejects.toMatchObject({ status: 404 });
+    expect(amistadRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("la lista de amigos de otro no muestra a los que tienen un bloqueo con quien mira", async () => {
+    const { bloqueoRepository } = await import("../src/repositories/bloqueoRepository.js");
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([
+      { id_solicitante: AJENO, id_receptor: OTRO },
+      { id_solicitante: AJENO, id_receptor: "bloqueado-uuid" },
+    ]);
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
+      { id_usuario: OTRO, nombre: "Otro" },
+      { id_usuario: "bloqueado-uuid", nombre: "Bloqueado" },
+    ]);
+    bloqueoRepository.idsConBloqueo.mockResolvedValueOnce(new Set(["bloqueado-uuid"]));
+
+    const amigos = await amistadService.listarAmigos(AJENO, YO);
+
+    expect(bloqueoRepository.idsConBloqueo).toHaveBeenCalledWith(YO);
+    expect(amigos.map((a) => a.id_usuario)).toEqual([OTRO]);
   });
 });

@@ -23,7 +23,7 @@ export const amistadController = {
   }),
 
   listarAmigos: asyncHandler(async (req, res) => {
-    const amigos = await amistadService.listarAmigos(req.params.idUsuario);
+    const amigos = await amistadService.listarAmigos(req.params.idUsuario, req.user.id);
     res.json(amigos);
   }),
 };

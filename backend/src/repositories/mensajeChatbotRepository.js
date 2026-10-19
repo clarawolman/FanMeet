@@ -4,13 +4,39 @@ import { unwrap } from "../helpers/supabaseResult.js";
 const TABLA = "mensaje_chatbot";
 
 export const mensajeChatbotRepository = {
-  async crear({ idUsuario, rol, contenido }) {
+  // `accion` solo se manda si hay una: así el chat sigue andando aunque
+  // todavía no se haya corrido supabase/fani_acciones.sql.
+  async crear({ idUsuario, rol, contenido, accion }) {
     const resultado = await supabaseAdmin
       .from(TABLA)
-      .insert([{ id_usuario: idUsuario, rol, contenido }])
+      .insert([{ id_usuario: idUsuario, rol, contenido, ...(accion ? { accion } : {}) }])
       .select()
       .single();
     return unwrap(resultado, "Error guardando el mensaje del chatbot");
+  },
+
+  // Solo un mensaje del propio usuario: el id de otro no encuentra nada.
+  async obtenerDeUsuario(idUsuario, idMensaje) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .select("*")
+      .eq("id_mensaje", idMensaje)
+      .eq("id_usuario", idUsuario)
+      .maybeSingle();
+    return unwrap(resultado, "Error cargando el mensaje de Fani");
+  },
+
+  // Cambia la acción solo si sigue en `estadoEsperado`: si se toca Confirmar
+  // dos veces a la vez, la segunda no encuentra la fila (devuelve null).
+  async cambiarAccion(idMensaje, estadoEsperado, accionNueva) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .update({ accion: accionNueva })
+      .eq("id_mensaje", idMensaje)
+      .eq("accion->>estado", estadoEsperado)
+      .select()
+      .maybeSingle();
+    return unwrap(resultado, "Error actualizando la acción de Fani");
   },
 
   // Igual que mensajePrivadoRepository.listarConversacion: los ultimos

@@ -83,19 +83,7 @@ export const backofficeRepository = {
       "Error cargando los grupos del concierto"
     );
     const idsGrupo = grupos.map((g) => g.id_grupo);
-
-    if (idsGrupo.length > 0) {
-      for (const tabla of ["notificacion", "mensaje_grupo", "grupos_usuarios"]) {
-        unwrap(
-          await supabaseAdmin.from(tabla).delete().in("id_grupo", idsGrupo),
-          `Error borrando ${tabla} de los grupos del concierto`
-        );
-      }
-      unwrap(
-        await supabaseAdmin.from("grupo").delete().in("id_grupo", idsGrupo),
-        "Error borrando los grupos del concierto"
-      );
-    }
+    await this.eliminarGrupos(idsGrupo);
 
     for (const tabla of ["notificacion", "usuarios_conciertos"]) {
       unwrap(
@@ -161,6 +149,23 @@ export const backofficeRepository = {
   async listarEstadios() {
     const resultado = await supabaseAdmin.from("estadio").select("*").order("nombre");
     return unwrap(resultado, "Error cargando estadios");
+  },
+
+  // Borra los grupos con sus avisos, mensajes e integrantes (en ese orden por
+  // las claves foráneas). Los reportes quedan: su id_grupo pasa a null.
+  // Las fotos del chat están en Storage y las borra el service.
+  async eliminarGrupos(idsGrupo) {
+    if (idsGrupo.length === 0) return;
+    for (const tabla of ["notificacion", "mensaje_grupo", "grupos_usuarios"]) {
+      unwrap(
+        await supabaseAdmin.from(tabla).delete().in("id_grupo", idsGrupo),
+        `Error borrando ${tabla} de los grupos`
+      );
+    }
+    unwrap(
+      await supabaseAdmin.from("grupo").delete().in("id_grupo", idsGrupo),
+      "Error borrando los grupos"
+    );
   },
 
   async listarGrupos() {

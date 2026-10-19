@@ -10,7 +10,14 @@ export const mensajesService = {
     return api.get(`/grupos/${idGrupo}/mensajes${query ? `?${query}` : ""}`);
   },
 
-  async enviar(idGrupo, contenido) {
+  // Igual que chatsService.enviar: con foto va como multipart.
+  async enviar(idGrupo, contenido, imagen) {
+    if (imagen) {
+      const formData = new FormData();
+      formData.append("imagen", imagen);
+      if (contenido) formData.append("contenido", contenido);
+      return api.postForm(`/grupos/${idGrupo}/mensajes`, formData);
+    }
     return api.post(`/grupos/${idGrupo}/mensajes`, { contenido });
   },
 };

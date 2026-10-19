@@ -11,11 +11,10 @@ export const mensajeController = {
   }),
 
   enviar: asyncHandler(async (req, res) => {
-    const mensaje = await mensajeService.enviar(
-      req.user.id,
-      req.params.idGrupo,
-      req.body.contenido
-    );
+    const mensaje = await mensajeService.enviar(req.user.id, req.params.idGrupo, {
+      contenido: req.body.contenido,
+      archivo: req.file,
+    });
     res.status(201).json(mensaje);
   }),
 };

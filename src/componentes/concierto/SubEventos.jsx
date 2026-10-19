@@ -20,6 +20,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
   const fecha = partesFecha(subEvento.fecha);
   const hora = subEvento.hora?.slice(0, 5);
   const voy = usuarios.some((u) => u.id_usuario === usuarioActual?.id_usuario);
+  const completo = Boolean(subEvento.cupo) && usuarios.length >= subEvento.cupo;
 
   return (
     <button
@@ -35,6 +36,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
           <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
         )}
         {voy && <span className="SubEventoVoy">Vas</span>}
+        {completo && !voy && <span className="SubEventoCompleto">Completo</span>}
       </span>
 
       {fecha && (
@@ -60,9 +62,11 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
             </span>
           )}
           <span className="SubEventoAsistiran">
-            {usuarios.length === 0
-              ? "Sé el primero en sumarte"
-              : `${usuarios.length} ${usuarios.length === 1 ? "va" : "van"}`}
+            {subEvento.cupo
+              ? `${usuarios.length}/${subEvento.cupo} lugares`
+              : usuarios.length === 0
+                ? "Sé el primero en sumarte"
+                : `${usuarios.length} ${usuarios.length === 1 ? "va" : "van"}`}
           </span>
           <svg className="SubEventoFlecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />

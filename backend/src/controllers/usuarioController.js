@@ -56,7 +56,7 @@ export const usuarioController = {
   }),
 
   obtenerEstadisticas: asyncHandler(async (req, res) => {
-    const estadisticas = await usuarioService.obtenerEstadisticas(req.params.idUsuario);
+    const estadisticas = await usuarioService.obtenerEstadisticas(req.params.idUsuario, req.user.id);
     res.json(estadisticas);
   }),
 

@@ -1,7 +1,7 @@
 import HeaderApp from "../generales/HeaderApp";
 
-function HeaderCrearGrupo({ onVolver }) {
-  return <HeaderApp onVolver={onVolver} titulo="Nuevo grupo" />;
+function HeaderCrearGrupo({ onVolver, titulo = "Nuevo grupo" }) {
+  return <HeaderApp onVolver={onVolver} titulo={titulo} />;
 }
 
 export default HeaderCrearGrupo;

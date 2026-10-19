@@ -343,6 +343,7 @@ function App() {
   async function abrirGrupoConConcierto(grupo, origen) {
     const pudoCargar = await cargarConciertoPorId(grupo.id_concierto);
     if (!pudoCargar) {
+      mostrarAviso("No se pudo abrir el grupo. Probá de nuevo.");
       setPantalla(origen);
       return;
     }
@@ -365,7 +366,9 @@ function App() {
       if (pantalla !== "perfilAjeno") setPantallaAntesDePerfil(pantalla);
       setPantalla("perfilAjeno");
     } catch (error) {
+      // No existe, está suspendido o hay un bloqueo entre los dos.
       console.error("Error cargando usuario:", error);
+      mostrarAviso("Este perfil no está disponible.");
     }
   }
 
@@ -394,7 +397,7 @@ function App() {
   }
   async function manejarVerMasNotificacion(notificacion) {
     if (
-      (notificacion.tipo === "concierto_unido" || notificacion.tipo === "novedad_concierto") &&
+      ["concierto_unido", "novedad_concierto", "recordatorio_concierto"].includes(notificacion.tipo) &&
       notificacion.id_concierto
     ) {
       await manejarEntrarConcierto(notificacion.id_concierto);
@@ -411,6 +414,18 @@ function App() {
 
     if (notificacion.tipo === "grupo_unido") {
       setPantalla("misGrupos");
+    }
+
+    if (notificacion.tipo === "cambio_grupo" && notificacion.id_grupo) {
+      try {
+        const grupo = await gruposService.obtenerDetalle(notificacion.id_grupo);
+        await abrirGrupoConConcierto(grupo, "notificaciones");
+      } catch (error) {
+        // El grupo se borró o ya no estás en el concierto.
+        console.error("No se pudo abrir el grupo de la notificación:", error);
+        mostrarAviso("Ese grupo ya no está disponible.");
+      }
+      return;
     }
 
     if (notificacion.tipo === "mensaje_grupo" && notificacion.id_grupo) {
@@ -576,6 +591,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
     pantalla !== "misEventos" &&
     pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
+    pantalla !== "editarGrupo" &&
     pantalla !== "infoGrupo" &&
     pantalla !== "concierto" &&
     pantalla !== "perfil" &&
@@ -797,6 +813,20 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           }}
           onVerFansConfirmados={() => setPantalla("fansConfirmadosGrupo")}
           onAbrirChat={() => manejarAbrirChatGrupo(grupoSeleccionado.id_grupo)}
+          onEditar={() => setPantalla("editarGrupo")}
+        />
+      )}
+
+      {pantalla === "editarGrupo" && grupoSeleccionado && concierto && usuarioActual && (
+        <CrearGrupo
+          concierto={concierto}
+          grupo={grupoSeleccionado}
+          onVolver={() => setPantalla("infoGrupo")}
+          onGrupoCreado={async (grupoActualizado) => {
+            setGrupoSeleccionado(grupoActualizado);
+            await recargarDatos();
+            setPantalla("infoGrupo");
+          }}
         />
       )}
 

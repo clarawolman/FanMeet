@@ -1,7 +1,15 @@
 import "./participantesGrupo.css";
 
+// "quedan 5 lugares" o "completo". Sin cupo, nada.
+function textoLugares(cantidad, cupo) {
+  if (!cupo) return "";
+  const quedan = cupo - cantidad;
+  if (quedan <= 0) return " · completo";
+  return ` · ${quedan === 1 ? "queda 1 lugar" : `quedan ${quedan} lugares`}`;
+}
+
 // Quién organiza y quiénes van. Tocarlo abre la lista de fans confirmados.
-export default function ParticipantesGrupo({ participantes = [], idCreador, onVerFansConfirmados }) {
+export default function ParticipantesGrupo({ participantes = [], idCreador, cupo, onVerFansConfirmados }) {
   const creador = participantes.find((u) => u.id_usuario === idCreador);
   const cantidad = participantes.length;
 
@@ -16,6 +24,7 @@ export default function ParticipantesGrupo({ participantes = [], idCreador, onVe
       <span className="participantesGrupoTexto">
         <strong>
           {cantidad === 0 ? "Todavía no va nadie" : `${cantidad} ${cantidad === 1 ? "fan va" : "fans van"}`}
+          {textoLugares(cantidad, cupo)}
         </strong>
         {creador && <small>Organiza {creador.apodo || creador.nombre}</small>}
       </span>

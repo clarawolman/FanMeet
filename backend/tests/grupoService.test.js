@@ -6,6 +6,7 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
     obtenerPorId: vi.fn(),
     listarPorConcierto: vi.fn(),
     eliminar: vi.fn(),
+    actualizar: vi.fn(),
   },
   grupoUsuarioRepository: {
     existeRelacion: vi.fn(),
@@ -39,6 +40,10 @@ vi.mock("../src/services/notificacionService.js", () => ({
   notificacionService: { crear: vi.fn() },
 }));
 
+vi.mock("../src/services/avisoCambiosGrupo.js", () => ({
+  avisarCambiosDeGrupo: vi.fn(async () => 0),
+}));
+
 const { grupoRepository, grupoUsuarioRepository } = await import("../src/repositories/grupoRepository.js");
 const { conciertoRepository, usuariosConciertosRepository } = await import(
   "../src/repositories/conciertoRepository.js"
@@ -46,6 +51,7 @@ const { conciertoRepository, usuariosConciertosRepository } = await import(
 const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
 const { notificacionService } = await import("../src/services/notificacionService.js");
 const { grupoService } = await import("../src/services/grupoService.js");
+const { avisarCambiosDeGrupo } = await import("../src/services/avisoCambiosGrupo.js");
 
 const CREADOR = "creador-uuid";
 const OTRO_USUARIO = "otro-uuid";
@@ -173,11 +179,111 @@ describe("grupoService.unirse", () => {
     );
     expect(resultado).toEqual({ ok: true, yaConfirmado: false });
   });
+
+  it("no deja sumarse a quien no está unido al concierto del grupo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
+
+    await expect(grupoService.unirse(OTRO_USUARIO, GRUPO.id_grupo)).rejects.toMatchObject({ status: 403 });
+    expect(usuariosConciertosRepository.existeRelacion).toHaveBeenCalledWith(OTRO_USUARIO, GRUPO.id_concierto);
+    expect(grupoUsuarioRepository.crearRelacion).not.toHaveBeenCalled();
+  });
 });
 
 describe("grupoService.salir", () => {
   it("solo borra la relación del propio usuario autenticado", async () => {
     await grupoService.salir(OTRO_USUARIO, GRUPO.id_grupo);
     expect(grupoUsuarioRepository.eliminarRelacion).toHaveBeenCalledWith(OTRO_USUARIO, GRUPO.id_grupo);
+  });
+});
+
+describe("grupoService.actualizar", () => {
+  beforeEach(() => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO });
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ ...GRUPO, ...cambios }));
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+  });
+
+  it("el creador puede cambiar los datos de su grupo", async () => {
+    const grupo = await grupoService.actualizar(CREADOR, 1, { hora: "19:30", ubicacion: "Parque Los Andes" });
+
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(1, { hora: "19:30", ubicacion: "Parque Los Andes" });
+    expect(grupo).toMatchObject({ id_grupo: 1, hora: "19:30", usuarios: [] });
+  });
+
+  it("avisa el cambio a los integrantes, menos al creador", async () => {
+    await grupoService.actualizar(CREADOR, 1, { hora: "19:30" });
+
+    expect(avisarCambiosDeGrupo).toHaveBeenCalledWith(
+      GRUPO,
+      expect.objectContaining({ hora: "19:30" }),
+      { excepto: CREADOR }
+    );
+  });
+
+  it("rechaza con 403 si no es el creador", async () => {
+    await expect(grupoService.actualizar(OTRO_USUARIO, 1, { nombre: "Mío" })).rejects.toMatchObject({ status: 403 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+    expect(avisarCambiosDeGrupo).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 404 si el grupo no existe", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(null);
+    await expect(grupoService.actualizar(CREADOR, 1, { nombre: "X" })).rejects.toMatchObject({ status: 404 });
+  });
+
+  it("pasa el nombre nuevo por el filtro de malas palabras", async () => {
+    await expect(grupoService.actualizar(CREADOR, 1, { nombre: "previa de mierda" })).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+});
+
+describe("cupo del grupo", () => {
+  beforeEach(() => {
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ ...GRUPO, ...cambios }));
+  });
+
+  it("no deja unirse si el grupo está completo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 2 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "a" }, { id_usuario: "b" }]);
+
+    await expect(grupoService.unirse(OTRO_USUARIO, 1)).rejects.toMatchObject({ status: 409 });
+    expect(grupoUsuarioRepository.crearRelacion).not.toHaveBeenCalled();
+  });
+
+  it("deja unirse si queda lugar", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 3 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "a" }, { id_usuario: "b" }]);
+
+    await grupoService.unirse(OTRO_USUARIO, 1);
+    expect(grupoUsuarioRepository.crearRelacion).toHaveBeenCalledWith(OTRO_USUARIO, 1);
+  });
+
+  it("sin cupo no cuenta integrantes", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: null });
+
+    await grupoService.unirse(OTRO_USUARIO, 1);
+    expect(grupoUsuarioRepository.listarUsuariosPorGrupo).not.toHaveBeenCalled();
+    expect(grupoUsuarioRepository.crearRelacion).toHaveBeenCalled();
+  });
+
+  it("el creador no puede bajar el cupo por debajo de los integrantes", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{}, {}, {}]);
+
+    await expect(grupoService.actualizar(CREADOR, 1, { cupo: 2 })).rejects.toMatchObject({ status: 400 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  it("el creador puede sacar el límite", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, cupo: 4 });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+
+    await grupoService.actualizar(CREADOR, 1, { cupo: null });
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(1, { cupo: null });
   });
 });

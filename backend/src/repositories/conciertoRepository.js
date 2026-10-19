@@ -26,6 +26,17 @@ export const conciertoRepository = {
     }));
   },
 
+  // Los conciertos de un día ("2026-10-19"), con su estadio. La fecha se
+  // guarda en hora de Argentina, así que alcanza con comparar el texto.
+  async listarDelDia(dia, diaSiguiente) {
+    const resultado = await supabaseAdmin
+      .from("concierto")
+      .select("*, estadio(*)")
+      .gte("fecha", dia)
+      .lt("fecha", diaSiguiente);
+    return unwrap(resultado, "Error cargando los conciertos del día");
+  },
+
   async obtenerPorId(idConcierto) {
     const resultado = await supabaseAdmin
       .from("concierto")

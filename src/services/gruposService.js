@@ -24,4 +24,9 @@ export const gruposService = {
   async eliminar(idGrupo) {
     return api.del(`/grupos/${idGrupo}`);
   },
+
+  // Solo el creador. Devuelve el grupo actualizado (con sus usuarios).
+  actualizar(idGrupo, cambios) {
+    return api.patch(`/grupos/${idGrupo}`, cambios);
+  },
 };
