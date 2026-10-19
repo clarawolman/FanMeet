@@ -4,8 +4,8 @@ import "./FansCompatiblesHome.css";
 
 const MAX_FANS = 10;
 
-// Fila de la home con los fans más compatibles (60% o más); "Ver todos"
-// lleva a Descubrir. Si nadie llega al 60% (soloCercanos), muestra los
+// Fila de la home con los fans más compatibles (40% o más); "Ver todos"
+// lleva a Descubrir. Si nadie llega al 40% (soloCercanos), muestra los
 // más parecidos con un aviso.
 export default function FansCompatiblesHome({ fans, soloCercanos, onVerUsuario, onVerTodos }) {
   return (
@@ -19,7 +19,7 @@ export default function FansCompatiblesHome({ fans, soloCercanos, onVerUsuario, 
 
       {soloCercanos && (
         <p className="fansHomeAviso">
-          Nadie llega al 60% de compatibilidad todavía: estos son los más cercanos.
+          Nadie llega al 40% de compatibilidad todavía: estos son los más cercanos.
         </p>
       )}
 

@@ -6,7 +6,7 @@
 ============================ */
 
 .pantallaChats {
-  height: 100dvh;
+  height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   font-family: var(--fm-font-body);
   color: var(--fm-ink);
@@ -405,6 +405,42 @@
   word-break: break-word;
 }
 
+/* momento compartido desde "Enviar" */
+.chatsMomentoCompartido {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 190px;
+  margin: 4px 0 2px;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: var(--fm-radius-md);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.92;
+}
+
+.chatsMomentoCompartido:hover {
+  opacity: 1;
+}
+
+.chatsMomentoCompartido span {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatsMomentoCompartido strong {
+  font-size: var(--fm-fs-sm);
+}
+
+.chatsMomentoCompartido small {
+  font-size: var(--fm-fs-xs);
+  opacity: 0.75;
+}
+
 .chatsBurbujaHora {
   display: inline-flex;
   align-items: center;
@@ -684,7 +720,7 @@
 }
 
 /* ===== MOBILE: conversación abierta a pantalla completa ===== */
-@media (max-width: 767px) {
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaChats--conversacion {
     padding-bottom: 0;
   }
@@ -701,7 +737,7 @@
 }
 
 /* ===== DESKTOP: dos paneles ===== */
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaChats {
     padding-left: var(--fm-sidebar);
     padding-bottom: 0;
@@ -738,7 +774,7 @@
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
   .chatsLista {
     flex-basis: 400px;
   }

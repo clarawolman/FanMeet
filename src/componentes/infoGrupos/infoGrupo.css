@@ -1,99 +1,82 @@
 .infoGrupo {
+  position: relative;
+  isolation: isolate; /* para que la luz de fondo (FondoAmbiente) quede atrás */
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   font-family: var(--fm-font-body);
+  overflow-x: clip;
 }
 
+/* container: ver Concierto.css */
 .infoGrupoContenido {
+  container-type: inline-size;
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 16px calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
-.botonChatGrupo {
-  min-height: 50px;
-  margin: 20px 16px 0;
-  padding: 0 24px;
-  background: var(--fm-cta);
-  color: var(--fm-cta-ink);
+/* hero + tira de datos montada sobre el borde de la foto */
+.infoGrupoHero {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+/* salir / eliminar: acciones de bajo peso, al final y en texto */
+.infoGrupoSecundarias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  padding: 8px 0 4px;
+}
+
+.botonSalirGrupo,
+.botonEliminarGrupo {
+  min-height: 40px;
+  padding: 0 10px;
   border: none;
   border-radius: var(--fm-radius-pill);
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-body);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color var(--fm-dur) var(--fm-ease);
-}
-
-.botonChatGrupo:hover {
-  background: var(--fm-cta-hover);
-}
-
-.botonSalirGrupo {
-  margin: 10px 16px 0;
-  padding: 13px;
   background: transparent;
-  color: var(--fm-ink);
-  border: 1px solid var(--fm-border-strong);
-  border-radius: var(--fm-radius-pill);
   font-family: var(--fm-font-body);
   font-size: var(--fm-fs-sm);
   font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
   cursor: pointer;
-  transition: background-color var(--fm-dur) var(--fm-ease);
+  transition: background-color var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+}
+
+.botonSalirGrupo {
+  color: var(--fm-muted);
 }
 
 .botonSalirGrupo:hover {
+  color: var(--fm-ink);
   background: var(--fm-bg-soft);
 }
 
 .botonEliminarGrupo {
-  margin: 10px 16px 0;
-  padding: 13px;
-  background: transparent;
   color: var(--fm-danger);
-  border: 1px solid transparent;
-  border-radius: var(--fm-radius-pill);
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.005em;
-  cursor: pointer;
-  transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
 .botonEliminarGrupo:hover {
   background: var(--fm-danger-bg);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .infoGrupo {
-    background: var(--fm-bg);
     padding-left: var(--fm-sidebar);
   }
 
   .infoGrupoContenido {
-    max-width: 680px;
-    width: 100%;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 24px 0 80px;
-  }
-
-  .botonChatGrupo {
-    margin: 24px 0 0;
-  }
-
-  .botonSalirGrupo {
-    margin: 10px 0 0;
-  }
-
-  .botonEliminarGrupo {
-    margin: 10px 0 0;
+    padding: 24px 24px 40px;
+    gap: 16px;
   }
 }

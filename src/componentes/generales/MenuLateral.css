@@ -22,7 +22,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(300px, 84vw);
+  width: min(300px, calc(84vw / var(--fm-zoom)));
   background: var(--fm-surface);
   border-left: 1px solid var(--fm-border);
   box-shadow: var(--fm-shadow);
@@ -141,7 +141,7 @@
   color: var(--fm-accent);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .menuLateralOverlay {
     display: none;
   }

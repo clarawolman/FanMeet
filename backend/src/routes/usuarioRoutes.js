@@ -3,9 +3,13 @@ import { usuarioController } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validate.js";
 import { upload } from "../middlewares/upload.js";
+import { momentoController } from "../controllers/momentoController.js";
+import { subirMomentoSchema } from "../validators/momentoValidators.js";
 import {
   vibraSchema,
   apodoSchema,
+  perfilSchema,
+  idHighlightParamSchema,
   generosSchema,
   buscarGeneroSchema,
   buscarUsuarioSchema,
@@ -48,6 +52,12 @@ router.patch(
   validate(apodoSchema),
   usuarioController.actualizarApodo
 );
+router.patch(
+  "/me/perfil",
+  authMiddleware,
+  validate(perfilSchema),
+  usuarioController.actualizarPerfil
+);
 router.post(
   "/me/foto",
   authMiddleware,
@@ -57,8 +67,24 @@ router.post(
 router.post(
   "/me/highlights",
   authMiddleware,
-  upload.single("highlight"),
-  usuarioController.subirHighlight
+  upload.fields([
+    { name: "fotos", maxCount: 10 },
+    { name: "highlight", maxCount: 1 },
+  ]),
+  validate(subirMomentoSchema),
+  momentoController.subir
+);
+router.post(
+  "/me/highlights/:idHighlight/aceptar",
+  authMiddleware,
+  validate(idHighlightParamSchema, "params"),
+  momentoController.aceptar
+);
+router.delete(
+  "/me/highlights/:idHighlight",
+  authMiddleware,
+  validate(idHighlightParamSchema, "params"),
+  momentoController.quitar
 );
 
 router.get(
@@ -71,7 +97,7 @@ router.get(
   "/:idUsuario/highlights",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
-  usuarioController.listarHighlights
+  momentoController.listarDeUsuario
 );
 router.get(
   "/:idUsuario/estadisticas",

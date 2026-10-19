@@ -135,7 +135,7 @@
   cursor: default;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .sugerenciasLastfm {
     margin: 0 var(--perfil-gutter, 40px) 16px;
   }

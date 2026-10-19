@@ -1,0 +1,228 @@
+/* arriba de todo, no centrado: la marca grande es lo primero que se ve */
+.pagina404 {
+  min-height: calc(100dvh / var(--fm-zoom));
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: clamp(28px, calc(7vh / var(--fm-zoom)), 72px) 20px calc(32px + env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 35%, var(--fm-glow), transparent 70%),
+    var(--fm-bg);
+  font-family: var(--fm-font-body);
+  color: var(--fm-ink);
+}
+
+.pagina404Contenido {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* la marca grande (el ícono escala con el font-size, ver Marca.css).
+   .pagina404 adelante: .marca pone font-size y margin, y carga después */
+.pagina404 .pagina404Marca {
+  margin-bottom: clamp(32px, calc(6vh / var(--fm-zoom)), 56px);
+  font-size: clamp(34px, calc(9vw / var(--fm-zoom)), 48px);
+  gap: 12px;
+  animation: pagina404Marca 600ms var(--fm-ease) both;
+}
+
+@keyframes pagina404Marca {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== LA ENTRADA ===== */
+.pagina404Ticket {
+  --talon: 78px;
+  --muesca: 11px;
+  position: relative;
+  width: min(100%, 340px);
+  display: grid;
+  grid-template-columns: 1fr var(--talon);
+  margin-bottom: 36px;
+  background: var(--fm-surface);
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-lg);
+  box-shadow: var(--fm-shadow);
+  transform: rotate(-3deg);
+  animation: pagina404Entrar 600ms var(--fm-ease) both;
+}
+
+/* muescas de la línea troquelada, del color del fondo */
+.pagina404Ticket::before,
+.pagina404Ticket::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--talon) - var(--muesca));
+  width: calc(var(--muesca) * 2);
+  height: calc(var(--muesca) * 2);
+  border-radius: 50%;
+  background: var(--fm-bg);
+  border: 1px solid var(--fm-border);
+}
+
+.pagina404Ticket::before {
+  top: calc(var(--muesca) * -1 - 1px);
+  clip-path: inset(50% 0 0 0);
+}
+
+.pagina404Ticket::after {
+  bottom: calc(var(--muesca) * -1 - 1px);
+  clip-path: inset(0 0 50% 0);
+}
+
+.pagina404TicketCuerpo {
+  padding: 22px 20px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+
+.pagina404Etiqueta {
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-2xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
+
+.pagina404Numero {
+  font-family: var(--fm-font-data);
+  font-size: 72px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--fm-accent);
+}
+
+.pagina404Datos {
+  display: flex;
+  gap: 18px;
+  margin: 14px 0 0;
+}
+
+.pagina404Datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pagina404Datos dt {
+  font-size: var(--fm-fs-2xs);
+  color: var(--fm-muted);
+}
+
+.pagina404Datos dd {
+  margin: 0;
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+}
+
+/* 403: la entrada existe pero está "cerrada": sin el rosa en el número
+   y con rayado de fondo */
+.pagina404Ticket--sinAcceso .pagina404Numero {
+  color: var(--fm-ink);
+}
+
+.pagina404Ticket--sinAcceso .pagina404TicketCuerpo {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 10px,
+      var(--fm-bg-soft) 10px 12px
+    );
+  border-radius: var(--fm-radius-lg) 0 0 var(--fm-radius-lg);
+}
+
+.pagina404TicketTalon {
+  display: grid;
+  place-items: center;
+  border-left: 2px dashed var(--fm-border-strong);
+}
+
+.pagina404Sello {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding: 10px 5px;
+  border: 1.5px solid var(--fm-accent);
+  border-radius: var(--fm-radius-sm);
+  font-family: var(--fm-font-data);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fm-accent);
+}
+
+/* ===== TEXTO Y ACCIONES ===== */
+.pagina404Titulo {
+  margin: 0 0 10px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.pagina404Texto {
+  max-width: 34ch;
+  margin: 0 0 28px;
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-body);
+  line-height: 1.5;
+}
+
+.pagina404Acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagina404Secundario {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  background: transparent;
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.pagina404Secundario:hover {
+  background: var(--fm-bg-soft);
+}
+
+@keyframes pagina404Entrar {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina404Marca,
+  .pagina404Ticket {
+    animation: none;
+  }
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .pagina404Titulo {
+    font-size: var(--fm-fs-2xl);
+  }
+}

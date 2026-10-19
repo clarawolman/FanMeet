@@ -18,10 +18,6 @@ export const usuariosService = {
     return api.get(`/usuarios/${idUsuario}/estadisticas`);
   },
 
-  async listarHighlights(idUsuario) {
-    return api.get(`/usuarios/${idUsuario}/highlights`);
-  },
-
   async actualizarVibra(estiloAsistencia) {
     return api.patch("/usuarios/me/vibra", { estilo_asistencia: estiloAsistencia });
   },
@@ -37,10 +33,10 @@ export const usuariosService = {
     return api.postForm("/usuarios/me/foto", formData);
   },
 
-  async subirHighlight(archivo) {
-    const formData = new FormData();
-    formData.append("highlight", archivo);
-    return api.postForm("/usuarios/me/highlights", formData);
+  // "Editar perfil": { apodo, descripcion, nombre }, solo lo que cambió.
+  // El @nombre se puede cambiar una vez cada 15 días.
+  async actualizarPerfil(cambios) {
+    return api.patch("/usuarios/me/perfil", cambios);
   },
 
   async obtenerCatalogoGeneros() {

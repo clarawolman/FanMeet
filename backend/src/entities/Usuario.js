@@ -14,6 +14,9 @@ export function toUsuarioCompleto(row) {
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     estilo_asistencia: row.estilo_asistencia,
     rol: row.rol || "usuario",
+    descripcion: row.descripcion || null,
+    // Para "Editar perfil": cuándo cambió el @nombre por última vez
+    nombre_cambiado_at: row.nombre_cambiado_at || null,
   };
 }
 
@@ -55,5 +58,6 @@ export function toUsuarioPublico(row) {
     apodo: row.apodo || null,
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     estilo_asistencia: row.estilo_asistencia,
+    descripcion: row.descripcion || null,
   };
 }

@@ -1,31 +1,37 @@
 .heroGrupo {
   position: relative;
   width: 100%;
-  border: none;
   border-radius: var(--fm-radius-lg);
   overflow: hidden;
-  box-shadow: var(--fm-shadow-sm);
+  background: var(--fm-bg-soft);
+  box-shadow: var(--fm-shadow);
 }
 
 .heroImageContainer {
-  width: 100%;
-  height: 280px;
-  overflow: hidden;
   position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 280px;
+  max-height: 400px;
+  overflow: hidden;
 }
 
-/* misma foto subexpuesta en claro y en oscuro, como en el resto de
-   las cards de concierto */
 .heroImageContainer img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: brightness(0.9) saturate(0.92);
+  filter: brightness(0.92) saturate(1.05);
+  animation: heroGrupoZoom 1400ms var(--fm-ease) both;
 }
 
-/* velo al pie: el título tiene que leerse sobre cualquier foto,
-   sin depender del tema claro/oscuro */
+@keyframes heroGrupoZoom {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+/* velo al pie: el título tiene que leerse sobre cualquier foto */
 .heroImageContainer::after {
   content: "";
   position: absolute;
@@ -33,53 +39,73 @@
   background: var(--fm-scrim);
 }
 
-.heroGrupo h1 {
+.heroGrupoCategoria {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  border-radius: var(--fm-radius-pill);
+  background: rgba(12, 11, 15, 0.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+  color: var(--fm-on-photo);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+}
+
+.heroGrupoTexto {
   position: absolute;
   left: 20px;
   right: 20px;
-  bottom: 18px;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-2xl);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  color: var(--fm-on-photo);
-  line-height: 1;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  bottom: 44px;
   z-index: 1;
+  color: var(--fm-on-photo);
+  animation: heroGrupoEntrar 700ms var(--fm-ease) 120ms both;
 }
 
-.heroGrupo h1 span {
-  font-family: var(--fm-font-body);
-  font-size: var(--fm-fs-xs);
-  font-weight: 500;
-  text-transform: none;
-  text-shadow: none;
-  color: var(--fm-accent);
-  background: transparent;
-  border: none;
-  display: inline-block;
-  padding: 0;
-  border-radius: 0;
-  width: fit-content;
-  letter-spacing: 0.02em;
+@keyframes heroGrupoEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 
-@media (min-width: 768px) {
+.heroGrupoConcierto {
+  margin: 0 0 8px;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.heroGrupo h1 {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--fm-font-display);
+  font-size: clamp(28px, 7.5cqi, 52px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-wrap: balance;
+  color: var(--fm-on-photo);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroImageContainer img,
+  .heroGrupoTexto {
+    animation: none;
+  }
+}
+
+@container (min-width: 640px) {
   .heroImageContainer {
-    height: 380px;
+    aspect-ratio: 16 / 8;
   }
 
-  .heroGrupo h1 {
-    font-size: 42px;
+  .heroGrupoTexto {
     left: 32px;
     right: 32px;
-    bottom: 28px;
+    bottom: 60px;
   }
 }

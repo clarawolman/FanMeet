@@ -1,5 +1,5 @@
 .pantallaLogin {
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   display: flex;
   justify-content: center;
@@ -9,18 +9,18 @@
 .loginContenido {
   width: 100%;
   max-width: 400px;
-  padding: clamp(40px, 12dvh, 120px) 0 48px;
+  padding: clamp(40px, calc(12dvh / var(--fm-zoom)), 120px) 0 48px;
 }
 
 .loginMarca {
-  margin-bottom: clamp(40px, 9dvh, 72px);
+  margin-bottom: clamp(40px, calc(9dvh / var(--fm-zoom)), 72px);
   font-size: 21px;
 }
 
 .loginTitulo {
   margin: 0;
   font-family: var(--fm-font-display);
-  font-size: clamp(32px, 8.5vw, 42px);
+  font-size: clamp(32px, calc(8.5vw / var(--fm-zoom)), 42px);
   font-weight: 700;
   line-height: 1.04;
   letter-spacing: -0.035em;
@@ -48,7 +48,7 @@
   --login-glow-2: rgba(255, 61, 127, 0.14);
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaLogin {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
@@ -65,7 +65,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: calc(100dvh - 24px);
+    min-height: calc(calc(100dvh / var(--fm-zoom)) - 24px);
     margin: 12px 12px 12px 0;
     padding: 48px;
     overflow: hidden;
@@ -97,7 +97,7 @@
   /* el texto queda un poco arriba del centro, no pegado al pie */
   .loginPanelTexto {
     margin-block: auto;
-    padding-bottom: 8vh;
+    padding-bottom: calc(8vh / var(--fm-zoom));
   }
 
   .loginPanelEtiqueta {
@@ -112,7 +112,7 @@
   .loginPanelFrase {
     margin: 0;
     font-family: var(--fm-font-display);
-    font-size: clamp(48px, 5.4vw, 80px);
+    font-size: clamp(48px, calc(5.4vw / var(--fm-zoom)), 80px);
     font-weight: 700;
     line-height: 0.95;
     letter-spacing: -0.055em;

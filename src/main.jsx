@@ -6,6 +6,9 @@ import { TemaProvider } from "./context/TemaContext";
 import { MenuLateralProvider } from "./context/MenuLateralContext";
 import "./index.css";
 import "./App.css";
+import { iniciarEscalaPantalla } from "./utils/escalaPantalla";
+
+iniciarEscalaPantalla();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

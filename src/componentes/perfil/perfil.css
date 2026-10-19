@@ -1,7 +1,7 @@
 .pantallaPerfil {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background: var(--fm-bg);
   font-family: var(--fm-font-body);
 }
@@ -23,7 +23,7 @@
   overflow-y: auto;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .pantallaPerfil {
     background: var(--fm-bg);
     padding-left: var(--fm-sidebar);

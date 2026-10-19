@@ -34,7 +34,7 @@
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .botonChatbot {
     right: 28px;
     bottom: 28px;

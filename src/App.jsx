@@ -1,6 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import CargandoPantalla from "./componentes/generales/CargandoPantalla";
+import PaginaNoEncontrada from "./componentes/generales/PaginaNoEncontrada";
 import Concierto from "./componentes/concierto/Concierto";
 import InfoGrupo from "./componentes/infoGrupos/infoGrupo";
 import CrearGrupo from "./componentes/crearGrupo/CrearGrupo";
@@ -18,16 +19,20 @@ import FansUnidosLista from "./componentes/concierto/FansUnidosLista";
 import Notificaciones from "./componentes/notificaciones/Notificaciones";
 import Chats from "./componentes/chats/Chats";
 import Descubrir from "./componentes/descubrir/Descubrir";
+import MomentoDetalle from "./componentes/momento/MomentoDetalle";
 import MenuLateral from "./componentes/generales/MenuLateral";
 import Avisos from "./componentes/generales/Avisos";
 import { ID_CHATBOT } from "./services/chatbotService";
+import { mostrarAviso } from "./utils/avisos";
 
 import { authService } from "./services/authService";
 import { usuariosService } from "./services/usuariosService";
 import { conciertosService } from "./services/conciertosService";
+import { gruposService } from "./services/gruposService";
 import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
 import { supabase } from "./supabase";
+import { leerRuta, rutaDePantalla, tituloDePantalla, PANTALLAS_SIN_SESION } from "./utils/rutas";
 
 // Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
 // motivo acá para mostrarlo en el login después de recargar.
@@ -67,26 +72,43 @@ function App() {
   const [pantallaAntesDeGrupo, setPantallaAntesDeGrupo] = useState("concierto");
   // Pantalla a la que vuelve el perfil ajeno (fans unidos, chats, ...)
   const [pantallaAntesDePerfil, setPantallaAntesDePerfil] = useState("fansUnidos");
+  // Momento abierto (pantalla "momento") y a dónde vuelve
+  const [idMomento, setIdMomento] = useState(null);
+  const [pantallaAntesDeMomento, setPantallaAntesDeMomento] = useState("home");
 
   const [cargando, setCargando] = useState(false);
   const [errorTexto, setErrorTexto] = useState(leerAvisoLogin);
   // Al recargar la página, supabase-js todavía tiene la sesión guardada en
   // localStorage: mientras se recupera el usuario no se muestra el login.
   const [restaurandoSesion, setRestaurandoSesion] = useState(true);
+  // URL protegida que se abrió sin sesión: se va ahí después del login.
+  const rutaPendiente = useRef(null);
+  // Página 403: si lo que no se puede ver es un concierto o un grupo
+  const [recursoSinAcceso, setRecursoSinAcceso] = useState("concierto");
+  const primeraSincronizacion = useRef(true);
+  const irARutaRef = useRef(null);
 
+  // Al recargar se vuelve a la pantalla de la URL (ver utils/rutas.js).
   useEffect(() => {
     let activo = true;
+    const ruta = leerRuta(window.location.pathname);
 
     async function restaurarSesion() {
       try {
         const { data } = await supabase.auth.getSession();
-        if (!data.session) return;
+        if (!data.session) {
+          if (activo) await irARuta(ruta, null);
+          return;
+        }
         const usuario = await usuariosService.obtenerMiPerfil();
-        if (activo) manejarIngreso(usuario);
+        if (!activo) return;
+        setUsuarioActual(usuario);
+        await irARuta(ruta, usuario);
       } catch (error) {
         // Sesión vencida o usuario borrado: se limpia y queda el login.
         console.error("No se pudo restaurar la sesión:", error);
         if (error.status === 401 || error.status === 404) await supabase.auth.signOut();
+        if (activo) await irARuta(ruta, null);
       } finally {
         if (activo) setRestaurandoSesion(false);
       }
@@ -98,6 +120,131 @@ function App() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // La URL y el título de la pestaña siguen a la pantalla. La primera vez
+  // se reemplaza la entrada del historial (ej. /mis-eventos sin sesión ->
+  // /login), después cada pantalla nueva suma una para que ande "atrás".
+  useEffect(() => {
+    if (restaurandoSesion) return;
+    const datos = { concierto, grupo: grupoSeleccionado, usuarioVisitado, idMomento };
+    document.title = tituloDePantalla(pantalla, datos);
+
+    const ruta = rutaDePantalla(pantalla, datos);
+    if (ruta && ruta !== window.location.pathname) {
+      if (primeraSincronizacion.current) window.history.replaceState(null, "", ruta);
+      else window.history.pushState(null, "", ruta);
+    }
+    primeraSincronizacion.current = false;
+  }, [restaurandoSesion, pantalla, concierto, grupoSeleccionado, usuarioVisitado, idMomento]);
+
+  // Atrás / adelante del navegador
+  useEffect(() => {
+    irARutaRef.current = irARuta;
+  });
+
+  useEffect(() => {
+    function alCambiarHistorial() {
+      irARutaRef.current?.(leerRuta(window.location.pathname));
+    }
+    window.addEventListener("popstate", alCambiarHistorial);
+    return () => window.removeEventListener("popstate", alCambiarHistorial);
+  }, []);
+
+  // Abre la pantalla de una URL, cargando lo que necesite (concierto,
+  // grupo, perfil). Si no existe o no hay acceso, 404.
+  async function irARuta(ruta, usuario = usuarioActual) {
+    const { pantalla: destino, idConcierto, idGrupo, idUsuario } = ruta;
+
+    if (destino === "noEncontrada") {
+      setPantalla("noEncontrada");
+      return;
+    }
+
+    if (!usuario) {
+      // verificarMail necesita datos que se pierden al recargar
+      if (PANTALLAS_SIN_SESION.includes(destino) && destino !== "verificarMail") {
+        setPantalla(destino);
+      } else {
+        if (!PANTALLAS_SIN_SESION.includes(destino)) rutaPendiente.current = ruta;
+        setPantalla("login");
+      }
+      return;
+    }
+
+    if (PANTALLAS_SIN_SESION.includes(destino)) {
+      manejarNavegacion("home");
+      return;
+    }
+
+    // Si no existe, la pantalla del momento muestra el 404
+    if (destino === "momento") {
+      setIdMomento(ruta.idMomento);
+      setPantallaAntesDeMomento("home");
+      setPantalla("momento");
+      return;
+    }
+
+    if (destino === "perfilAjeno") {
+      if (idUsuario === usuario.id_usuario) {
+        setPantalla("perfil");
+        return;
+      }
+      try {
+        setUsuarioVisitado(await usuariosService.obtenerPerfil(idUsuario));
+        setPantallaAntesDePerfil("home");
+        setPantalla("perfilAjeno");
+      } catch {
+        setPantalla("noEncontrada");
+      }
+      return;
+    }
+
+    if (idConcierto) {
+      let detalle = concierto;
+      if (String(concierto?.id_concierto) !== idConcierto) {
+        setCargando(true);
+        try {
+          detalle = await conciertosService.obtenerDetalle(idConcierto);
+        } catch (error) {
+          // 403: existe pero no se unió al concierto. En la URL de un grupo
+          // se pregunta por el grupo, para no decir que existe si no.
+          let estado = error.status;
+          if (estado === 403 && idGrupo) {
+            estado = await gruposService.obtenerDetalle(idGrupo).then(
+              () => 403,
+              (errorGrupo) => errorGrupo.status
+            );
+          }
+          setCargando(false);
+          if (estado === 403) {
+            setRecursoSinAcceso(idGrupo ? "grupo" : "concierto");
+            setPantalla("sinAcceso");
+          } else {
+            setPantalla("noEncontrada");
+          }
+          return;
+        }
+        setCargando(false);
+        setConcierto(detalle);
+      }
+
+      if (idGrupo) {
+        const grupo = (detalle.grupos || []).find((g) => String(g.id_grupo) === idGrupo);
+        if (!grupo) {
+          setPantalla("noEncontrada");
+          return;
+        }
+        setGrupoSeleccionado(grupo);
+        setPantallaAntesDeGrupo("concierto");
+      }
+
+      setPantalla(destino);
+      return;
+    }
+
+    if (destino === "chats") setChatInicial(null);
+    setPantalla(destino);
+  }
 
   async function cargarConciertoPorId(idConcierto) {
     setCargando(true);
@@ -111,6 +258,12 @@ function App() {
     } catch (error) {
       setErrorTexto(error.message || "No se pudo cargar el concierto");
       setCargando(false);
+      // errorTexto solo se ve en el login: dentro de la app va como aviso
+      mostrarAviso(
+        error.status === 403
+          ? "Para entrar a ese concierto tenés que unirte con el código desde el inicio."
+          : error.message || "No se pudo cargar el concierto"
+      );
       return false;
     }
   }
@@ -135,10 +288,18 @@ function App() {
     setConcierto(null);
     setGrupoSeleccionado(null);
     setErrorTexto("");
+
+    const pendiente = rutaPendiente.current;
+    rutaPendiente.current = null;
+    if (pendiente) {
+      await irARuta(pendiente, usuario);
+      return;
+    }
     setPantalla("home");
   }
 
   async function manejarCerrarSesion() {
+    rutaPendiente.current = null;
     await authService.logout();
     setUsuarioActual(null);
     setUsuarioVisitado(null);
@@ -208,6 +369,13 @@ function App() {
     }
   }
 
+  // Abre un momento (publicación) desde un perfil, una notificación o un chat
+  function abrirMomento(id) {
+    setIdMomento(id);
+    if (pantalla !== "momento") setPantallaAntesDeMomento(pantalla);
+    setPantalla("momento");
+  }
+
   async function manejarEntrarConcierto(idConcierto) {
     const pudoCargar = await cargarConciertoPorId(idConcierto);
 
@@ -230,6 +398,14 @@ function App() {
       notificacion.id_concierto
     ) {
       await manejarEntrarConcierto(notificacion.id_concierto);
+      return;
+    }
+
+    if (
+      (notificacion.tipo === "momento_like" || notificacion.tipo === "momento_comentario") &&
+      notificacion.id_highlight
+    ) {
+      abrirMomento(notificacion.id_highlight);
       return;
     }
 
@@ -409,18 +585,16 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
     pantalla !== "perfilAjeno" &&
     pantalla !== "notificaciones" &&
     pantalla !== "chats" &&
-    pantalla !== "descubrir"
+    pantalla !== "descubrir" &&
+    pantalla !== "momento"
   ) {
     return (
-      <main className="fmErrorPantalla">
-        <div>
-          <h1>No pudimos abrir esta pantalla</h1>
-          <p>{errorTexto}</p>
-          <button className="fmBotonPrimario" onClick={() => manejarNavegacion("home")}>
-            Volver al inicio
-          </button>
-        </div>
-      </main>
+      <PaginaNoEncontrada
+        tipo={pantalla === "sinAcceso" ? "sinAcceso" : "noEncontrada"}
+        recurso={recursoSinAcceso}
+        conSesion={Boolean(usuarioActual)}
+        onIrAlInicio={() => (usuarioActual ? manejarNavegacion("home") : setPantalla("login"))}
+      />
     );
   }
 
@@ -508,6 +682,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onCerrarSesion={manejarCerrarSesion}
           onVerUsuario={manejarVerUsuario}
           onIngresarConcierto={manejarEntrarConcierto}
+          onAbrirMomento={abrirMomento}
         />
       )}
 
@@ -525,6 +700,8 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onVolver={() => setPantalla(pantallaAntesDePerfil)}
           onVerUsuario={manejarVerUsuario}
           onEnviarMensaje={manejarEnviarMensaje}
+          onAbrirMomento={abrirMomento}
+          onIngresarConcierto={manejarEntrarConcierto}
         />
       )}
 
@@ -558,6 +735,18 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onVerUsuario={manejarVerUsuario}
           chatInicial={chatInicial}
           onVerGrupo={(grupo) => abrirGrupoConConcierto(grupo, "chats")}
+          onAbrirMomento={abrirMomento}
+        />
+      )}
+
+      {pantalla === "momento" && idMomento && usuarioActual && (
+        <MomentoDetalle
+          key={idMomento}
+          idMomento={idMomento}
+          onVolver={() => setPantalla(pantallaAntesDeMomento)}
+          onNavegar={manejarNavegacion}
+          onVerUsuario={manejarVerUsuario}
+          onIngresarConcierto={manejarEntrarConcierto}
         />
       )}
 

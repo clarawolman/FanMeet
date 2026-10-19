@@ -5,6 +5,19 @@ import HeaderApp from "../generales/HeaderApp";
 import IconoCampana from "../generales/IconoCampana";
 import { IconoNavSalir } from "../generales/iconosNav";
 
+// Mismas reglas que el backend (usuarioValidators.js / usuarioService.js)
+const REGEX_NOMBRE_USUARIO = /^[a-zA-Z0-9._]{3,30}$/;
+const MAX_DESCRIPCION = 160;
+const DIAS_ENTRE_CAMBIOS_DE_NOMBRE = 15;
+
+// Desde cuándo puede volver a cambiar su @nombre (null = ya puede)
+function proximoCambioDeNombre(nombreCambiadoAt) {
+  if (!nombreCambiadoAt) return null;
+  const proximo = new Date(nombreCambiadoAt);
+  proximo.setDate(proximo.getDate() + DIAS_ENTRE_CAMBIOS_DE_NOMBRE);
+  return proximo > new Date() ? proximo : null;
+}
+
 export default function HeaderPerfil({
   usuario,
   isOwnProfile,
@@ -13,7 +26,7 @@ export default function HeaderPerfil({
   onAccionAmistad,
   onSubirFoto,
   subiendoFoto,
-  onGuardarApodo,
+  onGuardarPerfil,
   onVolver,
   onNavegar,
   onCerrarSesion,
@@ -23,20 +36,39 @@ export default function HeaderPerfil({
   const inputFotoRef = useRef(null);
   const [editando, setEditando] = useState(false);
   const [apodo, setApodo] = useState("");
+  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [errorNombre, setErrorNombre] = useState("");
   const [guardando, setGuardando] = useState(false);
 
   // Como en Instagram: el nombre/apodo es opcional; sin él se ve el usuario.
   const nombreVisible = usuario?.apodo || usuario?.nombre;
+  const proximoCambio = proximoCambioDeNombre(usuario?.nombre_cambiado_at);
 
   function abrirEdicion() {
     setApodo(usuario?.apodo || "");
+    setNombreUsuario(usuario?.nombre || "");
+    setDescripcion(usuario?.descripcion || "");
+    setErrorNombre("");
     setEditando(true);
   }
 
   async function manejarGuardar(e) {
     e.preventDefault();
+
+    const cambios = { apodo: apodo.trim(), descripcion: descripcion.trim() };
+    // El @ solo se manda si cambió: así no cuenta para los 15 días.
+    const nombreNuevo = nombreUsuario.trim().replace(/^@/, "");
+    if (nombreNuevo !== usuario?.nombre) {
+      if (!REGEX_NOMBRE_USUARIO.test(nombreNuevo)) {
+        setErrorNombre("De 3 a 30 letras, números, puntos o guiones bajos, sin espacios.");
+        return;
+      }
+      cambios.nombre = nombreNuevo;
+    }
+
     setGuardando(true);
-    const ok = await onGuardarApodo(apodo.trim());
+    const ok = await onGuardarPerfil(cambios);
     setGuardando(false);
     if (ok) setEditando(false);
   }
@@ -111,8 +143,19 @@ export default function HeaderPerfil({
         </div>
 
         <div className="headerPerfilIdentidad">
-          {editando ? (
-            <form id="headerPerfilFormApodo" onSubmit={manejarGuardar}>
+          <h2 className="headerPerfilNombre">{nombreVisible}</h2>
+          {usuario?.nombre && (
+            <p className="headerPerfilHandle">@{usuario.nombre}</p>
+          )}
+        </div>
+
+        {!editando && usuario?.descripcion && (
+          <p className="headerPerfilDescripcion">{usuario.descripcion}</p>
+        )}
+
+        {editando && (
+          <form id="headerPerfilFormApodo" className="headerPerfilFormulario" onSubmit={manejarGuardar}>
+            <div className="headerPerfilCampo">
               <label className="headerPerfilApodoLabel" htmlFor="perfil-apodo">
                 Nombre <span>(opcional)</span>
               </label>
@@ -126,14 +169,62 @@ export default function HeaderPerfil({
                 onChange={(e) => setApodo(e.target.value)}
                 autoFocus
               />
-            </form>
-          ) : (
-            <h2 className="headerPerfilNombre">{nombreVisible}</h2>
-          )}
-          {usuario?.nombre && (
-            <p className="headerPerfilHandle">@{usuario.nombre}</p>
-          )}
-        </div>
+            </div>
+
+            <div className="headerPerfilCampo">
+              <label className="headerPerfilApodoLabel" htmlFor="perfil-usuario">
+                Nombre de usuario
+              </label>
+              <div className="headerPerfilUsuarioInput">
+                <span aria-hidden="true">@</span>
+                <input
+                  id="perfil-usuario"
+                  className="headerPerfilApodoInput"
+                  type="text"
+                  maxLength={30}
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  spellCheck={false}
+                  value={nombreUsuario}
+                  onChange={(e) => {
+                    setNombreUsuario(e.target.value);
+                    setErrorNombre("");
+                  }}
+                  disabled={Boolean(proximoCambio)}
+                  aria-describedby="perfil-usuario-ayuda"
+                  aria-invalid={Boolean(errorNombre)}
+                />
+              </div>
+              <p
+                id="perfil-usuario-ayuda"
+                className={`headerPerfilAyuda ${errorNombre ? "headerPerfilAyuda--error" : ""}`}
+              >
+                {errorNombre ||
+                  (proximoCambio
+                    ? `Lo podés volver a cambiar desde el ${proximoCambio.toLocaleDateString("es-AR", { day: "numeric", month: "long" })}.`
+                    : `Es con el que iniciás sesión. Lo podés cambiar una vez cada ${DIAS_ENTRE_CAMBIOS_DE_NOMBRE} días.`)}
+              </p>
+            </div>
+
+            <div className="headerPerfilCampo">
+              <label className="headerPerfilApodoLabel" htmlFor="perfil-descripcion">
+                Descripción <span>(opcional)</span>
+              </label>
+              <textarea
+                id="perfil-descripcion"
+                className="headerPerfilApodoInput headerPerfilDescripcionInput"
+                maxLength={MAX_DESCRIPCION}
+                rows={3}
+                placeholder="Contá qué música te mueve, a qué recitales vas…"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+              />
+              <p className="headerPerfilAyuda headerPerfilContador">
+                {descripcion.length}/{MAX_DESCRIPCION}
+              </p>
+            </div>
+          </form>
+        )}
 
         {isOwnProfile && editando ? (
           <div className="headerPerfilAccionesEdicion">

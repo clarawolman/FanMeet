@@ -10,14 +10,14 @@ import Buscador from "../generales/Buscador";
 import { IconoSiguiente } from "../generales/iconosNav";
 import { usuariosService } from "../../services/usuariosService";
 
-// Línea de abajo del nombre: "Le gusta rock, indie". Si no comparten
-// géneros con nombre, se usa lo más fuerte que tengan en común.
+// Línea de abajo del nombre: "Le gusta Duki, Khea". Primero los artistas
+// en común; si no comparten ninguno, los géneros en común.
 function resumen(fan) {
-  if (fan.generosEnComun.length > 0) {
-    return `Le gusta ${fan.generosEnComun.slice(0, 3).join(", ")}`;
-  }
   if (fan.artistasEnComun.length > 0) {
     return `Le gusta ${fan.artistasEnComun.slice(0, 3).join(", ")}`;
+  }
+  if (fan.generosEnComun.length > 0) {
+    return `Le gusta ${fan.generosEnComun.slice(0, 3).join(", ")}`;
   }
   if (fan.parecidos.length > 0) {
     return `Le gusta ${fan.parecidos[0].suyo}`;
@@ -76,7 +76,7 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
 
   return (
     <div className="pantallaDescubrir">
-      <HeaderApp titulo="Descubrir" subtitulo="Fans con 60% o más de compatibilidad con vos" />
+      <HeaderApp titulo="Descubrir" subtitulo="Fans con gustos similares a los tuyos" />
 
       <main className="descubrirLayout">
         <Buscador
@@ -149,7 +149,7 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
 
         {!hayBusqueda && datos?.soloCercanos && fans.length > 0 && (
           <p className="descubrirAviso">
-            Nadie llega al 60% de compatibilidad todavía, así que te mostramos a los más
+            Nadie llega al 40% de compatibilidad todavía, así que te mostramos a los más
             parecidos a vos. Sumá más artistas y géneros en tu perfil para encontrar más gente.
           </p>
         )}

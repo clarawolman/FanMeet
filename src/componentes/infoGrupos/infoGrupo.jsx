@@ -10,6 +10,7 @@ import MapaGrupo from "./mapaGrupo";
 import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
+import FondoAmbiente from "../generales/FondoAmbiente";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { mostrarAviso } from "../../utils/avisos";
@@ -114,57 +115,45 @@ function InfoGrupo({
 
   return (
     <div className="infoGrupo">
-      <HeaderGrupo titulo={`Grupo - ${grupo.nombre}`} onVolver={onVolver} />
+      <FondoAmbiente imagen={grupo.foto} />
+      <HeaderGrupo titulo={grupo.nombre} onVolver={onVolver} />
 
       <div className="infoGrupoContenido">
-        <HeroGrupo grupo={grupo} concierto={concierto} />
+        <section className="infoGrupoHero">
+          <HeroGrupo grupo={grupo} concierto={concierto} />
+          <StatsGrupo grupo={grupo} />
+        </section>
 
         <ParticipantesGrupo
           participantes={grupo.usuarios}
+          idCreador={grupo.id_creador}
           onVerFansConfirmados={onVerFansConfirmados}
         />
-
-        <StatsGrupo grupo={grupo} />
 
         <DescripcionGrupo descripcion={grupo.descripcion} />
 
         <MapaGrupo ubicacion={grupo.ubicacion} />
 
-        {!verificandoConfirmacion && !confirmado && (
+        {!verificandoConfirmacion && confirmado && (
+          <div className="infoGrupoSecundarias">
+            <button className="botonSalirGrupo" type="button" onClick={() => setMostrarConfirmarSalida(true)}>
+              Salir del grupo
+            </button>
+            {esCreador && (
+              <button className="botonEliminarGrupo" type="button" onClick={() => setMostrarConfirmarEliminar(true)}>
+                Eliminar grupo
+              </button>
+            )}
+          </div>
+        )}
+
+        {!verificandoConfirmacion && (
           <ConfirmacionGrupo
+            confirmado={confirmado}
             onConfirmar={confirmarAsistenciaGrupo}
+            onAbrirChat={onAbrirChat}
             cargandoConfirmacion={cargandoConfirmacion}
           />
-        )}
-
-        {!verificandoConfirmacion && confirmado && (
-          <button
-            className="botonChatGrupo"
-            type="button"
-            onClick={onAbrirChat}
-          >
-            Chat del grupo
-          </button>
-        )}
-
-        {!verificandoConfirmacion && confirmado && (
-          <button
-            className="botonSalirGrupo"
-            type="button"
-            onClick={() => setMostrarConfirmarSalida(true)}
-          >
-            Salir del grupo
-          </button>
-        )}
-
-        {!verificandoConfirmacion && confirmado && esCreador && (
-          <button
-            className="botonEliminarGrupo"
-            type="button"
-            onClick={() => setMostrarConfirmarEliminar(true)}
-          >
-            Eliminar grupo
-          </button>
         )}
       </div>
 

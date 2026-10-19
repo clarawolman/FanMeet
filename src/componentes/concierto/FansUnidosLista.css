@@ -1,5 +1,5 @@
 .fansUnidosLista {
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--fm-zoom));
   background-color: var(--fm-bg);
   font-family: var(--fm-font-body);
 }
@@ -132,7 +132,7 @@
   color: var(--fm-ink);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .fansUnidosLista {
     padding-left: var(--fm-sidebar);
   }

@@ -14,10 +14,7 @@ dist-ssr
 
 # Variables de entorno (nunca versionar secretos)
 .env
-.env.example
-.env.local
-backend/.env
-backend/.env.local
+.env.*
 
 # Editor directories and files
 .vscode/*
