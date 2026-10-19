@@ -8,6 +8,7 @@ import { amistadRepository } from "../repositories/amistadRepository.js";
 import { toUsuarioCompleto, toUsuarioPublico, toUsuarioResumen } from "../entities/Usuario.js";
 import { toHighlight } from "../entities/Highlight.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { sinBloqueados } from "./bloqueoService.js";
 import { rutaArchivoUsuario } from "../helpers/sanitizeFilename.js";
 import { esImagenValida } from "../helpers/validarImagen.js";
 
@@ -31,9 +32,10 @@ export const usuarioService = {
   },
 
   // Buscador de "Descubrir": forma resumida, sin mail ni fecha de nacimiento.
+  // Sin los usuarios con los que hay un bloqueo.
   async buscar(idUsuarioAutenticado, texto) {
     const filas = await usuarioRepository.buscarActivos(texto, idUsuarioAutenticado);
-    return filas.map(toUsuarioResumen);
+    return (await sinBloqueados(idUsuarioAutenticado, filas)).map(toUsuarioResumen);
   },
 
   // idUsuarioAutenticado siempre sale de req.user.id (JWT), nunca de un
@@ -67,8 +69,9 @@ export const usuarioService = {
   },
 
   // Mismos 3 contadores que hoy calcula perfil.jsx::cargarEstadisticas.
-  // Los amigos suspendidos no cuentan (tampoco aparecen en la lista).
-  async obtenerEstadisticas(idUsuario) {
+  // Los amigos suspendidos no cuentan (tampoco aparecen en la lista), ni
+  // los que tienen un bloqueo con quien mira (idQuienMira).
+  async obtenerEstadisticas(idUsuario, idQuienMira = idUsuario) {
     const [conciertos, grupos, amistades] = await Promise.all([
       usuariosConciertosRepository.contarPorUsuario(idUsuario),
       grupoUsuarioRepository.contarPorUsuario(idUsuario),
@@ -77,7 +80,8 @@ export const usuarioService = {
     const idsAmigos = amistades.map((r) =>
       r.id_solicitante === idUsuario ? r.id_receptor : r.id_solicitante
     );
-    const amigos = (await usuarioRepository.listarActivosPorIds(idsAmigos)).length;
+    const activos = await usuarioRepository.listarActivosPorIds(idsAmigos);
+    const amigos = (await sinBloqueados(idQuienMira, activos)).length;
     return { conciertos, grupos, amigos };
   },
 

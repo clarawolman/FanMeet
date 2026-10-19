@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { lastfmController } from "../controllers/lastfmController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
 import { vincularLastfmSchema, autorizarLastfmSchema } from "../validators/lastfmValidators.js";
@@ -18,6 +19,7 @@ router.get(
   "/usuarios/:idUsuario/resumen",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   lastfmController.obtenerResumen
 );
 
@@ -25,6 +27,7 @@ router.get(
   "/usuarios/:idUsuario/escuchas",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   lastfmController.obtenerEscuchas
 );
 

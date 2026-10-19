@@ -13,6 +13,8 @@ import HighlightsPerfil from "./highlightsPerfil";
 import EditarGeneros from "../editarGeneros/EditarGeneros";
 import ListaAmigosPerfil from "./listaAmigosPerfil";
 import ModalReportar from "./ModalReportar";
+import ModalConfirmacion from "../generales/ModalConfirmacion";
+import { bloqueosService } from "../../services/bloqueosService";
 import ArtistasFavoritosPerfil from "./artistasFavoritosPerfil";
 import EscuchasPerfil from "./escuchasPerfil";
 import CompatibilidadPerfil from "./compatibilidadPerfil";
@@ -78,6 +80,8 @@ function Perfil({
   const [mostrarEditorGeneros, setMostrarEditorGeneros] = useState(false);
   const [mostrarAmigos, setMostrarAmigos] = useState(false);
   const [mostrarReportar, setMostrarReportar] = useState(false);
+  const [mostrarBloquear, setMostrarBloquear] = useState(false);
+  const [bloqueando, setBloqueando] = useState(false);
   // Sube cuando cambia la música del perfil desde Last.fm (vincular o sumar
   // sugerencias): remonta el resumen y los favoritos para que se recarguen.
   const [versionMusica, setVersionMusica] = useState(0);
@@ -179,6 +183,22 @@ function Perfil({
     }
 
     setCargandoAmistad(false);
+  }
+
+  // Bloquear corta todo en los dos sentidos (perfil, búsqueda, amistad,
+  // mensajes privados), así que después se vuelve a la pantalla anterior.
+  async function bloquearUsuario() {
+    setBloqueando(true);
+    try {
+      await bloqueosService.bloquear(usuario.id_usuario);
+      setMostrarBloquear(false);
+      setMostrarReportar(false);
+      mostrarAviso(`Bloqueaste a ${usuario.nombre}. Lo podés desbloquear desde Configuración.`, "info");
+      onVolver?.();
+    } catch (error) {
+      mostrarAviso("No se pudo bloquear: " + error.message);
+      setBloqueando(false);
+    }
   }
 
   async function cargarCatalogoGeneros() {
@@ -320,10 +340,26 @@ function Perfil({
           !isOwnProfile && onEnviarMensaje ? () => onEnviarMensaje(usuario.id_usuario) : undefined
         }
         onReportar={!isOwnProfile ? () => setMostrarReportar(true) : undefined}
+        onBloquear={!isOwnProfile ? () => setMostrarBloquear(true) : undefined}
       />
 
       {mostrarReportar && (
-        <ModalReportar usuario={usuario} onCerrar={() => setMostrarReportar(false)} />
+        <ModalReportar
+          usuario={usuario}
+          onCerrar={() => setMostrarReportar(false)}
+          onBloquear={bloquearUsuario}
+          bloqueando={bloqueando}
+        />
+      )}
+
+      {mostrarBloquear && (
+        <ModalConfirmacion
+          mensaje={`¿Bloquear a ${usuario.nombre}? No van a poder verse ni escribirse.`}
+          textoConfirmar="Bloquear"
+          confirmando={bloqueando}
+          onConfirmar={bloquearUsuario}
+          onCancelar={() => setMostrarBloquear(false)}
+        />
       )}
 
       <div className="perfilContenido">

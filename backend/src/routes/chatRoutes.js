@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { chatController } from "../controllers/chatController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { upload } from "../middlewares/upload.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
@@ -26,6 +27,7 @@ router.get(
   "/:idUsuario/mensajes",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   validate(listarMensajesPrivadosQuerySchema, "query"),
   chatController.listarMensajes
 );
@@ -33,6 +35,7 @@ router.post(
   "/:idUsuario/mensajes",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   upload.single("imagen"),
   validate(enviarMensajePrivadoSchema),
   chatController.enviar
@@ -41,6 +44,7 @@ router.patch(
   "/:idUsuario/leidos",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   chatController.marcarLeidos
 );
 

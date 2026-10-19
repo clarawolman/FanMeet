@@ -12,16 +12,19 @@ import { toMensaje } from "../entities/Mensaje.js";
 import { toMensajePrivado } from "../entities/MensajePrivado.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { exigirSinBloqueo } from "./bloqueoService.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 
 const EXTENSIONES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
-// Solo se puede chatear con amigos (amistad aceptada). Se chequea en cada
-// lectura y envio: si se elimina la amistad, el chat deja de estar disponible.
+// Solo se puede chatear con amigos (amistad aceptada) y sin un bloqueo de
+// por medio. Se chequea en cada lectura y envio: si se elimina la amistad,
+// el chat deja de estar disponible.
 async function exigirAmistad(idUsuarioAutenticado, idOtroUsuario) {
   if (idUsuarioAutenticado === idOtroUsuario) {
     throw ApiError.badRequest("No podés chatear con vos mismo");
   }
+  await exigirSinBloqueo(idUsuarioAutenticado, idOtroUsuario);
 
   const amistad = await amistadRepository.buscarEntreUsuarios(idUsuarioAutenticado, idOtroUsuario);
   if (amistad?.estado !== "aceptada") {

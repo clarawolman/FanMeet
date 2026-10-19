@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { conciertoController } from "../controllers/conciertoController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import {
   idConciertoParamSchema,
@@ -16,6 +17,7 @@ router.get(
   "/usuario/:idUsuario",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   conciertoController.listarDeUsuario
 );
 router.get(

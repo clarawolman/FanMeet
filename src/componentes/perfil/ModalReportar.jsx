@@ -7,7 +7,8 @@ import { reportesService } from "../../services/reportesService";
 // Reportar a otro usuario: le llega un mail al moderador y lo revisa en el
 // backoffice. Se ofrecen los grupos que tienen en común para que el
 // moderador pueda ver esa conversación.
-export default function ModalReportar({ usuario, onCerrar }) {
+// Después de reportar se ofrece bloquearlo (onBloquear lo hace el perfil).
+export default function ModalReportar({ usuario, onCerrar, onBloquear, bloqueando = false }) {
   const [gruposEnComun, setGruposEnComun] = useState([]);
   const [idGrupo, setIdGrupo] = useState("");
   const [motivo, setMotivo] = useState("");
@@ -62,8 +63,28 @@ export default function ModalReportar({ usuario, onCerrar }) {
             <p className="modalReportarAyuda">
               Un moderador va a revisar lo que pasó con {usuario.nombre}.
             </p>
-            <button className="modalConfirmacionBotonSecundario" type="button" onClick={onCerrar}>
-              Listo
+            {onBloquear && (
+              <>
+                <p className="modalReportarAyuda">
+                  ¿Querés bloquearlo también?
+                </p>
+                <button
+                  className="modalConfirmacionBotonPrincipal"
+                  type="button"
+                  onClick={onBloquear}
+                  disabled={bloqueando}
+                >
+                  {bloqueando ? "Bloqueando…" : `Bloquear a ${usuario.nombre}`}
+                </button>
+              </>
+            )}
+            <button
+              className="modalConfirmacionBotonSecundario"
+              type="button"
+              onClick={onCerrar}
+              disabled={bloqueando}
+            >
+              {onBloquear ? "No, listo" : "Listo"}
             </button>
           </>
         ) : (

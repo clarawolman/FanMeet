@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { amistadController } from "../controllers/amistadController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { crearAmistadSchema, idAmistadParamSchema } from "../validators/amistadValidators.js";
 import { idUsuarioParamSchema } from "../validators/usuarioValidators.js";
@@ -12,12 +13,14 @@ router.get(
   "/estado/:idUsuario",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   amistadController.obtenerEstado
 );
 router.get(
   "/amigos/:idUsuario",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   amistadController.listarAmigos
 );
 router.patch(

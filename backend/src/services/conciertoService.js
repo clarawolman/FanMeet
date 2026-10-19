@@ -13,6 +13,7 @@ import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { conciertoYaPaso } from "../helpers/fechas.js";
 import { env } from "../config/env.js";
+import { sinBloqueados } from "./bloqueoService.js";
 
 async function armarUsuariosResumen(idsUsuario) {
   const idsUnicos = [...new Set(idsUsuario)];
@@ -58,9 +59,13 @@ export const conciertoService = {
       usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto),
     ]);
 
+    // Los grupos muestran a todos sus integrantes (un bloqueo no cambia los
+    // grupos); la lista de fans unidos, no a los que tienen un bloqueo.
     const [grupos, usuariosBase, amistades] = await Promise.all([
       Promise.all(gruposCrudos.map(armarGrupoConUsuarios)),
-      armarUsuariosResumen(relacionesConcierto.map((r) => r.id_usuario)),
+      armarUsuariosResumen(relacionesConcierto.map((r) => r.id_usuario)).then((filas) =>
+        sinBloqueados(idUsuarioAutenticado, filas)
+      ),
       amistadRepository.listarDeUsuario(idUsuarioAutenticado),
     ]);
 

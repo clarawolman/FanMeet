@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { usuarioController } from "../controllers/usuarioController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { sinBloqueo } from "../middlewares/sinBloqueo.js";
 import { validate } from "../middlewares/validate.js";
 import { upload } from "../middlewares/upload.js";
 import {
@@ -65,24 +66,28 @@ router.get(
   "/:idUsuario",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   usuarioController.obtenerPerfil
 );
 router.get(
   "/:idUsuario/highlights",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   usuarioController.listarHighlights
 );
 router.get(
   "/:idUsuario/estadisticas",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   usuarioController.obtenerEstadisticas
 );
 router.get(
   "/:idUsuario/generos",
   authMiddleware,
   validate(idUsuarioParamSchema, "params"),
+  sinBloqueo,
   usuarioController.obtenerGenerosDeUsuario
 );
 

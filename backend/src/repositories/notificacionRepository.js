@@ -61,6 +61,19 @@ export const notificacionRepository = {
     return unwrap(resultado, "Error marcando notificaciones como leídas");
   },
 
+  // Al bloquear: las notificaciones de uno sobre el otro (solicitudes,
+  // mensajes privados) se borran, en los dos sentidos.
+  async eliminarEntreUsuarios(idUsuarioA, idUsuarioB, tipos) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .delete()
+      .in("tipo", tipos)
+      .or(
+        `and(id_usuario.eq.${idUsuarioA},id_usuario_relacionado.eq.${idUsuarioB}),and(id_usuario.eq.${idUsuarioB},id_usuario_relacionado.eq.${idUsuarioA})`
+      );
+    unwrap(resultado, "Error eliminando notificaciones");
+  },
+
   async contarNoLeidas(idUsuario) {
     const resultado = await supabaseAdmin
       .from(TABLA)

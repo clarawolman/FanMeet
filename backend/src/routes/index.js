@@ -12,6 +12,7 @@ import lastfmRoutes from "./lastfmRoutes.js";
 import matchingRoutes from "./matchingRoutes.js";
 import chatbotRoutes from "./chatbotRoutes.js";
 import reporteRoutes from "./reporteRoutes.js";
+import bloqueoRoutes from "./bloqueoRoutes.js";
 import backofficeRoutes from "./backofficeRoutes.js";
 
 const router = Router();
@@ -29,6 +30,7 @@ router.use("/lastfm", lastfmRoutes);
 router.use("/matching", matchingRoutes);
 router.use("/chatbot", chatbotRoutes);
 router.use("/reportes", reporteRoutes);
+router.use("/bloqueos", bloqueoRoutes);
 router.use("/backoffice", backofficeRoutes);
 
 export default router;

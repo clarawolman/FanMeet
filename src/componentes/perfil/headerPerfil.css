@@ -169,11 +169,24 @@
 .headerPerfilAccionesAmistad {
   grid-column: 1 / -1;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .headerPerfilAccionesAmistad > * {
   flex: 1;
+}
+
+/* Reportar y Bloquear: en el celular, una fila propia abajo, mitad y mitad. */
+.headerPerfilAccionesAmistad > .headerPerfilAccionesSecundarias {
+  flex: 1 1 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.headerPerfilAccionesSecundarias > * {
+  flex: 1;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {
@@ -202,7 +215,19 @@
   }
 
   .headerPerfilAccionesAmistad > *,
-  .headerPerfilAccionesEdicion > * {
+  .headerPerfilAccionesEdicion > *,
+  .headerPerfilAccionesSecundarias > * {
     flex: 0 0 auto;
+  }
+
+  /* Dos filas angostas a la derecha, para no comerle lugar al nombre. */
+  .headerPerfilAccionesAmistad {
+    max-width: 260px;
+    justify-content: flex-end;
+  }
+
+  .headerPerfilAccionesAmistad > .headerPerfilAccionesSecundarias {
+    flex: 1 1 100%;
+    justify-content: flex-end;
   }
 }

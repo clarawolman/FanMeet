@@ -19,6 +19,7 @@ export default function HeaderPerfil({
   onCerrarSesion,
   onEnviarMensaje,
   onReportar,
+  onBloquear,
 }) {
   const inputFotoRef = useRef(null);
   const [editando, setEditando] = useState(false);
@@ -186,18 +187,35 @@ export default function HeaderPerfil({
                 Mensaje
               </button>
             )}
-            {onReportar && (
-              <button
-                className="headerPerfilReportar"
-                type="button"
-                onClick={onReportar}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M4 22V4" />
-                  <path d="M4 4h12l-2 4 2 4H4" />
-                </svg>
-                Reportar
-              </button>
+            {(onReportar || onBloquear) && (
+              <div className="headerPerfilAccionesSecundarias">
+              {onReportar && (
+                <button
+                  className="headerPerfilReportar"
+                  type="button"
+                  onClick={onReportar}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M4 22V4" />
+                    <path d="M4 4h12l-2 4 2 4H4" />
+                  </svg>
+                  Reportar
+                </button>
+              )}
+              {onBloquear && (
+                <button
+                  className="headerPerfilReportar"
+                  type="button"
+                  onClick={onBloquear}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M5.6 5.6l12.8 12.8" />
+                  </svg>
+                  Bloquear
+                </button>
+              )}
+              </div>
             )}
           </div>
         )}

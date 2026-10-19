@@ -207,7 +207,9 @@ function App() {
       if (pantalla !== "perfilAjeno") setPantallaAntesDePerfil(pantalla);
       setPantalla("perfilAjeno");
     } catch (error) {
+      // No existe, está suspendido o hay un bloqueo entre los dos.
       console.error("Error cargando usuario:", error);
+      mostrarAviso("Este perfil no está disponible.");
     }
   }
 
