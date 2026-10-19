@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Cargando, Conversacion } from "../componentes";
-import { fechaCorta, useCarga } from "../utilidades";
+import { fechaCorta, ordenarPorNombre, useCarga } from "../utilidades";
 
 const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "Mismo día" };
 
@@ -84,7 +84,7 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
           Concierto
           <select value={form.id_concierto} onChange={elegirConcierto} required>
             <option value="">Elegí…</option>
-            {conciertos.map((c) => (
+            {ordenarPorNombre(conciertos).map((c) => (
               <option key={c.id_concierto} value={c.id_concierto}>
                 {c.nombre} — {c.artista?.nombre} ({fechaCorta(c.fecha)})
               </option>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Cargando } from "../componentes";
-import { fechaCorta, useCarga } from "../utilidades";
+import { fechaCorta, ordenarPorNombre, useCarga } from "../utilidades";
 
 const VACIO = {
   nombre: "",
@@ -157,7 +157,7 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
           Estadio
           <select value={form.id_estadio} onChange={cambiar("id_estadio")} required>
             <option value="">Elegí…</option>
-            {catalogo.estadios.map((e) => (
+            {ordenarPorNombre(catalogo.estadios).map((e) => (
               <option key={e.id_estadio} value={e.id_estadio}>
                 {e.nombre} ({e.ciudad})
               </option>
@@ -168,7 +168,7 @@ function FormularioConcierto({ concierto, catalogo, onListo, onCancelar }) {
           Género
           <select value={form.id_estiloMusical} onChange={cambiar("id_estiloMusical")} required>
             <option value="">Elegí…</option>
-            {catalogo.estilos.map((e) => (
+            {ordenarPorNombre(catalogo.estilos).map((e) => (
               <option key={e.id} value={e.id}>
                 {e.nombre}
               </option>

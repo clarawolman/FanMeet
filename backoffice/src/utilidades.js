@@ -44,3 +44,12 @@ export function fechaCorta(valor) {
 export function irA(hash) {
   window.location.hash = hash;
 }
+
+// Para las listas de opciones de los formularios: orden alfabético en
+// español, sin importar mayúsculas ni tildes ("clásica" va antes de "country",
+// no al final como ordena la base).
+export function ordenarPorNombre(lista, nombre = (item) => item.nombre) {
+  return [...lista].sort((a, b) =>
+    String(nombre(a) ?? "").localeCompare(String(nombre(b) ?? ""), "es", { sensitivity: "base" })
+  );
+}
