@@ -11,6 +11,8 @@ import ConfirmacionGrupo from "./confirmacionGrupo";
 import ParticipantesGrupo from "./participantesGrupo";
 import Footer from "../generales/Footer";
 import ModalConfirmacion from "../generales/ModalConfirmacion";
+import ModalConsejosSeguridad from "./ModalConsejosSeguridad";
+import { consejosOcultos } from "../../utils/consejosSeguridad";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { mostrarAviso } from "../../utils/avisos";
 
@@ -33,6 +35,7 @@ function InfoGrupo({
   const [mostrarConfirmarEliminar, setMostrarConfirmarEliminar] =
     useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [mostrarConsejos, setMostrarConsejos] = useState(false);
 
   const esCreador = usuarioActual?.id_usuario === grupo.id_creador;
   const completo = Boolean(grupo.cupo) && (grupo.usuarios || []).length >= grupo.cupo;
@@ -55,6 +58,16 @@ function InfoGrupo({
     setVerificandoConfirmacion(false);
   }
 
+  // Antes de unirse se muestran consejos de seguridad, salvo que la persona
+  // haya marcado "no volver a mostrar".
+  function pedirConfirmacionAsistencia() {
+    if (consejosOcultos()) {
+      confirmarAsistenciaGrupo();
+    } else {
+      setMostrarConsejos(true);
+    }
+  }
+
   async function confirmarAsistenciaGrupo() {
     if (!usuarioActual || !grupo || confirmado) return;
 
@@ -73,6 +86,7 @@ function InfoGrupo({
 
     setConfirmado(true);
     setCargandoConfirmacion(false);
+    setMostrarConsejos(false);
   }
 
   async function confirmarSalirDelGrupo() {
@@ -142,7 +156,7 @@ function InfoGrupo({
 
         {!verificandoConfirmacion && !confirmado && !completo && (
           <ConfirmacionGrupo
-            onConfirmar={confirmarAsistenciaGrupo}
+            onConfirmar={pedirConfirmacionAsistencia}
             cargandoConfirmacion={cargandoConfirmacion}
           />
         )}
@@ -183,6 +197,14 @@ function InfoGrupo({
           </button>
         )}
       </div>
+
+      {mostrarConsejos && (
+        <ModalConsejosSeguridad
+          confirmando={cargandoConfirmacion}
+          onConfirmar={confirmarAsistenciaGrupo}
+          onCancelar={() => setMostrarConsejos(false)}
+        />
+      )}
 
       {mostrarConfirmarSalida && (
         <ModalConfirmacion
