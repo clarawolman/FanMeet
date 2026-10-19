@@ -22,6 +22,7 @@ function InfoGrupo({
   onGrupoEliminado,
   onVerFansConfirmados,
   onAbrirChat,
+  onEditar,
 }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [confirmado, setConfirmado] = useState(false);
@@ -154,6 +155,12 @@ function InfoGrupo({
             onClick={() => setMostrarConfirmarSalida(true)}
           >
             Salir del grupo
+          </button>
+        )}
+
+        {esCreador && onEditar && (
+          <button className="botonEditarGrupo" type="button" onClick={onEditar}>
+            Editar grupo
           </button>
         )}
 

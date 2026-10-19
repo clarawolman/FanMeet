@@ -12,6 +12,13 @@ export const crearGrupoSchema = z.object({
   foto: z.string().optional(),
 });
 
+// El creador edita su grupo: solo los campos que cambiaron. El concierto no
+// se puede cambiar (los integrantes se sumaron para ese show).
+export const actualizarGrupoSchema = crearGrupoSchema
+  .omit({ id_concierto: true })
+  .partial()
+  .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
+
 export const idGrupoParamSchema = z.object({
   idGrupo: z.coerce.number().int().positive("id de grupo inválido"),
 });

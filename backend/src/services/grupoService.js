@@ -123,6 +123,23 @@ export const grupoService = {
     return { ok: true };
   },
 
+  async actualizar(idUsuarioAutenticado, idGrupo, cambios) {
+    const grupo = await grupoRepository.obtenerPorId(idGrupo);
+    if (!grupo) throw ApiError.notFound("El grupo no existe");
+
+    if (grupo.id_creador !== idUsuarioAutenticado) {
+      throw ApiError.forbidden("Solo el creador puede editar el grupo");
+    }
+
+    const textos = [cambios.nombre, cambios.descripcion, cambios.ubicacion].filter(Boolean).join(" ");
+    if (contieneMalasPalabras(textos)) {
+      throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
+    }
+
+    const actualizado = await grupoRepository.actualizar(idGrupo, cambios);
+    return toGrupo(actualizado, { usuarios: await armarUsuariosDeGrupo(idGrupo) });
+  },
+
   // Autorizacion real en el backend: antes esto dependia solo de ocultar
   // el boton "Eliminar grupo" en infoGrupo.jsx (esCreador calculado en
   // cliente) y de que existiera la RLS de eliminar_grupo.sql.

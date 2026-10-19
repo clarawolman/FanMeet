@@ -400,6 +400,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
     pantalla !== "misEventos" &&
     pantalla !== "misGrupos" &&
     pantalla !== "crearGrupo" &&
+    pantalla !== "editarGrupo" &&
     pantalla !== "infoGrupo" &&
     pantalla !== "concierto" &&
     pantalla !== "perfil" &&
@@ -608,6 +609,20 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           }}
           onVerFansConfirmados={() => setPantalla("fansConfirmadosGrupo")}
           onAbrirChat={() => manejarAbrirChatGrupo(grupoSeleccionado.id_grupo)}
+          onEditar={() => setPantalla("editarGrupo")}
+        />
+      )}
+
+      {pantalla === "editarGrupo" && grupoSeleccionado && concierto && usuarioActual && (
+        <CrearGrupo
+          concierto={concierto}
+          grupo={grupoSeleccionado}
+          onVolver={() => setPantalla("infoGrupo")}
+          onGrupoCreado={async (grupoActualizado) => {
+            setGrupoSeleccionado(grupoActualizado);
+            await recargarDatos();
+            setPantalla("infoGrupo");
+          }}
         />
       )}
 

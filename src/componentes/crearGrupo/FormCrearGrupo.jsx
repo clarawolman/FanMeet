@@ -6,6 +6,7 @@ function FormCrearGrupo({
   crearGrupo,
   guardando,
   errorTexto,
+  editando = false,
 }) {
   function actualizarCampo(campo, valor) {
     setFormulario({
@@ -16,7 +17,7 @@ function FormCrearGrupo({
 
   return (
     <main className="crearGrupoContenido">
-      <h1 className="crearGrupoTitulo">Nuevo grupo</h1>
+      <h1 className="crearGrupoTitulo">{editando ? "Editar grupo" : "Nuevo grupo"}</h1>
 
       <form className="crearGrupoForm" onSubmit={crearGrupo}>
         <label className="crearGrupoLabel">
@@ -153,7 +154,9 @@ function FormCrearGrupo({
         {errorTexto && <p className="crearGrupoError">{errorTexto}</p>}
 
         <button className="crearGrupoBoton" type="submit" disabled={guardando}>
-          {guardando ? "Creando…" : "Crear grupo"}
+          {guardando
+            ? editando ? "Guardando…" : "Creando…"
+            : editando ? "Guardar cambios" : "Crear grupo"}
         </button>
       </form>
     </main>

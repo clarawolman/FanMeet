@@ -2,7 +2,7 @@ import { Router } from "express";
 import { grupoController } from "../controllers/grupoController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validate.js";
-import { crearGrupoSchema, idGrupoParamSchema } from "../validators/grupoValidators.js";
+import { crearGrupoSchema, actualizarGrupoSchema, idGrupoParamSchema } from "../validators/grupoValidators.js";
 
 const router = Router();
 
@@ -25,6 +25,13 @@ router.delete(
   authMiddleware,
   validate(idGrupoParamSchema, "params"),
   grupoController.salir
+);
+router.patch(
+  "/:idGrupo",
+  authMiddleware,
+  validate(idGrupoParamSchema, "params"),
+  validate(actualizarGrupoSchema),
+  grupoController.actualizar
 );
 router.delete(
   "/:idGrupo",

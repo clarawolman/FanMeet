@@ -6,6 +6,7 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
     obtenerPorId: vi.fn(),
     listarPorConcierto: vi.fn(),
     eliminar: vi.fn(),
+    actualizar: vi.fn(),
   },
   grupoUsuarioRepository: {
     existeRelacion: vi.fn(),
@@ -179,5 +180,37 @@ describe("grupoService.salir", () => {
   it("solo borra la relación del propio usuario autenticado", async () => {
     await grupoService.salir(OTRO_USUARIO, GRUPO.id_grupo);
     expect(grupoUsuarioRepository.eliminarRelacion).toHaveBeenCalledWith(OTRO_USUARIO, GRUPO.id_grupo);
+  });
+});
+
+describe("grupoService.actualizar", () => {
+  beforeEach(() => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO });
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ ...GRUPO, ...cambios }));
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+  });
+
+  it("el creador puede cambiar los datos de su grupo", async () => {
+    const grupo = await grupoService.actualizar(CREADOR, 1, { hora: "19:30", ubicacion: "Parque Los Andes" });
+
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(1, { hora: "19:30", ubicacion: "Parque Los Andes" });
+    expect(grupo).toMatchObject({ id_grupo: 1, hora: "19:30", usuarios: [] });
+  });
+
+  it("rechaza con 403 si no es el creador", async () => {
+    await expect(grupoService.actualizar(OTRO_USUARIO, 1, { nombre: "Mío" })).rejects.toMatchObject({ status: 403 });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 404 si el grupo no existe", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(null);
+    await expect(grupoService.actualizar(CREADOR, 1, { nombre: "X" })).rejects.toMatchObject({ status: 404 });
+  });
+
+  it("pasa el nombre nuevo por el filtro de malas palabras", async () => {
+    await expect(grupoService.actualizar(CREADOR, 1, { nombre: "previa de mierda" })).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(grupoRepository.actualizar).not.toHaveBeenCalled();
   });
 });

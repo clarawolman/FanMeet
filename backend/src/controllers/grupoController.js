@@ -27,6 +27,11 @@ export const grupoController = {
     res.json(resultado);
   }),
 
+  actualizar: asyncHandler(async (req, res) => {
+    const resultado = await grupoService.actualizar(req.user.id, req.params.idGrupo, req.body);
+    res.json(resultado);
+  }),
+
   eliminar: asyncHandler(async (req, res) => {
     const resultado = await grupoService.eliminar(req.user.id, req.params.idGrupo);
     res.json(resultado);

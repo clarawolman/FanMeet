@@ -13,32 +13,37 @@ const IMAGEN_GRUPO_DEFAULT =
 const MENSAJE_ERROR_GENERICO =
   "No se pudo crear el grupo. Revisá los datos e intentá otra vez.";
 
-function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
+const CAMPOS_DE_TEXTO = ["nombre", "ubicacion", "fecha", "hora", "descripcion", "categoria"];
+
+function formularioInicial(grupo) {
+  return {
+    nombre: grupo?.nombre || "",
+    ubicacion: grupo?.ubicacion || "",
+    fecha: grupo?.fecha ? String(grupo.fecha).slice(0, 10) : "",
+    // <input type="time"> quiere "19:00", la base guarda "19:00:00".
+    hora: grupo?.hora ? String(grupo.hora).slice(0, 5) : "",
+    descripcion: grupo?.descripcion || "",
+    categoria: grupo?.categoria || "pre",
+    imagenArchivo: null,
+    imagenPreview: grupo?.foto || "",
+  };
+}
+
+// Con `grupo` edita ese grupo (solo lo ve su creador); sin él crea uno nuevo.
+function CrearGrupo({ concierto, grupo, onVolver, onGrupoCreado }) {
+  const editando = Boolean(grupo);
   const { usuarioActual } = useContext(UsuarioContext);
   const idUsuarioActual = usuarioActual?.id_usuario;
   const [mostrarModal, setMostrarModal] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [errorTexto, setErrorTexto] = useState("");
 
-  const [formulario, setFormulario] = useState({
-    nombre: "",
-    ubicacion: "",
-    fecha: "",
-    hora: "",
-    descripcion: "",
-    categoria: "pre",
-    imagenArchivo: null,
-    imagenPreview: "",
-  });
+  const [original] = useState(() => formularioInicial(grupo));
+  const [formulario, setFormulario] = useState(original);
 
   function hayCambios() {
     return (
-      formulario.nombre.trim() !== "" ||
-      formulario.ubicacion.trim() !== "" ||
-      formulario.fecha.trim() !== "" ||
-      formulario.hora.trim() !== "" ||
-      formulario.descripcion.trim() !== "" ||
-      formulario.categoria !== "pre" ||
+      CAMPOS_DE_TEXTO.some((campo) => formulario[campo].trim() !== original[campo].trim()) ||
       formulario.imagenArchivo !== null
     );
   }
@@ -116,6 +121,11 @@ function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
 
     setGuardando(true);
 
+    if (editando) {
+      await guardarCambios();
+      return;
+    }
+
     try {
       const imagenUrl = await obtenerImagenGrupo();
 
@@ -142,9 +152,37 @@ function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
     }
   }
 
+  // Solo se mandan los campos que cambiaron (y la foto si eligió una nueva).
+  async function guardarCambios() {
+    const cambios = {};
+    for (const campo of CAMPOS_DE_TEXTO) {
+      const valor = formulario[campo].trim();
+      if (valor !== original[campo].trim()) cambios[campo] = valor;
+    }
+
+    try {
+      if (formulario.imagenArchivo) {
+        cambios.foto = await convertirImagenABase64(formulario.imagenArchivo);
+      }
+
+      if (Object.keys(cambios).length === 0) {
+        setGuardando(false);
+        onVolver();
+        return;
+      }
+
+      const grupoActualizado = await gruposService.actualizar(grupo.id_grupo, cambios);
+      setGuardando(false);
+      onGrupoCreado(grupoActualizado);
+    } catch (error) {
+      setErrorTexto(error?.message || "No se pudo guardar el grupo. Intentá otra vez.");
+      setGuardando(false);
+    }
+  }
+
   return (
     <div className="crearGrupoPantalla">
-      <HeaderCrearGrupo onVolver={manejarVolver} />
+      <HeaderCrearGrupo onVolver={manejarVolver} titulo={editando ? "Editar sub-evento" : undefined} />
 
       <main className="crearGrupoMain">
         <FormCrearGrupo
@@ -153,6 +191,7 @@ function CrearGrupo({ concierto, onVolver, onGrupoCreado }) {
           crearGrupo={crearGrupo}
           guardando={guardando}
           errorTexto={errorTexto}
+          editando={editando}
         />
       </main>
 

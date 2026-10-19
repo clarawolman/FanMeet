@@ -52,6 +52,26 @@
   background: var(--fm-bg-soft);
 }
 
+.botonEditarGrupo {
+  margin: 10px 16px 0;
+  padding: 13px;
+  background: transparent;
+  color: var(--fm-ink);
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  font-family: var(--fm-font-body);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.botonEditarGrupo:hover {
+  background: var(--fm-bg-soft);
+}
+
 .botonEliminarGrupo {
   margin: 10px 16px 0;
   padding: 13px;
@@ -90,6 +110,10 @@
   }
 
   .botonSalirGrupo {
+    margin: 10px 0 0;
+  }
+
+  .botonEditarGrupo {
     margin: 10px 0 0;
   }
 
