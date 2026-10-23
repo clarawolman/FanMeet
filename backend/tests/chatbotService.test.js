@@ -60,6 +60,10 @@ vi.mock("../src/services/grupoService.js", async () => {
   };
 });
 
+vi.mock("../src/services/conciertoService.js", () => ({
+  conciertoService: { unirsePorCodigo: vi.fn() },
+}));
+
 vi.mock("../src/repositories/bloqueoRepository.js", () => ({
   bloqueoRepository: { idsConBloqueo: vi.fn() },
 }));
@@ -74,6 +78,7 @@ const { usuarioRepository } = await import("../src/repositories/usuarioRepositor
 const { artistaFavoritoRepository } = await import("../src/repositories/artistaFavoritoRepository.js");
 const { usuarioService } = await import("../src/services/usuarioService.js");
 const { grupoService } = await import("../src/services/grupoService.js");
+const { conciertoService } = await import("../src/services/conciertoService.js");
 const { bloqueoRepository } = await import("../src/repositories/bloqueoRepository.js");
 const { chatbotService } = await import("../src/services/chatbotService.js");
 
@@ -215,15 +220,36 @@ describe("chatbotService.enviar", () => {
   });
 
   it("solo a los gpt-oss les pide pensar poco (los demás modelos lo rechazan)", async () => {
-    fetchFalso.mockResolvedValueOnce({ ok: false, status: 503, text: async () => "" });
+    fetchFalso
+      .mockResolvedValueOnce({ ok: false, status: 503, text: async () => "" })
+      .mockResolvedValueOnce({ ok: false, status: 503, text: async () => "" });
 
     await chatbotService.enviar(YO, "hola");
 
     const cuerpo = (n) => JSON.parse(fetchFalso.mock.calls[n][1].body);
     expect(cuerpo(0)).toMatchObject({ model: "openai/gpt-oss-120b", reasoning_effort: "low" });
-    expect(cuerpo(1).model).toBe("llama-3.3-70b-versatile");
-    expect(cuerpo(1)).not.toHaveProperty("reasoning_effort");
-    expect(cuerpo(1).tools.map((h) => h.function.name)).toContain("mis_grupos_y_proximos_eventos");
+    expect(cuerpo(2).model).toBe("qwen/qwen3.8-27b");
+    expect(cuerpo(2)).not.toHaveProperty("reasoning_effort");
+    expect(cuerpo(2).tools.map((h) => h.function.name)).toContain("mis_grupos_y_proximos_eventos");
+  });
+
+  it("si todos están sin cuota por unos segundos, espera lo que dice Groq y reintenta", async () => {
+    const sinCuota = { ok: false, status: 429, text: async () => "Please try again in 0.05s" };
+    fetchFalso.mockResolvedValueOnce(sinCuota).mockResolvedValueOnce(sinCuota).mockResolvedValueOnce(sinCuota);
+
+    const { respuesta } = await chatbotService.enviar(YO, "hola");
+
+    expect(fetchFalso).toHaveBeenCalledTimes(4);
+    expect(respuesta.contenido).toBe("Hay una previa 🎸");
+  });
+
+  it("si un modelo ya no existe (404) prueba con otro", async () => {
+    fetchFalso.mockResolvedValueOnce({ ok: false, status: 404, text: async () => '{"error":{"code":"model_not_found"}}' });
+
+    const { respuesta } = await chatbotService.enviar(YO, "hola");
+
+    expect(fetchFalso).toHaveBeenCalledTimes(2);
+    expect(respuesta.contenido).toBe("Hay una previa 🎸");
   });
 
   it("con la key inválida avisa que el chatbot está mal configurado", async () => {
@@ -343,34 +369,46 @@ describe("herramientas de Fani", () => {
     ]);
   });
 
-  it("proponer_unirse_a_grupo no suma al usuario: guarda la propuesta en la respuesta de Fani", async () => {
-    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 10, id_concierto: 1, nombre: "Previa con lugar", cupo: 5, fecha: "2099-01-01", id_creador: "ana" });
+  it("mostrar_grupos no suma al usuario: guarda una tarjeta por grupo en la respuesta de Fani", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 10, id_concierto: 1, nombre: "Previa con lugar", categoria: "pre", cupo: 5, fecha: "2099-01-01", hora: "19:30:00", ubicacion: "Bar X", id_creador: "ana" });
     usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
     grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
     grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "ana" }]);
     conciertoRepository.obtenerPorId.mockResolvedValue({ id_concierto: 1, nombre: "Unido Fest", fecha: "2099-01-01" });
     respuestaGroq
-      .mockReturnValueOnce(pideHerramienta("proponer_unirse_a_grupo", { id_grupo: 10 }))
-      .mockReturnValueOnce(responde("¿Te sumo a Previa con lugar? Tocá Confirmar"));
+      .mockReturnValueOnce(pideHerramienta("mostrar_grupos", { ids_grupo: [10] }))
+      .mockReturnValueOnce(responde("Este te puede gustar, tocá Unirme"));
 
     const { respuesta } = await chatbotService.enviar(YO, "sumame a la previa");
 
     expect(grupoService.unirse).not.toHaveBeenCalled();
     expect(respuesta.accion).toEqual({
-      tipo: "unirse_grupo",
+      tipo: "tarjetas",
       estado: "pendiente",
-      id_grupo: 10,
-      grupo: "Previa con lugar",
-      concierto: "Unido Fest",
+      conciertos: [],
+      grupos: [
+        {
+          id_grupo: 10,
+          nombre: "Previa con lugar",
+          categoria: "pre",
+          concierto: "Unido Fest",
+          fecha: "2099-01-01",
+          hora: "19:30",
+          punto_de_encuentro: "Bar X",
+          integrantes: 1,
+          cupo: 5,
+          unido: false,
+        },
+      ],
     });
     expect(respuestaDeHerramienta(1).response.ok).toBe(true);
   });
 
-  it("proponer_unirse_a_grupo de un concierto al que no está unido no deja propuesta", async () => {
+  it("mostrar_grupos de un concierto al que no está unido no deja tarjetas", async () => {
     grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 20, id_concierto: 2, nombre: "Grupo secreto ajeno", id_creador: "ana" });
     usuariosConciertosRepository.existeRelacion.mockResolvedValue(null);
     respuestaGroq
-      .mockReturnValueOnce(pideHerramienta("proponer_unirse_a_grupo", { id_grupo: 20 }))
+      .mockReturnValueOnce(pideHerramienta("mostrar_grupos", { ids_grupo: [20] }))
       .mockReturnValueOnce(responde("No estás en ese concierto"));
 
     const { respuesta } = await chatbotService.enviar(YO, "sumame al 20");
@@ -382,7 +420,7 @@ describe("herramientas de Fani", () => {
   it("si el grupo lo creó alguien con bloqueo, responde que no existe", async () => {
     grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 13, id_concierto: 1, nombre: "Grupo del bloqueado", id_creador: "malo" });
     respuestaGroq
-      .mockReturnValueOnce(pideHerramienta("proponer_unirse_a_grupo", { id_grupo: 13 }))
+      .mockReturnValueOnce(pideHerramienta("mostrar_grupos", { ids_grupo: [13] }))
       .mockReturnValueOnce(responde("No encontré ese grupo"));
 
     const { respuesta } = await chatbotService.enviar(YO, "sumame al 13");
@@ -463,5 +501,185 @@ describe("chatbotService.resolverAccion", () => {
     mensajeChatbotRepository.obtenerDeUsuario.mockResolvedValue(null);
 
     await expect(chatbotService.resolverAccion(YO, 99, "confirmar")).rejects.toMatchObject({ status: 404 });
+  });
+});
+
+describe("chatbotService.resolverAccion con tarjetas de grupos", () => {
+  const tarjeta = (id, nombre) => ({ id_grupo: id, nombre, categoria: "pre", concierto: "Unido Fest", integrantes: 1, cupo: 5, unido: false });
+  const ACCION = { tipo: "tarjetas", estado: "pendiente", grupos: [tarjeta(10, "Previa"), tarjeta(11, "After")], conciertos: [] };
+
+  beforeEach(() => {
+    mensajeChatbotRepository.obtenerDeUsuario.mockResolvedValue({ id_mensaje: 5, id_usuario: YO, rol: "assistant", contenido: "Mirá", accion: ACCION });
+    mensajeChatbotRepository.cambiarAccion.mockImplementation(async (id, _estado, accion) => ({ id_mensaje: id, id_usuario: YO, rol: "assistant", contenido: "Mirá", accion }));
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 10, id_concierto: 1, nombre: "Previa", fecha: "2099-01-01", id_creador: "ana" });
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    conciertoRepository.obtenerPorId.mockResolvedValue({ id_concierto: 1, nombre: "Unido Fest", fecha: "2099-01-01" });
+    grupoService.unirse.mockResolvedValue({ ok: true, yaConfirmado: false });
+  });
+
+  it("al tocar Unirme lo suma a ese grupo y las otras tarjetas siguen disponibles", async () => {
+    const { mensaje, respuesta } = await chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 10 });
+
+    expect(mensajeChatbotRepository.cambiarAccion).toHaveBeenNthCalledWith(1, 5, "pendiente", { ...ACCION, estado: "uniendo" });
+    expect(grupoService.unirse).toHaveBeenCalledWith(YO, 10);
+    expect(mensaje.accion.estado).toBe("pendiente");
+    expect(mensaje.accion.grupos.map((g) => g.unido)).toEqual([true, false]);
+    expect(mensaje.accion.grupos[0].integrantes).toBe(2);
+    expect(respuesta.contenido).toContain('ya estás en "Previa"');
+  });
+
+  it("cuando se sumó a todas las tarjetas queda hecha", async () => {
+    mensajeChatbotRepository.obtenerDeUsuario.mockResolvedValue({
+      id_mensaje: 5,
+      accion: { ...ACCION, grupos: [{ ...tarjeta(10, "Previa"), unido: true }, tarjeta(11, "After")] },
+    });
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 11, id_concierto: 1, nombre: "After", fecha: "2099-01-01", id_creador: "ana" });
+
+    const { mensaje } = await chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 11 });
+
+    expect(mensaje.accion.estado).toBe("hecha");
+  });
+
+  it("si ya está en ese grupo de la tarjeta no lo suma de nuevo", async () => {
+    mensajeChatbotRepository.obtenerDeUsuario.mockResolvedValue({
+      id_mensaje: 5,
+      accion: { ...ACCION, grupos: [{ ...tarjeta(10, "Previa"), unido: true }] },
+    });
+
+    await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 10 })).rejects.toMatchObject({ status: 409 });
+    expect(grupoService.unirse).not.toHaveBeenCalled();
+  });
+
+  it("si otro toque está sumándolo, no lo suma dos veces", async () => {
+    mensajeChatbotRepository.cambiarAccion.mockResolvedValue(null);
+
+    await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 10 })).rejects.toMatchObject({ status: 409 });
+    expect(grupoService.unirse).not.toHaveBeenCalled();
+  });
+
+  it("si el grupo se llenó, la tarjeta vuelve a quedar como estaba", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 10, id_concierto: 1, nombre: "Previa", cupo: 1, fecha: "2099-01-01", id_creador: "ana" });
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([{ id_usuario: "ana" }]);
+
+    await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 10 })).rejects.toMatchObject({ status: 409 });
+    expect(grupoService.unirse).not.toHaveBeenCalled();
+    expect(mensajeChatbotRepository.cambiarAccion).toHaveBeenLastCalledWith(5, "uniendo", ACCION);
+  });
+
+  it("un grupo que no está en las tarjetas da 404", async () => {
+    await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idGrupo: 99 })).rejects.toMatchObject({ status: 404 });
+    expect(grupoService.unirse).not.toHaveBeenCalled();
+  });
+
+  it("le cuenta a la IA a qué tarjetas se sumó", async () => {
+    mensajeChatbotRepository.listarDeUsuario.mockResolvedValue([
+      { id_mensaje: 1, rol: "user", contenido: "grupos?" },
+      { id_mensaje: 2, rol: "assistant", contenido: "Mirá", accion: { ...ACCION, grupos: [{ ...tarjeta(10, "Previa"), unido: true }, tarjeta(11, "After")] } },
+      { id_mensaje: 3, rol: "user", contenido: "¿y ahora?" },
+    ]);
+
+    await chatbotService.enviar(YO, "¿y ahora?");
+
+    expect(conversacionEnviada()[1].content).toContain('[tarjetas con botón Unirme: "Previa" (se unió), "After" (no se unió)]');
+  });
+});
+
+describe("tarjetas de conciertos", () => {
+  const CONCIERTO = {
+    id_concierto: 3,
+    nombre: "Duki en River",
+    fecha: "2099-11-20T21:00:00",
+    artista: { nombre: "Duki" },
+    estadio: { nombre: "River", ciudad: "CABA" },
+    usuarios_conciertos: [{ count: 40 }],
+  };
+
+  it("mostrar_conciertos deja una tarjeta por concierto, sin el código", async () => {
+    conciertoRepository.listarTodos.mockResolvedValue([CONCIERTO, { ...CONCIERTO, id_concierto: 4, fecha: "2000-01-01" }]);
+    usuariosConciertosRepository.listarConciertosPorUsuario.mockResolvedValue([]);
+    respuestaGroq
+      .mockReturnValueOnce(pideHerramienta("mostrar_conciertos", { ids_concierto: [3, 4] }))
+      .mockReturnValueOnce(responde("Escribí el código y tocá Unirme"));
+
+    const { respuesta } = await chatbotService.enviar(YO, "quiero ir a Duki");
+
+    expect(conciertoService.unirsePorCodigo).not.toHaveBeenCalled();
+    expect(respuesta.accion).toEqual({
+      tipo: "tarjetas",
+      estado: "pendiente",
+      grupos: [],
+      conciertos: [
+        {
+          id_concierto: 3,
+          nombre: "Duki en River",
+          artista: "Duki",
+          fecha: "2099-11-20",
+          hora: "21:00",
+          estadio: "River",
+          ciudad: "CABA",
+          imagen: "",
+          fans_unidos: 40,
+          unido: false,
+        },
+      ],
+    });
+    expect(respuestaDeHerramienta(1).response.no_se_pudieron_mostrar).toEqual([
+      { id_concierto: 4, error: "Ese concierto ya pasó" },
+    ]);
+  });
+
+  it("si en la misma respuesta muestra grupos y conciertos, van todas las tarjetas juntas", async () => {
+    conciertoRepository.listarTodos.mockResolvedValue([CONCIERTO]);
+    usuariosConciertosRepository.listarConciertosPorUsuario.mockResolvedValue([]);
+    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 10, id_concierto: 1, nombre: "Previa", fecha: "2099-01-01", id_creador: "ana" });
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    grupoUsuarioRepository.listarUsuariosPorGrupo.mockResolvedValue([]);
+    conciertoRepository.obtenerPorId.mockResolvedValue({ id_concierto: 1, nombre: "Unido Fest", fecha: "2099-01-01" });
+    respuestaGroq
+      .mockReturnValueOnce(pideHerramienta("mostrar_conciertos", { ids_concierto: [3] }))
+      .mockReturnValueOnce(pideHerramienta("mostrar_grupos", { ids_grupo: [10] }))
+      .mockReturnValueOnce(responde("Mirá"));
+
+    const { respuesta } = await chatbotService.enviar(YO, "¿qué hay?");
+
+    expect(respuesta.accion.conciertos.map((c) => c.id_concierto)).toEqual([3]);
+    expect(respuesta.accion.grupos.map((g) => g.id_grupo)).toEqual([10]);
+  });
+
+  describe("unirse desde la tarjeta", () => {
+    const tarjeta = { id_concierto: 3, nombre: "Duki en River", fans_unidos: 40, unido: false };
+    const ACCION = { tipo: "tarjetas", estado: "pendiente", grupos: [], conciertos: [tarjeta] };
+
+    beforeEach(() => {
+      mensajeChatbotRepository.obtenerDeUsuario.mockResolvedValue({ id_mensaje: 5, accion: ACCION });
+      mensajeChatbotRepository.cambiarAccion.mockImplementation(async (id, _estado, accion) => ({ id_mensaje: id, rol: "assistant", contenido: "Mirá", accion }));
+      conciertoService.unirsePorCodigo.mockResolvedValue({ ok: true, yaUnido: false });
+    });
+
+    it("con el código lo une al concierto y la tarjeta queda unida", async () => {
+      const { mensaje, respuesta } = await chatbotService.resolverAccion(YO, 5, "confirmar", { idConcierto: 3, codigo: "ABC" });
+
+      expect(conciertoService.unirsePorCodigo).toHaveBeenCalledWith(YO, 3, "ABC");
+      expect(mensaje.accion.conciertos[0]).toMatchObject({ unido: true, fans_unidos: 41 });
+      expect(mensaje.accion.estado).toBe("hecha");
+      expect(respuesta.contenido).toContain('ya estás en "Duki en River"');
+    });
+
+    it("sin código no intenta unirlo", async () => {
+      await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idConcierto: 3 })).rejects.toMatchObject({ status: 400 });
+      expect(conciertoService.unirsePorCodigo).not.toHaveBeenCalled();
+    });
+
+    it("con el código mal, la tarjeta vuelve a quedar como estaba", async () => {
+      const { ApiError } = await import("../src/helpers/ApiError.js");
+      conciertoService.unirsePorCodigo.mockRejectedValue(ApiError.badRequest("Código incorrecto"));
+
+      await expect(chatbotService.resolverAccion(YO, 5, "confirmar", { idConcierto: 3, codigo: "mal" })).rejects.toMatchObject({
+        message: "Código incorrecto",
+      });
+      expect(mensajeChatbotRepository.cambiarAccion).toHaveBeenLastCalledWith(5, "uniendo", ACCION);
+    });
   });
 });

@@ -13,8 +13,13 @@ import { perteneceAlConciertoDelGrupo } from "./grupoService.js";
 // resuelve acá, no en el prompt: solo se ven grupos de conciertos a los que
 // el usuario está unido, nunca datos de otros usuarios (solo cuántos son) y
 // no aparecen grupos creados por alguien con quien hay un bloqueo.
-// Fani no hace acciones: "proponer_unirse_a_grupo" solo deja una propuesta
-// que el usuario confirma con un botón (ver chatbotService.resolverAccion).
+// Fani no hace acciones: "mostrar_grupos" y "mostrar_conciertos" solo dejan
+// tarjetas con un botón Unirme que toca el usuario (ver
+// chatbotService.resolverAccion). Para un concierto, la tarjeta le pide el
+// código de acceso: Fani nunca lo sabe.
+
+// Cuántas tarjetas de grupos (y cuántas de conciertos) puede mostrar Fani en un mensaje.
+const MAXIMO_TARJETAS = 3;
 
 export const NOMBRES_CATEGORIA_GRUPO = {
   pre: "Previa (antes del concierto)",
@@ -50,15 +55,37 @@ export const DECLARACIONES = [
       "Devuelve los próximos conciertos a los que el usuario está unido y los grupos en los que está, con fecha, hora y punto de encuentro.",
   },
   {
-    name: "proponer_unirse_a_grupo",
+    name: "mostrar_grupos",
     description:
-      "Le muestra al usuario los botones Confirmar y Cancelar para sumarse a un grupo. NO lo suma: se suma recién cuando él toca Confirmar. Usala solo cuando el usuario pidió sumarse a un grupo concreto.",
+      "Muestra debajo de tu mensaje una tarjeta por grupo (tipo, concierto, fecha, punto de encuentro, lugares) con un botón Unirme. NO suma al usuario: se suma recién cuando él toca Unirme. Usala cada vez que le recomiendes grupos o te pida sumarse a uno.",
     parameters: {
       type: "object",
       properties: {
-        id_grupo: { type: "integer", description: "id_grupo del grupo, sacado de los datos o de una búsqueda." },
+        ids_grupo: {
+          type: "array",
+          items: { type: "integer" },
+          maxItems: MAXIMO_TARJETAS,
+          description: `id_grupo de los grupos (de los datos o de una búsqueda), hasta ${MAXIMO_TARJETAS}.`,
+        },
       },
-      required: ["id_grupo"],
+      required: ["ids_grupo"],
+    },
+  },
+  {
+    name: "mostrar_conciertos",
+    description:
+      "Muestra debajo de tu mensaje una tarjeta por concierto (artista, fecha, estadio) con un campo para el código de acceso y un botón Unirme. NO suma al usuario: se suma recién cuando escribe el código y toca Unirme. Usala cada vez que le recomiendes conciertos o te pida unirse a uno.",
+    parameters: {
+      type: "object",
+      properties: {
+        ids_concierto: {
+          type: "array",
+          items: { type: "integer" },
+          maxItems: MAXIMO_TARJETAS,
+          description: `id_concierto de los conciertos (de los datos), hasta ${MAXIMO_TARJETAS}.`,
+        },
+      },
+      required: ["ids_concierto"],
     },
   },
 ];
@@ -199,27 +226,105 @@ export async function validarUnionAGrupo(idUsuario, idGrupo) {
   return { grupo, concierto };
 }
 
-async function proponerUnirseAGrupo(idUsuario, { id_grupo }) {
-  try {
-    const { grupo, concierto } = await validarUnionAGrupo(idUsuario, Number(id_grupo));
-    return {
-      respuesta: {
-        ok: true,
-        aviso:
-          "Se le mostraron al usuario los botones Confirmar y Cancelar. Todavía NO está en el grupo: decile que toque Confirmar si quiere sumarse.",
-      },
-      accion: {
-        tipo: "unirse_grupo",
-        estado: "pendiente",
-        id_grupo: grupo.id_grupo,
-        grupo: grupo.nombre,
-        concierto: concierto?.nombre || "",
-      },
-    };
-  } catch (error) {
-    if (error instanceof ApiError) return { respuesta: { error: error.message } };
-    throw error;
+// Los ids que pidió la IA, sin repetir y como mucho MAXIMO_TARJETAS.
+function idsPedidos(ids) {
+  return [...new Set((Array.isArray(ids) ? ids : [ids]).map(Number))]
+    .filter((id) => Number.isInteger(id) && id > 0)
+    .slice(0, MAXIMO_TARJETAS);
+}
+
+// Lo que muestra la tarjeta del grupo en el chat con Fani.
+async function tarjetaDeGrupo(idUsuario, idGrupo) {
+  const { grupo, concierto } = await validarUnionAGrupo(idUsuario, idGrupo);
+  const integrantes = await grupoUsuarioRepository.listarUsuariosPorGrupo(idGrupo);
+  return {
+    id_grupo: grupo.id_grupo,
+    nombre: grupo.nombre,
+    categoria: grupo.categoria,
+    concierto: concierto?.nombre || "",
+    fecha: grupo.fecha ? String(grupo.fecha).slice(0, 10) : fechaDe(concierto ?? {}),
+    hora: grupo.hora ? horaGrupo(grupo) : null,
+    punto_de_encuentro: grupo.ubicacion || "",
+    integrantes: integrantes.length,
+    cupo: grupo.cupo || null,
+    unido: false,
+  };
+}
+
+async function mostrarGrupos(idUsuario, { ids_grupo } = {}) {
+  const ids = idsPedidos(ids_grupo);
+
+  const tarjetas = [];
+  const errores = [];
+  for (const id of ids) {
+    try {
+      tarjetas.push(await tarjetaDeGrupo(idUsuario, id));
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error;
+      errores.push({ id_grupo: id, error: error.message });
+    }
   }
+
+  if (tarjetas.length === 0) {
+    return { respuesta: { error: errores[0]?.error || "No hay grupos para mostrar", errores } };
+  }
+  return {
+    respuesta: {
+      ok: true,
+      mostrados: tarjetas.map((t) => t.nombre),
+      ...(errores.length > 0 ? { no_se_pudieron_mostrar: errores } : {}),
+      aviso:
+        "El usuario ya ve una tarjeta por grupo con todos los datos y un botón Unirme. Todavía NO está en ningún grupo. No repitas los datos de las tarjetas: respondé corto y decile que toque Unirme en el que quiera.",
+    },
+    accion: { tipo: "tarjetas", estado: "pendiente", grupos: tarjetas, conciertos: [] },
+  };
+}
+
+// Conciertos de la app que todavía no pasaron. Los ya unidos también se
+// muestran (con "Ver concierto" en vez de Unirme).
+async function mostrarConciertos(idUsuario, { ids_concierto } = {}) {
+  const ids = idsPedidos(ids_concierto);
+  const [conciertos, relaciones] = await Promise.all([
+    conciertoRepository.listarTodos(),
+    usuariosConciertosRepository.listarConciertosPorUsuario(idUsuario),
+  ]);
+  const unidos = new Set(relaciones.map((r) => r.id_concierto));
+
+  const tarjetas = [];
+  const errores = [];
+  for (const id of ids) {
+    const c = conciertos.find((x) => x.id_concierto === id);
+    if (!c) errores.push({ id_concierto: id, error: "Ese concierto no existe" });
+    else if (conciertoYaPaso(c.fecha)) errores.push({ id_concierto: id, error: "Ese concierto ya pasó" });
+    else {
+      tarjetas.push({
+        id_concierto: c.id_concierto,
+        nombre: c.nombre,
+        artista: c.artista?.nombre || "",
+        fecha: fechaDe(c),
+        hora: c.fecha && String(c.fecha).length > 10 ? horaDe(c) : null,
+        estadio: c.estadio?.nombre || "",
+        ciudad: c.estadio?.ciudad || "",
+        imagen: c.imagen || c.imagenConcierto || c.foto || "",
+        fans_unidos: c.usuarios_conciertos?.[0]?.count ?? 0,
+        unido: unidos.has(c.id_concierto),
+      });
+    }
+  }
+
+  if (tarjetas.length === 0) {
+    return { respuesta: { error: errores[0]?.error || "No hay conciertos para mostrar", errores } };
+  }
+  return {
+    respuesta: {
+      ok: true,
+      mostrados: tarjetas.map((t) => ({ nombre: t.nombre, ya_esta_unido: t.unido })),
+      ...(errores.length > 0 ? { no_se_pudieron_mostrar: errores } : {}),
+      aviso:
+        "El usuario ya ve una tarjeta por concierto con los datos. En los que no está unido hay un campo para el código de acceso y un botón Unirme. No repitas los datos de las tarjetas: respondé corto y decile que escriba el código y toque Unirme.",
+    },
+    accion: { tipo: "tarjetas", estado: "pendiente", grupos: [], conciertos: tarjetas },
+  };
 }
 
 // Ejecuta lo que pidió la IA. Devuelve { respuesta } para mandarle a la IA
@@ -230,8 +335,10 @@ export async function ejecutarHerramienta(idUsuario, nombre, args = {}) {
       return { respuesta: await buscarGruposConLugar(idUsuario, args) };
     case "mis_grupos_y_proximos_eventos":
       return { respuesta: await misGruposYProximosEventos(idUsuario) };
-    case "proponer_unirse_a_grupo":
-      return proponerUnirseAGrupo(idUsuario, args);
+    case "mostrar_grupos":
+      return mostrarGrupos(idUsuario, args);
+    case "mostrar_conciertos":
+      return mostrarConciertos(idUsuario, args);
     default:
       return { respuesta: { error: `No existe la herramienta ${nombre}` } };
   }

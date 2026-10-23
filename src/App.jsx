@@ -770,6 +770,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onVerUsuario={manejarVerUsuario}
           chatInicial={chatInicial}
           onVerGrupo={(grupo) => abrirGrupoConConcierto(grupo, "chats")}
+          onVerConcierto={manejarEntrarConcierto}
           onAbrirMomento={abrirMomento}
         />
       )}
