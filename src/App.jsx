@@ -14,6 +14,7 @@ import { conciertosService } from "./services/conciertosService";
 import { gruposService } from "./services/gruposService";
 import { spotifyService } from "./services/spotifyService";
 import { UsuarioContext } from "./context/UsuarioContext";
+import { SesionContext } from "./context/SesionContext";
 import { supabase } from "./supabase";
 import { leerRuta, rutaDePantalla, tituloDePantalla, PANTALLAS_SIN_SESION } from "./utils/rutas";
 
@@ -618,6 +619,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
   }
 
   return (
+    <SesionContext.Provider value={manejarCerrarSesion}>
     <Suspense fallback={<CargandoPantalla texto="Cargando..." />}>
       <Avisos />
       {!esPantallaLogin && usuarioActual && (
@@ -848,6 +850,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
         />
       )}
     </Suspense>
+    </SesionContext.Provider>
   );
 }
 

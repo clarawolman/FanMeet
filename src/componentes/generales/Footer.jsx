@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Footer.css";
 import MenuConfiguracion from "./MenuConfiguracion";
+import { SesionContext } from "../../context/SesionContext";
 import Marca from "./Marca";
 import { chatsService } from "../../services/chatsService";
 import {
@@ -11,6 +12,7 @@ import {
   IconoNavChat,
   IconoNavPerfil,
   IconoNavConfiguracion,
+  IconoNavSalir,
 } from "./iconosNav";
 
 // En mobile la barra de abajo muestra solo Inicio, Eventos, Chat y Perfil;
@@ -25,6 +27,7 @@ const ITEMS = [
 ];
 
 function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
+  const cerrarSesion = useContext(SesionContext);
   const [configAbierta, setConfigAbierta] = useState(false);
   const [noLeidosCargados, setNoLeidosCargados] = useState(0);
 
@@ -73,6 +76,19 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
             </button>
           );
         })}
+
+        {cerrarSesion && (
+          <button
+            className="footerButton footerButton--escritorio footerButton--salir"
+            type="button"
+            onClick={cerrarSesion}
+          >
+            <span className="footerButtonChip">
+              <IconoNavSalir className="footerButtonIcono" />
+            </span>
+            <span className="footerButtonTexto">Cerrar sesión</span>
+          </button>
+        )}
 
         <button
           className={`footerButton footerButton--escritorio ${configAbierta ? "activo" : ""}`}

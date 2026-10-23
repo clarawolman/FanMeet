@@ -175,9 +175,14 @@
     transform: translateY(-50%);
   }
 
-  /* Configuración va abajo de todo, separada del resto */
+  /* Cerrar sesión y Configuración van abajo de todo, separados del resto */
+  .footerButton--salir,
   .footerButton:last-of-type {
     margin-top: auto;
+  }
+
+  .footerButton--salir + .footerButton:last-of-type {
+    margin-top: 0;
   }
 
   .footerButtonChip {
