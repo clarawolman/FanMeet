@@ -20,20 +20,24 @@ import { calcularEdad } from "../entities/Usuario.js";
 import { toMensajeChatbot } from "../entities/MensajeChatbot.js";
 import { ApiError } from "../helpers/ApiError.js";
 
-// Google Gemini, capa gratuita (key en https://aistudio.google.com/apikey).
-const MODELO = process.env.GEMINI_MODEL || "gemini-3.8-flash";
-// Si el modelo principal está saturado (o sin cuota), se prueban estos en
-// orden. Los "lite" son los que menos se saturan. Se pueden cambiar con
-// GEMINI_MODELOS_RESPALDO separados por coma.
-const MODELOS_RESPALDO = (
-  process.env.GEMINI_MODELOS_RESPALDO || "gemini-3.6-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite"
-)
+// Groq (API compatible con OpenAI), capa gratuita: key en
+// https://console.groq.com/keys. Groq corre los modelos en hardware propio
+// (LPU) y responde mucho más rápido que Gemini.
+const MODELO = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+// Si el modelo principal está saturado, sin cuota o falla con una
+// herramienta, se prueban estos en orden. Cada modelo tiene su propia cuota
+// gratis. Se pueden cambiar con GROQ_MODELOS_RESPALDO separados por coma.
+const MODELOS_RESPALDO = (process.env.GROQ_MODELOS_RESPALDO || "llama-3.3-70b-versatile,openai/gpt-oss-20b")
   .split(",")
   .map((m) => m.trim())
   .filter(Boolean);
-const URL_GEMINI = "https://generativelanguage.googleapis.com/v1beta/models";
+const URL_GROQ = "https://api.groq.com/openai/v1/chat/completions";
+// Si un modelo no contesta en este tiempo se prueba el siguiente.
+const TIEMPO_MAXIMO_MS = 20_000;
 // Cuántos mensajes anteriores del chat se le pasan a la IA como memoria.
-const MENSAJES_DE_HISTORIAL = 30;
+// La capa gratis de Groq limita los tokens por minuto: con menos historial
+// cada pedido es más chico (y más rápido).
+const MENSAJES_DE_HISTORIAL = 16;
 const MAIL_QUEJAS = "fanmeet100@gmail.com";
 
 // Los mismos textos que muestra el perfil (src/componentes/perfil/perfil.jsx).
@@ -180,8 +184,8 @@ async function armarDatosParaUsuario(idUsuario) {
   };
 }
 
-// El historial guardado pasa al formato de Gemini (el rol de la IA se
-// llama "model"). La conversación tiene que arrancar con un mensaje del usuario.
+// El historial guardado pasa al formato de chat de Groq/OpenAI. La
+// conversación tiene que arrancar con un mensaje del usuario.
 // A Fani le sirve saber qué pasó con sus propuestas anteriores.
 const ESTADOS_ACCION = {
   pendiente: "el usuario todavía no la confirmó",
@@ -197,115 +201,141 @@ function notaDeAccion(accion) {
 function armarHistorial(filas) {
   const desdePrimeroDelUsuario = filas.slice(filas.findIndex((f) => f.rol === "user"));
   return desdePrimeroDelUsuario.map((f) => ({
-    role: f.rol === "assistant" ? "model" : "user",
-    parts: [{ text: f.contenido + (f.rol === "assistant" ? notaDeAccion(f.accion) : "") }],
+    role: f.rol === "assistant" ? "assistant" : "user",
+    content: f.contenido + (f.rol === "assistant" ? notaDeAccion(f.accion) : ""),
   }));
 }
 
-// Un pedido a Gemini, probando los modelos de respaldo si hace falta.
-// Devuelve el JSON de la respuesta.
-async function llamarAGemini(apiKey, cuerpoPedido) {
-  // 429: se acabó la cuota gratis de ese modelo. 503: Gemini está saturado.
-  // En los dos casos se prueba con el modelo siguiente.
+// Las herramientas de Fani en el formato de Groq/OpenAI.
+const HERRAMIENTAS = DECLARACIONES.map(({ name, description, parameters }) => ({
+  type: "function",
+  function: { name, description, parameters: parameters ?? { type: "object", properties: {} } },
+}));
+
+// Solo los gpt-oss "piensan": a los demás modelos no se les puede mandar
+// reasoning_effort (Groq responde 400).
+const esModeloQuePiensa = (modelo) => modelo.startsWith("openai/gpt-oss");
+
+// Errores por los que vale la pena probar el modelo siguiente:
+// 429 sin cuota, 413 pedido muy grande para la cuota de ese modelo,
+// 5xx Groq caído o saturado, 400 "tool_use_failed" el modelo armó mal la
+// llamada a una herramienta.
+function convieneProbarOtro(status, detalle) {
+  return status === 429 || status === 413 || status >= 500 || (status === 400 && detalle.includes("tool_use_failed"));
+}
+
+// Un pedido a Groq, probando los modelos de respaldo si hace falta.
+// Devuelve el mensaje de la IA ({ content, tool_calls }).
+async function llamarAGroq(apiKey, messages) {
   const modelos = [...new Set([MODELO, ...MODELOS_RESPALDO])];
-  let respuesta;
+  let ultimoStatus = 0;
+
   for (const modelo of modelos) {
+    let respuesta;
     try {
-      respuesta = await fetch(`${URL_GEMINI}/${modelo}:generateContent`, {
+      respuesta = await fetch(URL_GROQ, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: cuerpoPedido,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: modelo,
+          messages,
+          tools: HERRAMIENTAS,
+          tool_choice: "auto",
+          temperature: 0.6,
+          // El límite incluye lo que el modelo "piensa" antes de responder.
+          max_completion_tokens: 1024,
+          // Pensar poco y no devolver el razonamiento: más rápido.
+          ...(esModeloQuePiensa(modelo) ? { reasoning_effort: "low", include_reasoning: false } : {}),
+        }),
+        signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
       });
-    } catch {
+    } catch (error) {
+      // Se colgó: se prueba el siguiente. Sin red: no tiene sentido seguir.
+      if (error?.name === "TimeoutError") {
+        console.warn(`Groq (${modelo}) no respondió en ${TIEMPO_MAXIMO_MS} ms`);
+        ultimoStatus = 504;
+        continue;
+      }
       throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
     }
-    if (respuesta.status !== 429 && respuesta.status !== 503) break;
-    console.warn(`Gemini (${modelo}) respondió ${respuesta.status}: ${await respuesta.text().catch(() => "")}`);
-  }
 
-  if (!respuesta.ok) {
-    if (respuesta.status === 429 || respuesta.status === 503) {
-      throw new ApiError(429, "Fani está con muchas consultas, probá de nuevo en un ratito");
+    if (respuesta.ok) {
+      const cuerpo = await respuesta.json();
+      return cuerpo.choices?.[0] ?? null;
     }
+
     const detalle = await respuesta.text().catch(() => "");
-    console.error(`Gemini respondió ${respuesta.status}: ${detalle}`);
-    const keyInvalida = detalle.includes("API_KEY_INVALID");
-    if (keyInvalida || respuesta.status === 401 || respuesta.status === 403) {
-      throw new ApiError(503, "El chatbot no está bien configurado (revisá GEMINI_API_KEY)");
+    ultimoStatus = respuesta.status;
+    if (respuesta.status === 401 || respuesta.status === 403 || detalle.includes("invalid_api_key")) {
+      console.error(`Groq respondió ${respuesta.status}: ${detalle}`);
+      throw new ApiError(503, "El chatbot no está bien configurado (revisá GROQ_API_KEY)");
     }
-    throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+    if (!convieneProbarOtro(respuesta.status, detalle)) {
+      console.error(`Groq (${modelo}) respondió ${respuesta.status}: ${detalle}`);
+      throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+    }
+    console.warn(`Groq (${modelo}) respondió ${respuesta.status}: ${detalle}`);
   }
 
-  return respuesta.json();
+  if (ultimoStatus === 429 || ultimoStatus === 413) {
+    throw new ApiError(429, "Fani está con muchas consultas, probá de nuevo en un ratito");
+  }
+  throw new ApiError(502, "Fani no pudo responder, probá de nuevo en un ratito");
+}
+
+function leerArgumentos(texto) {
+  try {
+    return texto ? JSON.parse(texto) : {};
+  } catch {
+    return {};
+  }
 }
 
 // Le pregunta a la IA y ejecuta las herramientas que pida, hasta que
 // responde con texto. Devuelve { texto, accion }: la acción (si propuso
 // una) queda pendiente hasta que el usuario la confirma.
 async function preguntarALaIA(idUsuario, historial) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new ApiError(503);
   }
 
   const datos = await armarDatosParaUsuario(idUsuario);
-  const pedidoFijo = {
-    systemInstruction: {
-      parts: [
-        { text: INSTRUCCIONES },
-        { text: `<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>` },
-      ],
+  const messages = [
+    {
+      role: "system",
+      content: `${INSTRUCCIONES}\n\n<datos_fanmeet>\n${JSON.stringify(datos)}\n</datos_fanmeet>`,
     },
-    tools: [{ functionDeclarations: DECLARACIONES }],
-    generationConfig: {
-      // El límite incluye lo que el modelo "piensa" antes de responder.
-      maxOutputTokens: 2048,
-      // Pensar poco: más rápido y gasta menos cuota gratis.
-      thinkingConfig: { thinkingLevel: "low" },
-    },
-  };
-
-  const contents = [...historial];
+    ...historial,
+  ];
   let accion = null;
   const sinRespuesta = `Perdón, con eso no te puedo ayudar 😕 Si necesitás algo más, escribinos a ${MAIL_QUEJAS}.`;
 
   for (let vuelta = 0; vuelta < MAXIMO_VUELTAS_HERRAMIENTAS; vuelta++) {
-    const cuerpo = await llamarAGemini(apiKey, JSON.stringify({ ...pedidoFijo, contents }));
-    const candidato = cuerpo.candidates?.[0];
-    const partes = candidato?.content?.parts ?? [];
+    const eleccion = await llamarAGroq(apiKey, messages);
+    const mensaje = eleccion?.message;
 
-    // Bloqueado por los filtros de seguridad de Gemini.
-    if (cuerpo.promptFeedback?.blockReason || candidato?.finishReason === "SAFETY") {
+    // Cortado por el filtro de contenido del modelo.
+    if (eleccion?.finish_reason === "content_filter") {
       return { texto: sinRespuesta, accion: null };
     }
 
-    const llamadas = partes.filter((p) => p.functionCall);
+    const llamadas = mensaje?.tool_calls ?? [];
     if (llamadas.length === 0) {
-      const texto = partes
-        .filter((p) => !p.thought)
-        .map((p) => p.text ?? "")
-        .join("")
-        .trim();
+      const texto = (mensaje?.content ?? "").trim();
       if (texto) return { texto, accion };
       break;
     }
 
-    // Se devuelve el turno de la IA tal cual (Gemini necesita sus
-    // "thoughtSignature") y después las respuestas de las herramientas.
-    contents.push(candidato.content);
-    const respuestas = [];
-    for (const { functionCall } of llamadas) {
-      const resultado = await ejecutarHerramienta(idUsuario, functionCall.name, functionCall.args);
+    // Se devuelve el turno de la IA con sus pedidos y después una respuesta
+    // por cada herramienta, con el mismo tool_call_id.
+    messages.push({ role: "assistant", content: mensaje.content ?? "", tool_calls: llamadas });
+    for (const llamada of llamadas) {
+      const { name, arguments: args } = llamada.function ?? {};
+      const resultado = await ejecutarHerramienta(idUsuario, name, leerArgumentos(args));
       if (resultado.accion) accion = resultado.accion;
-      respuestas.push({
-        functionResponse: {
-          name: functionCall.name,
-          ...(functionCall.id ? { id: functionCall.id } : {}),
-          response: resultado.respuesta,
-        },
-      });
+      messages.push({ role: "tool", tool_call_id: llamada.id, content: JSON.stringify(resultado.respuesta) });
     }
-    contents.push({ role: "user", parts: respuestas });
   }
 
   // Propuso sumarse pero no escribió nada: igual se muestran los botones.

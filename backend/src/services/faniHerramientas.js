@@ -9,7 +9,7 @@ import { ApiError } from "../helpers/ApiError.js";
 import { conciertosDelGrupo, esGrupoGeneral } from "../helpers/gruposGenerales.js";
 import { perteneceAlConciertoDelGrupo } from "./grupoService.js";
 
-// Herramientas de Fani (function calling de Gemini). La privacidad se
+// Herramientas de Fani (function calling de la IA, ver chatbotService). La privacidad se
 // resuelve acá, no en el prompt: solo se ven grupos de conciertos a los que
 // el usuario está unido, nunca datos de otros usuarios (solo cuántos son) y
 // no aparecen grupos creados por alguien con quien hay un bloqueo.

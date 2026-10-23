@@ -255,6 +255,51 @@ describe("matchingService.descubrir", () => {
   });
 });
 
+describe("matchingService: no esperar de más a Last.fm", () => {
+  it("si Last.fm tarda con el perfil de otro, Descubrir responde igual y lo deja cargándose", async () => {
+    vi.useFakeTimers();
+    let soltarTaylor;
+    lastfmApiRepository.obtenerTagsArtista.mockImplementation((nombre) =>
+      nombre === "Taylor Swift"
+        ? new Promise((resolve) => (soltarTaylor = () => resolve({ toptags: { tag: [{ name: "pop", count: "100" }] } })))
+        : Promise.resolve({ toptags: { tag: [] } })
+    );
+
+    try {
+      const pedido = matchingService.descubrir(YO);
+      await vi.advanceTimersByTimeAsync(3000);
+      const { fans } = await pedido;
+      expect(fans.map((f) => f.id_usuario)).toEqual([GEMELO]);
+
+      // Llega la respuesta tarde: queda en el cache y no se vuelve a pedir.
+      soltarTaylor();
+      await vi.advanceTimersByTimeAsync(0);
+      await matchingService.descubrir(YO);
+      const pedidosTaylor = lastfmApiRepository.obtenerTagsArtista.mock.calls.filter(([n]) => n === "Taylor Swift");
+      expect(pedidosTaylor).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("precalentar pide a Last.fm los artistas de todos y los de los próximos conciertos", async () => {
+    conciertoRepository.listarTodos.mockResolvedValue([
+      { id_concierto: 9, nombre: "Show", artista: { nombre: "Charly García" } },
+    ]);
+
+    await matchingService.precalentar();
+
+    const pedidos = lastfmApiRepository.obtenerSimilares.mock.calls.map(([nombre]) => nombre);
+    expect(pedidos).toEqual(expect.arrayContaining(["Duki", "Taylor Swift", "Charly García"]));
+    expect(conciertoRepository.listarTodos).toHaveBeenCalledWith({ soloProximos: true });
+
+    // Después, Descubrir sale del cache: no vuelve a pedir nada.
+    vi.clearAllMocks();
+    await matchingService.descubrir(YO);
+    expect(lastfmApiRepository.obtenerSimilares).not.toHaveBeenCalled();
+  });
+});
+
 describe("matchingService.compatibilidad", () => {
   it("no deja compararse con uno mismo", async () => {
     await expect(matchingService.compatibilidad(YO, YO)).rejects.toBeInstanceOf(ApiError);

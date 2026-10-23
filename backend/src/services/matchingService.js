@@ -46,6 +46,11 @@ const HORA = 60 * 60 * 1000;
 const TTL_TOP_USUARIO = 6 * HORA;
 const TTL_ARTISTA = 7 * 24 * HORA;
 const LASTFM_EN_PARALELO = 4;
+// Descubrir y "Para vos" no esperan a Last.fm más que esto: lo que no llegó
+// a tiempo se sigue pidiendo de fondo y queda en el cache para la próxima.
+// Sin este tope, con el cache vacío (el server recién arrancado) Descubrir
+// podía tardar casi un minuto, porque arma el perfil de todos los usuarios.
+const ESPERA_MAXIMA_LASTFM_MS = 2500;
 
 // ── Cache y limite de llamadas a Last.fm ─────────────────────────────────
 // Last.fm pide no consultarlo de mas y los tags/similares de un artista casi
@@ -69,17 +74,28 @@ async function conLimite(fn) {
 }
 
 // Si Last.fm falla devolvemos `vacio`: el matching sigue con lo que haya.
-function cacheado(clave, ttl, fn, vacio) {
-  const guardado = cache.get(clave);
-  if (guardado && guardado.expira > Date.now()) return guardado.promesa;
+// `hasta` (un Date.now() en ms, opcional): si el dato no está listo para
+// ese momento se devuelve `vacio`, pero el pedido sigue y queda guardado.
+function cacheado(clave, ttl, fn, vacio, hasta) {
+  let guardado = cache.get(clave);
+  if (!guardado || guardado.expira <= Date.now()) {
+    const promesa = conLimite(fn).catch((error) => {
+      console.error(`Last.fm (${clave}):`, error.message);
+      cache.delete(clave);
+      return vacio;
+    });
+    guardado = { promesa, expira: Date.now() + ttl };
+    cache.set(clave, guardado);
+  }
+  if (!hasta) return guardado.promesa;
 
-  const promesa = conLimite(fn).catch((error) => {
-    console.error(`Last.fm (${clave}):`, error.message);
-    cache.delete(clave);
-    return vacio;
+  const restante = hasta - Date.now();
+  if (restante <= 0) return Promise.race([guardado.promesa, Promise.resolve(vacio)]);
+  let temporizador;
+  const tarde = new Promise((resolve) => {
+    temporizador = setTimeout(() => resolve(vacio), restante);
   });
-  cache.set(clave, { promesa, expira: Date.now() + ttl });
-  return promesa;
+  return Promise.race([guardado.promesa, tarde]).finally(() => clearTimeout(temporizador));
 }
 
 export function limpiarCacheLastfm() {
@@ -94,7 +110,7 @@ export function claveArtista(nombre) {
   return normalizarGenero(nombre);
 }
 
-function topArtistasLastfm(usuarioLastfm) {
+function topArtistasLastfm(usuarioLastfm, hasta) {
   return cacheado(
     `top|${usuarioLastfm.toLowerCase()}`,
     TTL_TOP_USUARIO,
@@ -103,11 +119,12 @@ function topArtistasLastfm(usuarioLastfm) {
       const datos = await lastfmApiRepository.obtenerTopArtistas(usuarioLastfm, "1month", TOP_LASTFM);
       return comoLista(datos?.topartists?.artist).map((a) => a.name).filter(Boolean);
     },
-    []
+    [],
+    hasta
   );
 }
 
-function tagsDeArtista(nombre) {
+function tagsDeArtista(nombre, hasta) {
   return cacheado(
     `tags|${claveArtista(nombre)}`,
     TTL_ARTISTA,
@@ -118,11 +135,12 @@ function tagsDeArtista(nombre) {
         .filter((t) => t.peso >= MIN_PESO_TAG && !esTagGenerico(t.nombre))
         .slice(0, TAGS_POR_ARTISTA);
     },
-    []
+    [],
+    hasta
   );
 }
 
-function similaresDeArtista(nombre) {
+function similaresDeArtista(nombre, hasta) {
   return cacheado(
     `similares|${claveArtista(nombre)}`,
     TTL_ARTISTA,
@@ -133,7 +151,8 @@ function similaresDeArtista(nombre) {
         parecido: Number(a.match) || 0,
       }));
     },
-    []
+    [],
+    hasta
   );
 }
 
@@ -161,9 +180,9 @@ function sumarGenero(generos, clave, peso, vocabulario) {
 
 // Generos que se deducen de los tags de Last.fm de un artista. Solo cuentan
 // los tags que son generos conocidos (MusicBrainz o catalogo).
-async function generosDeArtista(nombre, vocabulario) {
+async function generosDeArtista(nombre, vocabulario, hasta) {
   const generos = new Map();
-  for (const tag of await tagsDeArtista(nombre)) {
+  for (const tag of await tagsDeArtista(nombre, hasta)) {
     const clave = normalizarGenero(tag.nombre);
     if (vocabulario.has(clave)) sumarGenero(generos, clave, tag.peso / 100, vocabulario);
   }
@@ -238,7 +257,8 @@ async function cargarDatosBase() {
 }
 
 // ── Perfil musical de un usuario ─────────────────────────────────────────
-export async function construirPerfil(idUsuario, base) {
+// `hasta`: tope para esperar a Last.fm (ver cacheado). Sin tope, espera todo.
+export async function construirPerfil(idUsuario, base, hasta) {
   // clave -> { nombre, peso, favorito }
   const artistas = new Map();
 
@@ -259,7 +279,7 @@ export async function construirPerfil(idUsuario, base) {
 
   const usuarioLastfm = base.lastfmPorUsuario.get(idUsuario);
   if (usuarioLastfm && lastfmDisponible()) {
-    const top = await topArtistasLastfm(usuarioLastfm);
+    const top = await topArtistasLastfm(usuarioLastfm, hasta);
     // El nº 1 pesa casi como un favorito; el nº 30, bastante menos.
     top.forEach((nombre, i) => sumarArtista(nombre, 0.9 * (1 - i / (top.length + 10)), false));
   }
@@ -280,7 +300,7 @@ export async function construirPerfil(idUsuario, base) {
   if (lastfmDisponible()) {
     const conTags = principales.slice(0, ARTISTAS_CON_TAGS);
     const generosDeduccion = await Promise.all(
-      conTags.map((a) => generosDeArtista(a.nombre, base.vocabulario))
+      conTags.map((a) => generosDeArtista(a.nombre, base.vocabulario, hasta))
     );
     conTags.forEach((artista, i) => {
       for (const [clave, peso] of generosDeduccion[i]) {
@@ -290,7 +310,7 @@ export async function construirPerfil(idUsuario, base) {
     });
 
     const conSimilares = principales.slice(0, ARTISTAS_CON_SIMILARES);
-    const listas = await Promise.all(conSimilares.map((a) => similaresDeArtista(a.nombre)));
+    const listas = await Promise.all(conSimilares.map((a) => similaresDeArtista(a.nombre, hasta)));
     conSimilares.forEach((artista, i) => {
       for (const similar of listas[i]) {
         const clave = claveArtista(similar.nombre);
@@ -398,12 +418,12 @@ export function compararPerfiles(yo, otro, nombresGeneros = new Map()) {
   };
 }
 
-async function construirPerfiles(ids, base) {
-  return Promise.all(ids.map((id) => construirPerfil(id, base)));
+async function construirPerfiles(ids, base, hasta) {
+  return Promise.all(ids.map((id) => construirPerfil(id, base, hasta)));
 }
 
 // ── Recomendacion de conciertos ──────────────────────────────────────────
-async function puntuarConcierto(concierto, yo, base, amigos) {
+async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
   const nombreArtista = concierto.artista?.nombre || "";
   const clave = claveArtista(nombreArtista);
   const motivos = [];
@@ -417,7 +437,7 @@ async function puntuarConcierto(concierto, yo, base, amigos) {
     // Parecido en las dos direcciones: el artista del concierto aparece
     // entre los similares de los tuyos, o uno tuyo entre los suyos.
     const similarMio = yo.similares.get(clave);
-    const suyos = await similaresDeArtista(nombreArtista);
+    const suyos = await similaresDeArtista(nombreArtista, hasta);
     const parecidoAlMio = suyos
       .map((s) => ({ ...s, mio: yo.artistas.get(claveArtista(s.nombre)) }))
       .filter((s) => s.mio)
@@ -437,7 +457,7 @@ async function puntuarConcierto(concierto, yo, base, amigos) {
   }
 
   if (nombreArtista && lastfmDisponible() && yo.generos.size > 0) {
-    const generosArtista = await generosDeArtista(nombreArtista, base.vocabulario);
+    const generosArtista = await generosDeArtista(nombreArtista, base.vocabulario, hasta);
     puntaje += 0.6 * coseno(generosArtista, yo.generos);
   }
 
@@ -454,6 +474,20 @@ async function puntuarConcierto(concierto, yo, base, amigos) {
 
 // ── API del servicio ─────────────────────────────────────────────────────
 export const matchingService = {
+  // Llena el cache de Last.fm (perfiles de todos y artistas de los próximos
+  // conciertos) de fondo, para que Descubrir y "Para vos" salgan completos
+  // y rápidos aunque el server recién haya arrancado.
+  async precalentar() {
+    if (!lastfmDisponible()) return;
+    const [base, conciertos] = await Promise.all([
+      cargarDatosBase(),
+      conciertoRepository.listarTodos({ soloProximos: true }),
+    ]);
+    await construirPerfiles([...base.usuarios.keys()], base);
+    const artistas = [...new Set(conciertos.map((c) => c.artista?.nombre).filter(Boolean))];
+    await Promise.all(artistas.flatMap((nombre) => [similaresDeArtista(nombre), tagsDeArtista(nombre)]));
+  },
+
   async compatibilidad(idYo, idOtro) {
     if (idYo === idOtro) throw ApiError.badRequest("No podés compararte con vos mismo");
 
@@ -480,7 +514,13 @@ export const matchingService = {
       ...bloqueados,
     ]);
     const ids = [...base.usuarios.keys()].filter((id) => id !== idYo && !conRelacion.has(id));
-    const [yo, ...otros] = await construirPerfiles([idYo, ...ids], base);
+    // El perfil propio se arma completo; el de los demás, con lo que Last.fm
+    // llegue a dar a tiempo (el resto queda cargándose para la próxima).
+    const hasta = Date.now() + ESPERA_MAXIMA_LASTFM_MS;
+    const [yo, otros] = await Promise.all([
+      construirPerfil(idYo, base),
+      construirPerfiles(ids, base, hasta),
+    ]);
 
     if (!tieneDatos(yo)) return { perfilCompleto: false, soloCercanos: false, fans: [] };
 
@@ -521,7 +561,8 @@ export const matchingService = {
       amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante))
     );
     const candidatos = conciertos.filter((c) => !yo.conciertos.has(String(c.id_concierto)));
-    const puntajes = await Promise.all(candidatos.map((c) => puntuarConcierto(c, yo, base, amigos)));
+    const hasta = Date.now() + ESPERA_MAXIMA_LASTFM_MS;
+    const puntajes = await Promise.all(candidatos.map((c) => puntuarConcierto(c, yo, base, amigos, hasta)));
 
     return candidatos
       .map((concierto, i) => ({ concierto, ...puntajes[i] }))
