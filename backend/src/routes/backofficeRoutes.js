@@ -15,6 +15,7 @@ import {
   actualizarConciertoSchema,
   novedadSchema,
   importarConciertosSchema,
+  importarGruposSchema,
   crearGrupoSchema,
   actualizarGrupoSchema,
 } from "../validators/backofficeValidators.js";
@@ -69,6 +70,8 @@ router.post(
 
 router.get("/grupos", c.listarGrupos);
 router.post("/grupos", validate(crearGrupoSchema), c.crearGrupo);
+router.post("/grupos/importar/previa", validate(importarGruposSchema), c.previaImportacionGrupos);
+router.post("/grupos/importar", validate(importarGruposSchema), c.importarGrupos);
 router.patch(
   "/grupos/:idGrupo",
   validate(idGrupoParamSchema, "params"),

@@ -6,6 +6,8 @@ import { grupoRepository, grupoUsuarioRepository } from "../repositories/grupoRe
 import { sinBloqueados } from "./bloqueoService.js";
 import { conciertoYaPaso, hoyEnArgentina } from "../helpers/fechas.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { conciertosDelGrupo, esGrupoGeneral } from "../helpers/gruposGenerales.js";
+import { perteneceAlConciertoDelGrupo } from "./grupoService.js";
 
 // Herramientas de Fani (function calling de Gemini). La privacidad se
 // resuelve acá, no en el prompt: solo se ven grupos de conciertos a los que
@@ -18,6 +20,7 @@ export const NOMBRES_CATEGORIA_GRUPO = {
   pre: "Previa (antes del concierto)",
   after: "After (después del concierto)",
   mismo_dia: "Mismo día",
+  comunidad: "Comunidad (sin encuentro, para charlar entre los que van)",
 };
 
 export const DECLARACIONES = [
@@ -34,8 +37,9 @@ export const DECLARACIONES = [
         },
         tipo: {
           type: "string",
-          enum: ["pre", "after", "mismo_dia"],
-          description: "pre = previa, after = después del show, mismo_dia = el mismo día.",
+          enum: ["pre", "after", "mismo_dia", "comunidad"],
+          description:
+            "pre = previa, after = después del show, mismo_dia = el mismo día, comunidad = sin encuentro, para charlar.",
         },
       },
     },
@@ -75,13 +79,17 @@ async function cargarLoVisible(idUsuario) {
   const conciertoPorId = new Map(unidos.map((c) => [c.id_concierto, c]));
 
   const gruposPorConcierto = await Promise.all(unidos.map((c) => grupoRepository.listarPorConcierto(c.id_concierto)));
-  const grupos = await sinBloqueados(idUsuario, gruposPorConcierto.flat(), "id_creador");
+  // Un grupo general aparece en cada una de sus fechas: va una sola vez.
+  const sinRepetir = [...new Map(gruposPorConcierto.flat().map((g) => [g.id_grupo, g])).values()];
+  const grupos = await sinBloqueados(idUsuario, sinRepetir, "id_creador");
   const miembros = await grupoUsuarioRepository.listarUsuariosPorGrupos(grupos.map((g) => g.id_grupo));
   const integrantes = (idGrupo) => miembros.filter((m) => m.id_grupo === idGrupo).length;
 
   return {
     unidos,
     conciertoPorId,
+    // El concierto de un grupo que el usuario ve: el suyo, si es general.
+    conciertoDe: (g) => conciertosDelGrupo(g).map((id) => conciertoPorId.get(id)).find(Boolean),
     grupos,
     integrantes,
     misGrupos: new Set(misRelaciones.map((r) => r.id_grupo)),
@@ -94,6 +102,7 @@ function resumirGrupo(g, concierto, integrantes) {
     nombre: g.nombre,
     tipo: NOMBRES_CATEGORIA_GRUPO[g.categoria] || g.categoria,
     concierto: concierto?.nombre,
+    ...(esGrupoGeneral(g) ? { de_todas_las_fechas: conciertosDelGrupo(g).length } : {}),
     fecha: g.fecha,
     hora: horaGrupo(g),
     punto_de_encuentro: g.ubicacion,
@@ -115,12 +124,12 @@ async function buscarGruposConLugar(idUsuario, { id_concierto, tipo } = {}) {
   }
 
   const grupos = visible.grupos
-    .filter((g) => !id_concierto || g.id_concierto === Number(id_concierto))
+    .filter((g) => !id_concierto || conciertosDelGrupo(g).includes(Number(id_concierto)))
     .filter((g) => !tipo || g.categoria === tipo)
     .filter((g) => !visible.misGrupos.has(g.id_grupo))
-    .filter((g) => !conciertoYaPaso(visible.conciertoPorId.get(g.id_concierto)?.fecha) && grupoVigente(g))
+    .filter((g) => !conciertoYaPaso(visible.conciertoDe(g)?.fecha) && grupoVigente(g))
     .filter((g) => !g.cupo || visible.integrantes(g.id_grupo) < g.cupo)
-    .map((g) => resumirGrupo(g, visible.conciertoPorId.get(g.id_concierto), visible.integrantes(g.id_grupo)));
+    .map((g) => resumirGrupo(g, visible.conciertoDe(g), visible.integrantes(g.id_grupo)));
 
   return { grupos };
 }
@@ -153,7 +162,7 @@ async function misGruposYProximosEventos(idUsuario) {
       .map((g) => ({
         ...resumirGrupo(
           g,
-          visible.conciertoPorId.get(g.id_concierto),
+          visible.conciertoDe(g),
           miembros.filter((m) => m.id_grupo === g.id_grupo).length
         ),
         lo_creo_el_usuario: g.id_creador === idUsuario,
@@ -169,7 +178,7 @@ export async function validarUnionAGrupo(idUsuario, idGrupo) {
   const visibles = grupo ? await sinBloqueados(idUsuario, [grupo], "id_creador") : [];
   if (visibles.length === 0) throw ApiError.notFound("Ese grupo no existe");
 
-  const estaEnElConcierto = await usuariosConciertosRepository.existeRelacion(idUsuario, grupo.id_concierto);
+  const estaEnElConcierto = await perteneceAlConciertoDelGrupo(idUsuario, grupo);
   if (!estaEnElConcierto) {
     throw ApiError.forbidden(
       "No estás unido al concierto de ese grupo. Podés unirte desde el Inicio con el código de acceso."
@@ -178,7 +187,8 @@ export async function validarUnionAGrupo(idUsuario, idGrupo) {
   if (await grupoUsuarioRepository.existeRelacion(idUsuario, idGrupo)) {
     throw new ApiError(409, "Ya estás en ese grupo");
   }
-  const concierto = await conciertoRepository.obtenerPorId(grupo.id_concierto);
+  // Un grupo general pasa cuando pasó su última fecha.
+  const concierto = await conciertoRepository.obtenerPorId(conciertosDelGrupo(grupo).at(-1));
   if (conciertoYaPaso(concierto?.fecha) || !grupoVigente(grupo)) {
     throw new ApiError(409, "Ese grupo ya pasó");
   }

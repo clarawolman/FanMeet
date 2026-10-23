@@ -29,6 +29,9 @@ function formularioInicial(grupo) {
     cupo: grupo?.cupo ? String(grupo.cupo) : "",
     imagenArchivo: null,
     imagenPreview: grupo?.foto || "",
+    // Grupo general: de todas las fechas seguidas del show (ver
+    // concierto.fechasSeguidas). Solo se elige al crearlo.
+    todasLasFechas: (grupo?.ids_conciertos?.length || 0) > 1,
   };
 }
 
@@ -43,6 +46,8 @@ function CrearGrupo({ concierto, grupo, onVolver, onGrupoCreado }) {
 
   const [original] = useState(() => formularioInicial(grupo));
   const [formulario, setFormulario] = useState(original);
+  const fechasSeguidas = concierto?.fechasSeguidas || [];
+  const sinEncuentro = formulario.categoria === "comunidad";
 
   // null = sin límite.
   function cupoElegido(datos) {
@@ -94,20 +99,23 @@ function CrearGrupo({ concierto, grupo, onVolver, onGrupoCreado }) {
       return "Falta completar el nombre del grupo.";
     }
 
-    if (!formulario.ubicacion.trim()) {
-      return "Falta completar la ubicación del grupo.";
-    }
+    // Un grupo de comunidad no tiene encuentro.
+    if (!sinEncuentro) {
+      if (!formulario.ubicacion.trim()) {
+        return "Falta completar la ubicación del grupo.";
+      }
 
-    if (formulario.ubicacion.trim().length < 6) {
-      return "Escribí una ubicación más específica.";
-    }
+      if (formulario.ubicacion.trim().length < 6) {
+        return "Escribí una ubicación más específica.";
+      }
 
-    if (!formulario.fecha) {
-      return "Falta elegir la fecha del grupo.";
-    }
+      if (!formulario.fecha) {
+        return "Falta elegir la fecha del grupo.";
+      }
 
-    if (!formulario.hora) {
-      return "Falta elegir la hora del grupo.";
+      if (!formulario.hora) {
+        return "Falta elegir la hora del grupo.";
+      }
     }
 
     if (formulario.limitado) {
@@ -153,12 +161,15 @@ function CrearGrupo({ concierto, grupo, onVolver, onGrupoCreado }) {
       // sesión autenticada (req.user.id), no desde un valor de React.
       const nuevoGrupo = {
         nombre: formulario.nombre.trim(),
-        ubicacion: formulario.ubicacion.trim(),
-        fecha: formulario.fecha,
-        hora: formulario.hora,
+        ubicacion: sinEncuentro ? null : formulario.ubicacion.trim(),
+        fecha: sinEncuentro ? null : formulario.fecha,
+        hora: sinEncuentro ? null : formulario.hora,
         descripcion: formulario.descripcion.trim(),
         categoria: formulario.categoria,
         id_concierto: concierto.id_concierto,
+        ...(formulario.todasLasFechas
+          ? { ids_conciertos: fechasSeguidas.map((c) => c.id_concierto) }
+          : {}),
         foto: imagenUrl,
         cupo: cupoElegido(formulario),
       };
@@ -219,6 +230,7 @@ function CrearGrupo({ concierto, grupo, onVolver, onGrupoCreado }) {
           concierto={concierto}
           imagenDefault={IMAGEN_GRUPO_DEFAULT}
           editando={editando}
+          fechasSeguidas={editando ? [] : fechasSeguidas}
         />
       </main>
 

@@ -14,6 +14,7 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
     obtenerPorId: vi.fn(),
     obtenerArtista: vi.fn(),
     obtenerEstadio: vi.fn(),
+    listarDeArtistaYEstadio: vi.fn(),
   },
   usuariosConciertosRepository: {
     existeRelacion: vi.fn(),
@@ -55,6 +56,8 @@ const CONCIERTO = { id_concierto: 1, nombre: "Show", id_artista: 1, id_estadio: 
 beforeEach(() => {
   vi.clearAllMocks();
   usuarioRepository.listarPorIds.mockResolvedValue([]);
+  usuariosConciertosRepository.listarConciertosPorUsuario.mockResolvedValue([]);
+  conciertoRepository.listarDeArtistaYEstadio.mockResolvedValue([]);
 });
 
 describe("conciertoService.unirsePorCodigo", () => {
@@ -143,6 +146,24 @@ describe("conciertoService.obtenerDetalle (autorización)", () => {
 
     expect(resultado.id_concierto).toBe(CONCIERTO.id_concierto);
   });
+
+  it("trae las fechas seguidas del artista en ese estadio que no pasaron", async () => {
+    const fecha = (id, dia) => ({ id_concierto: id, id_artista: 1, id_estadio: 1, fecha: `${dia}T21:00:00` });
+    conciertoRepository.obtenerPorId.mockResolvedValue(fecha(1, "2099-11-13"));
+    conciertoRepository.listarDeArtistaYEstadio.mockResolvedValue([
+      fecha(1, "2099-11-13"),
+      fecha(2, "2099-11-14"),
+      fecha(3, "2099-11-15"),
+      fecha(4, "2099-12-20"),
+    ]);
+    grupoRepository.listarPorConcierto.mockResolvedValue([]);
+    usuariosConciertosRepository.existeRelacion.mockResolvedValue({ id: 1 });
+    usuariosConciertosRepository.listarUsuariosPorConcierto.mockResolvedValue([]);
+
+    const resultado = await conciertoService.obtenerDetalle(YO, 1);
+
+    expect(resultado.fechasSeguidas.map((c) => c.id_concierto)).toEqual([1, 2, 3]);
+  });
 });
 
 describe("conciertoService.salirDeConcierto", () => {
@@ -153,6 +174,22 @@ describe("conciertoService.salirDeConcierto", () => {
 
     expect(grupoUsuarioRepository.eliminarDeGruposIds).toHaveBeenCalledWith(YO, [1, 2]);
     expect(usuariosConciertosRepository.eliminarRelacion).toHaveBeenCalledWith(YO, 1);
+  });
+
+  it("en un grupo general sigue si todavía va a otra de sus fechas", async () => {
+    grupoRepository.listarPorConcierto.mockResolvedValue([
+      { id_grupo: 1, id_concierto: 1 },
+      { id_grupo: 2, id_concierto: 1, ids_conciertos: [1, 2, 3] },
+      { id_grupo: 3, id_concierto: 1, ids_conciertos: [1, 2] },
+    ]);
+    usuariosConciertosRepository.listarConciertosPorUsuario.mockResolvedValue([
+      { id_concierto: 1 },
+      { id_concierto: 3 },
+    ]);
+
+    await conciertoService.salirDeConcierto(YO, 1);
+
+    expect(grupoUsuarioRepository.eliminarDeGruposIds).toHaveBeenCalledWith(YO, [1, 3]);
   });
 
   it("no llama a eliminarDeGruposIds si el concierto no tiene grupos", async () => {

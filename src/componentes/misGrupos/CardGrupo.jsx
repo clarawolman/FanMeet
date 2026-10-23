@@ -9,12 +9,14 @@ const CATEGORIAS = {
   pre: "Pre-show",
   after: "After",
   mismo_dia: "Mismo día",
+  comunidad: "Comunidad",
 };
 
 function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
   const usuarios = grupo.usuarios || [];
   const hora = grupo.hora ? String(grupo.hora).slice(0, 5) : "";
   const falta = cuentaRegresiva(grupo.fecha);
+  const cantidadFechas = grupo.ids_conciertos?.length || 1;
 
   return (
     <article className="tarjeta">
@@ -27,6 +29,7 @@ function CardGrupo({ grupo, onAbrirGrupo, onSalir }) {
             </span>
           )}
           <span className="tarjetaChip">{CATEGORIAS[grupo.categoria] || "Grupo"}</span>
+          {cantidadFechas > 1 && <span className="tarjetaChip">{cantidadFechas} fechas</span>}
         </div>
       </div>
 

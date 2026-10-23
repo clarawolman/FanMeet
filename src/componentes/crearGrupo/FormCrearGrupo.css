@@ -290,6 +290,24 @@
   gap: 8px;
 }
 
+/* con Comunidad son cuatro tipos: de a dos */
+@container (min-width: 481px) {
+  .crearGrupoCategorias:has(> :nth-child(4)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* grupo de comunidad: en vez de fecha, hora y lugar, una sola celda
+   (le gana a los bordes de :first-child/:last-child de las celdas) */
+.crearGrupoTira .crearGrupoCelda.crearGrupoSinEncuentro {
+  margin: 0;
+  cursor: default;
+  border-radius: var(--fm-radius-lg);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.4;
+}
+
 .crearGrupoCategoria {
   position: relative;
   display: flex;

@@ -202,6 +202,22 @@
   font-weight: 600;
 }
 
+/* ===== CARPETA: un artista varios días seguidos ===== */
+/* Dos hojas asomando abajo, más angostas, como cards apiladas. Cada hoja
+   es un par de sombras: relleno arriba y borde (1px más ancho) abajo. */
+.home-card--carpeta {
+  margin-bottom: 9px;
+  box-shadow:
+    0 10px 0 -6px var(--fm-surface),
+    0 10px 0 -5px var(--fm-card-borde),
+    0 20px 0 -12px var(--fm-surface),
+    0 20px 0 -11px var(--fm-card-borde);
+}
+
+.home-card-badge-fechas {
+  padding-left: 10px;
+}
+
 .home-card-badge-unido svg {
   width: 14px;
   height: 14px;

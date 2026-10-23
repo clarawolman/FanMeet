@@ -10,6 +10,7 @@ vi.mock("../src/repositories/backofficeRepository.js", () => ({
     eliminarGrupos: vi.fn(),
     listarEstadios: vi.fn(),
     listarConciertos: vi.fn(),
+    listarGrupos: vi.fn(),
     cambiarEstadoUsuario: vi.fn(),
     banearEnAuth: vi.fn(),
   },
@@ -30,6 +31,7 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
     listarPorConcierto: vi.fn(async () => []),
     obtenerPorId: vi.fn(),
     actualizar: vi.fn(),
+    crear: vi.fn(),
   },
   grupoUsuarioRepository: { listarUsuariosPorGrupo: vi.fn() },
 }));
@@ -177,8 +179,8 @@ describe("importación de conciertos en lote", () => {
       { id_estadio: 2, nombre: "River Plate" },
     ]);
     estiloMusicalRepository.listarCatalogo.mockResolvedValue([
-      { id_estiloMusical: 10, nombre: "Rock" },
-      { id_estiloMusical: 11, nombre: "singer-songwriter" },
+      { id: 10, nombre: "Rock" },
+      { id: 11, nombre: "singer-songwriter" },
     ]);
     backofficeRepository.listarConciertos.mockResolvedValue([
       { id_concierto: 1, nombre: "Take Cover Tour", fecha: "2099-02-25T21:00:00" },
@@ -379,7 +381,15 @@ describe("backofficeService.resolverReporte", () => {
 
 describe("backofficeService.actualizarGrupo", () => {
   beforeEach(() => {
-    grupoRepository.obtenerPorId.mockResolvedValue({ id_grupo: 9, nombre: "Previa", foto: "https://x.com/a.jpg" });
+    grupoRepository.obtenerPorId.mockResolvedValue({
+      id_grupo: 9,
+      nombre: "Previa",
+      categoria: "pre",
+      fecha: "2099-11-15",
+      hora: "18:00:00",
+      ubicacion: "Plaza Serrano",
+      foto: "https://x.com/a.jpg",
+    });
     grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ id_grupo: id, ...cambios }));
   });
 
@@ -404,5 +414,111 @@ describe("backofficeService.actualizarGrupo", () => {
     conciertoRepository.obtenerPorId.mockResolvedValue(null);
     await expect(backofficeService.actualizarGrupo(9, { id_concierto: 99 })).rejects.toMatchObject({ status: 404 });
     expect(grupoRepository.actualizar).not.toHaveBeenCalled();
+  });
+});
+
+describe("importación de grupos en lote", () => {
+  const ENCABEZADO = "Nombre\tConcierto\tTipo\tFecha y hora\tPunto de encuentro\tCupo";
+  const fila = (...celdas) => celdas.join("\t");
+  const lista = (...filas) => [ENCABEZADO, ...filas].join("\n");
+
+  beforeEach(() => {
+    backofficeRepository.listarConciertos.mockResolvedValue([
+      { id_concierto: 1, nombre: "Take Cover Tour", fecha: "2099-02-25T21:00:00" },
+      // Gira con dos fechas: se elige por la fecha del grupo.
+      { id_concierto: 2, nombre: "Maria Becerra en el Movistar Arena", fecha: "2099-11-13T21:00:00" },
+      { id_concierto: 3, nombre: "Maria Becerra en el Movistar Arena", fecha: "2099-11-15T21:00:00" },
+      { id_concierto: 4, nombre: "Viejo", fecha: "2020-01-01T21:00:00" },
+    ]);
+    backofficeRepository.listarGrupos.mockResolvedValue([{ id_grupo: 9, nombre: "Previa en Palermo", id_concierto: 1 }]);
+    conciertoRepository.obtenerPorId.mockImplementation(async (id) => ({ id_concierto: id }));
+    let id = 300;
+    grupoRepository.crear.mockImplementation(async (datos) => ({ id_grupo: id++, ...datos }));
+  });
+
+  it("la vista previa marca cada error en su fila y no crea nada", async () => {
+    const { filas } = await backofficeService.previaImportacionGrupos(
+      lista(
+        fila("Previa Maria", "maria becerra en el movistar arena", "Previa", "15/11/2099 18:00", "Bar de la esquina", "20"),
+        fila("After Maria", "Maria Becerra en el Movistar Arena", "after", "20/11/2099 01:00", "Bar de la esquina", ""),
+        fila("Previa en Palermo", "1", "Mismo día", "25/02/2099 19:00", "Plaza Italia", ""),
+        fila("Otro", "Show inexistente", "fiesta", "25/02/2099", "Acá", "1"),
+        fila("Pasado", "Viejo", "Previa", "01/01/2020 19:00", "Bar de la esquina", "")
+      )
+    );
+
+    expect(filas.map((f) => f.errores)).toEqual([
+      [],
+      ['Hay varios conciertos "Maria Becerra en el Movistar Arena": poné el id del concierto en vez del nombre'],
+      ["Ya existe un grupo con ese nombre en ese concierto"],
+      [
+        'No existe el concierto "Show inexistente"',
+        'Tipo inválido: "fiesta" (Previa, After, Mismo día o Comunidad)',
+        "Falta la hora",
+        "El punto de encuentro debe tener al menos 6 caracteres",
+        "El cupo tiene que ser un número entre 2 y 500 (vacío = sin límite)",
+      ],
+      ["El concierto ya pasó", "La fecha ya pasó"],
+    ]);
+    expect(filas[0]).toMatchObject({
+      concierto: { nombre: "Maria Becerra en el Movistar Arena", fecha: "2099-11-15T21:00:00" },
+      categoria: "pre",
+      fecha: "2099-11-15T18:00",
+      cupo: 20,
+    });
+    expect(filas[0]).not.toHaveProperty("datos");
+    expect(grupoRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("acepta grupos de varias fechas seguidas (ids con +) y de comunidad sin encuentro", async () => {
+    backofficeRepository.listarConciertos.mockResolvedValue([
+      { id_concierto: 2, nombre: "MB", id_artista: 5, id_estadio: 1, fecha: "2099-11-13T21:00:00" },
+      { id_concierto: 3, nombre: "MB", id_artista: 5, id_estadio: 1, fecha: "2099-11-14T21:00:00" },
+      { id_concierto: 8, nombre: "MB", id_artista: 5, id_estadio: 1, fecha: "2099-12-20T21:00:00" },
+    ]);
+
+    const { filas } = await backofficeService.previaImportacionGrupos(
+      lista(
+        fila("Fans de MB", "2+3", "Comunidad", "", "", ""),
+        fila("Previa general", "3+2", "Previa", "12/11/2099 18:00", "Bar de la esquina", ""),
+        fila("Mal", "2+8", "Comunidad", "", "", "")
+      )
+    );
+
+    expect(filas.map((f) => f.errores)).toEqual([
+      [],
+      [],
+      ['"2+8" no son fechas seguidas del mismo artista y estadio (poné sus ids unidos con +)'],
+    ]);
+    expect(filas[0]).toMatchObject({ cantidadFechas: 2, categoria: "comunidad", fecha: "", ubicacion: "" });
+    expect(filas[1]).toMatchObject({ cantidadFechas: 2, concierto: { fecha: "2099-11-13T21:00:00" } });
+  });
+
+  it("crea solo las filas válidas, con el moderador como creador", async () => {
+    const resultado = await backofficeService.importarGrupos(
+      "mod1",
+      lista(
+        fila("Previa Maria", "3", "Previa", "15/11/2099 18:00", "Bar de la esquina", ""),
+        fila("Sin concierto", "", "Previa", "15/11/2099 18:00", "Bar de la esquina", "")
+      )
+    );
+
+    expect(grupoRepository.crear.mock.calls.map((c) => c[0])).toEqual([
+      {
+        nombre: "Previa Maria",
+        id_concierto: 3,
+        ids_conciertos: null,
+        categoria: "pre",
+        fecha: "2099-11-15",
+        hora: "18:00",
+        ubicacion: "Bar de la esquina",
+        descripcion: "",
+        cupo: null,
+        id_creador: "mod1",
+      },
+    ]);
+    expect(resultado.creados).toEqual([{ fila: 1, id_grupo: 300, nombre: "Previa Maria" }]);
+    expect(resultado.conErrores.map((f) => f.fila)).toEqual([2]);
+    expect(resultado.fallidos).toEqual([]);
   });
 });

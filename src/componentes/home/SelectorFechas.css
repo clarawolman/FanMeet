@@ -1,0 +1,70 @@
+.selectorFechas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.selectorFechas-fecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
+}
+
+.selectorFechas-fecha:hover {
+  border-color: var(--fm-accent-soft-border);
+  background: var(--fm-accent-soft-bg);
+}
+
+.selectorFechas-fecha svg {
+  flex-shrink: 0;
+  color: var(--fm-muted);
+}
+
+.selectorFechas-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.selectorFechas-texto strong {
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+}
+
+/* .home-modal span (OverlayCodigo.css) pinta todos los span del modal */
+.home-modal .selectorFechas-texto,
+.home-modal .selectorFechas-unido {
+  color: inherit;
+  line-height: 1.3;
+}
+
+.selectorFechas-texto small {
+  color: var(--fm-muted);
+  font-size: var(--fm-fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-modal .selectorFechas-unido {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+}

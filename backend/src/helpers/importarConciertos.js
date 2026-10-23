@@ -74,38 +74,42 @@ function separarLineas(texto) {
 
 // Si la primera fila es un encabezado, devuelve en qué columna está cada
 // campo ({ nombre: 1, artista: 2, ... }). Si no, null.
-function leerEncabezado(celdas) {
+function leerEncabezado(celdas, encabezados) {
   const posiciones = {};
   celdas.forEach((celda, i) => {
-    const campo = ENCABEZADOS[normalizarGenero(celda)];
+    const campo = encabezados[normalizarGenero(celda)];
     if (campo && posiciones[campo] === undefined) posiciones[campo] = i;
   });
   return Object.keys(posiciones).length >= 3 ? posiciones : null;
 }
 
-// Convierte el texto pegado en filas { fila, nombre, artista, estadio,
-// genero, fecha, hora, imagen }. `fila` es el número que ve el moderador
-// (1 = primera fila de datos).
-export function leerFilas(texto) {
+// Convierte el texto pegado en filas { fila, ...campos }. Sin encabezado,
+// las columnas van en el orden de `columnas`; `campos` son todos los que se
+// devuelven (incluye los que solo llegan por encabezado, como "hora").
+// `fila` es el número que ve el moderador (1 = primera fila de datos).
+// La usa también la importación de grupos (importarGrupos.js).
+export function leerTabla(texto, { columnas, encabezados, campos = columnas }) {
   const lineas = separarLineas(texto).map((celdas) => celdas.map((c) => c.trim()));
   if (lineas.length === 0) return [];
 
-  const encabezado = leerEncabezado(lineas[0]);
-  const posiciones = encabezado || Object.fromEntries(COLUMNAS.map((campo, i) => [campo, i]));
+  const encabezado = leerEncabezado(lineas[0], encabezados);
+  const posiciones = encabezado || Object.fromEntries(columnas.map((campo, i) => [campo, i]));
   const datos = encabezado ? lineas.slice(1) : lineas;
 
-  return datos.map((celdas, i) => {
-    const valor = (campo) => (posiciones[campo] === undefined ? "" : celdas[posiciones[campo]] || "");
-    return {
-      fila: i + 1,
-      nombre: valor("nombre"),
-      artista: valor("artista"),
-      estadio: valor("estadio"),
-      genero: valor("genero"),
-      fecha: valor("fecha"),
-      hora: valor("hora"),
-      imagen: valor("imagen"),
-    };
+  return datos.map((celdas, i) => ({
+    fila: i + 1,
+    ...Object.fromEntries(
+      campos.map((campo) => [campo, posiciones[campo] === undefined ? "" : celdas[posiciones[campo]] || ""])
+    ),
+  }));
+}
+
+// Filas { fila, nombre, artista, estadio, genero, fecha, hora, imagen }.
+export function leerFilas(texto) {
+  return leerTabla(texto, {
+    columnas: COLUMNAS,
+    encabezados: ENCABEZADOS,
+    campos: ["nombre", "artista", "estadio", "genero", "fecha", "hora", "imagen"],
   });
 }
 

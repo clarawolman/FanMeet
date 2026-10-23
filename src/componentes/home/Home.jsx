@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import "./Home.css";
 import OverlayCodigo from "./OverlayCodigo";
+import SelectorFechas from "./SelectorFechas";
+import { agruparFechasSeguidas } from "../../utils/carpetasConciertos";
 import { conciertosService } from "../../services/conciertosService";
 import { usuariosService } from "../../services/usuariosService";
 import { notificacionesService } from "../../services/notificacionesService";
@@ -36,6 +38,8 @@ function Home({ onEntrarConcierto, onNavegar, onVerUsuario, onAbrirChatbot }) {
   const [conciertos, setConciertos] = useState([]);
   const [conciertosUnidos, setConciertosUnidos] = useState([]);
   const [conciertoSeleccionado, setConciertoSeleccionado] = useState(null);
+  // Fechas de la carpeta abierta (SelectorFechas), o null.
+  const [carpetaAbierta, setCarpetaAbierta] = useState(null);
   const [codigoIngresado, setCodigoIngresado] = useState("");
   const [errorCodigo, setErrorCodigo] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -323,6 +327,93 @@ const generosOrdenados = [...generos].sort((a, b) => {
     );
   }
 
+  // Un artista varios días seguidos en el mismo estadio: una sola card con
+  // las fechas apiladas. Al tocarla se elige la fecha (SelectorFechas).
+  function renderCarpeta(fechas, motivo) {
+    const primera = fechas[0];
+    const ultima = fechas[fechas.length - 1];
+    const desde = partesFecha(primera.fecha);
+    const hasta = partesFecha(ultima.fecha);
+    const titulo = primera.artista?.nombre || primera.nombre;
+    const mismoNombre = fechas.every((c) => c.nombre === primera.nombre);
+    const cantidadFans = fechas.reduce((total, c) => total + (c.cantidadFans ?? 0), 0);
+    const cantidadGrupos = fechas.reduce((total, c) => total + (c.cantidadGrupos ?? 0), 0);
+    const unidoAAlguna = fechas.some((c) => usuarioYaEstaUnido(c.id_concierto));
+
+    return (
+      <article
+        className="home-card home-card--carpeta"
+        key={`carpeta-${primera.id_concierto}`}
+        onClick={() => setCarpetaAbierta(fechas)}
+      >
+        <div className="home-card-imagen">
+          <img src={primera.imagen || primera.imagenConcierto || ""} alt={titulo} draggable={false} />
+
+          {desde && hasta && (
+            <time className="home-card-fecha" dateTime={String(primera.fecha).slice(0, 10)}>
+              <span>{desde.mes === hasta.mes ? desde.mes : `${desde.mes}–${hasta.mes}`}</span>
+              <strong>
+                {desde.dia}–{hasta.dia}
+              </strong>
+            </time>
+          )}
+
+          <span className="home-card-badge-unido home-card-badge-fechas">
+            {unidoAAlguna && (
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+            {fechas.length} fechas
+          </span>
+        </div>
+
+        <div className="home-card-info">
+          {mismoNombre && primera.nombre && primera.artista?.nombre && (
+            <p className="home-card-artista">{primera.artista.nombre}</p>
+          )}
+
+          <h3>{mismoNombre && primera.nombre ? primera.nombre : titulo}</h3>
+
+          <p className="home-card-meta">
+            {primera.estadio?.nombre || primera.estadio?.ciudad || "Estadio a confirmar"}
+            {desde && <> · {desde.anio}</>}
+          </p>
+
+          {motivo && <p className="home-card-motivo">{motivo}</p>}
+
+          <div className="home-card-pie">
+            <span className="home-card-stats fmDato">
+              {cantidadFans} {cantidadFans === 1 ? "fan" : "fans"} · {cantidadGrupos}{" "}
+              {cantidadGrupos === 1 ? "grupo" : "grupos"}
+            </span>
+
+            <button
+              type="button"
+              className="home-card-btn-unirme home-card-btn-unirme--ver"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCarpetaAbierta(fechas);
+              }}
+            >
+              Ver fechas
+            </button>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  // Para las filas: agrupa las fechas seguidas y dibuja cada elemento.
+  function renderLista(lista, { conMotivo = false, maximo } = {}) {
+    const items = agruparFechasSeguidas(lista);
+    return (maximo ? items.slice(0, maximo) : items).map((item) =>
+      item.carpeta
+        ? renderCarpeta(item.fechas, conMotivo ? item.fechas[0].motivo : null)
+        : renderCard(item, conMotivo ? item.motivo : null)
+    );
+  }
+
   return (
     <div className="pantalla-home">
       <HeaderApp
@@ -389,7 +480,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
               <p className="home-estado">No encontramos conciertos.</p>
             ) : (
               <div className="home-resultados-grid">
-                {conciertosBuscados.map((concierto) => renderCard(concierto))}
+                {renderLista(conciertosBuscados)}
               </div>
             )}
           </section>
@@ -419,9 +510,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
 
               {conciertosRecomendados.length > 0 && (
                 <CarruselFila>
-                  {conciertosRecomendados.map((concierto) =>
-                    renderCard(concierto, concierto.motivo)
-                  )}
+                  {renderLista(conciertosRecomendados, { conMotivo: true })}
                 </CarruselFila>
               )}
             </section>
@@ -441,9 +530,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
               </div>
 
               <CarruselFila>
-                {conciertos
-                  .slice(0, 10)
-                  .map((concierto) => renderCard(concierto))}
+                {renderLista(conciertos, { maximo: 10 })}
               </CarruselFila>
             </section>
 
@@ -463,9 +550,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
                   </div>
 
                   <CarruselFila>
-                    {conciertosDelGenero.map((concierto) =>
-                      renderCard(concierto)
-                    )}
+                    {renderLista(conciertosDelGenero)}
                   </CarruselFila>
                 </section>
               );
@@ -473,6 +558,18 @@ const generosOrdenados = [...generos].sort((a, b) => {
           </section>
         )}
       </main>
+
+      {carpetaAbierta && (
+        <SelectorFechas
+          fechas={carpetaAbierta}
+          estaUnido={usuarioYaEstaUnido}
+          onElegir={(concierto) => {
+            setCarpetaAbierta(null);
+            abrirConcierto(concierto);
+          }}
+          onCerrar={() => setCarpetaAbierta(null)}
+        />
+      )}
 
       {conciertoSeleccionado && (
         <OverlayCodigo

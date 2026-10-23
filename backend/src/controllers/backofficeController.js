@@ -72,6 +72,14 @@ export const backofficeController = {
     res.status(201).json(await backofficeService.crearGrupo(req.user.id, req.body));
   }),
 
+  previaImportacionGrupos: asyncHandler(async (req, res) => {
+    res.json(await backofficeService.previaImportacionGrupos(req.body.texto));
+  }),
+
+  importarGrupos: asyncHandler(async (req, res) => {
+    res.status(201).json(await backofficeService.importarGrupos(req.user.id, req.body.texto));
+  }),
+
   actualizarGrupo: asyncHandler(async (req, res) => {
     res.json(await backofficeService.actualizarGrupo(req.params.idGrupo, req.body));
   }),

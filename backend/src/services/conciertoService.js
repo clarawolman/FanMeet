@@ -14,6 +14,8 @@ import { ApiError } from "../helpers/ApiError.js";
 import { conciertoYaPaso } from "../helpers/fechas.js";
 import { env } from "../config/env.js";
 import { sinBloqueados } from "./bloqueoService.js";
+import { fechasSeguidasDe } from "./grupoService.js";
+import { conciertosDelGrupo, esGrupoGeneral } from "../helpers/gruposGenerales.js";
 
 async function armarUsuariosResumen(idsUsuario) {
   const idsUnicos = [...new Set(idsUsuario)];
@@ -52,11 +54,12 @@ export const conciertoService = {
       throw ApiError.forbidden("No pertenecés a este concierto");
     }
 
-    const [artista, estadio, gruposCrudos, relacionesConcierto] = await Promise.all([
+    const [artista, estadio, gruposCrudos, relacionesConcierto, seguidas] = await Promise.all([
       conciertoRepository.obtenerArtista(concierto.id_artista),
       conciertoRepository.obtenerEstadio(concierto.id_estadio),
       grupoRepository.listarPorConcierto(idConcierto),
       usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto),
+      fechasSeguidasDe(concierto),
     ]);
 
     // Los grupos muestran a todos sus integrantes (un bloqueo no cambia los
@@ -85,7 +88,13 @@ export const conciertoService = {
       };
     });
 
-    return toConciertoDetalle(concierto, { artista, estadio, grupos, usuarios });
+    // Si el artista toca varios días seguidos ahí, se puede armar un grupo
+    // general de todas las fechas que no pasaron.
+    const fechasSeguidas = seguidas
+      .filter((c) => !conciertoYaPaso(c.fecha))
+      .map((c) => ({ id_concierto: c.id_concierto, fecha: c.fecha }));
+
+    return { ...toConciertoDetalle(concierto, { artista, estadio, grupos, usuarios }), fechasSeguidas };
   },
 
   // El codigo de acceso ahora se valida en el servidor (antes vivia
@@ -143,9 +152,18 @@ export const conciertoService = {
 
   // Mismo efecto en cascada que hoy tiene MisEventos.jsx: salir de un
   // concierto tambien saca al usuario de todos los grupos de ese concierto.
+  // En un grupo general sigue si todavía está unido a otra de sus fechas.
   async salirDeConcierto(idUsuarioAutenticado, idConcierto) {
-    const grupos = await grupoRepository.listarPorConcierto(idConcierto);
-    const idsGrupo = grupos.map((g) => g.id_grupo);
+    const [grupos, misConciertos] = await Promise.all([
+      grupoRepository.listarPorConcierto(idConcierto),
+      usuariosConciertosRepository.listarConciertosPorUsuario(idUsuarioAutenticado),
+    ]);
+    const meQuedan = new Set(
+      misConciertos.map((r) => r.id_concierto).filter((id) => id !== Number(idConcierto))
+    );
+    const idsGrupo = grupos
+      .filter((g) => !esGrupoGeneral(g) || !conciertosDelGrupo(g).some((id) => meQuedan.has(id)))
+      .map((g) => g.id_grupo);
 
     if (idsGrupo.length > 0) {
       await grupoUsuarioRepository.eliminarDeGruposIds(idUsuarioAutenticado, idsGrupo);

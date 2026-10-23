@@ -22,11 +22,14 @@ export const grupoRepository = {
     return unwrap(resultado, "Error cargando grupos");
   },
 
+  // Incluye los grupos generales que abarcan ese concierto aunque sean de
+  // otra de sus fechas (ids_conciertos, ver helpers/gruposGenerales.js).
   async listarPorConcierto(idConcierto) {
+    const id = Number(idConcierto);
     const resultado = await supabaseAdmin
       .from("grupo")
       .select("*")
-      .eq("id_concierto", idConcierto);
+      .or(`id_concierto.eq.${id},ids_conciertos.cs.{${id}}`);
     return unwrap(resultado, "Error cargando grupos del concierto");
   },
 

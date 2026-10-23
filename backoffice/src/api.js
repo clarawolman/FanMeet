@@ -98,6 +98,9 @@ export const api = {
 
   grupos: () => solicitar("/backoffice/grupos"),
   crearGrupo: (datos) => solicitar("/backoffice/grupos", { method: "POST", body: datos }),
+  previaImportacionGrupos: (texto) =>
+    solicitar("/backoffice/grupos/importar/previa", { method: "POST", body: { texto } }),
+  importarGrupos: (texto) => solicitar("/backoffice/grupos/importar", { method: "POST", body: { texto } }),
   actualizarGrupo: (id, cambios) => solicitar(`/backoffice/grupos/${id}`, { method: "PATCH", body: cambios }),
   eliminarGrupo: (id) => solicitar(`/backoffice/grupos/${id}`, { method: "DELETE" }),
   mensajesDeGrupo: (id) => solicitar(`/backoffice/grupos/${id}/mensajes`),

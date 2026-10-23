@@ -15,23 +15,51 @@ export const cupoSchema = z.preprocess(
     .nullable()
 );
 
+// "comunidad" es un grupo sin encuentro (ver helpers/gruposGenerales.js).
+export const CATEGORIAS_GRUPO = ["pre", "after", "mismo_dia", "comunidad"];
+
+// Fechas de un grupo general (ids de concierto). El service controla que
+// sean fechas seguidas del mismo artista y estadio.
+export const idsConciertosSchema = z.array(z.coerce.number().int().positive()).max(30).optional();
+
+// Un grupo de comunidad no tiene encuentro: fecha, hora y lugar quedan en
+// null. Cualquier otro tipo necesita los tres.
+export function conEncuentro(schema, mensajes) {
+  return schema
+    .superRefine((d, ctx) => {
+      if (d.categoria === "comunidad") return;
+      for (const campo of ["fecha", "hora", "ubicacion"]) {
+        if (!d[campo]) ctx.addIssue({ code: "custom", path: [campo], message: mensajes[campo] });
+      }
+    })
+    .transform((d) => (d.categoria === "comunidad" ? { ...d, fecha: null, hora: null, ubicacion: null } : d));
+}
+
 // Mismas reglas que hoy valida FormCrearGrupo.jsx/CrearGrupo.jsx en el cliente.
-export const crearGrupoSchema = z.object({
+const camposGrupo = z.object({
   nombre: z.string().trim().min(1, "El nombre del grupo es obligatorio"),
-  ubicacion: z.string().trim().min(6, "La ubicación debe tener al menos 6 caracteres"),
-  fecha: z.string().min(1, "La fecha es obligatoria"),
-  hora: z.string().min(1, "La hora es obligatoria"),
+  ubicacion: z.string().trim().min(6, "La ubicación debe tener al menos 6 caracteres").or(z.literal("")).nullish(),
+  fecha: z.string().nullish(),
+  hora: z.string().nullish(),
   descripcion: z.string().trim().optional().default(""),
-  categoria: z.enum(["pre", "after", "mismo_dia"]),
+  categoria: z.enum(CATEGORIAS_GRUPO),
   id_concierto: z.coerce.number().int().positive(),
+  ids_conciertos: idsConciertosSchema,
   foto: z.string().optional(),
   cupo: cupoSchema.optional(),
 });
 
+export const crearGrupoSchema = conEncuentro(camposGrupo, {
+  fecha: "La fecha es obligatoria",
+  hora: "La hora es obligatoria",
+  ubicacion: "La ubicación es obligatoria",
+});
+
 // El creador edita su grupo: solo los campos que cambiaron. El concierto no
-// se puede cambiar (los integrantes se sumaron para ese show).
-export const actualizarGrupoSchema = crearGrupoSchema
-  .omit({ id_concierto: true })
+// se puede cambiar (los integrantes se sumaron para ese show). Que el
+// encuentro quede completo lo controla el service (cambiosConEncuentro).
+export const actualizarGrupoSchema = camposGrupo
+  .omit({ id_concierto: true, ids_conciertos: true })
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
 

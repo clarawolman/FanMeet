@@ -26,6 +26,17 @@ export const conciertoRepository = {
     }));
   },
 
+  // Todas las fechas de un artista en un estadio (para armar las fechas
+  // seguidas de los grupos generales, ver helpers/gruposGenerales.js).
+  async listarDeArtistaYEstadio(idArtista, idEstadio) {
+    const resultado = await supabaseAdmin
+      .from("concierto")
+      .select("id_concierto, id_artista, id_estadio, fecha")
+      .eq("id_artista", idArtista)
+      .eq("id_estadio", idEstadio);
+    return unwrap(resultado, "Error cargando las fechas del artista");
+  },
+
   // Los conciertos de un día ("2026-10-19"), con su estadio. La fecha se
   // guarda en hora de Argentina, así que alcanza con comparar el texto.
   async listarDelDia(dia, diaSiguiente) {
@@ -74,6 +85,17 @@ export const usuariosConciertosRepository = {
       .eq("id_concierto", idConcierto)
       .maybeSingle();
     return unwrap(resultado, "Error verificando inscripción al concierto");
+  },
+
+  // Para los grupos generales: alcanza con estar unido a una de sus fechas.
+  async existeRelacionEnAlguno(idUsuario, idsConcierto) {
+    const resultado = await supabaseAdmin
+      .from("usuarios_conciertos")
+      .select("id_concierto")
+      .eq("id_usuario", idUsuario)
+      .in("id_concierto", idsConcierto)
+      .limit(1);
+    return unwrap(resultado, "Error verificando inscripción al concierto").length > 0;
   },
 
   // Quien va a que concierto, de todos los usuarios (para el matching).

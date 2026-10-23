@@ -51,9 +51,14 @@ vi.mock("../src/services/usuarioService.js", () => ({
   usuarioService: { obtenerEstadisticas: vi.fn() },
 }));
 
-vi.mock("../src/services/grupoService.js", () => ({
-  grupoService: { unirse: vi.fn() },
-}));
+vi.mock("../src/services/grupoService.js", async () => {
+  const { usuariosConciertosRepository } = await import("../src/repositories/conciertoRepository.js");
+  return {
+    grupoService: { unirse: vi.fn() },
+    perteneceAlConciertoDelGrupo: async (idUsuario, grupo) =>
+      Boolean(await usuariosConciertosRepository.existeRelacion(idUsuario, grupo.id_concierto)),
+  };
+});
 
 vi.mock("../src/repositories/bloqueoRepository.js", () => ({
   bloqueoRepository: { idsConBloqueo: vi.fn() },

@@ -13,14 +13,17 @@ import { estiloMusicalRepository } from "../repositories/estiloMusicalRepository
 import { artistaFavoritoRepository } from "../repositories/artistaFavoritoRepository.js";
 import { normalizarGenero } from "../helpers/generos.js";
 import { claveConcierto, esUrlHttp, leerFechaHora, leerFilas } from "../helpers/importarConciertos.js";
+import { claveGrupo, leerCategoria, leerFilasGrupos } from "../helpers/importarGrupos.js";
 import { problemaConImagen } from "../helpers/imagenRemota.js";
+import { CUPO_MAXIMO, CUPO_MINIMO } from "../validators/grupoValidators.js";
 import { conciertoYaPaso } from "../helpers/fechas.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { env } from "../config/env.js";
 import { olvidarEstadoUsuario } from "../middlewares/authMiddleware.js";
 import { avisarCambiosDeGrupo } from "./avisoCambiosGrupo.js";
-import { validarCupoNuevo } from "./grupoService.js";
+import { cambiosConEncuentro, prepararConciertosDelGrupo, validarCupoNuevo } from "./grupoService.js";
+import { CATEGORIA_COMUNIDAD, conciertosDelGrupo, esGrupoGeneral, fechasSeguidas } from "../helpers/gruposGenerales.js";
 
 // Cuántos mensajes de contexto ve el moderador al revisar un reporte.
 const MENSAJES_DE_CONTEXTO = 100;
@@ -246,9 +249,147 @@ async function revisarImportacion(texto) {
               nombre: f.nombre,
               artista: f.artista,
               id_estadio: estadio.id_estadio,
-              id_estiloMusical: estilo.id_estiloMusical,
+              id_estiloMusical: estilo.id,
               fecha,
               imagenConcierto: f.imagen,
+            }
+          : null,
+    };
+  });
+}
+
+const diasEntre = (a, b) => Math.abs(Date.parse(`${a}T12:00:00Z`) - Date.parse(`${b}T12:00:00Z`)) / 86_400_000;
+
+// El concierto de un grupo importado: por id o por nombre. Varios shows
+// pueden llamarse igual (una gira con varias fechas): se queda con el que
+// cae a un día o menos del grupo. Devuelve { concierto } o { error }.
+function buscarConciertoDeGrupo(texto, conciertos, diaGrupo) {
+  if (/^\d+$/.test(texto)) {
+    const concierto = conciertos.find((c) => String(c.id_concierto) === texto);
+    return concierto ? { concierto } : { error: `No existe el concierto con id ${texto}` };
+  }
+
+  const clave = normalizarGenero(texto);
+  let candidatos = conciertos.filter((c) => normalizarGenero(c.nombre) === clave);
+  if (candidatos.length === 0) return { error: `No existe el concierto "${texto}"` };
+  if (candidatos.length > 1) {
+    candidatos = candidatos.filter((c) => !conciertoYaPaso(c.fecha));
+    if (diaGrupo) candidatos = candidatos.filter((c) => diasEntre(String(c.fecha).slice(0, 10), diaGrupo) <= 1);
+  }
+  if (candidatos.length === 1) return { concierto: candidatos[0] };
+  return { error: `Hay varios conciertos "${texto}": poné el id del concierto en vez del nombre` };
+}
+
+// Igual que revisarImportacion, para grupos. Cada fila vuelve con sus
+// errores y, si no tiene, con los datos listos para crearGrupo.
+async function revisarImportacionGrupos(texto) {
+  const filas = leerFilasGrupos(texto);
+  if (filas.length === 0) {
+    throw ApiError.badRequest("No encontré grupos en lo que pegaste");
+  }
+  if (filas.length > MAXIMO_IMPORTACION) {
+    throw ApiError.badRequest(`Se pueden importar hasta ${MAXIMO_IMPORTACION} grupos por vez`);
+  }
+
+  const [conciertos, existentes] = await Promise.all([
+    backofficeRepository.listarConciertos(),
+    backofficeRepository.listarGrupos(),
+  ]);
+  const yaCargados = new Set(existentes.map((g) => claveGrupo(g.nombre, g.id_concierto)));
+  const primeraFilaDe = new Map();
+
+  const urls = [...new Set(filas.map((f) => f.foto).filter(esUrlHttp))];
+  const problemaDe = new Map(await Promise.all(urls.map(async (url) => [url, await problemaConImagen(url)])));
+
+  return filas.map((f) => {
+    const errores = [];
+    const fecha = leerFechaHora(f.fecha, f.hora);
+    const fechaValida = typeof fecha === "string";
+    const categoria = leerCategoria(f.categoria);
+    const sinEncuentro = categoria === CATEGORIA_COMUNIDAD;
+    const cupo = f.cupo ? Number(f.cupo) : null;
+    // "69+70+71" = grupo general de esas fechas (tienen que ser seguidas).
+    const partes = f.concierto.split("+").map((p) => p.trim()).filter(Boolean);
+    let { concierto, error: errorConcierto } = partes.length
+      ? buscarConciertoDeGrupo(partes[0], conciertos, fechaValida ? fecha.slice(0, 10) : null)
+      : { error: "Falta el concierto" };
+    let fechasDelGrupo = concierto ? [concierto] : [];
+    if (concierto && partes.length > 1) {
+      const ids = [...new Set(partes.map(Number))];
+      fechasDelGrupo = fechasSeguidas(concierto, conciertos).filter((c) => ids.includes(c.id_concierto));
+      if (partes.some((p) => !/^\d+$/.test(p)) || fechasDelGrupo.length !== ids.length) {
+        errorConcierto = `"${f.concierto}" no son fechas seguidas del mismo artista y estadio (poné sus ids unidos con +)`;
+      } else {
+        concierto = fechasDelGrupo[0];
+      }
+    }
+
+    if (!f.nombre) errores.push("Falta el nombre");
+    else if (f.nombre.length > 100) errores.push("El nombre es muy largo (máximo 100 caracteres)");
+
+    if (errorConcierto) errores.push(errorConcierto);
+    else if (conciertoYaPaso(fechasDelGrupo.at(-1).fecha)) errores.push("El concierto ya pasó");
+
+    if (!f.categoria) errores.push("Falta el tipo (Previa, After, Mismo día o Comunidad)");
+    else if (!categoria) errores.push(`Tipo inválido: "${f.categoria}" (Previa, After, Mismo día o Comunidad)`);
+
+    // Un grupo de comunidad no tiene encuentro: fecha y lugar se ignoran.
+    if (!sinEncuentro) {
+      if (!f.fecha) errores.push("Falta la fecha");
+      else if (!fecha) errores.push(`Fecha inválida: "${`${f.fecha} ${f.hora}`.trim()}"`);
+      else if (fecha.sinHora) errores.push("Falta la hora");
+      else if (conciertoYaPaso(fecha)) errores.push("La fecha ya pasó");
+
+      if (!f.ubicacion) errores.push("Falta el punto de encuentro");
+      else if (f.ubicacion.length < 6) errores.push("El punto de encuentro debe tener al menos 6 caracteres");
+      else if (f.ubicacion.length > 150) errores.push("El punto de encuentro es muy largo (máximo 150 caracteres)");
+    }
+
+    if (f.descripcion.length > 500) errores.push("La descripción es muy larga (máximo 500 caracteres)");
+
+    if (cupo !== null && (!Number.isInteger(cupo) || cupo < CUPO_MINIMO || cupo > CUPO_MAXIMO)) {
+      errores.push(`El cupo tiene que ser un número entre ${CUPO_MINIMO} y ${CUPO_MAXIMO} (vacío = sin límite)`);
+    }
+
+    if (f.foto && !esUrlHttp(f.foto)) errores.push("La foto tiene que ser una URL (https://...)");
+    else if (f.foto && problemaDe.get(f.foto)) errores.push(problemaDe.get(f.foto));
+
+    if (f.nombre && concierto) {
+      const clave = claveGrupo(f.nombre, concierto.id_concierto);
+      if (yaCargados.has(clave)) {
+        errores.push("Ya existe un grupo con ese nombre en ese concierto");
+      } else if (primeraFilaDe.has(clave)) {
+        errores.push(`Repetido: es igual a la fila ${primeraFilaDe.get(clave)}`);
+      } else {
+        primeraFilaDe.set(clave, f.fila);
+      }
+    }
+
+    return {
+      fila: f.fila,
+      nombre: f.nombre,
+      // Con el nombre y la fecha como están en la base, para que se vea qué se eligió.
+      concierto: concierto ? { nombre: concierto.nombre, fecha: concierto.fecha } : { nombre: f.concierto },
+      cantidadFechas: fechasDelGrupo.length,
+      categoria: categoria || f.categoria,
+      fecha: sinEncuentro ? "" : fechaValida ? fecha : `${f.fecha} ${f.hora}`.trim(),
+      ubicacion: sinEncuentro ? "" : f.ubicacion,
+      cupo,
+      foto: f.foto,
+      errores,
+      datos:
+        errores.length === 0
+          ? {
+              nombre: f.nombre,
+              id_concierto: concierto.id_concierto,
+              ids_conciertos: fechasDelGrupo.map((c) => c.id_concierto),
+              categoria,
+              fecha: sinEncuentro ? null : fecha.slice(0, 10),
+              hora: sinEncuentro ? null : fecha.slice(11, 16),
+              ubicacion: sinEncuentro ? null : f.ubicacion,
+              descripcion: f.descripcion,
+              cupo,
+              foto: f.foto,
             }
           : null,
     };
@@ -412,9 +553,14 @@ export const backofficeService = {
     return { artistas, estadios, estilos };
   },
 
+  // Cada concierto trae sus fechas seguidas (ids, él incluido) para
+  // elegir de cuáles es un grupo general.
   async listarConciertos() {
     const filas = await backofficeRepository.listarConciertos();
-    return filas.map(toConciertoResumen);
+    return filas.map((fila) => ({
+      ...toConciertoResumen(fila),
+      fechasSeguidas: fechasSeguidas(fila, filas).map((c) => c.id_concierto),
+    }));
   },
 
   // El artista se elige de Spotify o se escribe por nombre: si no existe, se crea.
@@ -490,8 +636,19 @@ export const backofficeService = {
 
     const unidos = await usuariosConciertosRepository.listarUsuariosPorConcierto(idConcierto);
     const grupos = await grupoRepository.listarPorConcierto(idConcierto);
+
+    // Un grupo general sigue con las otras fechas: solo se le saca esta.
+    const generales = grupos.filter(esGrupoGeneral);
+    for (const grupo of generales) {
+      const quedan = conciertosDelGrupo(grupo).filter((id) => id !== Number(idConcierto));
+      await grupoRepository.actualizar(grupo.id_grupo, {
+        id_concierto: quedan[0],
+        ids_conciertos: quedan.length > 1 ? quedan : null,
+      });
+    }
+
     await backofficeRepository.eliminarConcierto(idConcierto);
-    await borrarFotosDeGrupos(grupos.map((g) => g.id_grupo));
+    await borrarFotosDeGrupos(grupos.filter((g) => !esGrupoGeneral(g)).map((g) => g.id_grupo));
 
     try {
       await backofficeRepository.crearNotificaciones(
@@ -526,6 +683,7 @@ export const backofficeService = {
     return filas.map(({ concierto, grupos_usuarios, mensaje_grupo, ...g }) => ({
       ...g,
       concierto: concierto?.nombre || "",
+      cantidadFechas: conciertosDelGrupo(g).length,
       cantidadIntegrantes: grupos_usuarios?.[0]?.count ?? 0,
       cantidadMensajes: mensaje_grupo?.[0]?.count ?? 0,
     }));
@@ -534,28 +692,57 @@ export const backofficeService = {
   // A diferencia de un fan, el moderador no necesita estar unido al
   // concierto ni queda como integrante: el grupo arranca vacío y los fans se
   // suman. Queda como id_creador, así que solo él podría eliminarlo.
-  async crearGrupo(idModerador, { foto, ...datos }) {
+  async crearGrupo(idModerador, { foto, ids_conciertos: idsPedidos, ...datos }) {
     const concierto = await conciertoRepository.obtenerPorId(datos.id_concierto);
     if (!concierto) throw ApiError.notFound("El concierto no existe");
 
     return grupoRepository.crear({
       ...datos,
+      ...(await prepararConciertosDelGrupo(concierto, idsPedidos)),
       ...(foto ? { foto } : {}),
       id_creador: idModerador,
     });
   },
 
-  async actualizarGrupo(idGrupo, { foto, ...cambios }) {
+  async previaImportacionGrupos(texto) {
+    const filas = await revisarImportacionGrupos(texto);
+    return { filas: filas.map(({ datos: _datos, ...fila }) => fila) };
+  },
+
+  // Como importarConciertos: revalida todo y crea solo las filas sin errores.
+  async importarGrupos(idModerador, texto) {
+    const filas = await revisarImportacionGrupos(texto);
+    const creados = [];
+    const fallidos = [];
+
+    for (const fila of filas) {
+      if (!fila.datos) continue;
+      try {
+        const grupo = await this.crearGrupo(idModerador, fila.datos);
+        creados.push({ fila: fila.fila, id_grupo: grupo.id_grupo, nombre: fila.nombre });
+      } catch (error) {
+        fallidos.push({ fila: fila.fila, nombre: fila.nombre, error: error.message });
+      }
+    }
+
+    const conErrores = filas.filter((f) => !f.datos).map(({ datos: _datos, ...fila }) => fila);
+    return { creados, conErrores, fallidos };
+  },
+
+  // Cambiar el concierto o las fechas (ids_conciertos) vuelve a armar las
+  // fechas del grupo desde el concierto elegido.
+  async actualizarGrupo(idGrupo, { foto, ids_conciertos: idsPedidos, ...cambios }) {
     const grupo = await grupoRepository.obtenerPorId(idGrupo);
     if (!grupo) throw ApiError.notFound("El grupo no existe");
-    if (cambios.id_concierto) {
-      const concierto = await conciertoRepository.obtenerPorId(cambios.id_concierto);
+    if (cambios.id_concierto || idsPedidos) {
+      const concierto = await conciertoRepository.obtenerPorId(cambios.id_concierto || grupo.id_concierto);
       if (!concierto) throw ApiError.notFound("El concierto no existe");
+      Object.assign(cambios, await prepararConciertosDelGrupo(concierto, idsPedidos));
     }
     await validarCupoNuevo(idGrupo, cambios.cupo);
 
     const actualizado = await grupoRepository.actualizar(idGrupo, {
-      ...cambios,
+      ...cambiosConEncuentro(grupo, cambios),
       ...(foto !== undefined ? { foto: foto || null } : {}),
     });
     // El moderador no es integrante: se les avisa a todos.

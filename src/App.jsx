@@ -341,11 +341,25 @@ function App() {
     setPantalla("chats");
   }
 
+  // Un grupo general es de varias fechas (ids_conciertos) y su id_concierto
+  // es la primera: se abre la fecha a la que el usuario está unido.
+  async function conciertoParaAbrir(grupo) {
+    const fechas = grupo.ids_conciertos || [];
+    if (fechas.length < 2) return grupo.id_concierto;
+    try {
+      const misEventos = await conciertosService.listarMisEventos();
+      const mios = new Set((misEventos || []).map((e) => String(e.id_concierto)));
+      return fechas.find((id) => mios.has(String(id))) ?? grupo.id_concierto;
+    } catch {
+      return grupo.id_concierto;
+    }
+  }
+
   // Abre la info de un grupo desde fuera del concierto (Mis grupos, Chats):
   // InfoGrupo necesita el concierto del grupo (fans, etc.), así que se
   // carga antes.
   async function abrirGrupoConConcierto(grupo, origen) {
-    const pudoCargar = await cargarConciertoPorId(grupo.id_concierto);
+    const pudoCargar = await cargarConciertoPorId(await conciertoParaAbrir(grupo));
     if (!pudoCargar) {
       mostrarAviso("No se pudo abrir el grupo. Probá de nuevo.");
       setPantalla(origen);

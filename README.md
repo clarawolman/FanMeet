@@ -47,6 +47,15 @@ Reglas de moderación:
 - Backoffice: Root Directory = `backoffice`. Mismas tres variables.
 - En el backend, poner `FRONTEND_URL` y `BACKOFFICE_URL` con las URLs de Vercel, y `CORS_ORIGIN` con la de la app de fans. El backend acepta las dos URLs por CORS.
 
+## Grupos generales (artista varios días seguidos)
+
+Setup: correr `supabase/grupos_generales.sql` en el SQL Editor. **Sin esto la pantalla de cada concierto da error** (el backend busca los grupos por la columna `ids_conciertos`).
+
+- Si un artista toca varios días seguidos en el mismo estadio (hasta 2 días entre una fecha y la siguiente), en la home esas fechas van juntas en una "carpeta" y al crear un grupo se puede elegir que sea de todas las fechas.
+- Un grupo general lo ve y se puede sumar cualquiera que esté unido a alguna de sus fechas. Se guarda con `id_concierto` = la primera fecha e `ids_conciertos` = todas.
+- Tipo "Comunidad": grupo sin encuentro (sin fecha, hora ni punto de encuentro), para charlar. Solo se ofrece en los grupos de todas las fechas.
+- Desde el backoffice se crean desde el formulario (campo "Fechas") o importando con los ids unidos con `+` (ej: `69+70+71`).
+
 ## Perfil: descripción, @nombre y momentos compartidos
 
 Setup: correr en el SQL Editor, en este orden (después de `backoffice.sql`): `supabase/perfil_momentos.sql` y `supabase/momentos_publicaciones.sql`.

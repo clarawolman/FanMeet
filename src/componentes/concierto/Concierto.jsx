@@ -16,6 +16,8 @@ const FILTROS = [
   { id: "pre", nombre: "Pre" },
   { id: "after", nombre: "After" },
   { id: "mismo_dia", nombre: "Hoy" },
+  // Solo aparece si hay alguno (grupos sin encuentro, de todas las fechas).
+  { id: "comunidad", nombre: "Comunidad", soloSiHay: true },
 ];
 
 const TEXTO_VACIO = {
@@ -23,6 +25,7 @@ const TEXTO_VACIO = {
   pre: "Todavía no hay previas armadas.",
   after: "Todavía no hay afters armados.",
   mismo_dia: "Todavía no hay grupos para ir juntos el mismo día.",
+  comunidad: "Todavía no hay grupos de comunidad.",
 };
 
 // "21:00" desde concierto.hora o desde la fecha ("2026-08-28T21:00:00")
@@ -40,6 +43,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
   const cantidades = Object.fromEntries(
     FILTROS.map((f) => [f.id, f.id === "todos" ? grupos.length : grupos.filter((g) => g.categoria === f.id).length])
   );
+  const filtros = FILTROS.filter((f) => !f.soloSiHay || cantidades[f.id] > 0);
 
   const hora = horaDe(concierto);
   const anio = String(concierto.fecha || "").slice(0, 4);
@@ -81,7 +85,7 @@ function Concierto({ concierto, onAbrirGrupo, onCrearGrupo, onNavegar, onVolver,
               <p className="conciertoBloqueBajada">Previas, afters o para ir juntos: sumate o armá el tuyo.</p>
             </div>
             <FiltroSubEvento
-              filtros={FILTROS}
+              filtros={filtros}
               filtroActivo={filtroActivo}
               onCambiarFiltro={setFiltroActivo}
               cantidades={cantidades}

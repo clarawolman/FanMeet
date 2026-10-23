@@ -4,6 +4,7 @@ import { usuarioRepository } from "../repositories/usuarioRepository.js";
 import { notificacionRepository } from "../repositories/notificacionRepository.js";
 import { recordatorioRepository } from "../repositories/recordatorioRepository.js";
 import { hoyEnArgentina, horaEnArgentina, diaSiguiente } from "../helpers/fechas.js";
+import { CATEGORIA_COMUNIDAD, esGrupoGeneral } from "../helpers/gruposGenerales.js";
 
 // Antes de esta hora (de Argentina) no se manda nada: nadie quiere una
 // notificación a las 3 de la mañana. El chequeo de las 9 manda los del día.
@@ -50,14 +51,27 @@ export function textoRecordatorio(concierto, grupos = [], hoy = hoyEnArgentina()
   return texto;
 }
 
+// Los grupos que se nombran en el recordatorio: los de comunidad no tienen
+// encuentro, y uno general (varias fechas) solo si se juntan hoy o esta
+// noche, no en cada una de sus fechas.
+function gruposParaRecordar(grupos, hoy) {
+  return grupos.filter((g) => {
+    if (g.categoria === CATEGORIA_COMUNIDAD) return false;
+    if (!esGrupoGeneral(g)) return true;
+    const dia = String(g.fecha ?? "").slice(0, 10);
+    return dia === hoy || dia === diaSiguiente(hoy);
+  });
+}
+
 // Manda el recordatorio de un concierto a los unidos que todavía no lo
 // recibieron hoy. Devuelve a cuántos les llegó.
 async function recordarConcierto(concierto, hoy) {
-  const [unidos, grupos, suspendidos] = await Promise.all([
+  const [unidos, todosLosGrupos, suspendidos] = await Promise.all([
     usuariosConciertosRepository.listarUsuariosPorConcierto(concierto.id_concierto),
     grupoRepository.listarPorConcierto(concierto.id_concierto),
     usuarioRepository.listarIdsSuspendidos(),
   ]);
+  const grupos = gruposParaRecordar(todosLosGrupos, hoy);
   const destinatarios = [...new Set(unidos.map((u) => u.id_usuario))].filter(
     (id) => !suspendidos.has(id)
   );

@@ -1,12 +1,24 @@
 import "../generales/TiraTicket.css";
 import "./FormCrearGrupo.css";
-import { formatearFechaLarga } from "../../utils/fechas";
+import { formatearFechaLarga, partesFecha } from "../../utils/fechas";
 
 const CATEGORIAS = [
   { id: "pre", nombre: "Previa", detalle: "Antes del show" },
   { id: "mismo_dia", nombre: "El mismo día", detalle: "Para ir juntos" },
   { id: "after", nombre: "After", detalle: "Después del show" },
 ];
+
+// Solo para grupos de todas las fechas: sin encuentro, para charlar.
+const COMUNIDAD = { id: "comunidad", nombre: "Comunidad", detalle: "Sin encuentro, para charlar" };
+
+// [13 nov, 14 nov, 15 nov] -> "13, 14 y 15 de nov"
+function textoFechas(fechas) {
+  const partes = fechas.map((c) => partesFecha(c?.fecha)).filter(Boolean);
+  if (partes.length === 0) return "";
+  const enLista = (items) => (items.length <= 1 ? items.join("") : `${items.slice(0, -1).join(", ")} y ${items.at(-1)}`);
+  if (partes.every((p) => p.mes === partes[0].mes)) return `${enLista(partes.map((p) => p.dia))} de ${partes[0].mes}`;
+  return enLista(partes.map((p) => `${p.dia} ${p.mes}`));
+}
 
 const MAX_NOMBRE = 60;
 
@@ -31,6 +43,7 @@ function FormCrearGrupo({
   concierto,
   imagenDefault,
   editando = false,
+  fechasSeguidas = [],
 }) {
   function actualizarCampo(campo, valor) {
     setFormulario({
@@ -50,8 +63,21 @@ function FormCrearGrupo({
     });
   }
 
-  const categoria = CATEGORIAS.find((c) => c.id === formulario.categoria);
+  // Comunidad se ofrece si el grupo es de todas las fechas (o ya lo era).
+  const categorias =
+    formulario.todasLasFechas || formulario.categoria === COMUNIDAD.id ? [...CATEGORIAS, COMUNIDAD] : CATEGORIAS;
+  const categoria = categorias.find((c) => c.id === formulario.categoria);
+  const sinEncuentro = formulario.categoria === COMUNIDAD.id;
   const nombre = formulario.nombre.trim();
+
+  function elegirFechas(todas) {
+    setFormulario({
+      ...formulario,
+      todasLasFechas: todas,
+      // Una sola fecha no puede ser comunidad: vuelve a Previa.
+      categoria: !todas && formulario.categoria === COMUNIDAD.id ? "pre" : formulario.categoria,
+    });
+  }
 
   return (
     <form className="crearGrupoForm" onSubmit={crearGrupo} noValidate>
@@ -82,6 +108,14 @@ function FormCrearGrupo({
           />
         </label>
 
+        {sinEncuentro ? (
+          <div className="tiraTicket crearGrupoTira">
+            <p className="tiraTicketCelda crearGrupoCelda crearGrupoSinEncuentro">
+              <span className="crearGrupoCeldaEtiqueta">Sin encuentro</span>
+              Un grupo para charlar entre los que van{formulario.todasLasFechas ? " a cualquiera de las fechas" : ""}.
+            </p>
+          </div>
+        ) : (
         <div className="tiraTicket crearGrupoTira">
           <label className="tiraTicketCelda crearGrupoCelda">
             <span className="crearGrupoCeldaEtiqueta">Fecha</span>
@@ -112,6 +146,7 @@ function FormCrearGrupo({
             />
           </label>
         </div>
+        )}
       </section>
 
       <section className="crearGrupoBloque">
@@ -132,10 +167,36 @@ function FormCrearGrupo({
           />
         </label>
 
+        {fechasSeguidas.length > 1 && (
+          <fieldset className="crearGrupoCampo crearGrupoTipos">
+            <legend className="crearGrupoCampoEtiqueta">¿Para qué fechas?</legend>
+            <div className="crearGrupoCategorias">
+              {[
+                { todas: false, nombre: "Solo esta", detalle: textoFechas([concierto]) },
+                { todas: true, nombre: "Todas las fechas", detalle: textoFechas(fechasSeguidas) },
+              ].map((opcion) => (
+                <label
+                  key={opcion.nombre}
+                  className={`crearGrupoCategoria ${formulario.todasLasFechas === opcion.todas ? "activa" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="fechas"
+                    checked={formulario.todasLasFechas === opcion.todas}
+                    onChange={() => elegirFechas(opcion.todas)}
+                  />
+                  <strong>{opcion.nombre}</strong>
+                  <small>{opcion.detalle}</small>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
         <fieldset className="crearGrupoCampo crearGrupoTipos">
           <legend className="crearGrupoCampoEtiqueta">¿Cuándo se juntan?</legend>
           <div className="crearGrupoCategorias">
-            {CATEGORIAS.map((c) => (
+            {categorias.map((c) => (
               <label
                 key={c.id}
                 className={`crearGrupoCategoria ${formulario.categoria === c.id ? "activa" : ""}`}
@@ -217,7 +278,11 @@ function FormCrearGrupo({
       <div className="crearGrupoBarra">
         <span className="crearGrupoBarraTexto">
           <strong>{nombre || (editando ? "Editar grupo" : "Nuevo grupo")}</strong>
-          <small>Los fans del show lo van a ver así.</small>
+          <small>
+            {formulario.todasLasFechas
+              ? "Lo van a ver los fans de todas las fechas."
+              : "Los fans del show lo van a ver así."}
+          </small>
         </span>
         <button className="fmBotonPrimario" type="submit" disabled={guardando}>
           {guardando

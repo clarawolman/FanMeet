@@ -11,6 +11,7 @@ import { toConciertoDetalle } from "../entities/Concierto.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
+import { CATEGORIA_COMUNIDAD, conciertosDelGrupo, fechasSeguidas } from "../helpers/gruposGenerales.js";
 
 // Al bajar el cupo no puede quedar gente afuera. Se cuentan las relaciones
 // (no solo los usuarios activos): un suspendido que vuelve sigue adentro.
@@ -22,6 +23,48 @@ export async function validarCupoNuevo(idGrupo, cupo) {
       `Ya hay ${integrantes.length} integrantes: el cupo no puede ser menor`
     );
   }
+}
+
+// Ver un grupo o sumarse: alcanza con estar unido a una de sus fechas
+// (un grupo general abarca varias, ver helpers/gruposGenerales.js).
+export async function perteneceAlConciertoDelGrupo(idUsuario, grupo) {
+  const ids = conciertosDelGrupo(grupo);
+  if (ids.length === 1) return Boolean(await usuariosConciertosRepository.existeRelacion(idUsuario, ids[0]));
+  return usuariosConciertosRepository.existeRelacionEnAlguno(idUsuario, ids);
+}
+
+// Las fechas seguidas de un concierto (él incluido), ordenadas.
+export async function fechasSeguidasDe(concierto) {
+  const mismas = await conciertoRepository.listarDeArtistaYEstadio(concierto.id_artista, concierto.id_estadio);
+  return fechasSeguidas(concierto, mismas);
+}
+
+// Un grupo general (idsPedidos con más de una fecha) solo puede abarcar
+// fechas seguidas del concierto desde el que se crea. Devuelve
+// { id_concierto, ids_conciertos } para guardar: id_concierto es la primera
+// fecha e ids_conciertos queda en null si es de una sola.
+export async function prepararConciertosDelGrupo(concierto, idsPedidos) {
+  const ids = [...new Set([concierto.id_concierto, ...(idsPedidos || [])].map(Number))];
+  if (ids.length < 2) return { id_concierto: concierto.id_concierto, ids_conciertos: null };
+
+  const elegidas = (await fechasSeguidasDe(concierto)).filter((c) => ids.includes(c.id_concierto));
+  if (elegidas.length !== ids.length) {
+    throw ApiError.badRequest("Un grupo general solo puede ser de fechas seguidas del mismo artista en el mismo estadio");
+  }
+  return { id_concierto: elegidas[0].id_concierto, ids_conciertos: elegidas.map((c) => c.id_concierto) };
+}
+
+// Al editar: un grupo de comunidad no tiene encuentro (se borran fecha, hora
+// y lugar); cualquier otro tipo necesita los tres. Devuelve los cambios a guardar.
+export function cambiosConEncuentro(anterior, cambios) {
+  const categoria = cambios.categoria ?? anterior.categoria;
+  if (categoria === CATEGORIA_COMUNIDAD) return { ...cambios, fecha: null, hora: null, ubicacion: null };
+
+  const final = { ...anterior, ...cambios };
+  if (!final.fecha || !final.hora || !final.ubicacion) {
+    throw ApiError.badRequest("Para juntarse hacen falta la fecha, la hora y el punto de encuentro");
+  }
+  return cambios;
 }
 
 async function armarUsuariosDeGrupo(idGrupo) {
@@ -36,8 +79,8 @@ export const grupoService = {
   // id_creador siempre sale de req.user.id (idUsuarioAutenticado), nunca
   // del body: cierra el hallazgo donde CrearGrupo.jsx mandaba id_creador
   // como prop de React sin verificacion server-side.
-  async crear(idUsuarioAutenticado, datosGrupo) {
-    if (contieneMalasPalabras(`${datosGrupo.nombre} ${datosGrupo.descripcion || ""} ${datosGrupo.ubicacion}`)) {
+  async crear(idUsuarioAutenticado, { ids_conciertos: idsPedidos, ...datosGrupo }) {
+    if (contieneMalasPalabras(`${datosGrupo.nombre} ${datosGrupo.descripcion || ""} ${datosGrupo.ubicacion || ""}`)) {
       throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
 
@@ -56,6 +99,7 @@ export const grupoService = {
 
     const grupoCreado = await grupoRepository.crear({
       ...datosGrupo,
+      ...(await prepararConciertosDelGrupo(concierto, idsPedidos)),
       id_creador: idUsuarioAutenticado,
     });
 
@@ -71,10 +115,7 @@ export const grupoService = {
     const grupo = await grupoRepository.obtenerPorId(idGrupo);
     if (!grupo) throw ApiError.notFound("El grupo no existe");
 
-    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
-      idUsuarioAutenticado,
-      grupo.id_concierto
-    );
+    const perteneceAlConcierto = await perteneceAlConciertoDelGrupo(idUsuarioAutenticado, grupo);
     if (!perteneceAlConcierto) {
       throw ApiError.forbidden("No pertenecés al concierto de este grupo");
     }
@@ -120,10 +161,7 @@ export const grupoService = {
 
     // Mismo criterio que crear y obtenerDetalle: solo se suma quien entró
     // al concierto con el código (los ids de grupo son fáciles de adivinar).
-    const perteneceAlConcierto = await usuariosConciertosRepository.existeRelacion(
-      idUsuarioAutenticado,
-      grupo.id_concierto
-    );
+    const perteneceAlConcierto = await perteneceAlConciertoDelGrupo(idUsuarioAutenticado, grupo);
     if (!perteneceAlConcierto) {
       throw ApiError.forbidden("No pertenecés al concierto de este grupo");
     }
@@ -167,7 +205,7 @@ export const grupoService = {
     }
     await validarCupoNuevo(idGrupo, cambios.cupo);
 
-    const actualizado = await grupoRepository.actualizar(idGrupo, cambios);
+    const actualizado = await grupoRepository.actualizar(idGrupo, cambiosConEncuentro(grupo, cambios));
     await avisarCambiosDeGrupo(grupo, actualizado, { excepto: idUsuarioAutenticado });
     return toGrupo(actualizado, { usuarios: await armarUsuariosDeGrupo(idGrupo) });
   },

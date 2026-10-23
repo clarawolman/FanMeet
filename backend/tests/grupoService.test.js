@@ -23,9 +23,11 @@ vi.mock("../src/repositories/conciertoRepository.js", () => ({
     obtenerPorId: vi.fn(),
     obtenerArtista: vi.fn(),
     obtenerEstadio: vi.fn(),
+    listarDeArtistaYEstadio: vi.fn(),
   },
   usuariosConciertosRepository: {
     existeRelacion: vi.fn(),
+    existeRelacionEnAlguno: vi.fn(),
   },
 }));
 
@@ -55,7 +57,16 @@ const { avisarCambiosDeGrupo } = await import("../src/services/avisoCambiosGrupo
 
 const CREADOR = "creador-uuid";
 const OTRO_USUARIO = "otro-uuid";
-const GRUPO = { id_grupo: 1, id_creador: CREADOR, id_concierto: 10, nombre: "Previa" };
+const GRUPO = {
+  id_grupo: 1,
+  id_creador: CREADOR,
+  id_concierto: 10,
+  nombre: "Previa",
+  categoria: "pre",
+  fecha: "2099-10-20",
+  hora: "18:00:00",
+  ubicacion: "Plaza Serrano",
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -285,5 +296,72 @@ describe("cupo del grupo", () => {
 
     await grupoService.actualizar(CREADOR, 1, { cupo: null });
     expect(grupoRepository.actualizar).toHaveBeenCalledWith(1, { cupo: null });
+  });
+});
+
+describe("grupos generales (varias fechas seguidas)", () => {
+  const fecha = (id, dia) => ({ id_concierto: id, id_artista: 1, id_estadio: 1, fecha: `${dia}T21:00:00` });
+  const FECHAS = [fecha(13, "2099-11-13"), fecha(14, "2099-11-14"), fecha(15, "2099-11-15"), fecha(20, "2099-12-20")];
+  const NUEVO = { nombre: "Fans de MB", categoria: "comunidad", fecha: null, hora: null, ubicacion: null };
+
+  beforeEach(() => {
+    conciertoRepository.listarDeArtistaYEstadio.mockResolvedValue(FECHAS);
+    grupoRepository.crear.mockImplementation(async (datos) => ({ id_grupo: 7, ...datos }));
+  });
+
+  it("se crea desde cualquier fecha y queda guardado con la primera como concierto", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(FECHAS[2]);
+
+    await grupoService.crear(CREADOR, { ...NUEVO, id_concierto: 15, ids_conciertos: [13, 14, 15] });
+
+    expect(grupoRepository.crear).toHaveBeenCalledWith(
+      expect.objectContaining({ id_concierto: 13, ids_conciertos: [13, 14, 15], id_creador: CREADOR })
+    );
+  });
+
+  it("no deja sumar fechas que no son seguidas", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(FECHAS[0]);
+
+    await expect(
+      grupoService.crear(CREADOR, { ...NUEVO, id_concierto: 13, ids_conciertos: [13, 20] })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(grupoRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("un grupo de una sola fecha queda sin ids_conciertos", async () => {
+    conciertoRepository.obtenerPorId.mockResolvedValue(FECHAS[0]);
+
+    await grupoService.crear(CREADOR, { ...NUEVO, id_concierto: 13 });
+
+    expect(grupoRepository.crear).toHaveBeenCalledWith(expect.objectContaining({ id_concierto: 13, ids_conciertos: null }));
+  });
+
+  it("puede sumarse quien está unido a otra de sus fechas", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, id_concierto: 13, ids_conciertos: [13, 14, 15] });
+    grupoUsuarioRepository.existeRelacion.mockResolvedValue(null);
+    usuariosConciertosRepository.existeRelacionEnAlguno.mockResolvedValue(true);
+
+    const resultado = await grupoService.unirse(OTRO_USUARIO, GRUPO.id_grupo);
+
+    expect(usuariosConciertosRepository.existeRelacionEnAlguno).toHaveBeenCalledWith(OTRO_USUARIO, [13, 14, 15]);
+    expect(resultado).toEqual({ ok: true, yaConfirmado: false });
+  });
+
+  it("pasarlo a comunidad le saca el encuentro; volver a juntarse exige completarlo", async () => {
+    grupoRepository.obtenerPorId.mockResolvedValue(GRUPO);
+    grupoRepository.actualizar.mockImplementation(async (id, cambios) => ({ ...GRUPO, ...cambios }));
+
+    await grupoService.actualizar(CREADOR, GRUPO.id_grupo, { categoria: "comunidad" });
+    expect(grupoRepository.actualizar).toHaveBeenCalledWith(GRUPO.id_grupo, {
+      categoria: "comunidad",
+      fecha: null,
+      hora: null,
+      ubicacion: null,
+    });
+
+    grupoRepository.obtenerPorId.mockResolvedValue({ ...GRUPO, categoria: "comunidad", fecha: null, hora: null, ubicacion: null });
+    await expect(grupoService.actualizar(CREADOR, GRUPO.id_grupo, { categoria: "pre" })).rejects.toMatchObject({
+      status: 400,
+    });
   });
 });

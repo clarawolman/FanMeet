@@ -65,3 +65,8 @@ export function ordenarPorNombre(lista, nombre = (item) => item.nombre) {
     String(nombre(a) ?? "").localeCompare(String(nombre(b) ?? ""), "es", { sensitivity: "base" })
   );
 }
+
+// plural(3, "grupo", "grupos") -> "3 grupos".
+export function plural(cantidad, singular, varios) {
+  return `${cantidad} ${cantidad === 1 ? singular : varios}`;
+}

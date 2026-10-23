@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { conciertoYaPaso } from "../helpers/fechas.js";
-import { cupoSchema } from "./grupoValidators.js";
+import { CATEGORIAS_GRUPO, conEncuentro, cupoSchema, idsConciertosSchema } from "./grupoValidators.js";
 
 // "2026-08-28T21:00" (lo que manda un <input type="datetime-local">).
 const fechaHora = z
@@ -74,26 +74,44 @@ export const actualizarConciertoSchema = z
 
 // Mismos campos que crea un fan (grupoValidators.crearGrupoSchema), con la
 // foto como URL opcional porque el backoffice no sube archivos.
-export const crearGrupoSchema = z.object({
+const camposGrupo = z.object({
   nombre: z.string().trim().min(1, "Poné el nombre del grupo").max(100),
-  ubicacion: z.string().trim().min(6, "La ubicación debe tener al menos 6 caracteres").max(150),
-  fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida"),
-  hora: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "Hora inválida"),
+  ubicacion: z
+    .string()
+    .trim()
+    .min(6, "La ubicación debe tener al menos 6 caracteres")
+    .max(150)
+    .or(z.literal(""))
+    .nullish(),
+  fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha inválida").or(z.literal("")).nullish(),
+  hora: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "Hora inválida").or(z.literal("")).nullish(),
   descripcion: z.string().trim().max(500).optional().default(""),
-  categoria: z.enum(["pre", "after", "mismo_dia"], { message: "Elegí un tipo de grupo" }),
+  categoria: z.enum(CATEGORIAS_GRUPO, { message: "Elegí un tipo de grupo" }),
   id_concierto: z.coerce.number().int().positive("Elegí un concierto"),
+  ids_conciertos: idsConciertosSchema,
   foto: z.union([urlImagen, z.literal("")]).optional(),
   cupo: cupoSchema.optional(),
 });
 
-// Solo los campos que cambiaron. Foto "" = sacarle la foto al grupo.
-export const actualizarGrupoSchema = crearGrupoSchema
+export const crearGrupoSchema = conEncuentro(camposGrupo, {
+  fecha: "Elegí la fecha",
+  hora: "Elegí la hora",
+  ubicacion: "Poné el punto de encuentro",
+});
+
+// Solo los campos que cambiaron. Foto "" = sacarle la foto al grupo. Que el
+// encuentro quede completo lo controla el service (cambiosConEncuentro).
+export const actualizarGrupoSchema = camposGrupo
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: "No mandaste ningún cambio" });
 
 // Texto pegado con la lista de conciertos (lo interpreta el service).
 export const importarConciertosSchema = z.object({
   texto: z.string().trim().min(1, "Pegá la lista de conciertos").max(200_000, "La lista es demasiado larga"),
+});
+
+export const importarGruposSchema = z.object({
+  texto: z.string().trim().min(1, "Pegá la lista de grupos").max(200_000, "La lista es demasiado larga"),
 });
 
 export const novedadSchema = z.object({

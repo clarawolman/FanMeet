@@ -10,6 +10,7 @@ const CATEGORIAS = {
   pre: "Pre",
   after: "After",
   mismo_dia: "Hoy",
+  comunidad: "Comunidad",
 };
 
 // Card de un grupo: foto a sangre, chip de categoría, fecha como talón
@@ -21,6 +22,9 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
   const hora = subEvento.hora?.slice(0, 5);
   const voy = usuarios.some((u) => u.id_usuario === usuarioActual?.id_usuario);
   const completo = Boolean(subEvento.cupo) && usuarios.length >= subEvento.cupo;
+  // Grupo general: es de todas las fechas seguidas del show.
+  const cantidadFechas = subEvento.ids_conciertos?.length || 1;
+  const info = [hora && `${hora} h`, subEvento.ubicacion].filter(Boolean).join(" · ");
 
   return (
     <button
@@ -35,6 +39,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
         {CATEGORIAS[subEvento.categoria] && (
           <span className="SubEventoCategoria">{CATEGORIAS[subEvento.categoria]}</span>
         )}
+        {cantidadFechas > 1 && <span className="SubEventoCategoria">Las {cantidadFechas} fechas</span>}
         {voy && <span className="SubEventoVoy">Vas</span>}
         {completo && !voy && <span className="SubEventoCompleto">Completo</span>}
       </span>
@@ -49,9 +54,7 @@ function SubEventos({ subEvento, onAbrirGrupo }) {
       <span className="SubEventoContenido">
         <span className="SubEventoTitulo">{subEvento.nombre}</span>
 
-        <span className="SubEventoInfo">
-          {[hora && `${hora} h`, subEvento.ubicacion].filter(Boolean).join(" · ")}
-        </span>
+        <span className="SubEventoInfo">{info || "Sin encuentro, para charlar entre los que van"}</span>
 
         <span className="SubEventoUsuarios">
           {usuarios.length > 0 && (

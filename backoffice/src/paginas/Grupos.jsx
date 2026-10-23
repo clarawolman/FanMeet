@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Cargando, Conversacion } from "../componentes";
-import { fechaCorta, ordenarPorNombre, useCarga, useMostrarAlAbrir } from "../utilidades";
+import { fechaCorta, ordenarPorNombre, plural, useCarga, useMostrarAlAbrir } from "../utilidades";
+import ImportarGrupos from "./ImportarGrupos";
 
-const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "Mismo día" };
+// "comunidad" = sin encuentro (sin fecha, hora ni punto de encuentro).
+const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "Mismo día", comunidad: "Comunidad" };
 
 function MensajesDelGrupo({ idGrupo }) {
   const { datos, error, cargando } = useCarga(() => api.mensajesDeGrupo(idGrupo), [idGrupo]);
@@ -14,8 +16,19 @@ function MensajesDelGrupo({ idGrupo }) {
   );
 }
 
-// cupo "" = sin límite.
-const VACIO = { id_concierto: "", nombre: "", categoria: "", fecha: "", hora: "", ubicacion: "", descripcion: "", foto: "", cupo: "" };
+// cupo "" = sin límite. todasLasFechas = grupo general de las fechas seguidas del concierto.
+const VACIO = {
+  id_concierto: "",
+  nombre: "",
+  categoria: "",
+  fecha: "",
+  hora: "",
+  ubicacion: "",
+  descripcion: "",
+  foto: "",
+  cupo: "",
+  todasLasFechas: false,
+};
 
 function aFormulario(g) {
   return {
@@ -29,6 +42,20 @@ function aFormulario(g) {
     descripcion: g.descripcion || "",
     foto: g.foto || "",
     cupo: g.cupo ? String(g.cupo) : "",
+    todasLasFechas: (g.ids_conciertos?.length || 0) > 1,
+  };
+}
+
+// Lo que se manda al backend: las fechas del grupo general como ids y, sin
+// encuentro, sin fecha, hora ni lugar.
+function aDatos(form, conciertos) {
+  const { todasLasFechas, ...datos } = form;
+  const concierto = conciertos.find((c) => String(c.id_concierto) === String(form.id_concierto));
+  const fechas = todasLasFechas ? concierto?.fechasSeguidas || [] : [];
+  return {
+    ...datos,
+    ids_conciertos: fechas.length > 1 ? fechas : [Number(form.id_concierto)],
+    ...(form.categoria === "comunidad" ? { fecha: "", hora: "", ubicacion: "" } : {}),
   };
 }
 
@@ -60,8 +87,12 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
     try {
       if (editando) {
         // Solo se mandan los campos que cambiaron.
-        const original = aFormulario(grupo);
-        const cambios = Object.fromEntries(Object.entries(form).filter(([k, v]) => v !== original[k]));
+        const original = aDatos(aFormulario(grupo), conciertos);
+        const cambios = Object.fromEntries(
+          Object.entries(aDatos(form, conciertos)).filter(
+            ([k, v]) => JSON.stringify(v) !== JSON.stringify(original[k])
+          )
+        );
         if (Object.keys(cambios).length === 0) {
           onListo("No cambiaste nada.");
           return;
@@ -72,7 +103,7 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
             (notificados > 0 ? ` Se avisó a ${notificados} integrantes.` : "")
         );
       } else {
-        await api.crearGrupo(form);
+        await api.crearGrupo(aDatos(form, conciertos));
         onListo(`Grupo "${form.nombre.trim()}" creado.`);
       }
     } catch (err) {
@@ -80,6 +111,10 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
       setGuardando(false);
     }
   }
+
+  const sinEncuentro = form.categoria === "comunidad";
+  const conciertoElegido = conciertos.find((c) => String(c.id_concierto) === form.id_concierto);
+  const fechasSeguidas = conciertoElegido?.fechasSeguidas || [];
 
   return (
     <form className="tarjeta formulario" onSubmit={manejarEnviar}>
@@ -111,18 +146,34 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
             ))}
           </select>
         </label>
-        <label>
-          Fecha
-          <input type="date" value={form.fecha} onChange={cambiar("fecha")} required />
-        </label>
-        <label>
-          Hora
-          <input type="time" value={form.hora} onChange={cambiar("hora")} required />
-        </label>
-        <label>
-          Punto de encuentro
-          <input value={form.ubicacion} onChange={cambiar("ubicacion")} required minLength={6} maxLength={150} placeholder="Ej: Bar de la esquina del estadio" />
-        </label>
+        {fechasSeguidas.length > 1 && (
+          <label>
+            Fechas
+            <select
+              value={form.todasLasFechas ? "todas" : "una"}
+              onChange={(e) => setForm((f) => ({ ...f, todasLasFechas: e.target.value === "todas" }))}
+            >
+              <option value="una">Solo este concierto</option>
+              <option value="todas">Las {fechasSeguidas.length} fechas seguidas</option>
+            </select>
+          </label>
+        )}
+        {!sinEncuentro && (
+          <>
+            <label>
+              Fecha
+              <input type="date" value={form.fecha} onChange={cambiar("fecha")} required />
+            </label>
+            <label>
+              Hora
+              <input type="time" value={form.hora} onChange={cambiar("hora")} required />
+            </label>
+            <label>
+              Punto de encuentro
+              <input value={form.ubicacion} onChange={cambiar("ubicacion")} required minLength={6} maxLength={150} placeholder="Ej: Bar de la esquina del estadio" />
+            </label>
+          </>
+        )}
         <label>
           Cupo (vacío = sin límite)
           <input type="number" min={2} max={500} value={form.cupo} onChange={cambiar("cupo")} placeholder="Sin límite" />
@@ -148,10 +199,6 @@ function FormularioGrupo({ grupo, conciertos, onListo, onCancelar }) {
       </div>
     </form>
   );
-}
-
-function plural(cantidad, singular, varios) {
-  return `${cantidad} ${cantidad === 1 ? singular : varios}`;
 }
 
 function ConfirmarEliminar({ grupo, onListo, onCancelar }) {
@@ -201,24 +248,35 @@ export default function Grupos() {
   // null = sin formulario, { grupo: null } = nuevo, { grupo } = editar.
   const [formulario, setFormulario] = useState(null);
   const [aEliminar, setAEliminar] = useState(null);
+  const [importando, setImportando] = useState(false);
   const [mensaje, setMensaje] = useState("");
-  const refPanel = useMostrarAlAbrir(formulario || aEliminar || mensaje);
+  const refPanel = useMostrarAlAbrir(formulario || aEliminar || importando || mensaje);
   const refChat = useMostrarAlAbrir(abierto);
 
   function abrirFormulario(grupo) {
     setMensaje("");
     setAEliminar(null);
+    setImportando(false);
     setFormulario({ grupo });
   }
 
   function abrirEliminar(grupo) {
     setMensaje("");
     setFormulario(null);
+    setImportando(false);
     setAEliminar(grupo);
+  }
+
+  function abrirImportar() {
+    setMensaje("");
+    setFormulario(null);
+    setAEliminar(null);
+    setImportando(true);
   }
 
   function terminar(texto) {
     setFormulario(null);
+    setImportando(false);
     setMensaje(texto);
     recargar();
   }
@@ -234,15 +292,22 @@ export default function Grupos() {
     <>
       <div className="tituloConAccion">
         <h1>Grupos</h1>
-        {!formulario && (
-          <button className="boton botonPrincipal" type="button" onClick={() => abrirFormulario(null)}>
-            + Nuevo grupo
-          </button>
+        {!formulario && !importando && (
+          <div className="acciones">
+            <button className="boton" type="button" onClick={abrirImportar}>
+              Importar lista
+            </button>
+            <button className="boton botonPrincipal" type="button" onClick={() => abrirFormulario(null)}>
+              + Nuevo grupo
+            </button>
+          </div>
         )}
       </div>
 
       <div ref={refPanel} className="anclaPanel">
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
+
+      {importando && <ImportarGrupos onListo={terminar} onCancelar={() => setImportando(false)} />}
 
       {aEliminar && (
         <ConfirmarEliminar grupo={aEliminar} onListo={terminarEliminar} onCancelar={() => setAEliminar(null)} />
@@ -294,9 +359,12 @@ export default function Grupos() {
                     <strong>{g.nombre}</strong>
                     {g.descripcion && <div className="textoSuave celdaTexto">{g.descripcion}</div>}
                   </td>
-                  <td>{g.concierto}</td>
+                  <td>
+                    {g.concierto}
+                    {g.cantidadFechas > 1 && <div className="textoSuave">{g.cantidadFechas} fechas</div>}
+                  </td>
                   <td>{CATEGORIAS[g.categoria] || g.categoria}</td>
-                  <td>{fechaCorta(`${g.fecha}T${g.hora || "00:00"}`)}</td>
+                  <td>{g.fecha ? fechaCorta(`${g.fecha}T${g.hora || "00:00"}`) : "Sin encuentro"}</td>
                   <td>{g.cupo ? `${g.cantidadIntegrantes} / ${g.cupo}` : g.cantidadIntegrantes}</td>
                   <td>{g.cantidadMensajes}</td>
                   <td className="accionesFila">
