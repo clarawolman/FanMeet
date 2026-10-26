@@ -3,10 +3,9 @@ import "./highlightsPerfil.css";
 import NuevoMomento from "./nuevoMomento";
 import { momentosService } from "../../services/momentosService";
 import { mostrarAviso } from "../../utils/avisos";
+import { partesFecha } from "../../utils/fechas";
 import {
   IconoCarrusel,
-  IconoComentario,
-  IconoCorazon,
   IconoFijado,
   IconoGrilla,
   IconoGuardar,
@@ -14,9 +13,11 @@ import {
 
 export const MAX_FOTOS = 10;
 
-// Momentos del perfil, como la grilla de Instagram. En el propio perfil
-// hay una pestaña con los guardados (solo los ve uno).
-export default function HighlightsPerfil({ idPerfil, isOwnProfile, onAbrirMomento }) {
+// Momentos del perfil: cada uno es una entrada de recital (foto + talón con
+// el concierto). En el propio perfil hay una pestaña con los guardados
+// (solo los ve uno).
+// privado: es un perfil privado y quien mira no es amigo (no ve los momentos).
+export default function HighlightsPerfil({ idPerfil, isOwnProfile, privado, onAbrirMomento }) {
   const inputArchivoRef = useRef(null);
   const [pestana, setPestana] = useState("momentos");
   const [momentos, setMomentos] = useState([]);
@@ -138,7 +139,9 @@ export default function HighlightsPerfil({ idPerfil, isOwnProfile, onAbrirMoment
         <p className="highlightsPerfilVacio">
           {pestana === "guardados"
             ? "Todavía no guardaste momentos. Tocá el marcador en un momento para guardarlo acá (solo vos lo ves)."
-            : isOwnProfile
+            : privado
+              ? "Sus momentos los ven solo sus amigos. Mandale una solicitud para verlos."
+              : isOwnProfile
               ? "Compartí las fotos de tus recitales: podés subir varias, contar cómo fue y etiquetar a quienes fueron con vos."
               : "Todavía no hay fotos de recitales."}
         </p>
@@ -156,37 +159,46 @@ export default function HighlightsPerfil({ idPerfil, isOwnProfile, onAbrirMoment
         <div className="highlightsPerfilGrid">
           {momentos.map((momento) => {
             const participantes = momento.participantes || [];
+            const fecha = partesFecha(momento.concierto?.fecha || momento.created_at);
+            const titulo = momento.concierto?.nombre || momento.descripcion || "Un recuerdo";
             return (
               <button
                 className="highlightCard"
                 type="button"
                 key={momento.id_highlight}
                 onClick={() => onAbrirMomento?.(momento.id_highlight)}
-                aria-label={`Ver momento de ${participantes.map((u) => u.apodo || u.nombre).join(" y ")}`}
+                aria-label={`Ver momento: ${titulo}`}
               >
-                <img src={momento.url_imagen} alt="" loading="lazy" />
+                <span className="highlightCardFoto">
+                  <img src={momento.url_imagen} alt="" loading="lazy" />
 
-                <span className="highlightCardIconos" aria-hidden="true">
-                  {momento.fijado && <IconoFijado lleno width="16" height="16" />}
-                  {momento.cantidadFotos > 1 && <IconoCarrusel width="16" height="16" />}
-                </span>
-
-                {participantes.length > 1 && (
-                  <span className="highlightCardParticipantes" aria-hidden="true">
-                    {participantes.slice(0, 3).map((u) => (
-                      <img key={u.id_usuario} src={u.foto_perfil} alt="" />
-                    ))}
+                  <span className="highlightCardIconos" aria-hidden="true">
+                    {momento.fijado && <IconoFijado lleno width="15" height="15" />}
+                    {momento.cantidadFotos > 1 && <IconoCarrusel width="15" height="15" />}
                   </span>
-                )}
 
-                <span className="highlightCardDatos" aria-hidden="true">
-                  {momento.cantidadLikes !== null && (
-                    <span>
-                      <IconoCorazon lleno width="18" height="18" /> {momento.cantidadLikes}
+                  {participantes.length > 1 && (
+                    <span className="highlightCardParticipantes" aria-hidden="true">
+                      {participantes.slice(0, 3).map((u) => (
+                        <img key={u.id_usuario} src={u.foto_perfil} alt="" />
+                      ))}
                     </span>
                   )}
-                  <span>
-                    <IconoComentario width="18" height="18" /> {momento.cantidadComentarios}
+                </span>
+
+                {/* talón de la entrada: el día a la izquierda, el concierto a la derecha */}
+                <span className="highlightCardTalon" aria-hidden="true">
+                  {fecha && (
+                    <span className="highlightCardFecha">
+                      <b>{fecha.dia}</b>
+                      {fecha.mes}
+                    </span>
+                  )}
+                  <span className="highlightCardTexto">
+                    <span className="highlightCardTitulo">{titulo}</span>
+                    <span className="highlightCardSub">
+                      {momento.concierto ? `Estuve ahí${fecha ? ` · ${fecha.anio}` : ""}` : fecha?.anio}
+                    </span>
                   </span>
                 </span>
               </button>

@@ -40,6 +40,35 @@ export const usuarioController = {
     res.json(usuario);
   }),
 
+  eliminarFoto: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.eliminarFoto(req.user.id));
+  }),
+
+  // ── Configuración
+  actualizarPreferencias: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.actualizarPreferencias(req.user.id, req.body));
+  }),
+
+  actualizarCiudad: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.actualizarCiudad(req.user.id, req.body.ciudad));
+  }),
+
+  cambiarContrasena: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.cambiarContrasena(req.user.id, req.body));
+  }),
+
+  cambiarMail: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.cambiarMail(req.user.id, req.body));
+  }),
+
+  eliminarCuenta: asyncHandler(async (req, res) => {
+    res.json(await usuarioService.eliminarCuenta(req.user.id, req.body.contrasena));
+  }),
+
+  enviarSugerencia: asyncHandler(async (req, res) => {
+    res.status(201).json(await usuarioService.enviarSugerencia(req.user.id, req.body));
+  }),
+
   actualizarVibra: asyncHandler(async (req, res) => {
     const usuario = await usuarioService.actualizarVibra(req.user.id, req.body.estilo_asistencia);
     res.json(usuario);

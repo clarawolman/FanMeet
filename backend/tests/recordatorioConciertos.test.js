@@ -9,7 +9,7 @@ vi.mock("../src/repositories/grupoRepository.js", () => ({
   grupoUsuarioRepository: { listarUsuariosPorGrupos: vi.fn() },
 }));
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
-  usuarioRepository: { listarIdsSuspendidos: vi.fn() },
+  usuarioRepository: { listarIdsSuspendidos: vi.fn(), listarPorIds: vi.fn() },
 }));
 vi.mock("../src/repositories/notificacionRepository.js", () => ({
   notificacionRepository: { crearVarias: vi.fn() },
@@ -64,6 +64,8 @@ beforeEach(() => {
   grupoRepository.listarPorConcierto.mockResolvedValue([PREVIA, AFTER]);
   grupoUsuarioRepository.listarUsuariosPorGrupos.mockResolvedValue([{ id_grupo: 7, id_usuario: "fan1" }]);
   usuarioRepository.listarIdsSuspendidos.mockResolvedValue(new Set(["suspendido"]));
+  // Sin preferencias guardadas: el recordatorio llega el mismo día
+  usuarioRepository.listarPorIds.mockResolvedValue([]);
   // Por defecto, ninguno se había mandado: se reservan todos los pedidos.
   recordatorioRepository.reservar.mockImplementation(async (filas) =>
     filas.map((f) => ({ id_usuario: f.id_usuario }))
@@ -142,6 +144,23 @@ describe("enviarRecordatoriosDeHoy", () => {
 
     expect(await enviarRecordatoriosDeHoy({ ahora: AHORA })).toBe(0);
     expect(recordatorioRepository.liberar).toHaveBeenCalledWith(9, HOY, ["fan1", "fan2"]);
+  });
+
+  it("con aviso anticipado, a quien lo pidió le llega un día antes", async () => {
+    notificacionRepository.crearVarias.mockResolvedValue();
+    conciertoRepository.listarDelDia.mockImplementation(async (dia) =>
+      dia === "2026-10-21" ? [{ ...CONCIERTO, fecha: "2026-10-21T21:00:00" }] : []
+    );
+    usuarioRepository.listarPorIds.mockResolvedValue([
+      { id_usuario: "fan1", preferencias: { recordatorio_dias: [0, 1] } },
+    ]);
+
+    expect(await enviarRecordatoriosDeHoy({ ahora: AHORA })).toBe(1);
+    const filas = notificacionRepository.crearVarias.mock.calls[0][0];
+    expect(filas).toEqual([
+      expect.objectContaining({ id_usuario: "fan1", titulo: "¡Mañana es el show!" }),
+    ]);
+    expect(filas[0].descripcion).toMatch(/^Mañana es Iron Maiden, a las 21:00/);
   });
 
   it("antes de las 9 de Argentina no manda nada", async () => {

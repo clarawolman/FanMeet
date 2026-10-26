@@ -12,6 +12,7 @@ import { ApiError } from "../helpers/ApiError.js";
 import { exigirSinBloqueo } from "./bloqueoService.js";
 import { subirFotoDeChat, validarTextoOFoto } from "./fotosChat.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
+import { preferenciasDe } from "../helpers/preferencias.js";
 
 // Solo se puede chatear con amigos (amistad aceptada) y sin un bloqueo de
 // por medio. Se chequea en cada lectura y envio: si se elimina la amistad,
@@ -177,6 +178,10 @@ export const chatService = {
     }
 
     await exigirAmistad(idUsuarioAutenticado, idOtroUsuario);
+    const receptor = await usuarioRepository.obtenerPorId(idOtroUsuario);
+    if (preferenciasDe(receptor).mensajes === "nadie") {
+      throw ApiError.forbidden("Esta persona no está recibiendo mensajes");
+    }
 
     const imagen = archivo ? await subirFotoDeChat(idUsuarioAutenticado, archivo) : null;
 

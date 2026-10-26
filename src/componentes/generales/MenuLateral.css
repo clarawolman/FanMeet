@@ -1,6 +1,5 @@
 /* Menú hamburguesa: panel que entra desde la derecha. Solo existe en
-   mobile; en desktop la barra lateral (Footer) ya muestra todo.
-   El switch de modo oscuro reusa .themeSwitch de MenuConfiguracion.css. */
+   mobile; en desktop la barra lateral (Footer) ya muestra todo. */
 
 .menuLateralOverlay {
   position: fixed;
@@ -105,35 +104,6 @@
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-}
-
-.menuLateralTema {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: var(--fm-radius-md);
-  border: 1px solid var(--fm-border);
-  background: var(--fm-surface);
-}
-
-.menuLateralTemaTexto {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.menuLateralTemaTexto strong {
-  font-family: var(--fm-font-display);
-  font-size: var(--fm-fs-sm);
-  font-weight: 600;
-  color: var(--fm-ink);
-}
-
-.menuLateralTemaTexto span {
-  font-size: var(--fm-fs-xs);
-  color: var(--fm-muted);
 }
 
 .menuLateralSalir {

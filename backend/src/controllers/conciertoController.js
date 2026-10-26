@@ -27,7 +27,7 @@ export const conciertoController = {
   }),
 
   listarDeUsuario: asyncHandler(async (req, res) => {
-    const eventos = await conciertoService.listarEventosDeUsuario(req.params.idUsuario);
+    const eventos = await conciertoService.listarEventosDeUsuario(req.params.idUsuario, req.user.id);
     res.json(eventos);
   }),
 

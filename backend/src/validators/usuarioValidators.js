@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { contrasenaSchema } from "./authValidators.js";
 
 export const vibraSchema = z.object({
   estilo_asistencia: z.enum(["pogo", "tranquilo", "campo"]),
@@ -56,4 +57,61 @@ export const nombreGeneroSchema = z.object({
 
 export const idUsuarioParamSchema = z.object({
   idUsuario: z.string().uuid("id de usuario inválido"),
+});
+
+// ── Configuración ────────────────────────────────────────────────────────
+const interruptor = z.boolean();
+
+// Solo lo que cambió: cada campo es opcional.
+export const preferenciasSchema = z
+  .object({
+    perfil_privado: interruptor,
+    mensajes: z.enum(["amigos", "nadie"]),
+    etiquetas: z.enum(["amigos", "nadie"]),
+    mostrar_conciertos: interruptor,
+    aparecer_en_descubrir: interruptor,
+    mostrar_musica: interruptor,
+    ocultar_likes: interruptor,
+    notificaciones: z
+      .object({
+        amistad: interruptor,
+        mensajes: interruptor,
+        momentos: interruptor,
+        grupos: interruptor,
+        conciertos: interruptor,
+      })
+      .partial()
+      .strict(),
+    recordatorio_dias: z.array(z.union([z.literal(0), z.literal(1), z.literal(7)])).max(3),
+    fani: interruptor,
+  })
+  .partial()
+  .strict();
+
+// Vacío = sin ciudad
+export const ciudadSchema = z.object({
+  ciudad: z.string().trim().max(60, "La ciudad puede tener hasta 60 caracteres"),
+});
+
+export const cambiarContrasenaSchema = z.object({
+  actual: z.string().min(1, "Ingresá tu contraseña actual"),
+  nueva: contrasenaSchema,
+});
+
+export const cambiarMailSchema = z.object({
+  mail: z.string().trim().toLowerCase().email("Mail inválido"),
+  contrasena: z.string().min(1, "Ingresá tu contraseña"),
+});
+
+export const eliminarCuentaSchema = z.object({
+  contrasena: z.string().min(1, "Ingresá tu contraseña"),
+});
+
+export const sugerenciaSchema = z.object({
+  tipo: z.enum(["problema", "sugerencia"]),
+  texto: z
+    .string()
+    .trim()
+    .min(10, "Contanos un poco más (mínimo 10 caracteres)")
+    .max(2000, "Puede tener hasta 2000 caracteres"),
 });

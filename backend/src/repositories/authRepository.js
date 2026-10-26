@@ -1,4 +1,4 @@
-import { supabaseAuth } from "../config/supabaseClient.js";
+import { supabaseAdmin, supabaseAuth } from "../config/supabaseClient.js";
 import { env } from "../config/env.js";
 
 // Estas llamadas corren con la anon key (mismo rol que usa hoy el frontend)
@@ -25,6 +25,16 @@ export const authRepository = {
 
   async reenviarCodigoRegistro(email) {
     return supabaseAuth.auth.resend({ type: "signup", email });
+  },
+
+  // Configuración de la cuenta: con service_role, después de que el service
+  // confirmó la contraseña actual.
+  async actualizarCuenta(idUsuario, cambios) {
+    return supabaseAdmin.auth.admin.updateUserById(idUsuario, cambios);
+  },
+
+  async eliminarCuenta(idUsuario) {
+    return supabaseAdmin.auth.admin.deleteUser(idUsuario);
   },
 
   // RPC existente en el proyecto (Registro1.jsx la usa hoy desde el cliente).

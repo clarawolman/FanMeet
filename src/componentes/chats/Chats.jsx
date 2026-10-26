@@ -301,12 +301,14 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
   async function cargarChats(paraAbrir) {
     try {
       // Si el chat con el bot falla (ej. falta la tabla), igual se muestra.
+      // Si apagó a Fani en Configuración, no aparece.
+      const conFani = usuarioActual?.preferencias?.fani !== false;
       const [lista, ultimosBot] = await Promise.all([
         chatsService.listar(),
-        chatbotService.listarMensajes({ limite: 1 }).catch(() => []),
+        conFani ? chatbotService.listarMensajes({ limite: 1 }).catch(() => []) : [],
       ]);
       const chatBot = { tipo: "bot", ultimoMensaje: ultimosBot?.[0] || null, noLeidos: 0 };
-      const data = [chatBot, ...(lista || [])];
+      const data = conFani ? [chatBot, ...(lista || [])] : lista || [];
       setChats(data);
       chatsRef.current = data;
 

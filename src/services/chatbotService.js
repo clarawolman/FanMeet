@@ -15,6 +15,11 @@ export const chatbotService = {
   },
 
   // Devuelve { mensajeUsuario, respuesta }
+  // Borra toda la conversación con Fani
+  async borrarHistorial() {
+    return api.del("/chatbot/mensajes");
+  },
+
   async enviar(contenido) {
     return api.post("/chatbot/mensajes", { contenido });
   },

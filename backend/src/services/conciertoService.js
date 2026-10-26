@@ -11,6 +11,7 @@ import { toConciertoDetalle, toConciertoResumen } from "../entities/Concierto.js
 import { toGrupo } from "../entities/Grupo.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { preferenciasDe } from "../helpers/preferencias.js";
 import { conciertoYaPaso } from "../helpers/fechas.js";
 import { env } from "../config/env.js";
 import { sinBloqueados } from "./bloqueoService.js";
@@ -128,9 +129,13 @@ export const conciertoService = {
     return conciertoService.listarEventosDeUsuario(idUsuarioAutenticado);
   },
 
-  // Conciertos a los que se unió una persona (próximos y pasados). Es
-  // público para cualquier usuario logueado: se muestra en su perfil.
-  async listarEventosDeUsuario(idUsuario) {
+  // Conciertos a los que se unió una persona (próximos y pasados). Se
+  // muestran en su perfil, salvo que los haya ocultado en Configuración.
+  async listarEventosDeUsuario(idUsuario, idQuienMira = idUsuario) {
+    if (idQuienMira !== idUsuario) {
+      const duenio = await usuarioRepository.obtenerPorId(idUsuario);
+      if (!preferenciasDe(duenio).mostrar_conciertos) return [];
+    }
     const relaciones = await usuariosConciertosRepository.listarConciertosPorUsuario(idUsuario);
 
     const eventos = await Promise.all(

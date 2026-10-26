@@ -2,6 +2,10 @@ import { chatbotService } from "../services/chatbotService.js";
 import { asyncHandler } from "../helpers/asyncHandler.js";
 
 export const chatbotController = {
+  borrarHistorial: asyncHandler(async (req, res) => {
+    res.json(await chatbotService.borrarHistorial(req.user.id));
+  }),
+
   listarMensajes: asyncHandler(async (req, res) => {
     const mensajes = await chatbotService.listarMensajes(req.user.id, {
       limite: req.query.limite,

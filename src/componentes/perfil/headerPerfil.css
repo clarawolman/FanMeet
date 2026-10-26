@@ -113,6 +113,15 @@
   background: var(--fm-accent-soft-bg);
 }
 
+.headerPerfilBotonPeligro {
+  color: var(--fm-danger);
+}
+
+.headerPerfilBotonPeligro:hover:not(:disabled) {
+  border-color: var(--fm-danger);
+  background: var(--fm-danger-bg);
+}
+
 .headerPerfilBotonEditar:disabled {
   opacity: 0.6;
   cursor: default;

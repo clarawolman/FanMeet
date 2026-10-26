@@ -1,4 +1,6 @@
 import { notificacionRepository } from "../repositories/notificacionRepository.js";
+import { usuarioRepository } from "../repositories/usuarioRepository.js";
+import { tiposSilenciados } from "../helpers/preferencias.js";
 import { toNotificacion } from "../entities/Notificacion.js";
 import { ApiError } from "../helpers/ApiError.js";
 
@@ -33,8 +35,10 @@ export const notificacionService = {
 
   // Mismo comportamiento que Notificaciones.jsx: se marcan como leidas
   // apenas se listan.
+  // Los tipos que apagó en Configuración no se muestran ni se cuentan.
   async listar(idUsuario) {
-    const filas = await notificacionRepository.listarPorUsuario(idUsuario);
+    const silenciados = tiposSilenciados(await usuarioRepository.obtenerPorId(idUsuario));
+    const filas = await notificacionRepository.listarPorUsuario(idUsuario, silenciados);
     const idsSinLeer = filas.filter((n) => !n.leida).map((n) => n.id_notificacion);
 
     if (idsSinLeer.length > 0) {
@@ -45,7 +49,8 @@ export const notificacionService = {
   },
 
   async contarNoLeidas(idUsuario) {
-    return notificacionRepository.contarNoLeidas(idUsuario);
+    const silenciados = tiposSilenciados(await usuarioRepository.obtenerPorId(idUsuario));
+    return notificacionRepository.contarNoLeidas(idUsuario, silenciados);
   },
 
   // idUsuarioAutenticado siempre viaja en el filtro del repository: cierra

@@ -10,7 +10,12 @@ vi.mock("../src/repositories/notificacionRepository.js", () => ({
   },
 }));
 
+vi.mock("../src/repositories/usuarioRepository.js", () => ({
+  usuarioRepository: { obtenerPorId: vi.fn(async () => null) },
+}));
+
 const { notificacionRepository } = await import("../src/repositories/notificacionRepository.js");
+const { usuarioRepository } = await import("../src/repositories/usuarioRepository.js");
 const { notificacionService } = await import("../src/services/notificacionService.js");
 
 const YO = "yo-uuid";
@@ -56,5 +61,23 @@ describe("notificacionService.eliminar (autorización)", () => {
     await notificacionService.eliminar(YO, 1);
 
     expect(notificacionRepository.eliminar).toHaveBeenCalledWith(YO, 1);
+  });
+});
+
+describe("notificacionService: tipos silenciados en Configuración", () => {
+  it("no lista ni cuenta los tipos que la persona apagó", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({
+      id_usuario: YO,
+      preferencias: { notificaciones: { momentos: false } },
+    });
+    notificacionRepository.listarPorUsuario.mockResolvedValue([]);
+    notificacionRepository.contarNoLeidas.mockResolvedValue(0);
+
+    await notificacionService.listar(YO);
+    await notificacionService.contarNoLeidas(YO);
+
+    const silenciados = ["momento_like", "momento_comentario"];
+    expect(notificacionRepository.listarPorUsuario).toHaveBeenCalledWith(YO, silenciados);
+    expect(notificacionRepository.contarNoLeidas).toHaveBeenCalledWith(YO, silenciados);
   });
 });

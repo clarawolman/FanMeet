@@ -166,6 +166,17 @@ describe("usuarioService.actualizarFoto / actualizarVibra (identidad)", () => {
     expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
   });
 
+  it("eliminar la foto vuelve a la de por defecto y borra la subida", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: YO, fotoperfil: "https://cdn/avatars/yo.jpg" });
+    usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, fotoperfil: null });
+
+    const usuario = await usuarioService.eliminarFoto(YO);
+
+    expect(usuarioRepository.actualizar).toHaveBeenCalledWith(YO, { fotoperfil: null });
+    expect(storageRepository.eliminarPorUrl).toHaveBeenCalledWith("avatars", "https://cdn/avatars/yo.jpg");
+    expect(usuario.tiene_foto).toBe(false);
+  });
+
   it("actualiza estilo_asistencia solo del usuario autenticado", async () => {
     usuarioRepository.actualizar.mockResolvedValue({ id_usuario: YO, estilo_asistencia: "pogo" });
 

@@ -5,6 +5,7 @@ import { notificacionRepository } from "../repositories/notificacionRepository.j
 import { recordatorioRepository } from "../repositories/recordatorioRepository.js";
 import { hoyEnArgentina, horaEnArgentina, diaSiguiente } from "../helpers/fechas.js";
 import { CATEGORIA_COMUNIDAD, esGrupoGeneral } from "../helpers/gruposGenerales.js";
+import { DIAS_RECORDATORIO, preferenciasDe } from "../helpers/preferencias.js";
 
 // Antes de esta hora (de Argentina) no se manda nada: nadie quiere una
 // notificación a las 3 de la mañana. El chequeo de las 9 manda los del día.
@@ -36,17 +37,26 @@ function datosDelGrupo(grupo, hoy) {
   return texto;
 }
 
+// Cada uno elige en Configuración cuántos días antes le llega (0 = el día del show)
+const TITULOS = {
+  0: "¡Hoy es el show!",
+  1: "¡Mañana es el show!",
+  7: "Falta una semana para el show",
+};
+const CUANDO = { 0: "Hoy", 1: "Mañana", 7: "En una semana" };
+
 // "Hoy es Iron Maiden, a las 21:00 en Estadio River. Tu grupo «Previa» se
 // encuentra a las 18:00 en Parque Patricios."
-export function textoRecordatorio(concierto, grupos = [], hoy = hoyEnArgentina()) {
-  let texto = `Hoy es ${concierto.nombre}, a las ${horaCorta(concierto.fecha)}`;
+// `dia` es el día del show (con aviso anticipado, no es hoy).
+export function textoRecordatorio(concierto, grupos = [], diaShow = hoyEnArgentina(), diasAntes = 0) {
+  let texto = `${CUANDO[diasAntes]} es ${concierto.nombre}, a las ${horaCorta(concierto.fecha)}`;
   if (concierto.estadio?.nombre) texto += ` en ${concierto.estadio.nombre}`;
   texto += ".";
 
   if (grupos.length === 1) {
-    texto += ` Tu grupo ${datosDelGrupo(grupos[0], hoy)}.`;
+    texto += ` Tu grupo ${datosDelGrupo(grupos[0], diaShow)}.`;
   } else if (grupos.length > 1) {
-    texto += ` Tus grupos: ${enLista(grupos.map((g) => datosDelGrupo(g, hoy)))}.`;
+    texto += ` Tus grupos: ${enLista(grupos.map((g) => datosDelGrupo(g, diaShow)))}.`;
   }
   return texto;
 }
@@ -64,16 +74,23 @@ function gruposParaRecordar(grupos, hoy) {
 }
 
 // Manda el recordatorio de un concierto a los unidos que todavía no lo
-// recibieron hoy. Devuelve a cuántos les llegó.
-async function recordarConcierto(concierto, hoy) {
+// recibieron hoy y lo quieren `diasAntes` días antes del show. Devuelve a
+// cuántos les llegó.
+async function recordarConcierto(concierto, hoy, diaShow = hoy, diasAntes = 0) {
   const [unidos, todosLosGrupos, suspendidos] = await Promise.all([
     usuariosConciertosRepository.listarUsuariosPorConcierto(concierto.id_concierto),
     grupoRepository.listarPorConcierto(concierto.id_concierto),
     usuarioRepository.listarIdsSuspendidos(),
   ]);
-  const grupos = gruposParaRecordar(todosLosGrupos, hoy);
-  const destinatarios = [...new Set(unidos.map((u) => u.id_usuario))].filter(
-    (id) => !suspendidos.has(id)
+  const grupos = gruposParaRecordar(todosLosGrupos, diaShow);
+  const activos = [...new Set(unidos.map((u) => u.id_usuario))].filter((id) => !suspendidos.has(id));
+  if (activos.length === 0) return 0;
+
+  const filasUsuarios = new Map(
+    (await usuarioRepository.listarPorIds(activos)).map((u) => [u.id_usuario, u])
+  );
+  const destinatarios = activos.filter((id) =>
+    preferenciasDe(filasUsuarios.get(id)).recordatorio_dias.includes(diasAntes)
   );
   if (destinatarios.length === 0) return 0;
 
@@ -104,8 +121,8 @@ async function recordarConcierto(concierto, hoy) {
         return {
           id_usuario: idUsuario,
           tipo: "recordatorio_concierto",
-          titulo: "¡Hoy es el show!",
-          descripcion: textoRecordatorio(concierto, susGrupos, hoy),
+          titulo: TITULOS[diasAntes],
+          descripcion: textoRecordatorio(concierto, susGrupos, diaShow, diasAntes),
           imagen: concierto.imagenConcierto || "",
           id_concierto: concierto.id_concierto,
           // Con un solo grupo queda asociado; con varios, solo el concierto.
@@ -122,6 +139,12 @@ async function recordarConcierto(concierto, hoy) {
   return ids.length;
 }
 
+function sumarDias(dia, cantidad) {
+  let resultado = dia;
+  for (let i = 0; i < cantidad; i++) resultado = diaSiguiente(resultado);
+  return resultado;
+}
+
 // Manda los recordatorios de los conciertos de hoy (hora de Argentina).
 // Se puede llamar las veces que haga falta: lo ya enviado no se repite.
 // Devuelve a cuántos les llegó en esta pasada.
@@ -129,16 +152,19 @@ export async function enviarRecordatoriosDeHoy({ ahora = new Date() } = {}) {
   if (horaEnArgentina(ahora) < HORA_DESDE) return 0;
 
   const hoy = hoyEnArgentina(ahora);
-  const conciertos = await conciertoRepository.listarDelDia(hoy, diaSiguiente(hoy));
 
   let enviados = 0;
-  for (const concierto of conciertos) {
-    try {
-      enviados += await recordarConcierto(concierto, hoy);
-    } catch (error) {
-      // Un concierto que falla no frena a los demás; se reintenta en el
-      // próximo chequeo.
-      console.error(`No se pudo mandar el recordatorio del concierto ${concierto.id_concierto}:`, error);
+  for (const diasAntes of DIAS_RECORDATORIO) {
+    const diaShow = sumarDias(hoy, diasAntes);
+    const conciertos = await conciertoRepository.listarDelDia(diaShow, diaSiguiente(diaShow));
+    for (const concierto of conciertos) {
+      try {
+        enviados += await recordarConcierto(concierto, hoy, diaShow, diasAntes);
+      } catch (error) {
+        // Un concierto que falla no frena a los demás; se reintenta en el
+        // próximo chequeo.
+        console.error(`No se pudo mandar el recordatorio del concierto ${concierto.id_concierto}:`, error);
+      }
     }
   }
   return enviados;
