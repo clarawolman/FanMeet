@@ -185,7 +185,7 @@ function Tildes({ leido }) {
   );
 }
 
-function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicial }) {
+function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMomento, chatInicial }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const { abrirMenu } = useContext(MenuLateralContext);
   const idYo = usuarioActual?.id_usuario;
@@ -558,13 +558,16 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
     setBotEscribiendo(false);
   }
 
-  // Confirmar o cancelar lo que propuso Fani. Si se confirma, el backend
-  // suma al usuario al grupo y Fani responde con los consejos de seguridad.
-  async function resolverAccionFani(idMensaje, decision) {
-    setResolviendoAccion(idMensaje);
+  // Unirme en una tarjeta de Fani (objetivo: { idGrupo } o { idConcierto,
+  // codigo }) o Confirmar / Cancelar en las propuestas viejas. Si se une,
+  // Fani responde. Devuelve el error para mostrarlo en la tarjeta (o null).
+  async function resolverAccionFani(idMensaje, decision, objetivo) {
+    const tarjeta = objetivo?.idConcierto ? `c-${objetivo.idConcierto}` : objetivo?.idGrupo ? `g-${objetivo.idGrupo}` : true;
+    setResolviendoAccion({ idMensaje, tarjeta });
     setErrorEnvio("");
+    let mensajeError = null;
     try {
-      const { mensaje: actualizado, respuesta } = await chatbotService.resolverAccion(idMensaje, decision);
+      const { mensaje: actualizado, respuesta } = await chatbotService.resolverAccion(idMensaje, decision, objetivo);
       setMensajes((actuales) => {
         const conCambio = actuales.map((m) => (m.id_mensaje === actualizado.id_mensaje ? actualizado : m));
         return respuesta ? [...conCambio, respuesta] : conCambio;
@@ -575,11 +578,16 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
           actuales.map((c) => (c.tipo === "bot" ? { ...c, ultimoMensaje: respuesta } : c))
         );
       }
+      // El chat del grupo nuevo ya tiene que aparecer en la lista.
+      if (respuesta && objetivo?.idGrupo) cargarChats();
     } catch (error) {
       console.error("Error resolviendo la propuesta de Fani:", error);
-      setErrorEnvio(error.message || "No se pudo completar. Probá de nuevo.");
+      mensajeError = error.message || "No se pudo completar. Probá de nuevo.";
+      // Las tarjetas muestran su error; las propuestas viejas, abajo.
+      if (!objetivo) setErrorEnvio(mensajeError);
     }
     setResolviendoAccion(null);
+    return mensajeError;
   }
 
   async function manejarEnviar(evento) {
@@ -691,8 +699,12 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onAbrirMomento, chatInicia
                 <AccionFani
                   idMensaje={mensaje.id_mensaje}
                   accion={mensaje.accion}
-                  resolviendo={resolviendoAccion === mensaje.id_mensaje}
+                  resolviendo={
+                    resolviendoAccion?.idMensaje === mensaje.id_mensaje ? resolviendoAccion.tarjeta : null
+                  }
                   onResolver={resolverAccionFani}
+                  onAbrirChatGrupo={(idGrupo) => cargarChats({ tipo: "grupo", id: idGrupo })}
+                  onVerConcierto={onVerConcierto}
                 />
               )}
               <span className="chatsBurbujaHora">

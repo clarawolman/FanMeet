@@ -19,10 +19,16 @@ export const chatbotService = {
     return api.post("/chatbot/mensajes", { contenido });
   },
 
-  // Confirmar o cancelar una propuesta de Fani (sumarse a un grupo).
-  // Devuelve { mensaje, respuesta }: el mensaje actualizado y, si se
-  // confirmó, la respuesta nueva de Fani (si no, null).
-  async resolverAccion(idMensaje, decision) {
-    return api.post(`/chatbot/mensajes/${idMensaje}/accion`, { decision });
+  // Unirme en una tarjeta de Fani (objetivo: { idGrupo } o { idConcierto,
+  // codigo }) o Confirmar / Cancelar una propuesta vieja. Devuelve
+  // { mensaje, respuesta }: el mensaje actualizado y, si se unió, la
+  // respuesta nueva de Fani (si no, null).
+  async resolverAccion(idMensaje, decision, objetivo = {}) {
+    const { idGrupo, idConcierto, codigo } = objetivo;
+    return api.post(`/chatbot/mensajes/${idMensaje}/accion`, {
+      decision,
+      ...(idGrupo ? { id_grupo: idGrupo } : {}),
+      ...(idConcierto ? { id_concierto: idConcierto, codigo } : {}),
+    });
   },
 };

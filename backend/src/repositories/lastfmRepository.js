@@ -70,7 +70,8 @@ async function llamar(metodo, parametros, { firmado = false } = {}) {
 
   let respuesta;
   try {
-    respuesta = await fetch(`${API_URL}?${query}`);
+    // Si Last.fm se cuelga no se traba la pantalla que lo espera.
+    respuesta = await fetch(`${API_URL}?${query}`, { signal: AbortSignal.timeout(8000) });
   } catch (error) {
     throw ApiError.internal(`No se pudo conectar con Last.fm: ${error.message}`);
   }

@@ -2,9 +2,7 @@
   position: sticky;
   top: 0;
   z-index: var(--fm-z-header);
-  background: color-mix(in srgb, var(--fm-bg) 86%, transparent);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
+  background: var(--fm-bg);
   border-bottom: 1px solid var(--fm-border);
 }
 

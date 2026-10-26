@@ -73,3 +73,181 @@
 .accionFaniEstado--hecha {
   color: var(--fm-success);
 }
+
+/* Tarjetas de grupos que muestra Fani, una abajo de la otra. */
+.tarjetasFani {
+  width: 100%;
+  min-width: min(260px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.tarjetaFani {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-bg);
+}
+
+.tarjetaFaniArriba {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tarjetaFaniChip {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--fm-accent-soft-border);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent-soft-ink);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+}
+
+.tarjetaFaniConcierto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+}
+
+.tarjetaFaniTitulo {
+  margin: 0;
+  font-size: var(--fm-fs-md);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--fm-ink);
+  overflow-wrap: anywhere;
+}
+
+.tarjetaFaniMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjetaFaniMeta li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+}
+
+.tarjetaFaniMeta svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.tarjetaFaniPie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tarjetaFaniLugares {
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.tarjetaFaniBoton {
+  min-height: 36px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-accent);
+  color: var(--fm-accent-ink);
+  font: inherit;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tarjetaFaniBoton:hover:not(:disabled) {
+  background: var(--fm-accent-hover);
+}
+
+.tarjetaFaniBoton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tarjetaFaniBoton--unido {
+  border: 1px solid var(--fm-border-strong);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+}
+
+.tarjetaFaniBoton--unido:hover:not(:disabled) {
+  background: var(--fm-bg-soft);
+}
+
+.tarjetaFaniConciertoCabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tarjetaFaniImagen {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--fm-radius-sm);
+  object-fit: cover;
+}
+
+.tarjetaFaniConciertoTitulos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tarjetaFaniCodigo {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tarjetaFaniCodigo input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-surface);
+  color: var(--fm-ink);
+  font: inherit;
+  font-size: var(--fm-fs-sm);
+}
+
+.tarjetaFaniCodigo input:focus-visible {
+  outline: 2px solid var(--fm-accent);
+  outline-offset: 1px;
+}
+
+.tarjetaFaniError {
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-danger);
+}

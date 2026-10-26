@@ -11,6 +11,7 @@ Las claves de Supabase no estan en el repo por seguridad (la service role key da
    - `VITE_SUPABASE_ANON_KEY` / `SUPABASE_ANON_KEY`: "anon public" key
    - `SUPABASE_SERVICE_ROLE_KEY` (solo backend): "service_role" key. **Nunca compartir ni commitear.**
    - `SUPABASE_JWT_SECRET` (solo backend): Project Settings -> API -> JWT Settings
+4. Chatbot (Fani): crear una API key gratis en https://console.groq.com/keys y ponerla en `GROQ_API_KEY` de `backend/.env` (y en las variables del backend en Render). Opcionales: `GROQ_MODEL` (por defecto `openai/gpt-oss-120b`) y `GROQ_MODELOS_RESPALDO` (por defecto `llama-3.3-70b-versatile,openai/gpt-oss-20b`). Sin la key, el chatbot responde 503 y el resto anda igual.
 
 ## Correr el proyecto
 

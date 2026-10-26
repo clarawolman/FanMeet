@@ -20,6 +20,10 @@ export const idMensajeParamSchema = z.object({
 
 export const resolverAccionSchema = z.object({
   decision: z.enum(["confirmar", "cancelar"]),
+  // Para las tarjetas: a cuál tocó Unirme (y el código, si es un concierto).
+  id_grupo: z.coerce.number().int().positive().optional(),
+  id_concierto: z.coerce.number().int().positive().optional(),
+  codigo: z.string().trim().max(100).optional(),
 });
 
 export const listarMensajesQuerySchema = z.object({
