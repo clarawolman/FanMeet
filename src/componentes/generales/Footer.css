@@ -11,9 +11,7 @@
   align-items: stretch;
   height: calc(64px + env(safe-area-inset-bottom, 0px));
   padding: 0 6px env(safe-area-inset-bottom, 0px);
-  background-color: color-mix(in srgb, var(--fm-surface) 88%, transparent);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
+  background-color: var(--fm-surface);
   border-top: 1px solid var(--fm-border);
 }
 
@@ -133,8 +131,6 @@
     gap: 2px;
     padding: 22px 14px 24px;
     background: var(--fm-bg);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
     border-top: none;
     border-right: 1px solid var(--fm-border);
   }
