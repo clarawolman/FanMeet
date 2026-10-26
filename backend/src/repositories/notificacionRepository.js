@@ -3,6 +3,11 @@ import { unwrap } from "../helpers/supabaseResult.js";
 
 const TABLA = "notificacion";
 
+// Saca los tipos que la persona silenció en Configuración
+function sinTipos(consulta, tipos) {
+  return tipos.length > 0 ? consulta.not("tipo", "in", `(${tipos.join(",")})`) : consulta;
+}
+
 export const notificacionRepository = {
   async crear(datos) {
     const resultado = await supabaseAdmin.from(TABLA).insert([datos]);
@@ -37,12 +42,11 @@ export const notificacionRepository = {
     return unwrap(resultado, "Error borrando notificación");
   },
 
-  async listarPorUsuario(idUsuario) {
-    const resultado = await supabaseAdmin
-      .from(TABLA)
-      .select("*")
-      .eq("id_usuario", idUsuario)
-      .order("created_at", { ascending: false });
+  async listarPorUsuario(idUsuario, excluirTipos = []) {
+    const resultado = await sinTipos(
+      supabaseAdmin.from(TABLA).select("*").eq("id_usuario", idUsuario),
+      excluirTipos
+    ).order("created_at", { ascending: false });
     return unwrap(resultado, "Error cargando notificaciones");
   },
 
@@ -96,12 +100,15 @@ export const notificacionRepository = {
     unwrap(resultado, "Error eliminando notificaciones");
   },
 
-  async contarNoLeidas(idUsuario) {
-    const resultado = await supabaseAdmin
-      .from(TABLA)
-      .select("*", { count: "exact", head: true })
-      .eq("id_usuario", idUsuario)
-      .eq("leida", false);
+  async contarNoLeidas(idUsuario, excluirTipos = []) {
+    const resultado = await sinTipos(
+      supabaseAdmin
+        .from(TABLA)
+        .select("*", { count: "exact", head: true })
+        .eq("id_usuario", idUsuario)
+        .eq("leida", false),
+      excluirTipos
+    );
     if (resultado.error) {
       throw new Error(`Error contando notificaciones: ${resultado.error.message}`);
     }

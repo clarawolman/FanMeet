@@ -20,6 +20,11 @@ vi.mock("../src/repositories/lastfmRepository.js", () => ({
   },
 }));
 
+// Sin preferencias guardadas: lo que escucha se muestra (valor por defecto)
+vi.mock("../src/repositories/usuarioRepository.js", () => ({
+  usuarioRepository: { obtenerPorId: vi.fn(async () => null) },
+}));
+
 vi.mock("../src/services/spotifyService.js", () => ({
   spotifyService: { buscarImagen: vi.fn() },
 }));

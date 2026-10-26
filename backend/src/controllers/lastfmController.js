@@ -19,7 +19,7 @@ export const lastfmController = {
   }),
 
   obtenerResumen: asyncHandler(async (req, res) => {
-    res.json(await lastfmService.obtenerResumen(req.params.idUsuario));
+    res.json(await lastfmService.obtenerResumen(req.params.idUsuario, req.user.id));
   }),
 
   obtenerSugerencias: asyncHandler(async (req, res) => {
@@ -27,7 +27,7 @@ export const lastfmController = {
   }),
 
   obtenerEscuchas: asyncHandler(async (req, res) => {
-    const escuchas = await lastfmService.obtenerEscuchas(req.params.idUsuario);
+    const escuchas = await lastfmService.obtenerEscuchas(req.params.idUsuario, req.user.id);
     res.json(escuchas);
   }),
 };

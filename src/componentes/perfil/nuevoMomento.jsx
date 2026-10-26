@@ -27,7 +27,8 @@ export default function NuevoMomento({ fotos: fotosIniciales, onPublicado, onCan
   const [cargandoAmigos, setCargandoAmigos] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [elegidos, setElegidos] = useState([]);
-  const [ocultarLikes, setOcultarLikes] = useState(false);
+  // Arranca como lo eligió en Configuración → Privacidad
+  const [ocultarLikes, setOcultarLikes] = useState(Boolean(usuarioActual?.preferencias?.ocultar_likes));
   const [comentariosActivados, setComentariosActivados] = useState(true);
   const [publicando, setPublicando] = useState(false);
 

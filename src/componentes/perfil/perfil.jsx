@@ -74,7 +74,7 @@ function Perfil({
   const [perfilLocal, setPerfilLocal] = useState(null);
   const usuario = {
     ...usuarioBase,
-    ...(fotoLocal && { fotoperfil: fotoLocal }),
+    ...fotoLocal,
     ...perfilLocal,
   };
 
@@ -250,13 +250,30 @@ function Perfil({
 
     try {
       const usuarioActualizado = await usuariosService.subirFoto(archivo);
-      setFotoLocal(usuarioActualizado.fotoperfil);
-      setUsuarioActual({ ...usuarioBase, fotoperfil: usuarioActualizado.fotoperfil });
+      aplicarFoto(usuarioActualizado);
     } catch (error) {
       mostrarAviso("No se pudo subir la foto: " + error.message);
     }
 
     setSubiendoFoto(false);
+  }
+
+  async function manejarEliminarFoto() {
+    if (!isOwnProfile) return;
+
+    setSubiendoFoto(true);
+    try {
+      aplicarFoto(await usuariosService.eliminarFoto());
+      mostrarAviso("Foto de perfil eliminada.", "exito");
+    } catch (error) {
+      mostrarAviso("No se pudo eliminar la foto: " + error.message);
+    }
+    setSubiendoFoto(false);
+  }
+
+  function aplicarFoto({ fotoperfil, tiene_foto }) {
+    setFotoLocal({ fotoperfil, tiene_foto });
+    setUsuarioActual({ ...usuarioBase, fotoperfil, tiene_foto });
   }
 
   // Devuelve true si se guardó, para que el header cierre la edición.
@@ -310,6 +327,7 @@ function Perfil({
         }
         onAccionAmistad={manejarAccionAmistad}
         onSubirFoto={manejarSubirFoto}
+        onEliminarFoto={manejarEliminarFoto}
         subiendoFoto={subiendoFoto}
         onGuardarPerfil={manejarGuardarPerfil}
         onVolver={onVolver}
@@ -402,6 +420,7 @@ function Perfil({
           key={`momentos-${usuario.id_usuario}`}
           idPerfil={usuario.id_usuario}
           isOwnProfile={isOwnProfile}
+          privado={!isOwnProfile && Boolean(usuario.perfil_privado) && estadoAmistad !== "amigos"}
           onAbrirMomento={onAbrirMomento}
         />
 

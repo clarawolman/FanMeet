@@ -585,7 +585,7 @@ const generosOrdenados = [...generos].sort((a, b) => {
         />
       )}
 
-      <BotonChatbot onAbrir={onAbrirChatbot} />
+      {usuarioActual?.preferencias?.fani !== false && <BotonChatbot onAbrir={onAbrirChatbot} />}
 
       <Footer onNavegar={onNavegar} pantallaActiva="home" />
     </div>

@@ -37,6 +37,7 @@ const Notificaciones = lazy(() => import("./componentes/notificaciones/Notificac
 const Chats = lazy(() => import("./componentes/chats/Chats"));
 const Descubrir = lazy(() => import("./componentes/descubrir/Descubrir"));
 const MomentoDetalle = lazy(() => import("./componentes/momento/MomentoDetalle"));
+const Configuracion = lazy(() => import("./componentes/configuracion/Configuracion"));
 
 // Si api.js cerró la sesión porque la cuenta fue suspendida, deja el
 // motivo acá para mostrarlo en el login después de recargar.
@@ -620,7 +621,8 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
     pantalla !== "notificaciones" &&
     pantalla !== "chats" &&
     pantalla !== "descubrir" &&
-    pantalla !== "momento"
+    pantalla !== "momento" &&
+    pantalla !== "configuracion"
   ) {
     return (
       <PaginaNoEncontrada
@@ -784,6 +786,10 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
           onVerUsuario={manejarVerUsuario}
           onIngresarConcierto={manejarEntrarConcierto}
         />
+      )}
+
+      {pantalla === "configuracion" && usuarioActual && (
+        <Configuracion onNavegar={manejarNavegacion} onVolver={() => manejarNavegacion("home")} />
       )}
 
       {pantalla === "notificaciones" && usuarioActual && (

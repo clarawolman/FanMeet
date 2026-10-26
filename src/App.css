@@ -237,6 +237,15 @@ p {
   }
 }
 
+/* Configuración → Reducir animaciones (lo mismo, elegido desde la app) */
+:root[data-reducir-animaciones] *,
+:root[data-reducir-animaciones] *::before,
+:root[data-reducir-animaciones] *::after {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /* ===== ERROR GLOBAL (cuando no carga una pantalla) ===== */
 .app {
   width: 100%;

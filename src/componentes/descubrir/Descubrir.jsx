@@ -177,6 +177,7 @@ export default function Descubrir({ onNavegar, onVerUsuario }) {
                       {fan.edad != null && <small>, {fan.edad}</small>}
                     </h3>
                     <p className="descubrirCardResumen">{resumen(fan)}</p>
+                    {fan.mismaCiudad && <span className="descubrirCardCiudad">En tu ciudad</span>}
                   </div>
 
                   <BotonConectar fan={fan} className="descubrirCardBoton" />

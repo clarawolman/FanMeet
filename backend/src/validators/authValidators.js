@@ -3,7 +3,7 @@ import { z } from "zod";
 // Mismas reglas que hoy valida Registro1.jsx en el cliente (mayuscula,
 // minuscula, numero, caracter especial, minimo 8), repetidas en el
 // servidor porque nunca hay que confiar solo en la validacion de React.
-const contrasenaSchema = z
+export const contrasenaSchema = z
   .string()
   .min(8, "La contraseña debe tener al menos 8 caracteres")
   .regex(/[A-Z]/, "Debe incluir al menos una mayúscula")

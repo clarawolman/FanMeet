@@ -5,12 +5,14 @@ const contar = (embebido) => embebido?.[0]?.count ?? 0;
 
 // participantes: usuarios (resumen) que lo tienen en su perfil, el autor primero.
 // mostrarLikes: false si el autor ocultó la cantidad y quien mira no es participante.
-export function toMomentoResumen(row, { participantes = [], mostrarLikes = true } = {}) {
+export function toMomentoResumen(row, { participantes = [], mostrarLikes = true, concierto = null } = {}) {
   if (!row) return null;
   return {
     id_highlight: row.id_highlight,
     id_usuario: row.id_usuario,
     url_imagen: row.url_imagen,
+    descripcion: row.descripcion || "",
+    concierto,
     created_at: row.created_at,
     participantes,
     cantidadFotos: Math.max(1, contar(row.highlight_foto)),

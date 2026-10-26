@@ -14,6 +14,7 @@ import { ApiError } from "../helpers/ApiError.js";
 import { rutaArchivoUsuario } from "../helpers/sanitizeFilename.js";
 import { esImagenValida } from "../helpers/validarImagen.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
+import { preferenciasDe } from "../helpers/preferencias.js";
 
 // Momentos: publicaciones como las de Instagram (ver supabase/momentos_publicaciones.sql).
 export const MAX_FOTOS = 10;
@@ -47,14 +48,27 @@ function armarParticipantes(fila, porId) {
     .filter(Boolean);
 }
 
+// La grilla del perfil muestra cada momento como una entrada: con el
+// nombre y la fecha del concierto.
+async function conciertosPorId(filas) {
+  const ids = [...new Set(filas.map((f) => f.id_concierto).filter(Boolean))];
+  const conciertos = await Promise.all(ids.map((id) => conciertoRepository.obtenerPorId(id)));
+  return new Map(
+    conciertos
+      .filter(Boolean)
+      .map((c) => [String(c.id_concierto), { id_concierto: c.id_concierto, nombre: c.nombre, fecha: c.fecha }])
+  );
+}
+
 async function armarResumenes(filas, idQuienMira) {
-  const porId = await usuariosPorId(filas.flatMap(aceptados));
+  const [porId, conciertos] = await Promise.all([usuariosPorId(filas.flatMap(aceptados)), conciertosPorId(filas)]);
   return filas
     .map((fila) => {
       const participantes = armarParticipantes(fila, porId);
       if (participantes.length === 0) return null;
       const mostrarLikes = !fila.ocultar_likes || aceptados(fila).includes(idQuienMira);
-      return toMomentoResumen(fila, { participantes, mostrarLikes });
+      const concierto = conciertos.get(String(fila.id_concierto)) || null;
+      return toMomentoResumen(fila, { participantes, mostrarLikes, concierto });
     })
     .filter(Boolean);
 }
@@ -136,9 +150,20 @@ async function notificarParticipantes(fila, idQuienHizo, { tipo, descripcion }) 
   );
 }
 
+// Perfil privado (Configuración): sus momentos los ven solo sus amigos.
+// Un momento compartido se ve si alguno de los que lo tienen lo permite.
+async function puedeVerMomentosDe(idQuienMira, idsDuenios) {
+  if (idsDuenios.includes(idQuienMira)) return true;
+  const duenios = await usuarioRepository.listarActivosPorIds(idsDuenios);
+  if (duenios.some((u) => !preferenciasDe(u).perfil_privado)) return true;
+  const amigos = idsDeAmigos(await amistadRepository.listarAceptadasDeUsuario(idQuienMira), idQuienMira);
+  return idsDuenios.some((id) => amigos.has(id));
+}
+
 export const momentoService = {
   // Grilla del perfil: primero los fijados, después del más nuevo al más viejo.
   async listarDeUsuario(idUsuario, idQuienMira) {
+    if (!(await puedeVerMomentosDe(idQuienMira, [idUsuario]))) return [];
     const filas = await highlightRepository.listarPorUsuario(idUsuario);
     const fijados = filas
       .filter((f) => f.fijado_at)
@@ -155,6 +180,9 @@ export const momentoService = {
 
   async obtener(idQuienMira, idHighlight) {
     const { fila, participantes } = await obtenerVisible(idHighlight);
+    if (!(await puedeVerMomentosDe(idQuienMira, participantes.map((u) => u.id_usuario)))) {
+      throw ApiError.forbidden("Este momento lo ven solo los amigos de quien lo subió");
+    }
     const [likes, comentariosCrudos, guardado, concierto] = await Promise.all([
       highlightRepository.listarLikes(idHighlight),
       highlightRepository.listarComentarios(idHighlight),
@@ -218,6 +246,12 @@ export const momentoService = {
       const activos = await usuarioRepository.listarActivosPorIds(etiquetados);
       if (activos.length !== etiquetados.length || etiquetados.some((id) => !amigos.has(id))) {
         throw ApiError.badRequest("Solo podés etiquetar a tus amigos");
+      }
+      const sinEtiquetas = activos.filter((u) => preferenciasDe(u).etiquetas === "nadie");
+      if (sinEtiquetas.length > 0) {
+        throw ApiError.badRequest(
+          `${sinEtiquetas.map((u) => u.apodo || u.nombre).join(", ")} no acepta etiquetas en momentos`
+        );
       }
     }
 

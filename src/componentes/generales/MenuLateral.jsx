@@ -1,9 +1,14 @@
 import { useContext, useEffect } from "react";
-import "./MenuConfiguracion.css";
 import "./MenuLateral.css";
 import { MenuLateralContext } from "../../context/MenuLateralContext";
-import { TemaContext } from "../../context/TemaContext";
-import { IconoCerrar, IconoNavDescubrir, IconoNavGrupos, IconoNavNotificaciones, IconoNavSalir } from "./iconosNav";
+import {
+  IconoCerrar,
+  IconoNavConfiguracion,
+  IconoNavDescubrir,
+  IconoNavGrupos,
+  IconoNavNotificaciones,
+  IconoNavSalir,
+} from "./iconosNav";
 import Marca from "./Marca";
 
 // En mobile la barra de abajo solo tiene Inicio, Eventos, Chats y Perfil;
@@ -12,11 +17,11 @@ const ITEMS = [
   { destino: "descubrir", texto: "Descubrir fans", Icono: IconoNavDescubrir },
   { destino: "misGrupos", texto: "Mis grupos", Icono: IconoNavGrupos },
   { destino: "notificaciones", texto: "Notificaciones", Icono: IconoNavNotificaciones },
+  { destino: "configuracion", texto: "Configuración", Icono: IconoNavConfiguracion },
 ];
 
 export default function MenuLateral({ pantallaActiva, onNavegar, onCerrarSesion }) {
   const { abierto, cerrarMenu } = useContext(MenuLateralContext);
-  const { temaOscuro, alternarTema } = useContext(TemaContext);
 
   useEffect(() => {
     if (!abierto) return;
@@ -73,24 +78,6 @@ export default function MenuLateral({ pantallaActiva, onNavegar, onCerrarSesion 
             </button>
           ))}
         </nav>
-
-        <div className="menuLateralTema">
-          <div className="menuLateralTemaTexto">
-            <strong>Modo oscuro</strong>
-            <span>{temaOscuro ? "Activado" : "Desactivado"}</span>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={temaOscuro}
-            aria-label="Modo oscuro"
-            className={`themeSwitch ${temaOscuro ? "on" : ""}`}
-            onClick={alternarTema}
-            tabIndex={foco}
-          >
-            <span className="themeSwitchThumb" />
-          </button>
-        </div>
 
         <button
           type="button"

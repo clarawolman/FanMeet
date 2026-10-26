@@ -13,6 +13,8 @@ import {
   toEscuchaReciente,
 } from "../entities/Lastfm.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { usuarioRepository } from "../repositories/usuarioRepository.js";
+import { preferenciasDe } from "../helpers/preferencias.js";
 import { esOrigenPermitido } from "../helpers/origenes.js";
 
 const TOP_LIMITE = 10;
@@ -62,6 +64,12 @@ async function completarImagenes(items, tipo) {
   );
 }
 
+// Lo que escucha se puede ocultar a los demás desde Configuración.
+async function musicaOculta(idUsuario, idQuienMira) {
+  if (idQuienMira === idUsuario) return false;
+  return !preferenciasDe(await usuarioRepository.obtenerPorId(idUsuario)).mostrar_musica;
+}
+
 export const lastfmService = {
   // A donde mandar el popup para que la persona inicie sesion en Last.fm y
   // apruebe FanMeet. `origen` es el del frontend que lo pide: solo se aceptan
@@ -103,7 +111,8 @@ export const lastfmService = {
   },
 
   // Lo que escuchó un usuario (propio o ajeno) en los últimos 30 días.
-  async obtenerEscuchas(idUsuario) {
+  async obtenerEscuchas(idUsuario, idQuienMira = idUsuario) {
+    if (await musicaOculta(idUsuario, idQuienMira)) return { conectado: false, oculto: true };
     const cuenta = await lastfmCuentaRepository.obtenerPorUsuario(idUsuario);
     if (!cuenta) return { conectado: false };
 
@@ -147,7 +156,8 @@ export const lastfmService = {
 
   // Tarjeta corta de arriba del perfil: lo que mas escucho en los ultimos
   // 30 dias, sus generos y el total.
-  async obtenerResumen(idUsuario) {
+  async obtenerResumen(idUsuario, idQuienMira = idUsuario) {
+    if (await musicaOculta(idUsuario, idQuienMira)) return { conectado: false, oculto: true };
     const cuenta = await lastfmCuentaRepository.obtenerPorUsuario(idUsuario);
     if (!cuenta) return { conectado: false };
 

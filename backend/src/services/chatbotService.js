@@ -417,6 +417,11 @@ async function preguntarALaIA(idUsuario, historial) {
 }
 
 export const chatbotService = {
+  async borrarHistorial(idUsuario) {
+    await mensajeChatbotRepository.eliminarDeUsuario(idUsuario);
+    return { ok: true };
+  },
+
   async listarMensajes(idUsuario, opciones) {
     const filas = await mensajeChatbotRepository.listarDeUsuario(idUsuario, opciones);
     return filas.map(toMensajeChatbot);

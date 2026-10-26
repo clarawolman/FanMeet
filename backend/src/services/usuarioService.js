@@ -9,6 +9,19 @@ import { ApiError } from "../helpers/ApiError.js";
 import { sinBloqueados } from "./bloqueoService.js";
 import { rutaArchivoUsuario } from "../helpers/sanitizeFilename.js";
 import { esImagenValida } from "../helpers/validarImagen.js";
+import { authRepository } from "../repositories/authRepository.js";
+import { DIAS_RECORDATORIO, preferenciasDe } from "../helpers/preferencias.js";
+import { enviarMail } from "../helpers/mailer.js";
+import { env } from "../config/env.js";
+
+// Las acciones delicadas de Configuración piden la contraseña actual.
+async function exigirContrasena(idUsuario, contrasena) {
+  const usuario = await usuarioRepository.obtenerPorId(idUsuario);
+  if (!usuario) throw ApiError.notFound("Usuario no encontrado");
+  const { error } = await authRepository.signInWithPassword(usuario.mail, contrasena);
+  if (error) throw ApiError.badRequest("La contraseña no es correcta");
+  return usuario;
+}
 
 export const DIAS_ENTRE_CAMBIOS_DE_NOMBRE = 15;
 const DIA = 24 * 60 * 60 * 1000;
@@ -57,6 +70,95 @@ export const usuarioService = {
     const url = await storageRepository.subirArchivo("avatars", ruta, archivo.buffer, archivo.mimetype);
     const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, { fotoperfil: url });
     return toUsuarioCompleto(usuario);
+  },
+
+  // Vuelve a la foto por defecto y borra la subida del bucket.
+  async eliminarFoto(idUsuarioAutenticado) {
+    const actual = await usuarioRepository.obtenerPorId(idUsuarioAutenticado);
+    if (!actual) throw ApiError.notFound("Usuario no encontrado");
+
+    const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, { fotoperfil: null });
+    if (actual.fotoperfil) await storageRepository.eliminarPorUrl("avatars", actual.fotoperfil);
+    return toUsuarioCompleto(usuario);
+  },
+
+  // ── Configuración ──────────────────────────────────────────────────────
+  // Se guarda todo junto (lo que ya había + lo que cambió).
+  async actualizarPreferencias(idUsuarioAutenticado, cambios) {
+    const actual = await usuarioRepository.obtenerPorId(idUsuarioAutenticado);
+    if (!actual) throw ApiError.notFound("Usuario no encontrado");
+
+    const previas = preferenciasDe(actual);
+    const preferencias = {
+      ...previas,
+      ...cambios,
+      notificaciones: { ...previas.notificaciones, ...cambios.notificaciones },
+    };
+    if (cambios.recordatorio_dias) {
+      preferencias.recordatorio_dias = DIAS_RECORDATORIO.filter((d) => cambios.recordatorio_dias.includes(d));
+    }
+
+    const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, { preferencias });
+    return toUsuarioCompleto(usuario);
+  },
+
+  async actualizarCiudad(idUsuarioAutenticado, ciudad) {
+    const usuario = await usuarioRepository.actualizar(idUsuarioAutenticado, { ciudad: ciudad || null });
+    return toUsuarioCompleto(usuario);
+  },
+
+  async cambiarContrasena(idUsuarioAutenticado, { actual, nueva }) {
+    const usuario = await exigirContrasena(idUsuarioAutenticado, actual);
+    if (actual === nueva) throw ApiError.badRequest("La contraseña nueva tiene que ser distinta de la actual");
+
+    const { error } = await authRepository.actualizarCuenta(usuario.id_usuario, { password: nueva });
+    if (error) throw ApiError.badRequest("No se pudo cambiar la contraseña: " + error.message);
+    return { ok: true };
+  },
+
+  // Queda confirmado al toque: ya se pidió la contraseña para cambiarlo.
+  async cambiarMail(idUsuarioAutenticado, { mail, contrasena }) {
+    const usuario = await exigirContrasena(idUsuarioAutenticado, contrasena);
+    if (mail === String(usuario.mail).toLowerCase()) {
+      throw ApiError.badRequest("Ese ya es tu mail");
+    }
+    if (await usuarioRepository.existeMail(mail)) {
+      throw ApiError.badRequest("Ese mail ya tiene una cuenta");
+    }
+
+    const { error } = await authRepository.actualizarCuenta(usuario.id_usuario, { email: mail, email_confirm: true });
+    if (error) throw ApiError.badRequest("No se pudo cambiar el mail: " + error.message);
+
+    const actualizado = await usuarioRepository.actualizar(usuario.id_usuario, { mail });
+    return toUsuarioCompleto(actualizado);
+  },
+
+  // Borra los datos (en una transacción), las fotos y la cuenta de Auth.
+  async eliminarCuenta(idUsuarioAutenticado, contrasena) {
+    const usuario = await exigirContrasena(idUsuarioAutenticado, contrasena);
+
+    const fotosDeMomentos = await usuarioRepository.eliminarCuenta(usuario.id_usuario);
+    await Promise.all([
+      ...fotosDeMomentos.map((url) => storageRepository.eliminarPorUrl("highlights", url)),
+      storageRepository.eliminarCarpeta("avatars", usuario.id_usuario).catch((e) =>
+        console.error("No se pudieron borrar las fotos de perfil:", e)
+      ),
+    ]);
+
+    const { error } = await authRepository.eliminarCuenta(usuario.id_usuario);
+    if (error) console.error(`No se pudo borrar ${usuario.id_usuario} de Auth:`, error.message);
+    return { ok: true };
+  },
+
+  // "Reportar un problema" / "Enviar una sugerencia": le llega al moderador.
+  async enviarSugerencia(idUsuarioAutenticado, { tipo, texto }) {
+    const usuario = await usuarioRepository.obtenerPorId(idUsuarioAutenticado);
+    await enviarMail({
+      para: env.mailModerador,
+      asunto: `${tipo === "problema" ? "Problema" : "Sugerencia"} en FanMeet de ${usuario?.nombre || "un usuario"}`,
+      texto: [`De: ${usuario?.nombre || "?"} (${usuario?.mail || "sin mail"})`, "", texto].join("\n"),
+    });
+    return { ok: true };
   },
 
   async actualizarVibra(idUsuarioAutenticado, estiloAsistencia) {

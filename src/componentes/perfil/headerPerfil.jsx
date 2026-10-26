@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import "./headerPerfil.css";
 import BotonAmistad from "./botonAmistad";
 import HeaderApp from "../generales/HeaderApp";
+import ModalConfirmacion from "../generales/ModalConfirmacion";
 import IconoCampana from "../generales/IconoCampana";
 import { IconoNavSalir } from "../generales/iconosNav";
 
@@ -25,6 +26,7 @@ export default function HeaderPerfil({
   amistadDeshabilitada,
   onAccionAmistad,
   onSubirFoto,
+  onEliminarFoto,
   subiendoFoto,
   onGuardarPerfil,
   onVolver,
@@ -41,6 +43,7 @@ export default function HeaderPerfil({
   const [descripcion, setDescripcion] = useState("");
   const [errorNombre, setErrorNombre] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [confirmarEliminarFoto, setConfirmarEliminarFoto] = useState(false);
 
   // Como en Instagram: el nombre/apodo es opcional; sin él se ve el usuario.
   const nombreVisible = usuario?.apodo || usuario?.nombre;
@@ -235,8 +238,18 @@ export default function HeaderPerfil({
               onClick={manejarClickCambiarFoto}
               disabled={subiendoFoto}
             >
-              {subiendoFoto ? "Subiendo foto…" : "Cambiar foto"}
+              {subiendoFoto ? "Guardando foto…" : "Cambiar foto"}
             </button>
+            {usuario?.tiene_foto && onEliminarFoto && (
+              <button
+                className="headerPerfilBotonEditar headerPerfilBotonPeligro"
+                type="button"
+                onClick={() => setConfirmarEliminarFoto(true)}
+                disabled={subiendoFoto}
+              >
+                Eliminar foto
+              </button>
+            )}
             <button
               className="headerPerfilBotonEditar"
               type="button"
@@ -311,6 +324,19 @@ export default function HeaderPerfil({
           </div>
         )}
       </div>
+
+      {confirmarEliminarFoto && (
+        <ModalConfirmacion
+          mensaje="¿Eliminar tu foto de perfil? Vas a quedar con la foto por defecto."
+          textoConfirmar="Eliminar"
+          textoCancelar="Cancelar"
+          onConfirmar={() => {
+            setConfirmarEliminarFoto(false);
+            onEliminarFoto();
+          }}
+          onCancelar={() => setConfirmarEliminarFoto(false)}
+        />
+      )}
     </div>
   );
 }

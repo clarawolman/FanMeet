@@ -26,7 +26,7 @@ vi.mock("../src/repositories/amistadRepository.js", () => ({
 }));
 
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
-  usuarioRepository: { listarPorIds: vi.fn(), listarActivosPorIds: vi.fn() },
+  usuarioRepository: { listarPorIds: vi.fn(), listarActivosPorIds: vi.fn(), obtenerPorId: vi.fn(async () => null) },
 }));
 
 vi.mock("../src/repositories/notificacionRepository.js", () => ({

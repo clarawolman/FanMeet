@@ -18,6 +18,7 @@ router.get(
   validate(listarMensajesQuerySchema, "query"),
   chatbotController.listarMensajes
 );
+router.delete("/mensajes", authMiddleware, chatbotController.borrarHistorial);
 router.post(
   "/mensajes",
   authMiddleware,

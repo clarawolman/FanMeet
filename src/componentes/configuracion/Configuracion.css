@@ -1,0 +1,732 @@
+.pantallaConfiguracion {
+  min-height: calc(100dvh / var(--fm-zoom));
+  background: var(--fm-bg);
+  color: var(--fm-ink);
+  font-family: var(--fm-font-body);
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+/* mobile: la lista de secciones, o una sección sola */
+.configLayout {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px 24px;
+}
+
+.configLayout:not(.configLayout--lista) .configLateral {
+  display: none;
+}
+
+.configLateral {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Tu perfil, arriba de la lista ── */
+.configYo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--fm-card-borde);
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+  color: var(--fm-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease);
+}
+
+.configYo:hover {
+  border-color: var(--fm-border-strong);
+  box-shadow: var(--fm-shadow);
+}
+
+.configYo img {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+  box-shadow: 0 0 0 2px var(--fm-surface), 0 0 0 4px var(--fm-accent-soft-border);
+}
+
+.configYoTexto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.configYoTexto strong {
+  overflow: hidden;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-md);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.configYoTexto span {
+  overflow: hidden;
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Lista de secciones ── */
+.configNav {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--fm-card-borde);
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+}
+
+.configNavItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 66px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--fm-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease);
+}
+
+/* separador que arranca después del ícono */
+.configNavItem + .configNavItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 66px;
+  border-top: 1px solid var(--fm-border);
+}
+
+.configNavItem:hover {
+  background: var(--fm-nav-hover-bg);
+}
+
+.configNavIcono {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--fm-radius-sm);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  transition: background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+}
+
+.configNavIcono svg {
+  width: 19px;
+  height: 19px;
+}
+
+.configNavIcono--grande {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-accent-soft-bg);
+  color: var(--fm-accent);
+}
+
+.configNavIcono--grande svg {
+  width: 24px;
+  height: 24px;
+}
+
+.configNavTexto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.configNavTexto strong {
+  font-size: var(--fm-fs-body);
+  font-weight: 600;
+}
+
+.configNavTexto span {
+  overflow: hidden;
+  font-size: var(--fm-fs-xs);
+  color: var(--fm-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.configNavFlecha {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--fm-muted);
+}
+
+/* ── Contenido de una sección ── */
+.configContenido {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+/* en el celular el título ya está en el header */
+.configContenidoCabecera {
+  display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.configContenidoTitulo {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-xl);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.configContenidoDescripcion {
+  margin: 4px 0 0;
+  font-size: var(--fm-fs-sm);
+  color: var(--fm-muted);
+}
+
+/* ── Grupo: título chico afuera, filas en una tarjeta ── */
+.configGrupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.configGrupoTitulo {
+  margin: 0;
+  padding: 0 4px;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fm-muted);
+}
+
+.configGrupo--peligro .configGrupoTitulo {
+  color: var(--fm-danger);
+}
+
+.configGrupoDescripcion {
+  margin: 0;
+  padding: 0 4px;
+  font-size: var(--fm-fs-xs);
+  line-height: 1.45;
+  color: var(--fm-muted);
+}
+
+.configGrupoFilas {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 16px;
+  border: 1px solid var(--fm-card-borde);
+  border-radius: var(--fm-radius-lg);
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+}
+
+.configGrupo--peligro .configGrupoFilas {
+  border-color: color-mix(in srgb, var(--fm-danger) 30%, transparent);
+  box-shadow: none;
+}
+
+.configGrupoFilas > * + * {
+  border-top: 1px solid var(--fm-border);
+}
+
+/* ── Filas ── */
+.configFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 12px 0;
+  box-sizing: border-box;
+}
+
+.configFila--apilada {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.configFilaTexto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.configFilaTexto strong {
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.configFilaTexto span {
+  font-size: var(--fm-fs-xs);
+  line-height: 1.45;
+  color: var(--fm-muted);
+  overflow-wrap: anywhere;
+}
+
+.configTexto {
+  margin: 0;
+  padding: 12px 0;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.55;
+  color: var(--fm-muted);
+}
+
+.configTexto strong {
+  color: var(--fm-ink);
+}
+
+/* ── Interruptor ── */
+.configSwitch {
+  flex-shrink: 0;
+  position: relative;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-border-strong);
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.configSwitch.on {
+  background: var(--fm-accent);
+}
+
+.configSwitch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.configSwitchPerilla {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--fm-accent-ink);
+  box-shadow: var(--fm-shadow-sm);
+  transition: transform var(--fm-dur) var(--fm-ease);
+}
+
+.configSwitch.on .configSwitchPerilla {
+  transform: translateX(20px);
+}
+
+.configSwitch:focus-visible,
+.configOpciones button:focus-visible,
+.configBoton:focus-visible,
+.configNavItem:focus-visible,
+.configYo:focus-visible,
+.configDesplegable summary:focus-visible {
+  outline: 2px solid var(--fm-accent);
+  outline-offset: 2px;
+}
+
+/* ── Opciones: control segmentado ── */
+.configOpciones {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg-soft);
+}
+
+.configOpciones button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: transparent;
+  color: var(--fm-muted);
+  font-family: inherit;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease),
+    box-shadow var(--fm-dur) var(--fm-ease);
+}
+
+.configOpciones button:hover:not(.activa) {
+  color: var(--fm-ink);
+}
+
+.configOpciones button.activa {
+  background: var(--fm-surface);
+  box-shadow: var(--fm-shadow-sm);
+  color: var(--fm-accent);
+}
+
+/* ── Botones ── */
+.configBoton {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font-family: inherit;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
+}
+
+.configBoton:hover:not(:disabled) {
+  background: var(--fm-border-strong);
+}
+
+.configBoton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.configBoton--peligro {
+  background: var(--fm-danger-bg);
+  color: var(--fm-danger);
+}
+
+.configBoton--peligro:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--fm-danger) 18%, transparent);
+}
+
+.configBoton--peligroLleno {
+  background: var(--fm-danger);
+  color: var(--fm-accent-ink);
+}
+
+.configBoton--peligroLleno:hover:not(:disabled) {
+  background: var(--fm-danger);
+  filter: brightness(1.08);
+}
+
+.configBotonPrincipal {
+  min-height: 40px;
+  padding: 0 18px;
+}
+
+/* ── Formularios ── */
+.configForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.configForm--enLinea {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.configForm--enLinea .configCampo {
+  flex: 1 1 220px;
+}
+
+.configForm--enLinea .configBotonPrincipal {
+  margin-top: 24px;
+}
+
+.configFormAcciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.configCampo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configCampoEtiqueta {
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-ink);
+}
+
+.configCampoAyuda {
+  font-size: var(--fm-fs-xs);
+  line-height: 1.4;
+  color: var(--fm-muted);
+}
+
+.configInput {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--fm-radius-md);
+  background: var(--fm-bg-soft);
+  color: var(--fm-ink);
+  font-family: inherit;
+  font-size: var(--fm-fs-body);
+  box-sizing: border-box;
+  transition: border-color var(--fm-dur) var(--fm-ease), box-shadow var(--fm-dur) var(--fm-ease),
+    background var(--fm-dur) var(--fm-ease);
+}
+
+.configInput:focus {
+  outline: none;
+  border-color: var(--fm-accent-soft-border);
+  background: var(--fm-surface);
+  box-shadow: 0 0 0 3px var(--fm-accent-soft-bg);
+}
+
+.configTextarea {
+  min-height: 120px;
+  padding: 12px 14px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.configChecks {
+  display: flex;
+  flex-direction: column;
+}
+
+.configChecks > * + * {
+  border-top: 1px solid var(--fm-border);
+}
+
+.configCheck {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 0;
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  color: var(--fm-ink);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.configCheck input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--fm-accent);
+}
+
+/* ── Perfil (Cuenta) ── */
+.configPerfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.configPerfil img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--fm-bg-soft);
+}
+
+/* ── Bloqueados ── */
+.configBloqueadosLista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 12px;
+  list-style: none;
+}
+
+.configBloqueado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.configBloqueado img {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.configBloqueado span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fm-fs-sm);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Desplegables (Ayuda) ── */
+.configDesplegable summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 0;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.configDesplegable summary::-webkit-details-marker {
+  display: none;
+}
+
+.configDesplegable summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-right: 1.8px solid var(--fm-muted);
+  border-bottom: 1.8px solid var(--fm-muted);
+  transform: rotate(45deg);
+  transition: transform var(--fm-dur) var(--fm-ease);
+}
+
+.configDesplegable[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+.configDesplegableCuerpo {
+  padding: 0 0 14px;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.6;
+  color: var(--fm-muted);
+}
+
+.configDesplegableCuerpo p {
+  margin: 0;
+}
+
+.configDesplegableCuerpo ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.configVersion {
+  margin: 4px 0 0;
+  font-size: var(--fm-fs-xs);
+  text-align: center;
+  color: var(--fm-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .configSwitchPerilla,
+  .configDesplegable summary::after {
+    transition: none;
+  }
+}
+
+/* ── Escritorio: secciones a la izquierda, contenido a la derecha ── */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .pantallaConfiguracion {
+    padding-left: var(--fm-sidebar);
+    padding-bottom: 40px;
+  }
+
+  .configLayout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: start;
+    gap: 40px;
+    max-width: 1040px;
+    padding: 32px 32px 48px;
+  }
+
+  .configLayout:not(.configLayout--lista) .configLateral {
+    display: flex;
+  }
+
+  .configLateral {
+    position: sticky;
+    top: 24px;
+  }
+
+  .configNavItem {
+    min-height: 58px;
+  }
+
+  /* hay lugar a lo alto: la descripción entra entera */
+  .configNavTexto span {
+    white-space: normal;
+  }
+
+  .configNavItem.activo {
+    background: var(--fm-accent-soft-bg);
+  }
+
+  .configNavItem.activo strong {
+    color: var(--fm-accent);
+  }
+
+  .configNavItem.activo .configNavIcono {
+    background: var(--fm-accent);
+    color: var(--fm-accent-ink);
+  }
+
+  .configNavItem.activo .configNavFlecha {
+    color: var(--fm-accent);
+  }
+
+  .configContenido {
+    max-width: 640px;
+  }
+
+  .configContenidoCabecera {
+    display: flex;
+  }
+}

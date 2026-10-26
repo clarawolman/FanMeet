@@ -7,20 +7,20 @@ import ModalConfirmacion from "../generales/ModalConfirmacion";
 import PaginaNoEncontrada from "../generales/PaginaNoEncontrada";
 import { IconoAnterior, IconoSiguiente } from "../generales/iconosNav";
 import {
+  IconoBasura,
   IconoComentario,
   IconoCorazon,
   IconoEnviar,
   IconoFijado,
   IconoGuardar,
   IconoMas,
-  IconoUbicacion,
 } from "./iconosMomento";
 import CompartirMomento from "./CompartirMomento";
 import EditarMomento from "./EditarMomento";
 import ListaLikes from "./ListaLikes";
 import { momentosService, linkDeMomento } from "../../services/momentosService";
 import { UsuarioContext } from "../../context/UsuarioContext";
-import { haceCuanto, formatearFechaLarga } from "../../utils/fechas";
+import { haceCuanto, partesFecha } from "../../utils/fechas";
 import { mostrarAviso } from "../../utils/avisos";
 
 const LARGO_PIE_CORTO = 140;
@@ -72,6 +72,8 @@ function Carrusel({ fotos, onDobleToque }) {
       >
         {fotos.map((url, i) => (
           <div className="momentoCarruselFoto" key={url} aria-label={`Foto ${i + 1} de ${fotos.length}`}>
+            {/* la misma foto desenfocada de fondo: sin franjas negras si no llena el cuadro */}
+            <img className="momentoCarruselFondo" src={url} alt="" aria-hidden="true" draggable={false} />
             <img src={url} alt="" draggable={false} />
           </div>
         ))}
@@ -206,7 +208,8 @@ function Comentario({ comentario, puedeBorrar, onResponder, onBorrar, onLike, on
   );
 }
 
-// Pantalla de un momento: funciona como una publicación de Instagram.
+// Pantalla de un momento: una entrada del recital con las fotos, quiénes
+// fueron juntos, reacciones y comentarios.
 export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUsuario, onIngresarConcierto }) {
   const { usuarioActual } = useContext(UsuarioContext);
   const [momento, setMomento] = useState(null);
@@ -392,6 +395,8 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
     }
   }
 
+  // El día del show (o de la publicación), como el número grande de una entrada
+  const fechaTalon = partesFecha(momento.concierto?.fecha || momento.created_at);
   const cantidadComentarios = momento.comentarios.reduce((total, c) => total + 1 + c.respuestas.length, 0);
   const pieLargo = momento.descripcion.length > LARGO_PIE_CORTO;
   const pieVisible =
@@ -403,56 +408,36 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
 
       <main className="momentoLayout">
         <article className="momento">
-          {/* ── Cabecera: quiénes, concierto y menú ── */}
+          {/* ── Cabecera de la entrada: concierto, fecha y menú ── */}
           <header className="momentoCabecera">
-            <span className="momentoCabeceraFotos">
-              {momento.participantes.slice(0, 2).map((u) => (
-                <button
-                  key={u.id_usuario}
-                  type="button"
-                  onClick={() => onVerUsuario(u.id_usuario)}
-                  aria-label={`Ver el perfil de ${nombreDe(u)}`}
-                >
-                  <img src={u.foto_perfil} alt="" />
-                </button>
-              ))}
-            </span>
-
+            {fechaTalon && (
+              <div className="momentoFechaTalon" aria-hidden="true">
+                <span className="momentoFechaTalonMes">{fechaTalon.mes}</span>
+                <span className="momentoFechaTalonDia">{fechaTalon.dia}</span>
+                <span className="momentoFechaTalonAnio">{fechaTalon.anio}</span>
+              </div>
+            )}
             <div className="momentoCabeceraTexto">
-              <p className="momentoCabeceraNombres">
-                {momento.participantes.length <= 2 ? (
-                  momento.participantes.map((u, i) => (
-                    <span key={u.id_usuario}>
-                      {i > 0 && " y "}
-                      <button type="button" className="momentoNombre" onClick={() => onVerUsuario(u.id_usuario)}>
-                        {u.nombre}
-                      </button>
-                    </span>
-                  ))
-                ) : (
-                  <button type="button" className="momentoNombre" onClick={() => setModal("participantes")}>
-                    {nombresParticipantes(momento.participantes)}
-                  </button>
+              <p className="momentoEtiqueta">
+                {momento.concierto ? "Estuve ahí" : "Un recuerdo"}
+                {momento.fijado && (
+                  <span className="momentoFijadoMarca" title="Fijado en tu perfil">
+                    <IconoFijado lleno width="12" height="12" /> Fijado
+                  </span>
                 )}
               </p>
-              {momento.concierto && (
+              {momento.concierto ? (
                 <button
                   type="button"
-                  className="momentoUbicacion"
+                  className="momentoConcierto"
                   onClick={() => onIngresarConcierto?.(momento.concierto.id_concierto)}
                 >
-                  <IconoUbicacion width="13" height="13" />
                   {momento.concierto.nombre}
-                  {momento.concierto.fecha && ` · ${formatearFechaLarga(momento.concierto.fecha)}`}
                 </button>
+              ) : (
+                <p className="momentoConcierto">De {nombreDe(autor)}</p>
               )}
             </div>
-
-            {momento.fijado && (
-              <span className="momentoFijadoMarca" title="Fijado en tu perfil">
-                <IconoFijado lleno width="16" height="16" />
-              </span>
-            )}
 
             <div className="momentoMenu">
               <button
@@ -512,7 +497,7 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
                           className="momentoMenuPeligro"
                           onClick={() => { setMenuAbierto(false); setModal("quitar"); }}
                         >
-                          {momento.participantes.length > 1 ? "Quitar de mis momentos" : "Eliminar"}
+                          {momento.participantes.length > 1 ? "Quitar de mis momentos" : "Eliminar momento"}
                         </button>
                       </li>
                     )}
@@ -527,53 +512,87 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
 
           {/* ── Panel: acciones, pie y comentarios ── */}
           <div className="momentoPanel">
+            {/* quiénes fueron juntos */}
+            <div className="momentoQuienes">
+              <span className="momentoQuienesFotos">
+                {momento.participantes.slice(0, 3).map((u) => (
+                  <button
+                    key={u.id_usuario}
+                    type="button"
+                    onClick={() => onVerUsuario(u.id_usuario)}
+                    aria-label={`Ver el perfil de ${nombreDe(u)}`}
+                  >
+                    <img src={u.foto_perfil} alt="" />
+                  </button>
+                ))}
+              </span>
+              <p className="momentoQuienesTexto">
+                {momento.participantes.length <= 2 ? (
+                  momento.participantes.map((u, i) => (
+                    <span key={u.id_usuario}>
+                      {i > 0 && " y "}
+                      <button type="button" className="momentoNombre" onClick={() => onVerUsuario(u.id_usuario)}>
+                        {u.nombre}
+                      </button>
+                    </span>
+                  ))
+                ) : (
+                  <button type="button" className="momentoNombre" onClick={() => setModal("participantes")}>
+                    {nombresParticipantes(momento.participantes)}
+                  </button>
+                )}
+                <span className="momentoMuted">
+                  {momento.participantes.length > 1 ? " fueron juntos" : ""} · {haceCuanto(momento.created_at)}
+                  {momento.editado && " · Editado"}
+                </span>
+              </p>
+            </div>
+
             <div className="momentoAcciones">
               <button
                 type="button"
-                className={`momentoIconoBoton momentoLike ${momento.yoDiLike ? "activo" : ""}`}
+                className={`momentoPildora momentoLike ${momento.yoDiLike ? "activo" : ""}`}
                 onClick={() => alternarLike()}
                 aria-label={momento.yoDiLike ? "Ya no me gusta" : "Me gusta"}
                 aria-pressed={momento.yoDiLike}
               >
-                <IconoCorazon lleno={momento.yoDiLike} />
+                <IconoCorazon lleno={momento.yoDiLike} width="18" height="18" />
+                {momento.cantidadLikes !== null && <span>{momento.cantidadLikes}</span>}
               </button>
               <button
                 type="button"
-                className="momentoIconoBoton"
+                className="momentoPildora"
                 onClick={() => inputComentarioRef.current?.focus()}
                 disabled={!momento.comentariosActivados}
                 aria-label="Comentar"
               >
-                <IconoComentario />
+                <IconoComentario width="18" height="18" />
+                <span>{cantidadComentarios}</span>
               </button>
               <button
                 type="button"
-                className="momentoIconoBoton"
+                className="momentoPildora"
                 onClick={() => setModal("compartir")}
                 aria-label="Compartir"
               >
-                <IconoEnviar />
+                <IconoEnviar width="18" height="18" />
               </button>
               <button
                 type="button"
-                className={`momentoIconoBoton momentoGuardar ${momento.guardado ? "activo" : ""}`}
+                className={`momentoPildora momentoGuardar ${momento.guardado ? "activo" : ""}`}
                 onClick={alternarGuardado}
                 aria-label={momento.guardado ? "Quitar de guardados" : "Guardar"}
                 aria-pressed={momento.guardado}
               >
-                <IconoGuardar lleno={momento.guardado} />
+                <IconoGuardar lleno={momento.guardado} width="18" height="18" />
               </button>
             </div>
 
-            {momento.cantidadLikes !== null && (
+            {momento.cantidadLikes > 0 && (
               <p className="momentoLikes">
-                {momento.cantidadLikes === 0 ? (
-                  <span className="momentoMuted">Sé la primera persona en darle me gusta</span>
-                ) : (
-                  <button type="button" onClick={() => setModal("likes")}>
-                    {momento.cantidadLikes} me gusta
-                  </button>
-                )}
+                <button type="button" onClick={() => setModal("likes")}>
+                  Ver quiénes le dieron me gusta
+                </button>
                 {momento.ocultarLikes && <span className="momentoMuted"> · solo lo ven ustedes</span>}
               </p>
             )}
@@ -591,11 +610,6 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
                 )}
               </p>
             )}
-
-            <p className="momentoFecha">
-              <time dateTime={momento.created_at}>{haceCuanto(momento.created_at)}</time>
-              {momento.editado && " · Editado"}
-            </p>
 
             <section className="momentoSeccionComentarios" aria-label="Comentarios">
               {cantidadComentarios > 0 && (
@@ -617,6 +631,10 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
                   />
                 ))}
               </ul>
+
+              {cantidadComentarios === 0 && momento.comentariosActivados && (
+                <p className="momentoComentariosVacio">Todavía no hay comentarios. Contá algo de ese día.</p>
+              )}
 
               {momento.comentariosActivados ? (
                 <form className="momentoComentar" onSubmit={enviarComentario}>
@@ -655,6 +673,13 @@ export default function MomentoDetalle({ idMomento, onVolver, onNavegar, onVerUs
                 <p className="momentoMuted momentoSinComentarios">Los comentarios están desactivados.</p>
               )}
             </section>
+
+            {momento.soyParticipante && (
+              <button type="button" className="momentoEliminar" onClick={() => setModal("quitar")}>
+                <IconoBasura width="16" height="16" />
+                {momento.participantes.length > 1 ? "Quitar de mis momentos" : "Eliminar momento"}
+              </button>
+            )}
           </div>
         </article>
       </main>

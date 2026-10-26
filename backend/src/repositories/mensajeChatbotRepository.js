@@ -41,6 +41,12 @@ export const mensajeChatbotRepository = {
 
   // Igual que mensajePrivadoRepository.listarConversacion: los ultimos
   // `limite` mensajes en orden cronologico; con `antesDeId` pagina hacia atras.
+  // "Borrar la conversación con Fani" desde Configuración
+  async eliminarDeUsuario(idUsuario) {
+    const resultado = await supabaseAdmin.from(TABLA).delete().eq("id_usuario", idUsuario);
+    unwrap(resultado, "Error borrando la conversación");
+  },
+
   async listarDeUsuario(idUsuario, { limite = 50, antesDeId } = {}) {
     let query = supabaseAdmin
       .from(TABLA)

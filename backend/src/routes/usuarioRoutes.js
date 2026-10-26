@@ -16,7 +16,14 @@ import {
   buscarUsuarioSchema,
   nombreGeneroSchema,
   idUsuarioParamSchema,
+  preferenciasSchema,
+  ciudadSchema,
+  cambiarContrasenaSchema,
+  cambiarMailSchema,
+  eliminarCuentaSchema,
+  sugerenciaSchema,
 } from "../validators/usuarioValidators.js";
+import { authRateLimiter, reporteRateLimiter } from "../middlewares/rateLimiter.js";
 
 const router = Router();
 
@@ -64,6 +71,34 @@ router.post(
   authMiddleware,
   upload.single("foto"),
   usuarioController.actualizarFoto
+);
+router.delete("/me/foto", authMiddleware, usuarioController.eliminarFoto);
+
+// Configuración
+router.patch("/me/preferencias", authMiddleware, validate(preferenciasSchema), usuarioController.actualizarPreferencias);
+router.patch("/me/ciudad", authMiddleware, validate(ciudadSchema), usuarioController.actualizarCiudad);
+// Piden la contraseña actual: mismo límite que el login contra la fuerza bruta.
+router.post(
+  "/me/contrasena",
+  authMiddleware,
+  authRateLimiter,
+  validate(cambiarContrasenaSchema),
+  usuarioController.cambiarContrasena
+);
+router.post("/me/mail", authMiddleware, authRateLimiter, validate(cambiarMailSchema), usuarioController.cambiarMail);
+router.post(
+  "/me/eliminar",
+  authMiddleware,
+  authRateLimiter,
+  validate(eliminarCuentaSchema),
+  usuarioController.eliminarCuenta
+);
+router.post(
+  "/me/sugerencias",
+  authMiddleware,
+  reporteRateLimiter,
+  validate(sugerenciaSchema),
+  usuarioController.enviarSugerencia
 );
 router.post(
   "/me/highlights",

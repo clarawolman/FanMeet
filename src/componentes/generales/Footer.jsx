@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import "./Footer.css";
-import MenuConfiguracion from "./MenuConfiguracion";
 import { SesionContext } from "../../context/SesionContext";
 import Marca from "./Marca";
 import { chatsService } from "../../services/chatsService";
@@ -28,7 +27,6 @@ const ITEMS = [
 
 function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
   const cerrarSesion = useContext(SesionContext);
-  const [configAbierta, setConfigAbierta] = useState(false);
   const [noLeidosCargados, setNoLeidosCargados] = useState(0);
 
   // La pantalla de chats pasa su propio contador (se actualiza en tiempo
@@ -91,9 +89,10 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
         )}
 
         <button
-          className={`footerButton footerButton--escritorio ${configAbierta ? "activo" : ""}`}
+          className={`footerButton footerButton--escritorio ${pantallaActiva === "configuracion" ? "activo" : ""}`}
           type="button"
-          onClick={() => setConfigAbierta(true)}
+          onClick={() => navegar("configuracion")}
+          aria-current={pantallaActiva === "configuracion" ? "page" : undefined}
         >
           <span className="footerButtonChip">
             <IconoNavConfiguracion className="footerButtonIcono" />
@@ -101,8 +100,6 @@ function Footer({ onNavegar, pantallaActiva, noLeidosChat }) {
           <span className="footerButtonTexto">Configuración</span>
         </button>
       </nav>
-
-      <MenuConfiguracion abierto={configAbierta} onCerrar={() => setConfigAbierta(false)} />
     </>
   );
 }

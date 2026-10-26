@@ -15,6 +15,7 @@ import { normalizarGenero, familiaDe, esTagGenerico } from "../helpers/generos.j
 import { generoService } from "./generoService.js";
 import { bloqueoRepository } from "../repositories/bloqueoRepository.js";
 import { ApiError } from "../helpers/ApiError.js";
+import { mismaCiudad, preferenciasDe } from "../helpers/preferencias.js";
 
 // Matching de gustos musicales, sin IA: cada usuario se resume en un
 // "perfil musical" (artistas y generos con un peso) y dos perfiles se
@@ -469,6 +470,13 @@ async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
     motivos.push(amigosQueVan === 1 ? "Va 1 amigo tuyo" : `Van ${amigosQueVan} amigos tuyos`);
   }
 
+  // En su ciudad (Configuración) suma, pero solo si ya tenía algo que ver
+  const ciudad = concierto.estadio?.ciudad;
+  if (puntaje > 0 && mismaCiudad(base.usuarios.get(yo.idUsuario)?.ciudad, ciudad)) {
+    puntaje *= 1.3;
+    motivos.push(`Es en ${ciudad}`);
+  }
+
   return { puntaje, motivo: motivos[0] || "Parecido a lo que escuchás" };
 }
 
@@ -513,7 +521,11 @@ export const matchingService = {
       ...amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante)),
       ...bloqueados,
     ]);
-    const ids = [...base.usuarios.keys()].filter((id) => id !== idYo && !conRelacion.has(id));
+    // Quien lo apagó en Configuración no aparece en las sugerencias.
+    const ids = [...base.usuarios.keys()].filter(
+      (id) =>
+        id !== idYo && !conRelacion.has(id) && preferenciasDe(base.usuarios.get(id)).aparecer_en_descubrir
+    );
     // El perfil propio se arma completo; el de los demás, con lo que Last.fm
     // llegue a dar a tiempo (el resto queda cargándose para la próxima).
     const hasta = Date.now() + ESPERA_MAXIMA_LASTFM_MS;
@@ -524,10 +536,14 @@ export const matchingService = {
 
     if (!tieneDatos(yo)) return { perfilCompleto: false, soloCercanos: false, fans: [] };
 
+    // Los de la misma ciudad van primero entre los parecidos (+10 para ordenar)
+    const miCiudad = base.usuarios.get(idYo)?.ciudad;
+    const orden = ({ otro, resultado }) =>
+      resultado.porcentaje + (mismaCiudad(miCiudad, base.usuarios.get(otro.idUsuario)?.ciudad) ? 10 : 0);
     const ordenados = otros
       .map((otro) => ({ otro, resultado: compararPerfiles(yo, otro, base.vocabulario) }))
       .filter(({ resultado }) => resultado.porcentaje > 0)
-      .sort((a, b) => b.resultado.porcentaje - a.resultado.porcentaje);
+      .sort((a, b) => orden(b) - orden(a));
     const compatibles = ordenados.filter(
       ({ resultado }) => resultado.porcentaje >= MIN_PORCENTAJE_DESCUBRIR
     );
@@ -538,6 +554,7 @@ export const matchingService = {
       .map(({ otro, resultado }) => ({
         ...toUsuarioResumen(base.usuarios.get(otro.idUsuario)),
         ...resultado,
+        mismaCiudad: mismaCiudad(miCiudad, base.usuarios.get(otro.idUsuario)?.ciudad),
         // sin relación previa: siempre se puede mandar solicitud
         estadoAmistad: "conectar",
         idAmistad: null,

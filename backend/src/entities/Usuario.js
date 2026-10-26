@@ -1,4 +1,5 @@
 import { FOTO_PERFIL_DEFAULT } from "../helpers/constants.js";
+import { preferenciasDe } from "../helpers/preferencias.js";
 
 // Forma completa: la misma fila de "usuario", tal como hoy la guarda
 // App.jsx en el estado usuarioActual/usuarioVisitado.
@@ -12,11 +13,16 @@ export function toUsuarioCompleto(row) {
     fechanac: row.fechanac,
     genero: row.genero,
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
+    // Para mostrar "Eliminar foto" solo si subió una propia
+    tiene_foto: Boolean(row.fotoperfil || row.foto_perfil),
     estilo_asistencia: row.estilo_asistencia,
     rol: row.rol || "usuario",
     descripcion: row.descripcion || null,
     // Para "Editar perfil": cuándo cambió el @nombre por última vez
     nombre_cambiado_at: row.nombre_cambiado_at || null,
+    // Configuración (solo la ve el dueño de la cuenta)
+    ciudad: row.ciudad || null,
+    preferencias: preferenciasDe(row),
   };
 }
 
@@ -59,5 +65,8 @@ export function toUsuarioPublico(row) {
     fotoperfil: row.fotoperfil || row.foto_perfil || FOTO_PERFIL_DEFAULT,
     estilo_asistencia: row.estilo_asistencia,
     descripcion: row.descripcion || null,
+    ciudad: row.ciudad || null,
+    // Para avisar en el perfil por qué no se ven los momentos
+    perfil_privado: preferenciasDe(row).perfil_privado,
   };
 }

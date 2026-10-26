@@ -33,6 +33,40 @@ export const usuariosService = {
     return api.postForm("/usuarios/me/foto", formData);
   },
 
+  // Vuelve a la foto por defecto
+  async eliminarFoto() {
+    return api.del("/usuarios/me/foto");
+  },
+
+  // ── Configuración
+  // Solo lo que cambió, ej. { perfil_privado: true } o { notificaciones: { momentos: false } }.
+  // Devuelve el usuario con las preferencias completas.
+  async actualizarPreferencias(cambios) {
+    return api.patch("/usuarios/me/preferencias", cambios);
+  },
+
+  // "" borra la ciudad
+  async actualizarCiudad(ciudad) {
+    return api.patch("/usuarios/me/ciudad", { ciudad });
+  },
+
+  async cambiarContrasena(actual, nueva) {
+    return api.post("/usuarios/me/contrasena", { actual, nueva });
+  },
+
+  async cambiarMail(mail, contrasena) {
+    return api.post("/usuarios/me/mail", { mail, contrasena });
+  },
+
+  async eliminarCuenta(contrasena) {
+    return api.post("/usuarios/me/eliminar", { contrasena });
+  },
+
+  // tipo: "problema" | "sugerencia"
+  async enviarSugerencia(tipo, texto) {
+    return api.post("/usuarios/me/sugerencias", { tipo, texto });
+  },
+
   // "Editar perfil": { apodo, descripcion, nombre }, solo lo que cambió.
   // El @nombre se puede cambiar una vez cada 15 días.
   async actualizarPerfil(cambios) {

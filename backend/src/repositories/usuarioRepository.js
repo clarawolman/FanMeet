@@ -92,11 +92,12 @@ export const usuarioRepository = {
     return new Set(unwrap(resultado, "Error cargando suspendidos").map((f) => f.id_usuario));
   },
 
-  // Todos los usuarios activos (para "Descubrir"): solo lo que se muestra en la lista.
+  // Todos los usuarios activos (para "Descubrir"). Con "*" también vienen
+  // preferencias y ciudad si ya se corrió supabase/configuracion.sql.
   async listarTodos() {
     const resultado = await supabaseAdmin
       .from(TABLA)
-      .select("id_usuario, nombre, apodo, fotoperfil, fechanac, estilo_asistencia")
+      .select("*")
       .neq("estado", "suspendido");
     return unwrap(resultado, "Error cargando usuarios");
   },
@@ -118,6 +119,13 @@ export const usuarioRepository = {
   async crear(datosUsuario) {
     const resultado = await supabaseAdmin.from(TABLA).insert([datosUsuario]).select().single();
     return unwrap(resultado, "Error al registrar usuario");
+  },
+
+  // Borra todo lo del usuario en una transacción (supabase/configuracion.sql).
+  // Devuelve las URLs de fotos de momentos que quedaron sin dueño.
+  async eliminarCuenta(idUsuario) {
+    const resultado = await supabaseAdmin.rpc("eliminar_cuenta", { p_id: idUsuario });
+    return unwrap(resultado, "Error eliminando la cuenta").map((f) => f.url);
   },
 
   async actualizar(idUsuario, cambios) {
