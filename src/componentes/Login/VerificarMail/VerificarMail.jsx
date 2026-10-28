@@ -49,8 +49,8 @@ function VerificarMail({ mail, enviarAlEntrar = false, onVerificado, onVolver })
     setError("");
     setAviso("");
 
-    if (codigoAVerificar.length !== ) {
-      setError(`Ingresá los ${} números que te llegaron por mail.`);
+    if (codigoAVerificar.length !== LARGO_CODIGO) {
+      setError(`Ingresá los ${LARGO_CODIGO} números que te llegaron por mail.`);
       return;
     }
 
