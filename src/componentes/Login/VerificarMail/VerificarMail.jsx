@@ -6,7 +6,7 @@ import { authService } from "../../../services/authService";
 
 const SEGUNDOS_ENTRE_REENVIOS = 60;
 // Igual al "Email OTP Length" de Supabase.
-const LARGO_CODIGO = 8;
+const LARGO_CODIGO = 6;
 
 // Pantalla que se muestra después de registrarse (o al intentar ingresar
 // con una cuenta sin confirmar): pide el código que Supabase manda al mail.
@@ -49,8 +49,8 @@ function VerificarMail({ mail, enviarAlEntrar = false, onVerificado, onVolver })
     setError("");
     setAviso("");
 
-    if (codigoAVerificar.length !== LARGO_CODIGO) {
-      setError(`Ingresá los ${LARGO_CODIGO} números que te llegaron por mail.`);
+    if (codigoAVerificar.length !== ) {
+      setError(`Ingresá los ${} números que te llegaron por mail.`);
       return;
     }
 
