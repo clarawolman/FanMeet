@@ -269,9 +269,9 @@ describe("authService.verificarCodigo", () => {
     });
     usuarioRepository.obtenerPorId.mockResolvedValue(USUARIO_ROW);
 
-    const resultado = await authService.verificarCodigo({ mail: " Ana@Mail.com ", codigo: "12345678" });
+    const resultado = await authService.verificarCodigo({ mail: " Ana@Mail.com ", codigo: "123456" });
 
-    expect(authRepository.verificarCodigoRegistro).toHaveBeenCalledWith("ana@mail.com", "12345678");
+    expect(authRepository.verificarCodigoRegistro).toHaveBeenCalledWith("ana@mail.com", "123456");
     expect(resultado.session).toEqual(SESSION);
     expect(resultado.usuario.id_usuario).toBe("u1");
   });
@@ -283,7 +283,7 @@ describe("authService.verificarCodigo", () => {
     });
 
     await expect(
-      authService.verificarCodigo({ mail: "ana@mail.com", codigo: "00000000" })
+      authService.verificarCodigo({ mail: "ana@mail.com", codigo: "000000" })
     ).rejects.toMatchObject({ status: 400 });
   });
 });
