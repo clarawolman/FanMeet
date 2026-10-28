@@ -39,7 +39,7 @@ export const registroSchema = z.object({
 // (Authentication → Providers → Email → Email OTP Length), hoy 8 (la idea es pasarlo a 6).
 export const verificarCodigoSchema = z.object({
   mail: z.string().trim().email("Mail inválido"),
-  codigo: z.string().trim().regex(/^[0-9]{8}$/, "El código son 8 números"),
+  codigo: z.string().trim().regex(/^[0-9]{8}$/, "El código son 6 números"),
 });
 
 export const reenviarCodigoSchema = z.object({
