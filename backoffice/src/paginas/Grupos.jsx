@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { api } from "../api";
 import { Cargando, Conversacion } from "../componentes";
 import { fechaCorta, ordenarPorNombre, plural, useCarga, useMostrarAlAbrir } from "../utilidades";
@@ -371,7 +371,6 @@ export default function Grupos() {
             <thead>
               <tr>
                 <th>Grupo</th>
-                <th>Concierto</th>
                 <th>Tipo</th>
                 <th>Cuándo</th>
                 <th>Integrantes</th>
@@ -380,15 +379,25 @@ export default function Grupos() {
               </tr>
             </thead>
             <tbody>
-              {datos?.map((g) => (
-                <tr key={g.id_grupo} className="filaClick" onClick={() => setAbierto(g)}>
+              {datos?.map((g, i) => (
+                <Fragment key={g.id_grupo}>
+                {/* Los grupos vienen ordenados por concierto: una fila de título por cada uno. */}
+                {g.id_concierto !== datos[i - 1]?.id_concierto && (
+                  <tr className="filaConcierto">
+                    <th colSpan={6} scope="colgroup">
+                      {g.concierto || "Sin concierto"}
+                      <span className="textoSuave">
+                        {g.fechaConcierto && ` · ${fechaCorta(g.fechaConcierto)}`}
+                        {` · ${plural(datos.filter((x) => x.id_concierto === g.id_concierto).length, "grupo", "grupos")}`}
+                      </span>
+                    </th>
+                  </tr>
+                )}
+                <tr className="filaClick" onClick={() => setAbierto(g)}>
                   <td>
                     <strong>{g.nombre}</strong>
+                    {g.cantidadFechas > 1 && <div className="textoSuave">De {g.cantidadFechas} fechas</div>}
                     {g.descripcion && <div className="textoSuave celdaTexto">{g.descripcion}</div>}
-                  </td>
-                  <td>
-                    {g.concierto}
-                    {g.cantidadFechas > 1 && <div className="textoSuave">{g.cantidadFechas} fechas</div>}
                   </td>
                   <td>{CATEGORIAS[g.categoria] || g.categoria}</td>
                   <td>{g.fecha ? fechaCorta(`${g.fecha}T${g.hora || "00:00"}`) : "Sin encuentro"}</td>
@@ -404,6 +413,7 @@ export default function Grupos() {
                     </button>
                   </td>
                 </tr>
+                </Fragment>
               ))}
             </tbody>
           </table>

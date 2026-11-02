@@ -82,3 +82,24 @@ describe("armarGruposAutomaticos", () => {
     expect(filas[0].error).toMatch(/muy corto/);
   });
 });
+
+describe("compararPorConcierto", async () => {
+  const { compararPorConcierto } = await import("../src/services/backofficeService.js");
+  const ahora = new Date("2026-11-02T12:00:00Z");
+  const g = (id_grupo, id_concierto, fechaConcierto, fecha = null, hora = null) => ({
+    id_grupo, id_concierto, fechaConcierto, fecha, hora, nombre: `G${id_grupo}`,
+  });
+
+  it("próximos primero (por fecha), después los pasados (más recientes primero), y dentro por encuentro", () => {
+    const grupos = [
+      g(1, 30, "2026-09-01T21:00:00"),
+      g(2, 20, "2027-01-10T21:00:00", "2027-01-10", "18:00"),
+      g(3, 10, "2026-12-05T21:00:00", "2026-12-06", "00:00"),
+      g(4, 10, "2026-12-05T21:00:00", "2026-12-05", "18:00"),
+      g(5, 40, "2026-10-15T21:00:00"),
+      g(6, 10, "2026-12-05T21:00:00"),
+    ];
+    const orden = [...grupos].sort((a, b) => compararPorConcierto(a, b, ahora)).map((x) => x.id_grupo);
+    expect(orden).toEqual([6, 4, 3, 2, 5, 1]);
+  });
+});

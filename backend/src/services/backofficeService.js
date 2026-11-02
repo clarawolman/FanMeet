@@ -165,6 +165,20 @@ async function crearYAvisar({ artista, artista_spotify_id, ...datos }) {
   return { concierto, notificados };
 }
 
+// Orden de la lista de grupos del backoffice (ver listarGrupos).
+export function compararPorConcierto(a, b, ahora = new Date()) {
+  const fechaA = String(a.fechaConcierto || "");
+  const fechaB = String(b.fechaConcierto || "");
+  const pasoA = !fechaA || conciertoYaPaso(fechaA, ahora);
+  const pasoB = !fechaB || conciertoYaPaso(fechaB, ahora);
+  if (pasoA !== pasoB) return pasoA ? 1 : -1;
+  if (fechaA !== fechaB) return pasoA ? fechaB.localeCompare(fechaA) : fechaA.localeCompare(fechaB);
+  if (a.id_concierto !== b.id_concierto) return a.id_concierto - b.id_concierto;
+  const encuentroA = a.fecha ? `${a.fecha}T${a.hora || ""}` : "";
+  const encuentroB = b.fecha ? `${b.fecha}T${b.hora || ""}` : "";
+  return encuentroA.localeCompare(encuentroB) || String(a.nombre).localeCompare(String(b.nombre), "es");
+}
+
 const MAXIMO_IMPORTACION = 200;
 
 // Valida cada fila de una importación en lote contra la base, sin crear
@@ -679,15 +693,21 @@ export const backofficeService = {
 
   // ---------- Grupos ----------
 
+  // Ordenados por concierto: primero los próximos (del más cercano al más
+  // lejano), después los que ya pasaron (del más reciente al más viejo).
+  // Dentro de cada concierto, por fecha y hora del encuentro; los de
+  // comunidad (sin encuentro) van primero.
   async listarGrupos() {
     const filas = await backofficeRepository.listarGrupos();
-    return filas.map(({ concierto, grupos_usuarios, mensaje_grupo, ...g }) => ({
+    const grupos = filas.map(({ concierto, grupos_usuarios, mensaje_grupo, ...g }) => ({
       ...g,
       concierto: concierto?.nombre || "",
+      fechaConcierto: concierto?.fecha || null,
       cantidadFechas: conciertosDelGrupo(g).length,
       cantidadIntegrantes: grupos_usuarios?.[0]?.count ?? 0,
       cantidadMensajes: mensaje_grupo?.[0]?.count ?? 0,
     }));
+    return grupos.sort(compararPorConcierto);
   },
 
   // A diferencia de un fan, el moderador no necesita estar unido al

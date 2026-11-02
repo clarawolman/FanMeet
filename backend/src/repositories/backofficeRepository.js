@@ -171,7 +171,7 @@ export const backofficeRepository = {
   async listarGrupos() {
     const resultado = await supabaseAdmin
       .from("grupo")
-      .select("*, concierto(nombre), grupos_usuarios(count), mensaje_grupo(count)")
+      .select("*, concierto(nombre, fecha), grupos_usuarios(count), mensaje_grupo(count)")
       .order("id_grupo", { ascending: false });
     return unwrap(resultado, "Error cargando grupos");
   },

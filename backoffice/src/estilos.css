@@ -1176,3 +1176,17 @@ textarea:focus {
   background: var(--fm-border);
   color: var(--fm-muted);
 }
+
+/* Lista de grupos: título de cada concierto */
+.tabla .filaConcierto th {
+  padding-top: 18px;
+  background: var(--fm-border);
+  color: var(--fm-ink);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  white-space: normal;
+}
+
+.tabla .filaConcierto .textoSuave {
+  font-weight: 500;
+}
