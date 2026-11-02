@@ -361,7 +361,8 @@ function juntarTarjetas(anterior, nueva) {
 async function preguntarALaIA(idUsuario, historial) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    throw new ApiError(503);
+    console.error("Falta GROQ_API_KEY: el chatbot no puede responder");
+    throw new ApiError(503, "El chatbot no está configurado (falta GROQ_API_KEY)");
   }
 
   const datos = await armarDatosParaUsuario(idUsuario);

@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pegarle a /health
-        run: curl -fsS --max-time 90 --retry 2 "${{ vars.BACKEND_URL || 'https://fanmeet-o0h4.onrender.com' }}/health"
+        run: curl -fsS --max-time 90 --retry 2 "${{ vars.BACKEND_URL || 'https://fanmeet-o1cd.onrender.com' }}/health"
