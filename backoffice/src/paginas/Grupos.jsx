@@ -3,6 +3,7 @@ import { api } from "../api";
 import { Cargando, Conversacion } from "../componentes";
 import { fechaCorta, ordenarPorNombre, plural, useCarga, useMostrarAlAbrir } from "../utilidades";
 import ImportarGrupos from "./ImportarGrupos";
+import GruposAutomaticos from "./GruposAutomaticos";
 
 // "comunidad" = sin encuentro (sin fecha, hora ni punto de encuentro).
 const CATEGORIAS = { pre: "Previa", after: "After", mismo_dia: "Mismo día", comunidad: "Comunidad" };
@@ -249,14 +250,16 @@ export default function Grupos() {
   const [formulario, setFormulario] = useState(null);
   const [aEliminar, setAEliminar] = useState(null);
   const [importando, setImportando] = useState(false);
+  const [automaticos, setAutomaticos] = useState(false);
   const [mensaje, setMensaje] = useState("");
-  const refPanel = useMostrarAlAbrir(formulario || aEliminar || importando || mensaje);
+  const refPanel = useMostrarAlAbrir(formulario || aEliminar || importando || automaticos || mensaje);
   const refChat = useMostrarAlAbrir(abierto);
 
   function abrirFormulario(grupo) {
     setMensaje("");
     setAEliminar(null);
     setImportando(false);
+    setAutomaticos(false);
     setFormulario({ grupo });
   }
 
@@ -264,6 +267,7 @@ export default function Grupos() {
     setMensaje("");
     setFormulario(null);
     setImportando(false);
+    setAutomaticos(false);
     setAEliminar(grupo);
   }
 
@@ -271,12 +275,22 @@ export default function Grupos() {
     setMensaje("");
     setFormulario(null);
     setAEliminar(null);
+    setAutomaticos(false);
     setImportando(true);
+  }
+
+  function abrirAutomaticos() {
+    setMensaje("");
+    setFormulario(null);
+    setAEliminar(null);
+    setImportando(false);
+    setAutomaticos(true);
   }
 
   function terminar(texto) {
     setFormulario(null);
     setImportando(false);
+    setAutomaticos(false);
     setMensaje(texto);
     recargar();
   }
@@ -292,8 +306,11 @@ export default function Grupos() {
     <>
       <div className="tituloConAccion">
         <h1>Grupos</h1>
-        {!formulario && !importando && (
+        {!formulario && !importando && !automaticos && (
           <div className="acciones">
+            <button className="boton" type="button" onClick={abrirAutomaticos}>
+              Grupos automáticos
+            </button>
             <button className="boton" type="button" onClick={abrirImportar}>
               Importar lista
             </button>
@@ -308,6 +325,16 @@ export default function Grupos() {
       {mensaje && <p className="mensajeOk">{mensaje}</p>}
 
       {importando && <ImportarGrupos onListo={terminar} onCancelar={() => setImportando(false)} />}
+
+      {automaticos && (
+        <Cargando error={conciertos.error} cargando={conciertos.cargando}>
+          <GruposAutomaticos
+            conciertos={conciertos.datos || []}
+            onListo={terminar}
+            onCancelar={() => setAutomaticos(false)}
+          />
+        </Cargando>
+      )}
 
       {aEliminar && (
         <ConfirmarEliminar grupo={aEliminar} onListo={terminarEliminar} onCancelar={() => setAEliminar(null)} />

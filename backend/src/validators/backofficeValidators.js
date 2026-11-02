@@ -114,6 +114,23 @@ export const importarGruposSchema = z.object({
   texto: z.string().trim().min(1, "Pegá la lista de grupos").max(200_000, "La lista es demasiado larga"),
 });
 
+// Grupos automáticos: plantillas que se aplican a todos los conciertos
+// próximos (o a los ids elegidos). Ver helpers/gruposAutomaticos.js.
+const plantillaGrupo = z.object({
+  nombre: z.string().trim().min(1, "Poné el nombre de cada grupo").max(100),
+  categoria: z.enum(["pre", "after", "mismo_dia"], { message: "Elegí el tipo de cada grupo" }),
+  // Minutos respecto del inicio del concierto (-180 = 3 horas antes).
+  minutos: z.coerce.number().int().min(-2880, "Como mucho 48 horas antes").max(2880, "Como mucho 48 horas después"),
+  ubicacion: z.string().trim().min(6, "El punto de encuentro debe tener al menos 6 caracteres").max(150),
+  descripcion: z.string().trim().max(500).optional().default(""),
+  cupo: cupoSchema.optional(),
+});
+
+export const gruposAutomaticosSchema = z.object({
+  plantillas: z.array(plantillaGrupo).min(1, "Agregá al menos un grupo").max(10, "Hasta 10 grupos por concierto"),
+  ids_conciertos: z.array(z.coerce.number().int().positive()).max(500).optional(),
+});
+
 export const novedadSchema = z.object({
   titulo: z.string().trim().min(1, "Poné un título").max(100),
   descripcion: z.string().trim().min(1, "Escribí la novedad").max(500),

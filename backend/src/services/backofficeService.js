@@ -15,6 +15,7 @@ import { normalizarGenero } from "../helpers/generos.js";
 import { claveConcierto, esUrlHttp, leerFechaHora, leerFilas } from "../helpers/importarConciertos.js";
 import { claveGrupo, leerCategoria, leerFilasGrupos } from "../helpers/importarGrupos.js";
 import { problemaConImagen } from "../helpers/imagenRemota.js";
+import { armarGruposAutomaticos } from "../helpers/gruposAutomaticos.js";
 import { CUPO_MAXIMO, CUPO_MINIMO } from "../validators/grupoValidators.js";
 import { conciertoYaPaso } from "../helpers/fechas.js";
 import { toConciertoResumen } from "../entities/Concierto.js";
@@ -727,6 +728,53 @@ export const backofficeService = {
 
     const conErrores = filas.filter((f) => !f.datos).map(({ datos: _datos, ...fila }) => fila);
     return { creados, conErrores, fallidos };
+  },
+
+  // Grupos automáticos: muestra qué se crearía con las plantillas, sin
+  // crear nada.
+  async previaGruposAutomaticos({ plantillas, ids_conciertos }) {
+    const [conciertos, gruposExistentes] = await Promise.all([
+      backofficeRepository.listarConciertos(),
+      backofficeRepository.listarGrupos(),
+    ]);
+    const filas = armarGruposAutomaticos({ conciertos, plantillas, gruposExistentes, idsConciertos: ids_conciertos });
+    return { filas };
+  },
+
+  // Crea los grupos que faltan. Vuelve a revisar contra la base, así correrlo
+  // dos veces (o después de sumar conciertos nuevos) no duplica nada.
+  async crearGruposAutomaticos(idModerador, datos) {
+    const { filas } = await this.previaGruposAutomaticos(datos);
+    const creados = [];
+    const fallidos = [];
+
+    for (const fila of filas) {
+      if (fila.existe || fila.error) continue;
+      try {
+        const grupo = await grupoRepository.crear({
+          nombre: fila.nombre,
+          categoria: fila.categoria,
+          fecha: fila.fecha,
+          hora: fila.hora,
+          ubicacion: fila.ubicacion,
+          descripcion: fila.descripcion,
+          ...(fila.cupo ? { cupo: fila.cupo } : {}),
+          id_concierto: fila.concierto.id_concierto,
+          ids_conciertos: null,
+          id_creador: idModerador,
+        });
+        creados.push({ id_grupo: grupo.id_grupo, nombre: fila.nombre, concierto: fila.concierto.nombre });
+      } catch (error) {
+        fallidos.push({ nombre: fila.nombre, concierto: fila.concierto.nombre, error: error.message });
+      }
+    }
+
+    return {
+      creados,
+      fallidos,
+      yaExistian: filas.filter((f) => f.existe).length,
+      conErrores: filas.filter((f) => !f.existe && f.error).length,
+    };
   },
 
   // Cambiar el concierto o las fechas (ids_conciertos) vuelve a armar las
