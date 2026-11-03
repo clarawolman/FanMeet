@@ -28,7 +28,8 @@ export const registroSchema = z.object({
   contrasena: contrasenaSchema,
   fechanac: z.string().min(1, "La fecha de nacimiento es obligatoria"),
   genero: z.string().trim().min(1, "El género es obligatorio"),
-  estilo_asistencia: z.enum(["pogo", "tranquilo", "campo"]),
+  // Opcional en el registro: se puede elegir después desde el perfil.
+  estilo_asistencia: z.enum(["pogo", "tranquilo", "campo"]).nullish(),
   estilos_musicales: z
     .array(z.union([z.string(), z.number()]))
     .min(2, "Elegí al menos 2 géneros musicales"),

@@ -6,7 +6,8 @@ import { normalizarGenero } from "./generos.js";
 export const PREFERENCIAS_DEFAULT = {
   // Privacidad
   perfil_privado: false, // los momentos los ven solo los amigos
-  mensajes: "amigos", // "amigos" | "nadie"
+  // "todos" (los que no son amigos llegan como solicitud) | "amigos" | "nadie"
+  mensajes: "todos",
   etiquetas: "amigos", // "amigos" | "nadie"
   mostrar_conciertos: true,
   aparecer_en_descubrir: true,

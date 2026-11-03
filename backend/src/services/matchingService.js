@@ -16,6 +16,7 @@ import { generoService } from "./generoService.js";
 import { bloqueoRepository } from "../repositories/bloqueoRepository.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { mismaCiudad, preferenciasDe } from "../helpers/preferencias.js";
+import { popularidadDeArtistas } from "./popularidadArtistas.js";
 
 // Matching de gustos musicales, sin IA: cada usuario se resume en un
 // "perfil musical" (artistas y generos con un peso) y dos perfiles se
@@ -42,6 +43,8 @@ const MIN_PORCENTAJE_DESCUBRIR = 40;
 // Cuántos "más parecidos" se muestran cuando nadie llega a ese mínimo.
 const MAX_CERCANOS = 6;
 const MAX_RECOMENDACIONES = 10;
+// Con menos recomendaciones que esto se suman conciertos de géneros parecidos.
+const MIN_RECOMENDACIONES = 4;
 
 const HORA = 60 * 60 * 1000;
 const TTL_TOP_USUARIO = 6 * HORA;
@@ -480,17 +483,68 @@ async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
   return { puntaje, motivo: motivos[0] || "Parecido a lo que escuchás" };
 }
 
+// ── Géneros parecidos ────────────────────────────────────────────────────
+// Para cuando ningún concierto coincide con los gustos: se recomiendan los
+// de géneros del mismo palo. Grupos de familias que suelen compartir
+// público (claves normalizadas, ver normalizarGenero).
+const FAMILIAS_PARECIDAS = [
+  ["rock", "metal", "punk", "hard rock", "grunge", "alternative", "indie", "rock nacional", "heavy metal", "emo", "hardcore", "post punk"],
+  ["pop", "indie", "indie pop", "dance pop", "synthpop", "electropop", "pop rock", "k pop", "latin pop"],
+  ["trap", "hip hop", "rap", "reggaeton", "urbano", "latin", "dembow", "drill", "r&b", "rnb", "latin trap"],
+  ["electronic", "electronica", "house", "techno", "edm", "dance", "trance", "drum and bass", "dubstep", "electro"],
+  ["cumbia", "cuarteto", "reggaeton", "latin", "salsa", "bachata", "merengue", "tropical", "cumbia villera"],
+  ["jazz", "blues", "soul", "funk", "r&b", "rnb", "gospel"],
+  ["folk", "folklore", "country", "singer songwriter", "acoustic", "tango"],
+];
+
+function familiasDe(clave, vocabulario) {
+  const claves = new Set([clave]);
+  const padre = familiaDe(clave, vocabulario);
+  if (padre) claves.add(padre);
+  return claves;
+}
+
+// 0 a 1: qué tan parecido es `generoConcierto` a algún género del usuario.
+export function parecidoDeGeneros(generoConcierto, generosUsuario, vocabulario = new Map()) {
+  const propias = familiasDe(generoConcierto, vocabulario);
+  const palabras = new Set(generoConcierto.split(" "));
+  let mejor = { parecido: 0, genero: null };
+
+  for (const [clave] of generosUsuario) {
+    let parecido = 0;
+    const suyas = familiasDe(clave, vocabulario);
+    if ([...propias].some((f) => suyas.has(f))) parecido = 0.8;
+    else if (clave.split(" ").some((p) => p.length > 2 && palabras.has(p))) parecido = 0.6;
+    else if (
+      FAMILIAS_PARECIDAS.some(
+        (grupo) => [...propias].some((f) => grupo.includes(f)) && [...suyas].some((f) => grupo.includes(f))
+      )
+    ) {
+      parecido = 0.5;
+    }
+    // Pesa más el parecido con lo que más le gusta.
+    const ponderado = parecido * Math.min(1, 0.5 + (generosUsuario.get(clave) || 0) / 2);
+    if (ponderado > mejor.parecido) mejor = { parecido: ponderado, genero: clave };
+  }
+  return mejor;
+}
+
 // ── API del servicio ─────────────────────────────────────────────────────
 export const matchingService = {
   // Llena el cache de Last.fm (perfiles de todos y artistas de los próximos
   // conciertos) de fondo, para que Descubrir y "Para vos" salgan completos
   // y rápidos aunque el server recién haya arrancado.
   async precalentar() {
-    if (!lastfmDisponible()) return;
     const [base, conciertos] = await Promise.all([
       cargarDatosBase(),
       conciertoRepository.listarTodos({ soloProximos: true }),
     ]);
+    // Popularidad de los artistas para los "Destacados" (Spotify / Last.fm).
+    await popularidadDeArtistas(
+      conciertos.map((c) => c.artista?.nombre),
+      { esperaMaximaMs: 60000 }
+    );
+    if (!lastfmDisponible()) return;
     await construirPerfiles([...base.usuarios.keys()], base);
     const artistas = [...new Set(conciertos.map((c) => c.artista?.nombre).filter(Boolean))];
     await Promise.all(artistas.flatMap((nombre) => [similaresDeArtista(nombre), tagsDeArtista(nombre)]));
@@ -581,11 +635,42 @@ export const matchingService = {
     const hasta = Date.now() + ESPERA_MAXIMA_LASTFM_MS;
     const puntajes = await Promise.all(candidatos.map((c) => puntuarConcierto(c, yo, base, amigos, hasta)));
 
-    return candidatos
+    const afines = candidatos
       .map((concierto, i) => ({ concierto, ...puntajes[i] }))
       .filter((r) => r.puntaje > 0.1)
       .sort((a, b) => b.puntaje - a.puntaje)
-      .slice(0, MAX_RECOMENDACIONES)
-      .map(({ concierto, motivo }) => ({ ...toConciertoResumen(concierto), motivo }));
+      .slice(0, MAX_RECOMENDACIONES);
+
+    // Si casi nada coincide con sus gustos, se completa con conciertos de
+    // géneros parecidos a los suyos (rock -> metal, trap -> reggaeton...).
+    let parecidos = [];
+    if (afines.length < MIN_RECOMENDACIONES && yo.generos.size > 0) {
+      const yaEstan = new Set(afines.map((r) => r.concierto.id_concierto));
+      parecidos = candidatos
+        .filter((c) => !yaEstan.has(c.id_concierto))
+        .map((concierto) => {
+          const genero = base.generosPorId.get(String(concierto.id_estiloMusical));
+          if (!genero) return null;
+          const { parecido, genero: suyo } = parecidoDeGeneros(genero.clave, yo.generos, base.vocabulario);
+          if (parecido <= 0) return null;
+          const nombreSuyo = base.vocabulario.get(suyo) || suyo;
+          return {
+            concierto,
+            puntaje: parecido,
+            motivo:
+              suyo === genero.clave
+                ? `Te gusta el ${genero.nombre}`
+                : `Parecido al ${nombreSuyo} que escuchás`,
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.puntaje - a.puntaje)
+        .slice(0, MAX_RECOMENDACIONES - afines.length);
+    }
+
+    return [...afines, ...parecidos].map(({ concierto, motivo }) => ({
+      ...toConciertoResumen(concierto),
+      motivo,
+    }));
   },
 };

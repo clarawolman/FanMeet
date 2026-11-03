@@ -104,6 +104,30 @@ export const spotifyService = {
     }
   },
 
+  // Qué tan escuchado es un artista en Spotify: popularity (0 a 100, sale
+  // de las reproducciones recientes, lo más parecido a los oyentes
+  // mensuales que da la API) y seguidores. Nunca falla: si no lo encuentra
+  // o Spotify no lo manda, devuelve null.
+  async popularidadArtista(nombre) {
+    if (!spotifyConfigurado() || !nombre) return null;
+
+    try {
+      const token = await obtenerTokenApp();
+      const datos = await spotifyApiRepository.buscar(token, `artist:${nombre}`, "artist", 5);
+      const items = (datos?.artists?.items || []).filter(Boolean);
+      const artista =
+        items.find((a) => normalizarGenero(a.name) === normalizarGenero(nombre)) || null;
+      if (!artista) return null;
+      const popularidad = Number.isFinite(artista.popularity) ? artista.popularity : null;
+      const seguidores = Number.isFinite(artista.followers?.total) ? artista.followers.total : null;
+      if (popularidad == null && seguidores == null) return null;
+      return { popularidad, seguidores };
+    } catch (error) {
+      console.error("No se pudo buscar la popularidad en Spotify:", error.message);
+      return null;
+    }
+  },
+
   async listarFavoritos(idUsuario) {
     const filas = await artistaFavoritoRepository.listarPorUsuario(idUsuario);
     return filas.map(toArtistaFavorito);

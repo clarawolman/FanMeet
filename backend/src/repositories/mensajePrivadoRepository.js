@@ -66,4 +66,14 @@ export const mensajePrivadoRepository = {
       .eq("leido", false);
     return unwrap(resultado, "Error marcando mensajes como leídos");
   },
+
+  // Para "Eliminar" una solicitud de mensaje: lo que `idEmisor` le mandó.
+  async eliminarRecibidos(idReceptor, idEmisor) {
+    const resultado = await supabaseAdmin
+      .from(TABLA)
+      .delete()
+      .eq("id_receptor", idReceptor)
+      .eq("id_emisor", idEmisor);
+    return unwrap(resultado, "Error eliminando la solicitud de mensaje");
+  },
 };

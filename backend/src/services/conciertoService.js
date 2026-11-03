@@ -17,6 +17,7 @@ import { env } from "../config/env.js";
 import { sinBloqueados } from "./bloqueoService.js";
 import { fechasSeguidasDe } from "./grupoService.js";
 import { conciertosDelGrupo, esGrupoGeneral } from "../helpers/gruposGenerales.js";
+import { popularidadDeArtistas, puntajeDestacado } from "./popularidadArtistas.js";
 
 async function armarUsuariosResumen(idsUsuario) {
   const idsUnicos = [...new Set(idsUsuario)];
@@ -34,9 +35,28 @@ async function armarGrupoConUsuarios(grupo) {
 export const conciertoService = {
   // Home y buscador: solo los que no pasaron. Los pasados siguen en Mis
   // eventos de quienes se unieron (listarMisEventos).
+  // Cada concierto lleva `puntajeDestacado` (0 a 1) para ordenar los
+  // "Destacados" de la home: mezcla cuánta gente se unió y qué tan
+  // escuchado es el artista en Spotify / Last.fm.
   async listar() {
     const filas = await conciertoRepository.listarTodos({ soloProximos: true });
-    return filas.map(toConciertoResumen);
+    const conciertos = filas.map(toConciertoResumen);
+
+    const popularidades = await popularidadDeArtistas(conciertos.map((c) => c.artista?.nombre));
+    const maxUnidos = Math.max(0, ...conciertos.map((c) => c.cantidadFans || 0));
+
+    return conciertos.map((concierto) => {
+      const popularidad = popularidades.get(concierto.artista?.nombre) ?? null;
+      return {
+        ...concierto,
+        popularidadArtista: popularidad,
+        puntajeDestacado: puntajeDestacado({
+          popularidad,
+          unidos: concierto.cantidadFans,
+          maxUnidos,
+        }),
+      };
+    });
   },
 
   // Ver el detalle de un concierto (y de los grupos/asistentes que trae

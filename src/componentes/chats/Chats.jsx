@@ -8,6 +8,7 @@ import { chatsService } from "../../services/chatsService";
 import { idMomentoEnTexto } from "../../services/momentosService";
 import { IconoCarrusel } from "../momento/iconosMomento";
 import { mensajesService } from "../../services/mensajesService";
+import { usuariosService } from "../../services/usuariosService";
 import { chatbotService, ID_CHATBOT } from "../../services/chatbotService";
 import { supabase } from "../../supabase";
 import { UsuarioContext } from "../../context/UsuarioContext";
@@ -26,7 +27,10 @@ const FOTO_GRUPO_DEFAULT = "https://images.unsplash.com/photo-1501386761578-eac5
 //  - bot: Fani, la asistente de IA de FanMeet, siempre fijado arriba (tabla
 //    mensaje_chatbot, /api/chatbot/mensajes). Sin Realtime: la respuesta
 //    vuelve en el mismo POST.
-//  - privado: con un amigo (tabla mensaje_privado, /api/chats/:idUsuario)
+//  - privado: con un amigo o con alguien con quien hay mensajes (tabla
+//    mensaje_privado, /api/chats/:idUsuario). Si no es amigo y nunca le
+//    contesté, es una "solicitud de mensaje" (chat.solicitud) y va aparte,
+//    como en Instagram: al contestarle pasa a la lista de chats.
 //  - grupo: el chat de cada grupo del que soy miembro (tabla mensaje_grupo,
 //    /api/grupos/:idGrupo/mensajes). Existe desde que se crea el grupo.
 function claveChat(tipo, id) {
@@ -60,6 +64,8 @@ function datosDe(chat) {
     id: chat.usuario.id_usuario,
     nombre: chat.usuario.nombre,
     foto: chat.usuario.foto_perfil || fotoDefault,
+    esAmigo: chat.esAmigo !== false,
+    solicitud: Boolean(chat.solicitud),
   };
 }
 
@@ -143,6 +149,14 @@ function IconoVolver() {
   );
 }
 
+function IconoSiguienteChat() {
+  return (
+    <svg className="chatsSolicitudesFlecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 function IconoChatVacio() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
@@ -193,6 +207,9 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
   const [chats, setChats] = useState([]);
   const [cargandoChats, setCargandoChats] = useState(true);
   const [busqueda, setBusqueda] = useState("");
+  // Lista de "Solicitudes de mensajes" en vez de la de chats.
+  const [verSolicitudes, setVerSolicitudes] = useState(false);
+  const [eliminandoSolicitud, setEliminandoSolicitud] = useState(false);
 
   // datosDe(chat) del chat abierto: { tipo, id, nombre, foto, usuarios?, grupo? }
   const [chatAbierto, setChatAbierto] = useState(null);
@@ -314,7 +331,12 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
 
       if (paraAbrir) {
         const chat = data.find((c) => claveDe(c) === claveChat(paraAbrir.tipo, paraAbrir.id));
-        if (chat) abrirChat(chat);
+        if (chat) {
+          if (chat.solicitud) setVerSolicitudes(true);
+          abrirChat(chat);
+        } else if (paraAbrir.tipo === "privado") {
+          abrirChatNuevo(paraAbrir.id);
+        }
       }
     } catch (error) {
       // Si no se pudo cargar, se muestra como vacío: sin errores técnicos.
@@ -323,6 +345,29 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
       chatsRef.current = [];
     }
     setCargandoChats(false);
+  }
+
+  // Chat con alguien con quien todavía no hay mensajes (ej. "Mensaje" desde
+  // un perfil de alguien que no es amigo): se abre vacío y entra a la lista
+  // cuando se manda el primer mensaje.
+  async function abrirChatNuevo(idUsuario) {
+    try {
+      const perfil = await usuariosService.obtenerPerfil(idUsuario);
+      abrirChat({
+        tipo: "privado",
+        usuario: {
+          id_usuario: idUsuario,
+          nombre: perfil?.nombre || "Usuario",
+          foto_perfil: perfil?.foto_perfil || perfil?.fotoperfil,
+        },
+        ultimoMensaje: null,
+        noLeidos: 0,
+        esAmigo: perfil?.estadoAmistad === "amigos",
+        solicitud: false,
+      });
+    } catch (error) {
+      console.error("No se pudo abrir el chat:", error);
+    }
   }
 
   function marcarLeido(tipo, id) {
@@ -367,6 +412,12 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
     if (estaAbierto) {
       agregarMensaje(mensaje);
       if (!esPropio) marcarLeido(tipo, idChat);
+      if (esPropio && abierto.solicitud) {
+        const aceptado = { ...abierto, solicitud: false };
+        chatAbiertoRef.current = aceptado;
+        setChatAbierto(aceptado);
+        setVerSolicitudes(false);
+      }
     }
 
     setChats((actuales) => {
@@ -376,6 +427,8 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
         ...chat,
         ultimoMensaje: mensaje,
         noLeidos: !esPropio && !estaAbierto ? chat.noLeidos + 1 : chat.noLeidos,
+        // Contestar una solicitud de mensaje la acepta: pasa a los chats.
+        solicitud: esPropio ? false : chat.solicitud,
       };
       return [actualizado, ...actuales.filter((c) => c !== chat)];
     });
@@ -496,6 +549,21 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
     const alto = evento.currentTarget.offsetHeight;
     const distanciaAlFondo = lista.scrollHeight - lista.scrollTop - lista.clientHeight;
     if (distanciaAlFondo <= alto + 120) lista.scrollTop = lista.scrollHeight;
+  }
+
+  async function eliminarSolicitud() {
+    if (!chatAbierto?.solicitud || eliminandoSolicitud) return;
+    const { id } = chatAbierto;
+    setEliminandoSolicitud(true);
+    try {
+      await chatsService.eliminarSolicitud(id);
+      setChats((actuales) => actuales.filter((c) => claveDe(c) !== claveChat("privado", id)));
+      cerrarChat();
+    } catch (error) {
+      console.error("No se pudo eliminar la solicitud:", error);
+      setErrorEnvio(error.message || "No se pudo eliminar la solicitud");
+    }
+    setEliminandoSolicitud(false);
   }
 
   function cerrarChat() {
@@ -626,13 +694,19 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
     inputRef.current?.focus();
   }
 
-  const chatsFiltrados = useMemo(() => {
-    const termino = busqueda.trim().toLowerCase();
-    if (!termino) return chats;
-    return chats.filter((c) => datosDe(c).nombre.toLowerCase().includes(termino));
-  }, [chats, busqueda]);
+  const solicitudes = useMemo(() => chats.filter((c) => c.solicitud), [chats]);
+  const solicitudesSinLeer = solicitudes.filter((c) => c.noLeidos > 0).length;
+  const mostrandoSolicitudes = verSolicitudes && solicitudes.length > 0;
 
-  const totalNoLeidos = chats.reduce((total, c) => total + c.noLeidos, 0);
+  const chatsFiltrados = useMemo(() => {
+    const deLaVista = chats.filter((c) => Boolean(c.solicitud) === mostrandoSolicitudes);
+    const termino = busqueda.trim().toLowerCase();
+    if (!termino) return deLaVista;
+    return deLaVista.filter((c) => datosDe(c).nombre.toLowerCase().includes(termino));
+  }, [chats, busqueda, mostrandoSolicitudes]);
+
+  // Las solicitudes no suman al globito de la barra (como en Instagram).
+  const totalNoLeidos = chats.reduce((total, c) => total + (c.solicitud ? 0 : c.noLeidos), 0);
   const esGrupoAbierto = chatAbierto?.tipo === "grupo";
   const esBotAbierto = chatAbierto?.tipo === "bot";
 
@@ -774,7 +848,21 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
         <aside className="chatsLista">
           <header className="chatsListaHeader">
             <div className="chatsListaTitulo">
-              <h1>Chats</h1>
+              {mostrandoSolicitudes ? (
+                <span className="chatsListaTituloSolicitudes">
+                  <button
+                    type="button"
+                    className="chatsVolver chatsVolver--siempre"
+                    onClick={() => setVerSolicitudes(false)}
+                    aria-label="Volver a los chats"
+                  >
+                    <IconoVolver />
+                  </button>
+                  <h1>Solicitudes</h1>
+                </span>
+              ) : (
+                <h1>Chats</h1>
+              )}
               <button type="button" className="headerAppMenu" onClick={abrirMenu} aria-label="Abrir menú">
                 <IconoNavMenu />
               </button>
@@ -783,7 +871,7 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
               <IconoBuscar />
               <input
                 type="search"
-                placeholder="Buscar un amigo o grupo"
+                placeholder={mostrandoSolicitudes ? "Buscar en solicitudes" : "Buscar un chat o grupo"}
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
               />
@@ -791,6 +879,28 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
           </header>
 
           <div className="chatsListaItems">
+            {!mostrandoSolicitudes && solicitudes.length > 0 && (
+              <button type="button" className="chatsSolicitudesFila" onClick={() => setVerSolicitudes(true)}>
+                <span className="chatsSolicitudesTexto">
+                  <strong>Solicitudes de mensajes</strong>
+                  <span>
+                    {solicitudes.length === 1
+                      ? "1 persona que no es tu amiga te escribió"
+                      : `${solicitudes.length} personas que no son tus amigas te escribieron`}
+                  </span>
+                </span>
+                {solicitudesSinLeer > 0 && <span className="chatsItemBadge">{solicitudesSinLeer}</span>}
+                <IconoSiguienteChat />
+              </button>
+            )}
+
+            {mostrandoSolicitudes && (
+              <p className="chatsSolicitudesAyuda">
+                Te escribieron personas que no son tus amigas. Si les respondés, el chat pasa a tus mensajes. No
+                saben si viste su mensaje hasta que lo abrís.
+              </p>
+            )}
+
             {cargandoChats && <p className="chatsListaEstado">Cargando chats...</p>}
 
             {!cargandoChats && chats.length === 0 && (
@@ -798,7 +908,9 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
             )}
 
             {!cargandoChats && chats.length > 0 && chatsFiltrados.length === 0 && (
-              <p className="chatsListaEstado">No hay chats con ese nombre.</p>
+              <p className="chatsListaEstado">
+                {busqueda.trim() ? "No hay chats con ese nombre." : "Todavía no tenés chats."}
+              </p>
             )}
 
             {chatsFiltrados.map((chat) => {
@@ -883,7 +995,9 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
                       ? "Hola, soy Fani. Preguntame por los próximos conciertos, por los grupos de los conciertos a los que te uniste o por cómo usar la app. También puedo buscarte un grupo con lugar y sumarte (siempre te pido que confirmes)."
                       : esGrupoAbierto
                         ? `Este es el chat del grupo ${chatAbierto.nombre}. Mandá el primer mensaje.`
-                        : `Todavía no hay mensajes. Escribile a ${chatAbierto.nombre}.`}
+                        : chatAbierto.esAmigo
+                          ? `Todavía no hay mensajes. Escribile a ${chatAbierto.nombre}.`
+                          : `Todavía no hay mensajes. Como no son amigos, a ${chatAbierto.nombre} le va a llegar como solicitud de mensaje.`}
                   </p>
                 )}
 
@@ -899,6 +1013,28 @@ function Chats({ onNavegar, onVerUsuario, onVerGrupo, onVerConcierto, onAbrirMom
                   </div>
                 )}
               </div>
+
+              {chatAbierto.solicitud && !cargandoMensajes && (
+                <div className="chatsSolicitudAviso">
+                  <p>
+                    <strong>{chatAbierto.nombre}</strong> no es tu amigo/a y te mandó una solicitud de mensaje. Si
+                    le respondés, el chat pasa a tus mensajes.
+                  </p>
+                  <div className="chatsSolicitudAcciones">
+                    <button type="button" className="chatsSolicitudBoton" onClick={() => onVerUsuario?.(chatAbierto.id)}>
+                      Ver perfil
+                    </button>
+                    <button
+                      type="button"
+                      className="chatsSolicitudBoton chatsSolicitudBoton--peligro"
+                      onClick={eliminarSolicitud}
+                      disabled={eliminandoSolicitud}
+                    >
+                      {eliminandoSolicitud ? "Eliminando…" : "Eliminar"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {errorEnvio && <p className="chatsError">{errorEnvio}</p>}
 

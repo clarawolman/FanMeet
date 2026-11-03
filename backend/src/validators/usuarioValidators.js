@@ -66,7 +66,7 @@ const interruptor = z.boolean();
 export const preferenciasSchema = z
   .object({
     perfil_privado: interruptor,
-    mensajes: z.enum(["amigos", "nadie"]),
+    mensajes: z.enum(["todos", "amigos", "nadie"]),
     etiquetas: z.enum(["amigos", "nadie"]),
     mostrar_conciertos: interruptor,
     aparecer_en_descubrir: interruptor,

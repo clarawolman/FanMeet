@@ -142,6 +142,11 @@ export const lastfmApiRepository = {
     return llamar("artist.getSimilar", { artist: artista, limit: limite, autocorrect: 1 });
   },
 
+  // stats.listeners = cuánta gente escucha al artista (para "Destacados").
+  obtenerInfoArtista(artista) {
+    return llamar("artist.getInfo", { artist: artista, autocorrect: 1 });
+  },
+
   // reach = cuanta gente usa ese tag. Un tag inventado da reach 0.
   obtenerInfoTag(tag) {
     return llamar("tag.getInfo", { tag });

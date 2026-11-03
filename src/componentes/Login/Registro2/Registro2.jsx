@@ -126,9 +126,19 @@ function Registro2({ datosIniciales = {}, onVolver, onSiguiente }) {
     });
   }
 
+  // El paso es opcional: se sigue con la foto por defecto.
+  function manejarOmitir() {
+    cerrarCamara();
+
+    onSiguiente({
+      foto_perfil: null,
+      previewFoto: fotoDefault,
+    });
+  }
+
   return (
     <main className="regPantalla">
-      <EncabezadoRegistro paso={2} onVolver={manejarVolver} />
+      <EncabezadoRegistro paso={2} onVolver={manejarVolver} onOmitir={manejarOmitir} />
 
       <section className="registro2Contenido">
         <div className="registro2Intro">

@@ -12,11 +12,11 @@ function mismaClave(a, b) {
 
 // Buscador de géneros sobre todo lo que existe (MusicBrainz + Last.fm),
 // como el buscador de artistas de Spotify. Sin texto muestra los géneros
-// que ya eligió gente de FanMeet (el backend los manda de más a menos
-// elegidos). Lo usan el registro y "Editar géneros".
-// `seleccionados` es una lista de { id, nombre }. Con `maxPopulares` solo se
-// sugieren esos primeros; el resto hay que buscarlos.
-export default function SelectorGeneros({ seleccionados, onCambiar, maxPopulares }) {
+// más populares entre los usuarios de FanMeet (el backend los manda de más
+// a menos elegidos). Lo usan el registro y "Editar géneros".
+// `seleccionados` es una lista de { id, nombre }. Solo se sugieren los
+// primeros `maxPopulares`; el resto hay que buscarlos.
+export default function SelectorGeneros({ seleccionados, onCambiar, maxPopulares = 5 }) {
   const [populares, setPopulares] = useState([]);
   const [texto, setTexto] = useState("");
   const [resultados, setResultados] = useState([]);
@@ -90,13 +90,14 @@ export default function SelectorGeneros({ seleccionados, onCambiar, maxPopulares
       setAgregando(null);
     }
 
+    // No se borra la búsqueda: si buscaste "metal" seguís viendo los
+    // resultados para elegir otro sin tener que escribirlo de nuevo.
     onCambiar([...seleccionados, elegido]);
-    setTexto("");
   }
 
   // Con el input vacío no mostramos lo que quedó de la búsqueda anterior.
-  const sugeridos = maxPopulares ? populares.slice(0, maxPopulares) : populares;
-  const visibles = consulta ? resultados : sugeridos.filter((g) => !estaElegido(g));
+  const sugeridos = populares.slice(0, maxPopulares);
+  const visibles = consulta ? resultados : sugeridos;
   const errorVisible = consulta ? error : "";
 
   return (
@@ -135,7 +136,7 @@ export default function SelectorGeneros({ seleccionados, onCambiar, maxPopulares
       </div>
 
       {!consulta && visibles.length > 0 && (
-        <p className="selectorGenerosTitulo">{maxPopulares ? "Los más elegidos por otros fans" : "Elegidos por otros fans"}</p>
+        <p className="selectorGenerosTitulo">Los más populares</p>
       )}
 
       {errorVisible && <p className="selectorGenerosMensaje">{errorVisible}</p>}
