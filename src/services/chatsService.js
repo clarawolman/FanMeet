@@ -33,6 +33,11 @@ export const chatsService = {
     return api.patch(`/chats/grupos/${idGrupo}/leidos`);
   },
 
+  // Solicitud de mensaje: borra lo que esa persona (que no es amiga) me mandó.
+  async eliminarSolicitud(idUsuario) {
+    return api.del(`/chats/${idUsuario}/solicitud`);
+  },
+
   async marcarLeidos(idUsuario) {
     return api.patch(`/chats/${idUsuario}/leidos`);
   },

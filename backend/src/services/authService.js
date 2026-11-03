@@ -83,7 +83,7 @@ export const authService = {
       // Solo URLs públicas: una URL blob: o una ruta local del frontend no
       // se puede ver desde otro navegador. La foto real se sube aparte.
       fotoperfil: /^https?:\/\//i.test(datos.previewFoto || "") ? datos.previewFoto : FOTO_PERFIL_DEFAULT,
-      estilo_asistencia: datos.estilo_asistencia,
+      estilo_asistencia: datos.estilo_asistencia || null,
     });
 
     if (datos.estilos_musicales?.length > 0) {

@@ -201,6 +201,15 @@ const generosOrdenados = [...generos].sort((a, b) => {
   const conciertosRecomendados =
     recomendados.length > 0 ? recomendados : recomendadosPorGenero;
 
+  // Destacados: los que tienen más gente unida y, sobre todo, los de
+  // artistas muy escuchados (puntajeDestacado lo calcula el backend con
+  // Spotify / Last.fm y los unidos; ver backend/src/services/popularidadArtistas.js).
+  const conciertosDestacados = [...conciertos].sort(
+    (a, b) =>
+      (b.puntajeDestacado ?? 0) - (a.puntajeDestacado ?? 0) ||
+      (b.cantidadFans ?? 0) - (a.cantidadFans ?? 0)
+  );
+
   async function abrirConcierto(concierto) {
     if (usuarioYaEstaUnido(concierto.id_concierto)) {
       await onEntrarConcierto(concierto.id_concierto);
@@ -527,10 +536,11 @@ const generosOrdenados = [...generos].sort((a, b) => {
             <section className="home-row">
               <div className="home-row-header">
                 <h2>Destacados</h2>
+                <span>Los más escuchados y con más fans</span>
               </div>
 
               <CarruselFila>
-                {renderLista(conciertos, { maximo: 10 })}
+                {renderLista(conciertosDestacados, { maximo: 10 })}
               </CarruselFila>
             </section>
 

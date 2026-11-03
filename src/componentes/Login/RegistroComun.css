@@ -57,6 +57,26 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* "Omitir" en los pasos opcionales: link de texto, no compite con el CTA */
+.regOmitir {
+  min-height: 44px;
+  margin-right: -10px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--fm-radius-pill);
+  background: transparent;
+  color: var(--fm-ink);
+  font: inherit;
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--fm-dur) var(--fm-ease);
+}
+
+.regOmitir:hover {
+  background: var(--fm-nav-hover-bg);
+}
+
 /* tres tramos en vez de una barra con porcentaje */
 .regBarra {
   max-width: 640px;

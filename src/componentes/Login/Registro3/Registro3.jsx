@@ -64,14 +64,15 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
     });
   }
 
-  function manejarFinalizar() {
+  // Solo los géneros son obligatorios: artistas y vibra se pueden dejar
+  // vacíos y completar después desde el perfil.
+  function manejarFinalizar({ omitirOpcionales = false } = {}) {
     if (generosSeleccionados.length < 2) {
-      setErrorRegistro3("Elegí al menos 2 géneros para seguir.");
-      return;
-    }
-
-    if (!ambienteSeleccionado) {
-      setErrorRegistro3("Contanos cómo vivís un recital: elegí una opción.");
+      setErrorRegistro3(
+        omitirOpcionales
+          ? "Los géneros son lo único obligatorio: elegí al menos 2 para seguir."
+          : "Elegí al menos 2 géneros para seguir."
+      );
       return;
     }
 
@@ -79,14 +80,20 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
 
     onFinalizar({
       estilos_musicales: generosSeleccionados.map((genero) => genero.id),
-      artistas_favoritos: artistasSeleccionados.map((artista) => artista.spotify_id),
-      estilo_asistencia: ambienteSeleccionado,
+      artistas_favoritos: omitirOpcionales
+        ? []
+        : artistasSeleccionados.map((artista) => artista.spotify_id),
+      estilo_asistencia: (!omitirOpcionales && ambienteSeleccionado) || null,
     });
   }
 
   return (
     <main className="regPantalla regPantallaAncha">
-      <EncabezadoRegistro paso={3} onVolver={manejarVolver} />
+      <EncabezadoRegistro
+        paso={3}
+        onVolver={manejarVolver}
+        onOmitir={() => manejarFinalizar({ omitirOpcionales: true })}
+      />
 
       <section className="registro3Contenido">
         <div className="registro3Columna">
@@ -134,6 +141,7 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
 
         <fieldset className="registro3Columna registro3Ambientes">
           <legend className="registro3SeccionTitulo">¿Cómo vivís un recital?</legend>
+          <p className="registro3SeccionBajada">Opcional. Lo podés cambiar cuando quieras desde tu perfil.</p>
 
           {ambientes.map((ambiente) => {
             const activo = ambienteSeleccionado === ambiente.id;
@@ -146,7 +154,8 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
                 aria-pressed={activo}
                 onClick={() => {
                   setErrorRegistro3("");
-                  setAmbienteSeleccionado(ambiente.id);
+                  // Tocar la opción elegida la desmarca: el paso es opcional.
+                  setAmbienteSeleccionado(activo ? "" : ambiente.id);
                 }}
               >
                 <span className="registro3AmbienteIcono" aria-hidden="true">
@@ -177,7 +186,7 @@ function Registro3({ datosIniciales = {}, onVolver, onFinalizar }) {
             </p>
           )}
 
-          <button className="fmBotonPrimario regBotonSiguiente" type="button" onClick={manejarFinalizar}>
+          <button className="fmBotonPrimario regBotonSiguiente" type="button" onClick={() => manejarFinalizar()}>
             Crear mi cuenta
           </button>
         </div>

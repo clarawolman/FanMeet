@@ -282,9 +282,11 @@ export default function HeaderPerfil({
               onAccion={onAccionAmistad}
               deshabilitado={amistadDeshabilitada}
             />
-            {estadoAmistad === "amigos" && onEnviarMensaje && (
+            {/* A cualquiera se le puede escribir: si no son amigos, le
+                llega como solicitud de mensaje (ver Chats). */}
+            {onEnviarMensaje && (
               <button
-                className="botonAmistad conectar"
+                className={`botonAmistad ${estadoAmistad === "amigos" ? "conectar" : "enviada"}`}
                 type="button"
                 onClick={onEnviarMensaje}
               >

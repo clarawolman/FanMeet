@@ -23,7 +23,7 @@ const PREGUNTAS = [
   {
     pregunta: "¿Por qué no puedo escribirle a alguien?",
     respuesta:
-      "El chat privado es solo entre amigos. Mandale una solicitud desde su perfil; cuando la acepte, ya pueden hablar. También puede pasar que esa persona haya apagado los mensajes.",
+      "Podés escribirle a cualquiera desde su perfil. Si no son amigos, le llega como solicitud de mensaje y la ve en Chats → Solicitudes. Puede pasar que esa persona solo reciba mensajes de amigos o los haya apagado en Configuración.",
   },
   {
     pregunta: "¿Para qué sirve conectar Last.fm?",

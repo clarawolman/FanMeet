@@ -1,6 +1,13 @@
 import { Grupo, Interruptor, Opciones } from "./piezas";
 import UsuariosBloqueados from "../generales/UsuariosBloqueados";
 
+// Los que no son amigos te escriben como solicitud de mensaje (en Chats).
+const QUIEN_ESCRIBE = [
+  { valor: "todos", texto: "Todos" },
+  { valor: "amigos", texto: "Mis amigos" },
+  { valor: "nadie", texto: "Nadie" },
+];
+
 const AMIGOS_O_NADIE = [
   { valor: "amigos", texto: "Mis amigos" },
   { valor: "nadie", texto: "Nadie" },
@@ -39,8 +46,8 @@ export default function SeccionPrivacidad({ preferencias, onGuardarPreferencias 
       <Grupo titulo="Interacciones">
         <Opciones
           titulo="Quién te puede escribir"
-          descripcion="Por chat privado. Solo se puede chatear entre amigos."
-          opciones={AMIGOS_O_NADIE}
+          descripcion="Por chat privado. Si no son amigos, te llega como solicitud de mensaje."
+          opciones={QUIEN_ESCRIBE}
           valor={preferencias.mensajes}
           onCambiar={(v) => onGuardarPreferencias({ mensajes: v })}
         />

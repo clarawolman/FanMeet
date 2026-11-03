@@ -10,22 +10,59 @@ import { toMensajePrivado } from "../entities/MensajePrivado.js";
 import { toUsuarioResumen } from "../entities/Usuario.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { exigirSinBloqueo } from "./bloqueoService.js";
+import { bloqueoRepository } from "../repositories/bloqueoRepository.js";
 import { subirFotoDeChat, validarTextoOFoto } from "./fotosChat.js";
 import { contieneMalasPalabras, MENSAJE_MALAS_PALABRAS } from "../helpers/filtroPalabras.js";
 import { preferenciasDe } from "../helpers/preferencias.js";
 
-// Solo se puede chatear con amigos (amistad aceptada) y sin un bloqueo de
-// por medio. Se chequea en cada lectura y envio: si se elimina la amistad,
-// el chat deja de estar disponible.
-async function exigirAmistad(idUsuarioAutenticado, idOtroUsuario) {
+// Se puede chatear con cualquiera (sin un bloqueo de por medio), como en
+// Instagram: si no son amigos y quien recibe todavía no contestó, el chat le
+// llega como "solicitud de mensaje" (ver armarChatsPrivados).
+// Mientras la otra persona no conteste, se le pueden mandar pocos mensajes:
+// así nadie llena de spam la bandeja de un desconocido.
+export const MAX_MENSAJES_SIN_RESPUESTA = 3;
+
+async function exigirOtroUsuario(idUsuarioAutenticado, idOtroUsuario) {
   if (idUsuarioAutenticado === idOtroUsuario) {
     throw ApiError.badRequest("No podés chatear con vos mismo");
   }
   await exigirSinBloqueo(idUsuarioAutenticado, idOtroUsuario);
 
-  const amistad = await amistadRepository.buscarEntreUsuarios(idUsuarioAutenticado, idOtroUsuario);
-  if (amistad?.estado !== "aceptada") {
-    throw ApiError.forbidden("Solo podés chatear con tus amigos");
+  const otro = await usuarioRepository.obtenerPorId(idOtroUsuario);
+  if (!otro || otro.estado === "suspendido") throw ApiError.notFound("El usuario no existe");
+  return otro;
+}
+
+async function sonAmigos(idUsuarioA, idUsuarioB) {
+  const amistad = await amistadRepository.buscarEntreUsuarios(idUsuarioA, idUsuarioB);
+  return amistad?.estado === "aceptada";
+}
+
+// Antes de mandar: respeta "Quién te puede escribir" de quien recibe y el
+// tope de mensajes a alguien que no es amigo y no contestó.
+async function exigirPuedeEscribir(idUsuarioAutenticado, idOtroUsuario) {
+  const receptor = await exigirOtroUsuario(idUsuarioAutenticado, idOtroUsuario);
+  const quienPuede = preferenciasDe(receptor).mensajes;
+  if (quienPuede === "nadie") {
+    throw ApiError.forbidden("Esta persona no está recibiendo mensajes");
+  }
+  if (await sonAmigos(idUsuarioAutenticado, idOtroUsuario)) return;
+
+  const ultimos = await mensajePrivadoRepository.listarConversacion(idUsuarioAutenticado, idOtroUsuario, {
+    limite: 50,
+  });
+  const meEscribio = ultimos.some((m) => m.id_emisor === idOtroUsuario);
+  // Contestarle a alguien que te escribió primero siempre se puede.
+  if (meEscribio) return;
+
+  if (quienPuede === "amigos") {
+    throw ApiError.forbidden("Esta persona solo recibe mensajes de sus amigos");
+  }
+  const enviados = ultimos.filter((m) => m.id_emisor === idUsuarioAutenticado).length;
+  if (enviados >= MAX_MENSAJES_SIN_RESPUESTA) {
+    throw ApiError.forbidden(
+      "Ya le mandaste una solicitud de mensaje. Esperá a que te conteste para seguir escribiendo."
+    );
   }
 }
 
@@ -42,35 +79,49 @@ function nombreDelChat(chat) {
   return chat.tipo === "grupo" ? chat.grupo.nombre || "" : chat.usuario.nombre || "";
 }
 
+// Un chat por cada amigo y por cada persona con la que hay mensajes. Los de
+// alguien que no es amigo y al que todavía no le contesté son
+// "solicitudes" (solicitud: true): el frontend los muestra aparte.
 async function armarChatsPrivados(idUsuarioAutenticado) {
-  const relaciones = await amistadRepository.listarAceptadasDeUsuario(idUsuarioAutenticado);
-  const idsAmigos = relaciones.map((r) =>
-    r.id_solicitante === idUsuarioAutenticado ? r.id_receptor : r.id_solicitante
-  );
-  if (idsAmigos.length === 0) return [];
-
-  const [usuarios, recientes, noLeidos] = await Promise.all([
-    usuarioRepository.listarActivosPorIds(idsAmigos),
+  const [relaciones, recientes, noLeidos, bloqueados] = await Promise.all([
+    amistadRepository.listarAceptadasDeUsuario(idUsuarioAutenticado),
     mensajePrivadoRepository.listarRecientesDeUsuario(idUsuarioAutenticado),
     mensajePrivadoRepository.listarNoLeidosDeUsuario(idUsuarioAutenticado),
+    bloqueoRepository.idsConBloqueo(idUsuarioAutenticado),
   ]);
+  const idsAmigos = new Set(
+    relaciones.map((r) => (r.id_solicitante === idUsuarioAutenticado ? r.id_receptor : r.id_solicitante))
+  );
 
   // `recientes` viene del mas nuevo al mas viejo: el primero que aparece
-  // de cada amigo es su ultimo mensaje.
-  const ultimoPorAmigo = new Map();
+  // de cada persona es su ultimo mensaje.
+  const ultimoPorUsuario = new Map();
+  const lesEscribi = new Set();
   for (const fila of recientes) {
     const idOtro = fila.id_emisor === idUsuarioAutenticado ? fila.id_receptor : fila.id_emisor;
-    if (!ultimoPorAmigo.has(idOtro)) ultimoPorAmigo.set(idOtro, fila);
+    if (!ultimoPorUsuario.has(idOtro)) ultimoPorUsuario.set(idOtro, fila);
+    if (fila.id_emisor === idUsuarioAutenticado) lesEscribi.add(idOtro);
   }
 
-  const noLeidosPorAmigo = contarPor(noLeidos, "id_emisor");
+  const ids = [...new Set([...idsAmigos, ...ultimoPorUsuario.keys()])].filter(
+    (id) => id !== idUsuarioAutenticado && !bloqueados.has(id)
+  );
+  if (ids.length === 0) return [];
 
-  return usuarios.map((fila) => ({
-    tipo: "privado",
-    usuario: toUsuarioResumen(fila),
-    ultimoMensaje: toMensajePrivado(ultimoPorAmigo.get(fila.id_usuario)),
-    noLeidos: noLeidosPorAmigo.get(fila.id_usuario) || 0,
-  }));
+  const usuarios = await usuarioRepository.listarActivosPorIds(ids);
+  const noLeidosPorUsuario = contarPor(noLeidos, "id_emisor");
+
+  return usuarios.map((fila) => {
+    const esAmigo = idsAmigos.has(fila.id_usuario);
+    return {
+      tipo: "privado",
+      usuario: toUsuarioResumen(fila),
+      ultimoMensaje: toMensajePrivado(ultimoPorUsuario.get(fila.id_usuario)),
+      noLeidos: noLeidosPorUsuario.get(fila.id_usuario) || 0,
+      esAmigo,
+      solicitud: !esAmigo && !lesEscribi.has(fila.id_usuario),
+    };
+  });
 }
 
 async function armarChatsGrupales(idUsuarioAutenticado) {
@@ -122,7 +173,8 @@ function contarPor(filas, campo) {
 }
 
 export const chatService = {
-  // Lista de chats estilo WhatsApp: un chat privado por cada amigo y un
+  // Lista de chats estilo WhatsApp: un chat privado por cada amigo (y por
+  // cada persona con la que hay mensajes, ver armarChatsPrivados) y un
   // chat grupal por cada grupo del que es miembro (el chat de un grupo
   // existe desde que se crea el grupo). Primero los que tienen mensajes, el
   // más reciente arriba; después el resto por nombre.
@@ -142,17 +194,21 @@ export const chatService = {
     });
   },
 
+  // `total` = mensajes sin leer de los chats; las solicitudes de mensaje
+  // se cuentan aparte (como en Instagram, no suman al globito).
   async contarNoLeidos(idUsuarioAutenticado) {
     const [privados, grupales] = await Promise.all([
-      mensajePrivadoRepository.listarNoLeidosDeUsuario(idUsuarioAutenticado),
+      armarChatsPrivados(idUsuarioAutenticado),
       notificacionRepository.listarNoLeidasMensajesGrupo(idUsuarioAutenticado),
     ]);
-    return { total: privados.length + grupales.length };
+    const deChats = privados.filter((c) => !c.solicitud).reduce((total, c) => total + c.noLeidos, 0);
+    const solicitudes = privados.filter((c) => c.solicitud && c.noLeidos > 0).length;
+    return { total: deChats + grupales.length, solicitudes };
   },
 
   // Abrir un chat lo marca como leido.
   async listarMensajes(idUsuarioAutenticado, idOtroUsuario, opciones) {
-    await exigirAmistad(idUsuarioAutenticado, idOtroUsuario);
+    await exigirOtroUsuario(idUsuarioAutenticado, idOtroUsuario);
 
     const filas = await mensajePrivadoRepository.listarConversacion(
       idUsuarioAutenticado,
@@ -177,11 +233,7 @@ export const chatService = {
       throw ApiError.badRequest(MENSAJE_MALAS_PALABRAS);
     }
 
-    await exigirAmistad(idUsuarioAutenticado, idOtroUsuario);
-    const receptor = await usuarioRepository.obtenerPorId(idOtroUsuario);
-    if (preferenciasDe(receptor).mensajes === "nadie") {
-      throw ApiError.forbidden("Esta persona no está recibiendo mensajes");
-    }
+    await exigirPuedeEscribir(idUsuarioAutenticado, idOtroUsuario);
 
     const imagen = archivo ? await subirFotoDeChat(idUsuarioAutenticado, archivo) : null;
 
@@ -201,6 +253,32 @@ export const chatService = {
     if (!esMiembro) throw ApiError.forbidden("No pertenecés a este grupo");
 
     await notificacionRepository.marcarLeidasMensajesGrupo(idUsuarioAutenticado, idGrupo);
+    return { ok: true };
+  },
+
+  // Eliminar una solicitud de mensaje: se borran los mensajes que esa
+  // persona me mandó (y sus notificaciones). Solo si no somos amigos y
+  // nunca le contesté; si vuelve a escribir, llega otra solicitud.
+  async eliminarSolicitud(idUsuarioAutenticado, idOtroUsuario) {
+    if (idUsuarioAutenticado === idOtroUsuario) {
+      throw ApiError.badRequest("No podés chatear con vos mismo");
+    }
+    if (await sonAmigos(idUsuarioAutenticado, idOtroUsuario)) {
+      throw ApiError.badRequest("Ese chat no es una solicitud de mensaje");
+    }
+    const conversacion = await mensajePrivadoRepository.listarConversacion(
+      idUsuarioAutenticado,
+      idOtroUsuario,
+      { limite: 50 }
+    );
+    if (conversacion.some((m) => m.id_emisor === idUsuarioAutenticado)) {
+      throw ApiError.badRequest("Ese chat no es una solicitud de mensaje");
+    }
+
+    await Promise.all([
+      mensajePrivadoRepository.eliminarRecibidos(idUsuarioAutenticado, idOtroUsuario),
+      notificacionRepository.marcarLeidasMensajesPrivados(idUsuarioAutenticado, idOtroUsuario),
+    ]);
     return { ok: true };
   },
 

@@ -30,6 +30,10 @@ export const chatController = {
     res.json(await chatService.marcarGrupoLeido(req.user.id, req.params.idGrupo));
   }),
 
+  eliminarSolicitud: asyncHandler(async (req, res) => {
+    res.json(await chatService.eliminarSolicitud(req.user.id, req.params.idUsuario));
+  }),
+
   marcarLeidos: asyncHandler(async (req, res) => {
     res.json(await chatService.marcarLeidos(req.user.id, req.params.idUsuario));
   }),

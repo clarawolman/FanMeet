@@ -5,8 +5,9 @@ const TOTAL_PASOS = 3;
 
 // Encabezado compartido por los tres pasos del registro: volver, marca y
 // progreso. Cada paso solo dice en cuál está; sin paso (verificación de
-// mail) queda solo volver y marca.
-function EncabezadoRegistro({ paso, onVolver }) {
+// mail) queda solo volver y marca. Con `onOmitir` el paso es opcional y se
+// muestra "Omitir" para saltearlo.
+function EncabezadoRegistro({ paso, onVolver, onOmitir }) {
   return (
     <header className="regHeader">
       <div className="regHeaderFila">
@@ -22,6 +23,12 @@ function EncabezadoRegistro({ paso, onVolver }) {
           <span className="regPaso">
             Paso {paso} de {TOTAL_PASOS}
           </span>
+        )}
+
+        {onOmitir && (
+          <button className="regOmitir" type="button" onClick={onOmitir}>
+            Omitir
+          </button>
         )}
       </div>
 

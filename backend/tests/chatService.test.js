@@ -15,6 +15,7 @@ vi.mock("../src/repositories/mensajePrivadoRepository.js", () => ({
     listarRecientesDeUsuario: vi.fn(),
     listarNoLeidosDeUsuario: vi.fn(),
     marcarLeidos: vi.fn(),
+    eliminarRecibidos: vi.fn(),
   },
 }));
 
@@ -83,24 +84,68 @@ function mensajeConFecha(id, idEmisor, idReceptor, fecha) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // por defecto: el otro existe, recibe mensajes de todos y no hay historial
+  usuarioRepository.obtenerPorId.mockImplementation(async (id) => ({ id_usuario: id, estado: "activo" }));
+  mensajePrivadoRepository.listarConversacion.mockResolvedValue([]);
   // por defecto: sin grupos y sin notificaciones de grupo
   grupoUsuarioRepository.listarGruposPorUsuario.mockResolvedValue([]);
   notificacionRepository.listarNoLeidasMensajesGrupo.mockResolvedValue([]);
 });
 
 describe("chatService.enviar", () => {
-  it("rechaza con 403 si no son amigos", async () => {
+  it("le puede escribir a alguien que no es amigo (le llega como solicitud)", async () => {
     amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    mensajePrivadoRepository.crear.mockResolvedValue(mensaje(1, YO, DESCONOCIDO));
+
+    await chatService.enviar(YO, DESCONOCIDO, { contenido: "hola" });
+
+    expect(mensajePrivadoRepository.crear).toHaveBeenCalledWith(
+      expect.objectContaining({ idEmisor: YO, idReceptor: DESCONOCIDO })
+    );
+  });
+
+  it("rechaza con 403 si ya mandó el máximo de mensajes sin respuesta a alguien que no es amigo", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ estado: "pendiente" });
+    mensajePrivadoRepository.listarConversacion.mockResolvedValue([
+      mensaje(1, YO, DESCONOCIDO),
+      mensaje(2, YO, DESCONOCIDO),
+      mensaje(3, YO, DESCONOCIDO),
+    ]);
 
     await expect(chatService.enviar(YO, DESCONOCIDO, { contenido: "hola" })).rejects.toMatchObject({ status: 403 });
     expect(mensajePrivadoRepository.crear).not.toHaveBeenCalled();
   });
 
-  it("rechaza con 403 si la solicitud de amistad sigue pendiente", async () => {
-    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ estado: "pendiente" });
+  it("si la otra persona ya contestó, se puede seguir escribiendo sin tope", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    mensajePrivadoRepository.listarConversacion.mockResolvedValue([
+      mensaje(1, YO, DESCONOCIDO),
+      mensaje(2, YO, DESCONOCIDO),
+      mensaje(3, YO, DESCONOCIDO),
+      mensaje(4, DESCONOCIDO, YO),
+    ]);
+    mensajePrivadoRepository.crear.mockResolvedValue(mensaje(5, YO, DESCONOCIDO));
+
+    await chatService.enviar(YO, DESCONOCIDO, { contenido: "hola" });
+    expect(mensajePrivadoRepository.crear).toHaveBeenCalled();
+  });
+
+  it("rechaza con 403 si quien recibe solo acepta mensajes de amigos", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    usuarioRepository.obtenerPorId.mockResolvedValue({
+      id_usuario: DESCONOCIDO,
+      preferencias: { mensajes: "amigos" },
+    });
+
+    await expect(chatService.enviar(YO, DESCONOCIDO, { contenido: "hola" })).rejects.toMatchObject({ status: 403 });
+    expect(mensajePrivadoRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("rechaza con 403 si quien recibe apagó los mensajes, aunque sean amigos", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ estado: "aceptada" });
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: AMIGO, preferencias: { mensajes: "nadie" } });
 
     await expect(chatService.enviar(YO, AMIGO, { contenido: "hola" })).rejects.toMatchObject({ status: 403 });
-    expect(mensajePrivadoRepository.crear).not.toHaveBeenCalled();
   });
 
   it("rechaza con 400 si se intenta chatear con uno mismo", async () => {
@@ -136,8 +181,9 @@ describe("chatService.enviar", () => {
     expect(storageRepository.subirArchivo).not.toHaveBeenCalled();
   });
 
-  it("no sube la foto si no son amigos", async () => {
+  it("no sube la foto si no le puede escribir", async () => {
     amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    usuarioRepository.obtenerPorId.mockResolvedValue({ id_usuario: DESCONOCIDO, preferencias: { mensajes: "nadie" } });
 
     await expect(
       chatService.enviar(YO, DESCONOCIDO, { archivo: PNG_VALIDO })
@@ -163,10 +209,10 @@ describe("chatService.enviar", () => {
 });
 
 describe("chatService.listarMensajes", () => {
-  it("rechaza con 403 si no son amigos", async () => {
-    amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+  it("rechaza con 404 si el otro usuario no existe", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue(null);
 
-    await expect(chatService.listarMensajes(YO, DESCONOCIDO)).rejects.toMatchObject({ status: 403 });
+    await expect(chatService.listarMensajes(YO, DESCONOCIDO)).rejects.toMatchObject({ status: 404 });
     expect(mensajePrivadoRepository.listarConversacion).not.toHaveBeenCalled();
   });
 
@@ -234,10 +280,31 @@ describe("chatService.listarChats", () => {
     expect(chats[2]).toMatchObject({ grupo: { id_grupo: 8 }, ultimoMensaje: null, noLeidos: 0 });
   });
 
-  it("devuelve [] si no tiene amigos", async () => {
+  it("devuelve [] si no tiene amigos ni mensajes", async () => {
     amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([]);
+    mensajePrivadoRepository.listarRecientesDeUsuario.mockResolvedValue([]);
+    mensajePrivadoRepository.listarNoLeidosDeUsuario.mockResolvedValue([]);
 
     expect(await chatService.listarChats(YO)).toEqual([]);
+  });
+
+  it("los mensajes de alguien que no es amigo y al que no contestó llegan como solicitud", async () => {
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([]);
+    usuarioRepository.listarActivosPorIds.mockImplementation(async (ids) =>
+      ids.map((id) => ({ id_usuario: id, nombre: id }))
+    );
+    mensajePrivadoRepository.listarRecientesDeUsuario.mockResolvedValue([
+      mensajeConFecha(3, DESCONOCIDO, YO, "2026-10-05T12:00:00Z"),
+      mensajeConFecha(2, YO, OTRO_AMIGO, "2026-10-05T11:00:00Z"),
+    ]);
+    mensajePrivadoRepository.listarNoLeidosDeUsuario.mockResolvedValue([{ id_emisor: DESCONOCIDO }]);
+
+    const chats = await chatService.listarChats(YO);
+    const porId = Object.fromEntries(chats.map((c) => [c.usuario.id_usuario, c]));
+
+    expect(porId[DESCONOCIDO]).toMatchObject({ solicitud: true, esAmigo: false, noLeidos: 1 });
+    // a quien le escribí yo no es una solicitud (es mi chat)
+    expect(porId[OTRO_AMIGO]).toMatchObject({ solicitud: false, esAmigo: false });
   });
 
   it("arma un chat por amigo con su último mensaje y no leídos, el más reciente primero", async () => {
@@ -304,10 +371,43 @@ describe("chatService.marcarGrupoLeido", () => {
 });
 
 describe("chatService.contarNoLeidos", () => {
-  it("suma los mensajes privados y los de grupo sin leer", async () => {
-    mensajePrivadoRepository.listarNoLeidosDeUsuario.mockResolvedValue([{ id_emisor: AMIGO }]);
+  it("suma los mensajes privados y los de grupo sin leer; las solicitudes van aparte", async () => {
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([{ id_solicitante: YO, id_receptor: AMIGO }]);
+    usuarioRepository.listarActivosPorIds.mockImplementation(async (ids) =>
+      ids.map((id) => ({ id_usuario: id, nombre: id }))
+    );
+    mensajePrivadoRepository.listarRecientesDeUsuario.mockResolvedValue([
+      mensaje(2, DESCONOCIDO, YO),
+      mensaje(1, AMIGO, YO),
+    ]);
+    mensajePrivadoRepository.listarNoLeidosDeUsuario.mockResolvedValue([
+      { id_emisor: AMIGO },
+      { id_emisor: DESCONOCIDO },
+    ]);
     notificacionRepository.listarNoLeidasMensajesGrupo.mockResolvedValue([{ id_grupo: 7 }, { id_grupo: 7 }]);
 
-    expect(await chatService.contarNoLeidos(YO)).toEqual({ total: 3 });
+    expect(await chatService.contarNoLeidos(YO)).toEqual({ total: 3, solicitudes: 1 });
+  });
+});
+
+describe("chatService.eliminarSolicitud", () => {
+  it("borra los mensajes que me mandó alguien que no es amigo", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    mensajePrivadoRepository.listarConversacion.mockResolvedValue([mensaje(1, DESCONOCIDO, YO)]);
+
+    await chatService.eliminarSolicitud(YO, DESCONOCIDO);
+
+    expect(mensajePrivadoRepository.eliminarRecibidos).toHaveBeenCalledWith(YO, DESCONOCIDO);
+  });
+
+  it("no borra nada si ya le contesté (no es una solicitud)", async () => {
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
+    mensajePrivadoRepository.listarConversacion.mockResolvedValue([
+      mensaje(1, DESCONOCIDO, YO),
+      mensaje(2, YO, DESCONOCIDO),
+    ]);
+
+    await expect(chatService.eliminarSolicitud(YO, DESCONOCIDO)).rejects.toMatchObject({ status: 400 });
+    expect(mensajePrivadoRepository.eliminarRecibidos).not.toHaveBeenCalled();
   });
 });

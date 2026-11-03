@@ -25,7 +25,7 @@ import {
 // el backend todavía no manda preferencias, la pantalla igual funciona.
 const PREFERENCIAS_DEFAULT = {
   perfil_privado: false,
-  mensajes: "amigos",
+  mensajes: "todos",
   etiquetas: "amigos",
   mostrar_conciertos: true,
   aparecer_en_descubrir: true,
@@ -60,8 +60,8 @@ const SECCIONES = [
   },
   {
     id: "musica",
-    titulo: "Música y zona",
-    descripcion: "Tu ciudad, gustos y Last.fm",
+    titulo: "Zona",
+    descripcion: "Tu ciudad, para mostrarte shows y fans cerca",
     Icono: IconoMusica,
     Componente: SeccionMusica,
   },

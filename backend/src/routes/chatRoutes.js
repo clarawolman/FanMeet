@@ -50,4 +50,12 @@ router.patch(
   chatController.marcarLeidos
 );
 
+// Solicitudes de mensaje (alguien que no es amigo te escribió).
+router.delete(
+  "/:idUsuario/solicitud",
+  authMiddleware,
+  validate(idUsuarioParamSchema, "params"),
+  chatController.eliminarSolicitud
+);
+
 export default router;
