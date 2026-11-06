@@ -43,6 +43,7 @@ const MIN_PORCENTAJE_DESCUBRIR = 40;
 // Cuántos "más parecidos" se muestran cuando nadie llega a ese mínimo.
 const MAX_CERCANOS = 6;
 const MAX_RECOMENDACIONES = 10;
+const MAX_CONCIERTOS_AMIGOS = 10;
 // Con menos recomendaciones que esto se suman conciertos de géneros parecidos.
 const MIN_RECOMENDACIONES = 4;
 
@@ -241,7 +242,6 @@ async function cargarDatosBase() {
     catalogo.map((g) => [String(g.id), { nombre: g.nombre, clave: normalizarGenero(g.nombre) }])
   );
 
-  const activos = new Set(usuarios.map((u) => u.id_usuario));
   return {
     usuarios: new Map(usuarios.map((u) => [u.id_usuario, u])),
     generosPorId,
@@ -251,12 +251,6 @@ async function cargarDatosBase() {
     favoritosPorUsuario: agruparPor(favoritos, "id_usuario", (f) => f.nombre),
     lastfmPorUsuario: new Map(cuentasLastfm.map((c) => [c.id_usuario, c.usuario_lastfm])),
     conciertosPorUsuario: agruparPor(asistencias, "id_usuario", (f) => String(f.id_concierto)),
-    // `usuarios` ya viene sin suspendidos: así no suman en "Van N amigos tuyos".
-    asistentesPorConcierto: agruparPor(
-      asistencias.filter((f) => activos.has(f.id_usuario)),
-      "id_concierto",
-      (f) => f.id_usuario
-    ),
   };
 }
 
@@ -296,6 +290,8 @@ export async function construirPerfil(idUsuario, base, hasta) {
     generosElegidos.add(genero.clave);
     sumarGenero(generos, genero.clave, 1, base.vocabulario);
   }
+  // Lo que eligió a mano, antes de sumar lo deducido de sus artistas.
+  const generosPropios = new Map(generos);
 
   const principales = [...artistas.values()].sort((a, b) => b.peso - a.peso);
   // clave -> { nombre, peso, origen } (origen = artista propio que lo trajo)
@@ -333,6 +329,10 @@ export async function construirPerfil(idUsuario, base, hasta) {
     similares,
     generos,
     generosElegidos,
+    // Para recomendar conciertos manda lo que eligió: si cambia sus géneros,
+    // lo deducido de sus artistas no tiene que seguir trayendo lo de antes.
+    // Sin géneros elegidos se usa lo deducido, que es lo único que hay.
+    generosConciertos: generosPropios.size > 0 ? generosPropios : generos,
     conciertos: new Set(base.conciertosPorUsuario.get(idUsuario) || []),
     vibra: base.usuarios.get(idUsuario)?.estilo_asistencia || null,
     usaLastfm: Boolean(usuarioLastfm),
@@ -427,7 +427,7 @@ async function construirPerfiles(ids, base, hasta) {
 }
 
 // ── Recomendacion de conciertos ──────────────────────────────────────────
-async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
+async function puntuarConcierto(concierto, yo, base, hasta) {
   const nombreArtista = concierto.artista?.nombre || "";
   const clave = claveArtista(nombreArtista);
   const motivos = [];
@@ -455,22 +455,14 @@ async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
   }
 
   const genero = base.generosPorId.get(String(concierto.id_estiloMusical));
-  if (genero && yo.generos.has(genero.clave)) {
-    puntaje += 0.4 * Math.min(1, yo.generos.get(genero.clave));
+  if (genero && yo.generosConciertos.has(genero.clave)) {
+    puntaje += 0.4 * Math.min(1, yo.generosConciertos.get(genero.clave));
     if (yo.generosElegidos.has(genero.clave)) motivos.push(`Te gusta el ${genero.nombre}`);
   }
 
-  if (nombreArtista && lastfmDisponible() && yo.generos.size > 0) {
+  if (nombreArtista && lastfmDisponible() && yo.generosConciertos.size > 0) {
     const generosArtista = await generosDeArtista(nombreArtista, base.vocabulario, hasta);
-    puntaje += 0.6 * coseno(generosArtista, yo.generos);
-  }
-
-  const amigosQueVan = (base.asistentesPorConcierto.get(concierto.id_concierto) || []).filter((id) =>
-    amigos.has(id)
-  ).length;
-  if (amigosQueVan > 0) {
-    puntaje += 0.15 * Math.min(amigosQueVan, 3);
-    motivos.push(amigosQueVan === 1 ? "Va 1 amigo tuyo" : `Van ${amigosQueVan} amigos tuyos`);
+    puntaje += 0.6 * coseno(generosArtista, yo.generosConciertos);
   }
 
   // En su ciudad (Configuración) suma, pero solo si ya tenía algo que ver
@@ -481,6 +473,13 @@ async function puntuarConcierto(concierto, yo, base, amigos, hasta) {
   }
 
   return { puntaje, motivo: motivos[0] || "Parecido a lo que escuchás" };
+}
+
+// "Va Juan", "Van Juan y Ana", "Van Juan y 3 más"
+function motivoDeAmigos(nombres) {
+  if (nombres.length === 1) return `Va ${nombres[0]}`;
+  if (nombres.length === 2) return `Van ${nombres[0]} y ${nombres[1]}`;
+  return `Van ${nombres[0]} y ${nombres.length - 1} más`;
 }
 
 // ── Géneros parecidos ────────────────────────────────────────────────────
@@ -619,21 +618,17 @@ export const matchingService = {
 
   // Conciertos a los que todavia no se unio, ordenados por afinidad.
   async recomendarConciertos(idYo) {
-    const [base, conciertos, amistades] = await Promise.all([
+    const [base, conciertos] = await Promise.all([
       cargarDatosBase(),
       conciertoRepository.listarTodos({ soloProximos: true }),
-      amistadRepository.listarAceptadasDeUsuario(idYo),
     ]);
 
     const yo = await construirPerfil(idYo, base);
     if (!tieneDatos(yo)) return [];
 
-    const amigos = new Set(
-      amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante))
-    );
     const candidatos = conciertos.filter((c) => !yo.conciertos.has(String(c.id_concierto)));
     const hasta = Date.now() + ESPERA_MAXIMA_LASTFM_MS;
-    const puntajes = await Promise.all(candidatos.map((c) => puntuarConcierto(c, yo, base, amigos, hasta)));
+    const puntajes = await Promise.all(candidatos.map((c) => puntuarConcierto(c, yo, base, hasta)));
 
     const afines = candidatos
       .map((concierto, i) => ({ concierto, ...puntajes[i] }))
@@ -644,14 +639,14 @@ export const matchingService = {
     // Si casi nada coincide con sus gustos, se completa con conciertos de
     // géneros parecidos a los suyos (rock -> metal, trap -> reggaeton...).
     let parecidos = [];
-    if (afines.length < MIN_RECOMENDACIONES && yo.generos.size > 0) {
+    if (afines.length < MIN_RECOMENDACIONES && yo.generosConciertos.size > 0) {
       const yaEstan = new Set(afines.map((r) => r.concierto.id_concierto));
       parecidos = candidatos
         .filter((c) => !yaEstan.has(c.id_concierto))
         .map((concierto) => {
           const genero = base.generosPorId.get(String(concierto.id_estiloMusical));
           if (!genero) return null;
-          const { parecido, genero: suyo } = parecidoDeGeneros(genero.clave, yo.generos, base.vocabulario);
+          const { parecido, genero: suyo } = parecidoDeGeneros(genero.clave, yo.generosConciertos, base.vocabulario);
           if (parecido <= 0) return null;
           const nombreSuyo = base.vocabulario.get(suyo) || suyo;
           return {
@@ -672,5 +667,44 @@ export const matchingService = {
       ...toConciertoResumen(concierto),
       motivo,
     }));
+  },
+
+  // Próximos conciertos que eligieron sus amigos y a los que todavía no se
+  // unió, primero los que tienen más amigos. Se muestra quién va: los que
+  // ocultaron sus conciertos en Configuración no cuentan.
+  async conciertosDeAmigos(idYo) {
+    const [conciertos, amistades, asistencias] = await Promise.all([
+      conciertoRepository.listarTodos({ soloProximos: true }),
+      amistadRepository.listarAceptadasDeUsuario(idYo),
+      usuariosConciertosRepository.listarTodas(),
+    ]);
+
+    const amigos = await usuarioRepository.listarActivosPorIds(
+      amistades.map((a) => (a.id_solicitante === idYo ? a.id_receptor : a.id_solicitante))
+    );
+    const nombres = new Map(
+      amigos
+        .filter((amigo) => preferenciasDe(amigo).mostrar_conciertos)
+        .map((amigo) => [amigo.id_usuario, amigo.apodo || amigo.nombre])
+    );
+
+    const misConciertos = new Set(
+      asistencias.filter((f) => f.id_usuario === idYo).map((f) => f.id_concierto)
+    );
+    const amigosPorConcierto = agruparPor(
+      asistencias.filter((f) => nombres.has(f.id_usuario)),
+      "id_concierto",
+      (f) => nombres.get(f.id_usuario)
+    );
+
+    return conciertos
+      .filter((c) => amigosPorConcierto.has(c.id_concierto) && !misConciertos.has(c.id_concierto))
+      .map((concierto) => ({ concierto, quienes: amigosPorConcierto.get(concierto.id_concierto) }))
+      .sort((a, b) => b.quienes.length - a.quienes.length)
+      .slice(0, MAX_CONCIERTOS_AMIGOS)
+      .map(({ concierto, quienes }) => ({
+        ...toConciertoResumen(concierto),
+        motivo: motivoDeAmigos(quienes),
+      }));
   },
 };

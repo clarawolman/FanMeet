@@ -11,7 +11,7 @@ vi.mock("../src/repositories/bloqueoRepository.js", () => ({
 process.env.LASTFM_API_KEY = "lastfm-key-test";
 
 vi.mock("../src/repositories/usuarioRepository.js", () => ({
-  usuarioRepository: { listarTodos: vi.fn() },
+  usuarioRepository: { listarTodos: vi.fn(), listarActivosPorIds: vi.fn() },
 }));
 vi.mock("../src/repositories/artistaFavoritoRepository.js", () => ({
   artistaFavoritoRepository: { listarTodos: vi.fn() },
@@ -313,6 +313,8 @@ describe("matchingService.compatibilidad", () => {
 });
 
 describe("matchingService.recomendarConciertos", () => {
+  const TAG_POP = { toptags: { tag: [{ name: "pop", count: 100 }] } };
+
   beforeEach(() => {
     amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([
       { id_solicitante: YO, id_receptor: GEMELO },
@@ -331,12 +333,97 @@ describe("matchingService.recomendarConciertos", () => {
   it("recomienda primero a sus artistas, saltea a los que ya se unió y explica por qué", async () => {
     const recomendados = await matchingService.recomendarConciertos(YO);
 
-    expect(recomendados.map((c) => c.id_concierto)).toEqual([1, 2]);
+    expect(recomendados.map((c) => c.id_concierto)).toEqual([1]);
     expect(recomendados[0].motivo).toBe("Duki está entre tus favoritos");
-    expect(recomendados[1].motivo).toBe("Va 1 amigo tuyo");
+  });
+
+  it("que vaya un amigo no alcanza para recomendar: eso va en su propia fila", async () => {
+    conciertoRepository.listarTodos.mockResolvedValue([
+      { id_concierto: 2, nombre: "Eras", id_estiloMusical: 1, artista: { nombre: "Taylor Swift" } },
+    ]);
+
+    expect(await matchingService.recomendarConciertos(YO)).toEqual([]);
+  });
+
+  it("los géneros elegidos mandan sobre los deducidos de sus artistas", async () => {
+    // Duki (favorito) tiene el tag pop, pero YO eligió trap y rock.
+    lastfmApiRepository.obtenerTagsArtista.mockResolvedValue(TAG_POP);
+    conciertoRepository.listarTodos.mockResolvedValue([
+      { id_concierto: 2, nombre: "Eras", id_estiloMusical: 1, artista: { nombre: "Taylor Swift" } },
+    ]);
+
+    expect(await matchingService.recomendarConciertos(YO)).toEqual([]);
+  });
+
+  it("sin géneros elegidos usa los deducidos de sus artistas", async () => {
+    estiloMusicalRepository.listarTodasLasSelecciones.mockResolvedValue([]);
+    lastfmApiRepository.obtenerTagsArtista.mockResolvedValue(TAG_POP);
+    conciertoRepository.listarTodos.mockResolvedValue([
+      { id_concierto: 2, nombre: "Eras", id_estiloMusical: 1, artista: { nombre: "Taylor Swift" } },
+    ]);
+
+    const recomendados = await matchingService.recomendarConciertos(YO);
+
+    expect(recomendados.map((c) => c.id_concierto)).toEqual([2]);
   });
 
   it("sin gustos cargados no recomienda nada", async () => {
     expect(await matchingService.recomendarConciertos(VACIO)).toEqual([]);
+  });
+});
+
+describe("matchingService.conciertosDeAmigos", () => {
+  const OTRO_AMIGO = "55555555-5555-5555-5555-555555555555";
+
+  beforeEach(() => {
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([
+      { id_solicitante: YO, id_receptor: GEMELO },
+      { id_solicitante: OTRO_AMIGO, id_receptor: YO },
+    ]);
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
+      { id_usuario: GEMELO, nombre: "gemelo", apodo: "Gemi" },
+      { id_usuario: OTRO_AMIGO, nombre: "otro" },
+    ]);
+    conciertoRepository.listarTodos.mockResolvedValue([
+      { id_concierto: 1, nombre: "Uno", artista: { nombre: "A" } },
+      { id_concierto: 2, nombre: "Dos", artista: { nombre: "B" } },
+      { id_concierto: 3, nombre: "Tres", artista: { nombre: "C" } },
+      { id_concierto: 4, nombre: "Cuatro", artista: { nombre: "D" } },
+    ]);
+    usuariosConciertosRepository.listarTodas.mockResolvedValue([
+      { id_usuario: GEMELO, id_concierto: 1 },
+      { id_usuario: GEMELO, id_concierto: 2 },
+      { id_usuario: OTRO_AMIGO, id_concierto: 2 },
+      { id_usuario: GEMELO, id_concierto: 3 },
+      { id_usuario: YO, id_concierto: 3 },
+      { id_usuario: OPUESTO, id_concierto: 4 },
+    ]);
+  });
+
+  it("muestra lo de sus amigos, primero lo que tiene más, sin lo que ya eligió ni lo de desconocidos", async () => {
+    const conciertos = await matchingService.conciertosDeAmigos(YO);
+
+    expect(conciertos.map((c) => c.id_concierto)).toEqual([2, 1]);
+    expect(conciertos[0].motivo).toBe("Van Gemi y otro");
+    expect(conciertos[1].motivo).toBe("Va Gemi");
+  });
+
+  it("no cuenta a quien ocultó sus conciertos en Configuración", async () => {
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([
+      { id_usuario: GEMELO, nombre: "gemelo", preferencias: { mostrar_conciertos: false } },
+      { id_usuario: OTRO_AMIGO, nombre: "otro" },
+    ]);
+
+    const conciertos = await matchingService.conciertosDeAmigos(YO);
+
+    expect(conciertos.map((c) => c.id_concierto)).toEqual([2]);
+    expect(conciertos[0].motivo).toBe("Va otro");
+  });
+
+  it("sin amigos no devuelve nada", async () => {
+    amistadRepository.listarAceptadasDeUsuario.mockResolvedValue([]);
+    usuarioRepository.listarActivosPorIds.mockResolvedValue([]);
+
+    expect(await matchingService.conciertosDeAmigos(YO)).toEqual([]);
   });
 });

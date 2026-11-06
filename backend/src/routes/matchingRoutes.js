@@ -9,6 +9,7 @@ const router = Router();
 
 router.get("/me/descubrir", authMiddleware, matchingController.descubrir);
 router.get("/me/conciertos", authMiddleware, matchingController.recomendarConciertos);
+router.get("/me/conciertos-amigos", authMiddleware, matchingController.conciertosDeAmigos);
 router.get(
   "/usuarios/:idUsuario",
   authMiddleware,

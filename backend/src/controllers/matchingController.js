@@ -13,4 +13,8 @@ export const matchingController = {
   recomendarConciertos: asyncHandler(async (req, res) => {
     res.json(await matchingService.recomendarConciertos(req.user.id));
   }),
+
+  conciertosDeAmigos: asyncHandler(async (req, res) => {
+    res.json(await matchingService.conciertosDeAmigos(req.user.id));
+  }),
 };

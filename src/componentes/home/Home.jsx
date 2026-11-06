@@ -51,6 +51,7 @@ function Home({ onEntrarConcierto, onNavegar, onVerUsuario, onAbrirChatbot }) {
   // aparte, sin frenar el resto de la home.
   const [recomendados, setRecomendados] = useState([]);
   const [cargandoRecomendados, setCargandoRecomendados] = useState(true);
+  const [conciertosDeAmigos, setConciertosDeAmigos] = useState([]);
   const [fansCompatibles, setFansCompatibles] = useState([]);
   const [soloFansCercanos, setSoloFansCercanos] = useState(false);
 
@@ -63,6 +64,11 @@ function Home({ onEntrarConcierto, onNavegar, onVerUsuario, onAbrirChatbot }) {
       .then((datos) => !cancelado && setRecomendados(datos || []))
       .catch((error) => console.error("Error cargando recomendaciones:", error))
       .finally(() => !cancelado && setCargandoRecomendados(false));
+
+    matchingService
+      .conciertosDeAmigos()
+      .then((datos) => !cancelado && setConciertosDeAmigos(datos || []))
+      .catch((error) => console.error("Error cargando conciertos de amigos:", error));
 
     matchingService
       .descubrir()
@@ -508,8 +514,9 @@ const generosOrdenados = [...generos].sort((a, b) => {
               {!cargandoRecomendados && conciertosRecomendados.length === 0 && (
                 <div className="home-recomendados-vacio">
                   <p>
-                    Sumá tus artistas favoritos y géneros (o vinculá Last.fm) para
-                    recibir conciertos recomendados.
+                    {generosPreferidosIds.length > 0
+                      ? "Todavía no hay conciertos de tus géneros. Sumá artistas favoritos o vinculá Last.fm para encontrar más."
+                      : "Sumá tus artistas favoritos y géneros (o vinculá Last.fm) para recibir conciertos recomendados."}
                   </p>
                   <button className="fmBotonPrimario" type="button" onClick={() => onNavegar("perfil")}>
                     Completar mi perfil
@@ -523,6 +530,19 @@ const generosOrdenados = [...generos].sort((a, b) => {
                 </CarruselFila>
               )}
             </section>
+
+            {conciertosDeAmigos.length > 0 && (
+              <section className="home-row">
+                <div className="home-row-header">
+                  <h2>Van tus amigos</h2>
+                  <span>Los conciertos que eligieron</span>
+                </div>
+
+                <CarruselFila>
+                  {renderLista(conciertosDeAmigos, { conMotivo: true })}
+                </CarruselFila>
+              </section>
+            )}
 
             {fansCompatibles.length > 0 && (
               <FansCompatiblesHome

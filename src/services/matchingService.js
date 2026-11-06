@@ -14,4 +14,8 @@ export const matchingService = {
   async conciertosRecomendados() {
     return api.get("/matching/me/conciertos");
   },
+
+  async conciertosDeAmigos() {
+    return api.get("/matching/me/conciertos-amigos");
+  },
 };
