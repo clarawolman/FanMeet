@@ -27,6 +27,8 @@ const Home = lazy(() => import("./componentes/home/Home"));
 const Registro1 = lazy(() => import("./componentes/Login/Registro1/Registro1"));
 const Registro2 = lazy(() => import("./componentes/Login/Registro2/Registro2"));
 const Registro3 = lazy(() => import("./componentes/Login/Registro3/Registro3"));
+const Registro4 = lazy(() => import("./componentes/Login/Registro4/Registro4"));
+const Registro5 = lazy(() => import("./componentes/Login/Registro5/Registro5"));
 const VerificarMail = lazy(() => import("./componentes/Login/VerificarMail/VerificarMail"));
 const MisEventos = lazy(() => import("./componentes/misEventos/MisEventos"));
 const MisGrupos = lazy(() => import("./componentes/misGrupos/MisGrupos"));
@@ -472,12 +474,14 @@ function App() {
     setPantalla("login");
   }
 
-  function volverDeRegistro2ARegistro1() {
-    setPantalla("registro1");
-  }
-
-  function volverDeRegistro3ARegistro2() {
-    setPantalla("registro2");
+  // Ir y volver entre pasos: lo cargado en cada uno se guarda siempre, así
+  // no se pierde al moverse.
+  function irAPasoRegistro(destino) {
+    return (datosPaso) => {
+      guardarDatosRegistro(datosPaso);
+      setErrorTexto("");
+      setPantalla(destino);
+    };
   }
 
   function volverPantallaAnterior() {
@@ -488,48 +492,43 @@ function App() {
     setPantalla(pantallaAntesDeGrupo);
   }
 
-  function manejarRegistro1(datosPaso1) {
-    guardarDatosRegistro(datosPaso1);
-    setPantalla("registro2");
-  }
-
-  function manejarRegistro2(datosPaso2) {
-    guardarDatosRegistro(datosPaso2);
-    setPantalla("registro3");
-  }
-
-async function manejarFinalizarRegistro(datosPaso3) {
+async function manejarFinalizarRegistro(datosPaso5) {
   setCargando(true);
   setErrorTexto("");
 
   const datosFinales = {
     ...datosRegistro,
-    ...datosPaso3,
+    ...datosPaso5,
   };
 
   // Reemplaza signUp + insert en "usuario" + insert en
   // "estilo_musical_usuario" por una sola llamada al backend, que hace las
   // 3 cosas en ese mismo orden (backend/src/services/authService.js) y
   // devuelve exactamente los mismos mensajes de error.
-  // La foto elegida en Registro2 es un File con una URL blob: de preview,
+  // La foto elegida en Registro5 es un File con una URL blob: de preview,
   // que solo existe en esta pestaña: no se manda al backend. El archivo se
   // sube a Storage recién cuando la cuenta ya existe (necesita sesión).
   const archivoFoto = datosFinales.foto_perfil;
   // Los artistas favoritos (Registro3) también necesitan sesión: se suman
   // después de crear la cuenta, como la foto.
-  const artistasFavoritos = datosFinales.artistas_favoritos || [];
-  const datosSinFoto = { ...datosFinales };
+  const artistasFavoritos = (datosFinales.artistas || []).map((artista) => artista.spotify_id);
+  const datosSinFoto = {
+    ...datosFinales,
+    estilos_musicales: (datosFinales.generos || []).map((genero) => genero.id),
+    estilo_asistencia: datosFinales.estilo_asistencia || null,
+  };
   delete datosSinFoto.foto_perfil;
   delete datosSinFoto.previewFoto;
-  delete datosSinFoto.artistas_favoritos;
+  delete datosSinFoto.generos;
+  delete datosSinFoto.artistas;
 
   try {
     const { usuario, requiereConfirmacion } = await authService.registro(datosSinFoto);
 
     if (requiereConfirmacion) {
-      // Sin sesión hasta confirmar el mail: la foto y los artistas se
-      // guardan cuando se verifica el código.
-      setVerificacion({ mail: usuario.mail, enviarAlEntrar: false, archivoFoto, artistasFavoritos });
+      // Sin sesión hasta confirmar el mail: el perfil lo crea el backend al
+      // verificar el código, y ahí se guardan la foto y los artistas.
+      setVerificacion({ mail: datosFinales.mail, enviarAlEntrar: false, archivoFoto, artistasFavoritos });
       setDatosRegistro({});
       setCargando(false);
       setPantalla("verificarMail");
@@ -589,12 +588,7 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
     setPantalla("login");
   }
 
-  const esPantallaLogin =
-    pantalla === "login" ||
-    pantalla === "registro1" ||
-    pantalla === "registro2" ||
-    pantalla === "registro3" ||
-    pantalla === "verificarMail";
+  const esPantallaLogin = PANTALLAS_SIN_SESION.includes(pantalla);
 
   if (restaurandoSesion) {
     return <CargandoPantalla texto="Cargando..." />;
@@ -671,22 +665,39 @@ async function completarRegistro(usuario, archivoFoto, artistasFavoritos = []) {
         <Registro1
           datosIniciales={datosRegistro}
           onVolver={salirDelRegistro}
-          onSiguiente={manejarRegistro1}
+          onSiguiente={irAPasoRegistro("registro2")}
         />
       )}
 
       {pantalla === "registro2" && (
         <Registro2
           datosIniciales={datosRegistro}
-          onVolver={volverDeRegistro2ARegistro1}
-          onSiguiente={manejarRegistro2}
+          onVolver={irAPasoRegistro("registro1")}
+          onSiguiente={irAPasoRegistro("registro3")}
         />
       )}
 
       {pantalla === "registro3" && (
         <Registro3
           datosIniciales={datosRegistro}
-          onVolver={volverDeRegistro3ARegistro2}
+          onVolver={irAPasoRegistro("registro2")}
+          onSiguiente={irAPasoRegistro("registro4")}
+        />
+      )}
+
+      {pantalla === "registro4" && (
+        <Registro4
+          datosIniciales={datosRegistro}
+          onVolver={irAPasoRegistro("registro3")}
+          onSiguiente={irAPasoRegistro("registro5")}
+        />
+      )}
+
+      {pantalla === "registro5" && (
+        <Registro5
+          datosIniciales={datosRegistro}
+          cargando={cargando}
+          onVolver={irAPasoRegistro("registro4")}
           onFinalizar={manejarFinalizarRegistro}
         />
       )}

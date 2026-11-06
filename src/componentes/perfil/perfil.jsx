@@ -25,7 +25,7 @@ import { IconoPogo, IconoSentado, IconoPrimeraFila } from "./vibraIconos";
 import { UsuarioContext } from "../../context/UsuarioContext";
 import { mostrarAviso } from "../../utils/avisos";
 
-// Mismos valores que usa Registro3 para usuario.estilo_asistencia:
+// Mismos valores que usa Registro4 para usuario.estilo_asistencia:
 // no son datos inventados, son el vocabulario real ya persistido en esa columna.
 const AMBIENTES_CONCIERTO = [
   {
