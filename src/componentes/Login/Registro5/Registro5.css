@@ -1,4 +1,4 @@
-.registro2Contenido {
+.registro5Contenido {
   width: 100%;
   max-width: calc(640px + 48px);
   padding: 28px 24px 48px;
@@ -6,14 +6,14 @@
   flex-direction: column;
 }
 
-.registro2FotoWrapper {
+.registro5FotoWrapper {
   position: relative;
   width: 148px;
   height: 148px;
   margin: 4px auto 28px;
 }
 
-.registro2Foto {
+.registro5Foto {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -22,11 +22,11 @@
   background: var(--fm-surface);
 }
 
-.registro2Foto.conFoto {
+.registro5Foto.conFoto {
   border: none;
 }
 
-.registro2FotoPreview {
+.registro5FotoPreview {
   width: 100%;
   height: 100%;
   display: block;
@@ -34,12 +34,12 @@
 }
 
 /* Si la imagen por defecto es PNG con transparencia, se ve entera */
-.registro2FotoPreview[src$=".png"] {
+.registro5FotoPreview[src$=".png"] {
   object-fit: contain;
   padding: 18px;
 }
 
-.registro2BotonMas {
+.registro5BotonMas {
   position: absolute;
   right: -6px;
   bottom: -6px;
@@ -55,22 +55,22 @@
   transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2BotonMas:hover {
+.registro5BotonMas:hover {
   background: var(--fm-cta-hover);
 }
 
-.registro2Error {
+.registro5Error {
   margin-bottom: 16px;
 }
 
-.registro2Opciones,
-.registro2Camara {
+.registro5Opciones,
+.registro5Camara {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.registro2Opcion {
+.registro5Opcion {
   width: 100%;
   min-height: 64px;
   padding: 10px 14px;
@@ -86,12 +86,12 @@
   transition: border-color var(--fm-dur) var(--fm-ease), background-color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2Opcion:hover {
+.registro5Opcion:hover {
   border-color: var(--fm-border-strong);
   background: var(--fm-surface-warm);
 }
 
-.registro2OpcionIcono {
+.registro5OpcionIcono {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
@@ -102,34 +102,34 @@
   color: var(--fm-ink);
 }
 
-.registro2OpcionTexto {
+.registro5OpcionTexto {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.registro2OpcionTexto strong {
+.registro5OpcionTexto strong {
   font-size: var(--fm-fs-md);
   font-weight: 600;
 }
 
-.registro2OpcionTexto small {
+.registro5OpcionTexto small {
   color: var(--fm-muted);
   font-size: var(--fm-fs-xs);
 }
 
-.registro2Flecha {
+.registro5Flecha {
   color: var(--fm-muted);
   transition: transform var(--fm-dur) var(--fm-ease), color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2Opcion:hover .registro2Flecha {
+.registro5Opcion:hover .registro5Flecha {
   color: var(--fm-ink);
   transform: translateX(2px);
 }
 
-.registro2Video {
+.registro5Video {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: var(--fm-radius-md);
@@ -137,16 +137,16 @@
   object-fit: cover;
 }
 
-.registro2CamaraBotones {
+.registro5CamaraBotones {
   display: flex;
   gap: 10px;
 }
 
-.registro2CamaraBotones > button {
+.registro5CamaraBotones > button {
   flex: 1;
 }
 
-.registro2BotonCamaraSecundario {
+.registro5BotonCamaraSecundario {
   min-height: 44px;
   border: 1px solid var(--fm-border-strong);
   border-radius: var(--fm-radius-sm);
@@ -159,12 +159,12 @@
   transition: background-color var(--fm-dur) var(--fm-ease);
 }
 
-.registro2BotonCamaraSecundario:hover {
+.registro5BotonCamaraSecundario:hover {
   background: var(--fm-nav-hover-bg);
 }
 
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  .registro2Contenido {
+  .registro5Contenido {
     padding-top: 40px;
     display: grid;
     grid-template-columns: 220px minmax(0, 1fr);
@@ -172,24 +172,24 @@
     align-items: start;
   }
 
-  .registro2Intro,
-  .registro2Error {
+  .registro5Intro,
+  .registro5Error {
     grid-column: 1 / -1;
   }
 
-  .registro2FotoWrapper {
+  .registro5FotoWrapper {
     grid-column: 1;
     width: 190px;
     height: 190px;
     margin: 0;
   }
 
-  .registro2Opciones,
-  .registro2Camara {
+  .registro5Opciones,
+  .registro5Camara {
     grid-column: 2;
   }
 
-  .registro2Siguiente {
+  .registro5Siguiente {
     grid-column: 2;
     justify-self: end;
   }

@@ -8,12 +8,13 @@ export const authRepository = {
     return supabaseAuth.auth.signInWithPassword({ email, password });
   },
 
-  // El link del mail de confirmación vuelve a la app de fans.
-  async signUp(email, password) {
+  // El link del mail de confirmación vuelve a la app de fans. `metadata`
+  // queda guardado en la cuenta de Auth (user_metadata).
+  async signUp(email, password, metadata = {}) {
     return supabaseAuth.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: env.frontendUrl },
+      options: { emailRedirectTo: env.frontendUrl, data: metadata },
     });
   },
 

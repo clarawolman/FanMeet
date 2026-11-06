@@ -1,4 +1,4 @@
-/* ===== Compartido por los 3 pasos del registro ===== */
+/* ===== Compartido por los pasos del registro ===== */
 
 .regPantalla {
   min-height: calc(100dvh / var(--fm-zoom));
@@ -77,12 +77,12 @@
   background: var(--fm-nav-hover-bg);
 }
 
-/* tres tramos en vez de una barra con porcentaje */
+/* un tramo por paso en vez de una barra con porcentaje */
 .regBarra {
   max-width: 640px;
   margin: 8px auto 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   padding-bottom: 12px;
 }
@@ -96,6 +96,13 @@
 
 .regBarra span.activo {
   background: var(--fm-accent);
+}
+
+/* Contenido de los pasos de una sola columna */
+.regContenido {
+  width: 100%;
+  max-width: calc(640px + 48px);
+  padding: 28px 24px 48px;
 }
 
 .regTitulo {
@@ -132,14 +139,21 @@
     padding-top: 28px;
   }
 
+  .regContenido {
+    padding-top: 40px;
+  }
+
   .regBotonSiguiente {
     width: 280px;
   }
-}
 
-@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  .regPantallaAncha .regHeaderFila,
-  .regPantallaAncha .regBarra {
-    max-width: 920px;
+  .regPie {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .regPie .fmAvisoError {
+    align-self: stretch;
   }
 }

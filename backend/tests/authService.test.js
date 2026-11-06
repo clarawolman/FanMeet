@@ -178,7 +178,11 @@ describe("authService.registro", () => {
 
     expect(usuarioRepository.existeMail).not.toHaveBeenCalled();
     expect(usuarioRepository.existeNombre).not.toHaveBeenCalled();
-    expect(authRepository.signUp).toHaveBeenCalledWith(datosRegistro.mail, datosRegistro.contrasena);
+    expect(authRepository.signUp).toHaveBeenCalledWith(
+      datosRegistro.mail,
+      datosRegistro.contrasena,
+      expect.objectContaining({ registro_pendiente: expect.any(Object) })
+    );
   });
 
   it("crea el usuario y guarda sus géneros cuando todo es válido", async () => {
@@ -208,6 +212,18 @@ describe("authService.registro", () => {
       message: expect.stringContaining("ya tiene una cuenta"),
     });
     expect(usuarioRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("detecta el mail ya confirmado aunque Supabase no dé error (usuario sin identidades)", async () => {
+    authRepository.signUp.mockResolvedValue({
+      data: { user: { id: "falso", identities: [] }, session: null },
+      error: null,
+    });
+
+    await expect(authService.registro(datosRegistro)).rejects.toMatchObject({
+      status: 400,
+      message: expect.stringContaining("ya tiene una cuenta"),
+    });
   });
 });
 
@@ -239,12 +255,11 @@ describe("authService: moderación", () => {
 });
 
 describe("authService.registro con confirmación de mail", () => {
-  it("devuelve requiereConfirmacion:true y session null cuando signUp no da sesión", async () => {
+  it("sin sesión no crea el perfil: la cuenta no existe para nadie hasta confirmar", async () => {
     authRepository.signUp.mockResolvedValue({
-      data: { user: { id: "u1" }, session: null },
+      data: { user: { id: "u1", identities: [{}] }, session: null },
       error: null,
     });
-    usuarioRepository.crear.mockResolvedValue({ ...USUARIO_ROW, id_usuario: "u1" });
 
     const resultado = await authService.registro({
       nombre: "Ana",
@@ -258,6 +273,96 @@ describe("authService.registro con confirmación de mail", () => {
 
     expect(resultado.requiereConfirmacion).toBe(true);
     expect(resultado.session).toBeNull();
+    expect(resultado.usuario).toBeNull();
+    expect(usuarioRepository.crear).not.toHaveBeenCalled();
+    expect(estiloMusicalRepository.reemplazarSeleccion).not.toHaveBeenCalled();
+  });
+
+  it("guarda los datos del perfil en Auth sin la contraseña", async () => {
+    authRepository.signUp.mockResolvedValue({
+      data: { user: { id: "u1", identities: [{}] }, session: null },
+      error: null,
+    });
+
+    await authService.registro({
+      nombre: "Ana",
+      mail: "ana@mail.com",
+      contrasena: "Abcdef1!",
+      fechanac: "2000-01-01",
+      genero: "F",
+      estilos_musicales: [1, 2],
+    });
+
+    const { registro_pendiente: pendiente } = authRepository.signUp.mock.calls[0][2];
+    expect(pendiente).toMatchObject({ nombre: "Ana", estilos_musicales: [1, 2] });
+    expect(pendiente).not.toHaveProperty("contrasena");
+  });
+});
+
+describe("creación del perfil al confirmar el mail", () => {
+  const USUARIO_PENDIENTE = {
+    id: "abcd1234",
+    user_metadata: {
+      registro_pendiente: {
+        nombre: "Ana",
+        apodo: null,
+        mail: "ana@mail.com",
+        fechanac: "2000-01-01",
+        genero: "F",
+        fotoperfil: "default.png",
+        estilo_asistencia: null,
+        estilos_musicales: [1, 2],
+      },
+    },
+  };
+
+  beforeEach(() => {
+    authRepository.verificarCodigoRegistro.mockResolvedValue({
+      data: { user: USUARIO_PENDIENTE, session: SESSION },
+      error: null,
+    });
+    usuarioRepository.obtenerPorId.mockResolvedValue(null);
+    usuarioRepository.existeNombre.mockResolvedValue(null);
+    usuarioRepository.crear.mockImplementation(async (fila) => fila);
+  });
+
+  it("crea el perfil y los géneros al verificar el código", async () => {
+    const resultado = await authService.verificarCodigo({ mail: "ana@mail.com", codigo: "123456" });
+
+    expect(usuarioRepository.crear).toHaveBeenCalledWith(
+      expect.objectContaining({ id_usuario: "abcd1234", nombre: "Ana", mail: "ana@mail.com" })
+    );
+    expect(usuarioRepository.crear.mock.calls[0][0]).not.toHaveProperty("estilos_musicales");
+    expect(estiloMusicalRepository.reemplazarSeleccion).toHaveBeenCalledWith("abcd1234", [1, 2]);
+    expect(resultado.usuario.id_usuario).toBe("abcd1234");
+  });
+
+  it("no lo duplica si el perfil ya existe", async () => {
+    usuarioRepository.obtenerPorId.mockResolvedValue({ ...USUARIO_ROW, id_usuario: "abcd1234" });
+
+    await authService.verificarCodigo({ mail: "ana@mail.com", codigo: "123456" });
+
+    expect(usuarioRepository.crear).not.toHaveBeenCalled();
+  });
+
+  it("si otra persona tomó el nombre mientras tanto, igual crea el perfil con uno libre", async () => {
+    usuarioRepository.existeNombre.mockResolvedValue({ id_usuario: "otro" });
+
+    await authService.verificarCodigo({ mail: "ana@mail.com", codigo: "123456" });
+
+    expect(usuarioRepository.crear).toHaveBeenCalledWith(expect.objectContaining({ nombre: "Anaabcd" }));
+  });
+
+  it("crea el perfil al iniciar sesión si se confirmó con el link del mail", async () => {
+    authRepository.signInWithPassword.mockResolvedValue({
+      data: { user: USUARIO_PENDIENTE, session: SESSION },
+      error: null,
+    });
+
+    const resultado = await authService.login({ usuarioOMail: "ana@mail.com", contrasena: "Abcdef1!" });
+
+    expect(usuarioRepository.crear).toHaveBeenCalledTimes(1);
+    expect(resultado.usuario.id_usuario).toBe("abcd1234");
   });
 });
 

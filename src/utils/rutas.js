@@ -23,6 +23,8 @@ const RUTA_SIMPLE = {
   registro1: "/registro",
   registro2: "/registro",
   registro3: "/registro",
+  registro4: "/registro",
+  registro5: "/registro",
   verificarMail: "/verificar-mail",
   descubrir: "/descubrir",
   chats: "/chats",
@@ -35,7 +37,7 @@ const RUTA_SIMPLE = {
 };
 
 // Las que se pueden ver sin sesión
-export const PANTALLAS_SIN_SESION = ["login", "registro1", "registro2", "registro3", "verificarMail"];
+export const PANTALLAS_SIN_SESION = ["login", "registro1", "registro2", "registro3", "registro4", "registro5", "verificarMail"];
 
 const NO_ENCONTRADA = { pantalla: "noEncontrada" };
 
@@ -106,6 +108,8 @@ const TITULOS = {
   registro1: "Crear cuenta",
   registro2: "Crear cuenta",
   registro3: "Crear cuenta",
+  registro4: "Crear cuenta",
+  registro5: "Crear cuenta",
   verificarMail: "Verificar mail",
   home: "Inicio",
   descubrir: "Descubrir",

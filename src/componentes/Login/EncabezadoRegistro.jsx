@@ -1,9 +1,9 @@
 import Marca from "../generales/Marca";
 import "./RegistroComun.css";
 
-const TOTAL_PASOS = 3;
+const TOTAL_PASOS = 5;
 
-// Encabezado compartido por los tres pasos del registro: volver, marca y
+// Encabezado compartido por los pasos del registro: volver, marca y
 // progreso. Cada paso solo dice en cuál está; sin paso (verificación de
 // mail) queda solo volver y marca. Con `onOmitir` el paso es opcional y se
 // muestra "Omitir" para saltearlo.
